@@ -1,0 +1,87 @@
+﻿@using FamilieLaissEnums
+@using FamilieLaissFrontend.Client.ViewModels.Controls.VideoControl
+@using FamilieLaissInterfaces.Models.Data
+@using FamilieLaissSharedUI.Components
+
+@inherits FlComponentBase<VideoControlViewModel>
+
+<MudCard Class="@ClassAttributeCard" Outlined="true">
+    <!-- Card Header-Section -->
+    @if (ControlType != EnumVideoControlType.EditDialog)
+    {
+        <VideoControlHeader ShowSelectionMode="ShowSelectionMode" ShowSkeleton="ShowSkeleton" UploadItem="UploadItem" ToggleChanged="() => ViewModel.ToggleChangedCommand.Execute(null)" />
+    }
+
+    <!-- Card Media-Section -->
+    <VideoControlMedia ControlType="ControlType" MediaItem="MediaItem" ShowSkeleton="ShowSkeleton" UploadItem="UploadItem" />
+
+    <!-- Card Content-Section -->
+    @if (ControlType != EnumVideoControlType.EditDialog)
+    {
+        <MudCardContent>
+            <VideoControlInfo ShowSkeleton="ShowSkeleton" ControlType="ControlType" MediaItem="MediaItem" UploadItem="UploadItem" />
+        </MudCardContent>
+    }
+
+    <!-- Card Action-Section -->
+    @if (ControlType != EnumVideoControlType.EditDialog)
+    {
+        <MudCardActions>
+            <VideoControlActions ControlType="ControlType" UploadItem="UploadItem" IsDisabled="IsDisabled" ShowSkeleton="ShowSkeleton" ChooseClicked="ChooseClicked" DeleteClicked="DeleteClicked" EditClicked="EditClicked" />
+        </MudCardActions>
+    }
+</MudCard>
+
+@code
+{
+    [Parameter]
+    [EditorRequired]
+    public EnumVideoControlType ControlType { get; set; }
+
+    [Parameter]
+    [EditorRequired]
+    public bool ShowSkeleton { get; set; }
+
+    [Parameter]
+    public IUploadVideoModel? UploadItem { get; set; }
+
+    [Parameter]
+    public IMediaItemModel? MediaItem { get; set; }
+
+    [Parameter]
+    [EditorRequired]
+    public bool IsDisabled { get; set; }
+
+    [Parameter]
+    [EditorRequired]
+    public bool ShowSelectionMode { get; set; }
+
+    [Parameter]
+    public EventCallback<IUploadVideoModel> DeleteClicked { get; set; }
+
+    [Parameter]
+    public EventCallback<IUploadVideoModel> ChooseClicked { get; set; }
+
+    [Parameter]
+    public EventCallback<IUploadVideoModel> EditClicked { get; set; }
+
+    private string ClassAttributeCard
+    {
+        get
+        {
+            string result = string.Empty;
+
+            if (ControlType == EnumVideoControlType.Upload)
+            {
+                result += "fl-card-video-upload ";
+            }
+
+            if (UploadItem is not null && UploadItem.IsSelected)
+            {
+                result += "fl-card-video-selected ";
+            }
+
+            return result;
+        }
+    }
+}

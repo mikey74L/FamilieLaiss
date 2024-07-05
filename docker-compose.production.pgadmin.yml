@@ -1,0 +1,77 @@
+version: '3.4'
+
+services:
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: pgadmin4                
+    ports:
+      - 8500:80
+    volumes:
+      - /var/lib/familielaiss/pgadmin:/var/lib/pgadmin
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=mikey74@hotmail.de
+      - PGADMIN_DEFAULT_PASSWORD=Sicalis_74
+  gateway.spa:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+    ports:
+      - 8001:80
+  upload.api:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+  pictureconvert.api:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+  pictureconvertexecute:
+    environment: 
+      - Environment=Production
+  picture.api:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+  videoconvert.api:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+  videoconvertexecute:
+    environment:
+      - Environment=Production
+  video.api:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+  settings.api:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+  identity.api:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+    ports:
+      - 8002:80
+  mail.api:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+  message.api:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+  google.api:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+  catalog.api:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+  blog.api:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+  userinteraction.api:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+  scheduler.api:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+  frontend:
+    container_name: webspafrontend
+    image: mikey74l/familielaiss-webspafrontend
+    depends_on:
+      - gateway.spa
+      - identity.api
+    ports:
+      - 8000:80
+    restart: unless-stopped

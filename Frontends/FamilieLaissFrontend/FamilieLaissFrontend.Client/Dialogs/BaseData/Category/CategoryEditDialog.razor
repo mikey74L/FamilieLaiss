@@ -1,0 +1,126 @@
+﻿@using FamilieLaissEnums
+@using FamilieLaissFrontend.Client.ViewModels.Dialogs.BaseData.Category
+@using FamilieLaissGraphQlClientLibrary
+@using FamilieLaissInterfaces.Models.Data
+@using FamilieLaissResources.Resources.Dialogs.BaseData.Category
+@using FamilieLaissSharedUI.Components
+
+@inherits FlComponentBase<CategoryEditDialogViewModel>
+
+<MudDialog>
+    <DialogContent>
+        <MudContainer Style="max-height: 400px; overflow-y: scroll">
+            <MudForm Model="@Model" @ref="ViewModel.Form" Validation="@(ViewModel.Validator.ValidateValue)">
+                @if (Model is not null)
+                {
+                    <MudRadioGroup T="EnumCategoryType?" @bind-Value="@Model.CategoryType" For="@(() => Model.CategoryType)">
+                        <MudRadio T="EnumCategoryType?" Disabled="@(ViewModel.IsBusy || IsInEditMode)" Value="@(EnumCategoryType.Picture)">@CategoryEditDialogRes.RadioPicture</MudRadio>
+                        <MudRadio T="EnumCategoryType?" Disabled="@(ViewModel.IsBusy || IsInEditMode)" Value="@(EnumCategoryType.Video)">@CategoryEditDialogRes.RadioVideo</MudRadio>
+                        <MudRadio T="EnumCategoryType?" Disabled="@(ViewModel.IsBusy || IsInEditMode)" Value="@(EnumCategoryType.Both)">@CategoryEditDialogRes.RadioBoth</MudRadio>
+                    </MudRadioGroup>
+                    <MudTextField Disabled="@ViewModel.IsBusy"
+                                  @bind-Value="Model.NameGerman"
+                                  For="@(() => Model.NameGerman)"
+                                  Label="@CategoryEditDialogRes.LabelNameGerman"
+                                  HelperText="@CategoryEditDialogRes.DescriptionNameGerman"
+                                  HelperTextOnFocus="true"
+                                  Variant="MudBlazor.Variant.Text" />
+                    <MudTextField Disabled="@ViewModel.IsBusy"
+                                  @bind-Value="Model.NameEnglish"
+                                  For="@(() => Model.NameEnglish)"
+                                  Label="@CategoryEditDialogRes.LabelNameEnglish"
+                                  HelperText="@CategoryEditDialogRes.DescriptionNameEnglish"
+                                  HelperTextOnFocus="true"
+                                  Variant="MudBlazor.Variant.Text" />
+                }
+            </MudForm>
+        </MudContainer>
+    </DialogContent>
+    <DialogActions>
+        @if (ViewModel.SaveMode == EnumSaveMode.Save)
+        {
+            <MudTooltip Placement="Placement.Top" Arrow="true" Text="@CategoryEditDialogRes.TooltipSave" ShowOnFocus="false">
+                <MudLoadingButton Loading="@ViewModel.IsSaving"
+                                  LoadingAdornment="Adornment.Start"
+                                  StartIcon="@Icons.Material.Filled.Save"
+                                  Color="Color.Primary"
+                                  Variant="MudBlazor.Variant.Filled"
+                                  OnClick="async () => await ViewModel.SaveCommand.ExecuteAsync(false)">@CategoryEditDialogRes.ButtonSave</MudLoadingButton>
+            </MudTooltip>
+        }
+        else
+        {
+            <MudTooltip Placement="Placement.Top" Arrow="true" Text="@CategoryEditDialogRes.TooltipSaveContinue" ShowOnFocus="false">
+                <MudLoadingButton Loading="@ViewModel.IsSaving"
+                                  LoadingAdornment="Adornment.Start"
+                                  StartIcon="@Icons.Material.Filled.Save"
+                                  Color="Color.Primary"
+                                  Variant="MudBlazor.Variant.Filled"
+                                  OnClick="async () => await ViewModel.SaveCommand.ExecuteAsync(true)">@CategoryEditDialogRes.ButtonSaveContinue</MudLoadingButton>
+            </MudTooltip>
+        }
+        @if (!IsInEditMode)
+        {
+            <MudMenu Style="margin-left: 1px!important">
+                <ActivatorContent>
+                    <MudTooltip Text="@CategoryEditDialogRes.TooltipShowSaveOptions" ShowOnFocus="false">
+                        <MudIconButton Icon="@Icons.Material.Filled.ArrowDropDown"
+                                       Variant="MudBlazor.Variant.Filled"
+                                       Color="Color.Primary"
+                                       Disabled="@ViewModel.IsSaving">
+                        </MudIconButton>
+                    </MudTooltip>
+                </ActivatorContent>
+                <ChildContent>
+                    <MudMenuItem OnClick="async () => await ViewModel.SaveCommand.ExecuteAsync(false)">@CategoryEditDialogRes.ButtonSave</MudMenuItem>
+                    <MudMenuItem OnClick="async () => await ViewModel.SaveCommand.ExecuteAsync(true)">@CategoryEditDialogRes.TooltipSaveContinue</MudMenuItem>
+                </ChildContent>
+            </MudMenu>
+        }
+        <MudTooltip Placement="Placement.Top" Arrow="true" Text="@CategoryEditDialogRes.TooltipCancel" ShowOnFocus="false">
+            <MudButton Disabled="@ViewModel.IsSaving" OnClick="async () => await ViewModel.CancelCommand.ExecuteAsync(null)">@CategoryEditDialogRes.ButtonCancel</MudButton>
+        </MudTooltip>
+    </DialogActions>
+</MudDialog>
+
+@code
+{
+    [CascadingParameter]
+    public MudDialogInstance MudDialog 
+    { 
+        get
+        {
+            return ViewModel.MudDialog;
+        }
+        set
+        {
+            ViewModel.MudDialog = value;
+        }
+    }
+
+    [Parameter]
+    public bool IsInEditMode 
+    { 
+        get
+        {
+            return ViewModel.IsInEditMode;
+        }
+        set
+        {
+            ViewModel.IsInEditMode = value;
+        }
+    }
+
+    [Parameter]
+    public ICategoryModel? Model 
+    { 
+        get
+        {
+            return ViewModel.Model;
+        }
+        set
+        {
+            ViewModel.Model = value;
+        }
+    }
+}

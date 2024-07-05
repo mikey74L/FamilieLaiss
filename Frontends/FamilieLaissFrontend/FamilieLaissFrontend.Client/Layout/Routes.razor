@@ -1,0 +1,26 @@
+﻿<Router AppAssembly="@typeof(Program).Assembly" AdditionalAssemblies="new[] { typeof(Client._Imports).Assembly }">
+    <Found Context="routeData">
+        <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(Layout.MainLayout)">
+            <Authorizing>
+                <MudText Typo="Typo.body1">Ermittle Sitzungs-Status.Bitte warten...</MudText>
+            </Authorizing>
+            <NotAuthorized>
+                @if (context.User.Identity?.IsAuthenticated != true)
+                {
+@*                     <RedirectToLogin />
+ *@                }
+                else
+                {
+                    <MudText Typo="Typo.body2" Color="Color.Error">Sie sind nicht berechtigt den Inhalt aufzurufen.</MudText>
+                }
+            </NotAuthorized>
+        </AuthorizeRouteView>
+        <FocusOnNavigate RouteData="@routeData" Selector="h1" />
+    </Found>
+    <NotFound>
+        <PageTitle>Seite nicht gefunden</PageTitle>
+        <LayoutView Layout="@typeof(Layout.MainLayout)">
+            <MudText>Entschuldigung, aber unter dieser Adresse wurde leider keine Seite zum Anzeigen gefunden.</MudText>
+        </LayoutView>
+    </NotFound>
+</Router>

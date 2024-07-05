@@ -1,0 +1,51 @@
+﻿@using FamilieLaissFrontend.Client.ViewModels.Pages.Converter.Picture
+@using FamilieLaissInterfaces.Models.Data
+@using FamilieLaissResources.Resources.Pages.Converter.Picture
+@using FamilieLaissSharedObjects.Enums
+@using FamilieLaissSharedUI.Components
+@using FamilieLaissSharedUI.Helper
+
+@inherits FlComponentBase<PictureConvertStatusListViewModel>
+
+@if (Items.Any())
+{
+    <MudTable Items="@Items" Height="@FullPageHeightCalculated(100)" FixedHeader="true">
+        <HeaderContent>
+            <MudTh>@PictureConvertStatusListRes.Filename</MudTh>
+            @if (ListType == EnumPictureConvertStatus.ConvertedWithErrors)
+            {
+                <MudTh>@PictureConvertStatusListRes.ErrorMessage</MudTh>
+            }
+            @if (ListType == EnumPictureConvertStatus.SucessfullyConverted)
+            {
+                <MudTh>@PictureConvertStatusListRes.ConvertedAt</MudTh>
+            }
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd DataLabel="@PictureConvertStatusListRes.Filename">@context.UploadPicture?.Filename</MudTd>
+            @if (ListType == EnumPictureConvertStatus.ConvertedWithErrors)
+            {
+                <MudTd DataLabel="@PictureConvertStatusListRes.ErrorMessage">@context.ErrorMessage</MudTd>
+            }
+            @if (ListType == EnumPictureConvertStatus.SucessfullyConverted)
+            {
+                <MudTd DataLabel="@PictureConvertStatusListRes.ConvertedAt">@context.FinishDateConvert!.Value.LocalDateTime</MudTd>
+            }
+        </RowTemplate>
+    </MudTable>
+}
+else
+{
+    <MudText Class="mt-15" Align="Align.Center" Typo="Typo.h4">@PictureConvertStatusListRes.NoEntries</MudText>
+}
+
+@code
+{
+    [Parameter]
+    [EditorRequired]
+    public ExtendedObservableCollection<IPictureConvertStatusModel> Items { get; set; } = new();
+
+    [Parameter]
+    [EditorRequired]
+    public EnumPictureConvertStatus ListType { get; set; }
+}

@@ -1,0 +1,125 @@
+﻿fragment FrUploadPictureOnlyId on UploadPicture {
+	id
+}
+
+fragment FrUploadPictureIdWithFilename on UploadPicture {
+    ...FrUploadPictureOnlyId
+	filename
+}
+
+fragment FrUploadPictureExifInfo on UploadPictureExifInfo {
+	make
+	model
+	resolutionX
+	resolutionY
+	resolutionUnit
+	orientation
+	ddlRecorded
+	exposureTime
+	exposureProgram
+	exposureMode
+	fNumber
+	isoSensitivity
+	shutterSpeed
+	meteringMode
+	flashMode
+	focalLength
+	sensingMode
+	whiteBalanceMode
+	sharpness
+	gpsLongitude
+	gpsLatitude
+	contrast
+	saturation
+}
+
+fragment FrGoogleGeoCodingAddress on GoogleGeoCodingAddress {
+	longitude
+	latitude
+	streetName
+	hnr
+	zip
+	city
+	country
+}
+
+fragment FrUploadPictureForMediaItem on UploadPicture {
+	...FrUploadPictureOnlyId
+	filename
+	height
+	width
+	status
+	uploadPictureExifInfo {
+		...FrUploadPictureExifInfo
+	}
+	googleGeoCodingAddress {
+		...FrGoogleGeoCodingAddress
+	}
+	createDate
+}
+
+fragment FrUploadPictureForUploadView on UploadPicture {
+	...FrUploadPictureOnlyId
+	filename
+	height
+	width
+	status
+	uploadPictureExifInfo {
+		...FrUploadPictureExifInfo
+	}
+	googleGeoCodingAddress {
+		...FrGoogleGeoCodingAddress
+	}
+	createDate
+} 
+
+fragment FrUploadPictureForChooseView on UploadPicture {
+	...FrUploadPictureOnlyId
+	filename
+	status
+	createDate
+} 
+
+query GetUploadPicturesForChooseView {
+    uploadPictures (where: {status: {eq: CONVERTED}}, order: {createDate: DESC}) {
+       ...FrUploadPictureForChooseView
+	}
+}
+
+query GetUploadPicturesForUploadView ($sortCriteria: [UploadPictureSortInput!], $filterCriteria: UploadPictureFilterInput) {
+	uploadPictures (order: $sortCriteria, where: $filterCriteria) {
+       ...FrUploadPictureForUploadView
+	}
+}
+
+query GetUploadPictureCount {
+	uploadPictureCount
+}
+
+query GetUploadPictureExifInfoFilterData {
+	uploadPictureExifInfoFilterData {
+		make
+		model
+		fNumbers
+		isoSensitivities
+		exposureTimes
+		shutterSpeeds
+		focalLengths
+	}
+}
+
+mutation DeleteUploadPicture ($id: Long!) {
+  deleteUploadPicture (input: {id: $id}) {
+    uploadPicture {
+      ...FrUploadPictureOnlyId
+    }
+  }
+}
+
+mutation DeleteAllUploadPictures ($uploadPictureIds: [Long!]!) {
+  deleteAllUploadPictures (input: {uploadPictureIds: $uploadPictureIds}) {
+	  uploadPictures {
+        ...FrUploadPictureOnlyId
+	  }
+  }
+}

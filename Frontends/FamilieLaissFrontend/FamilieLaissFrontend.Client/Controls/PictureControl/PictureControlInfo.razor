@@ -1,0 +1,74 @@
+﻿@using FamilieLaissEnums
+@using FamilieLaissInterfaces.Models.Data
+@using FamilieLaissResources.Resources.Controls.PictureControl
+
+<MudGrid Spacing="1">
+    @if (ShowSkeleton)
+    {
+        <!-- Skeleton für Datum -->
+        <MudItem xs="6">
+            <MudSkeleton SkeletonType="SkeletonType.Text" Width="70%" />
+        </MudItem>
+        <MudItem xs="6">
+            <MudSkeleton SkeletonType="SkeletonType.Text" Width="70%" />
+        </MudItem>
+
+        <!-- Skeleton für Auflösung -->
+        <MudItem xs="6">
+            <MudSkeleton SkeletonType="SkeletonType.Text" Width="70%" />
+        </MudItem>
+        <MudItem xs="6">
+            <MudSkeleton SkeletonType="SkeletonType.Text" Width="70%" />
+        </MudItem>
+    }
+
+    <!-- Print adding date (only when media item) -->
+    @if (MediaItem?.CreateDate != null)
+    {
+        <MudItem xs="6">
+            <MudText>@PictureControlInfoRes.LabelAddDate:</MudText>
+        </MudItem>
+        <MudItem xs="6">
+            <MudText>@MediaItem.CreateDate.Value.LocalDateTime</MudText>
+        </MudItem>
+    }
+
+    <!-- Print upload date -->
+    @if (ControlType != EnumPictureControlType.MediaItemBaseData && UploadItem?.CreateDate != null)
+    {
+        <MudItem xs="6">
+            <MudText>@PictureControlInfoRes.LabelUploadDatum:</MudText>
+        </MudItem>
+        <MudItem xs="6">
+            <MudText>@UploadItem.CreateDate.Value.LocalDateTime</MudText>
+        </MudItem>
+    }
+
+    <!-- Print picture size -->
+    @if (UploadItem is not null)
+    {
+        <MudItem xs="6">
+            <MudText>@PictureControlInfoRes.LabelPictureSize:</MudText>
+        </MudItem>
+        <MudItem xs="6">
+            <MudText>@UploadItem.PictureSize</MudText>
+        </MudItem>
+    }
+</MudGrid>
+
+@code
+{
+    [Parameter]
+    [EditorRequired]
+    public bool ShowSkeleton { get; set; }
+
+    [Parameter]
+    [EditorRequired]
+    public EnumPictureControlType ControlType { get; set; }
+
+    [Parameter]
+    public IUploadPictureModel? UploadItem { get; set; }
+
+    [Parameter]
+    public IMediaItemModel? MediaItem { get; set; }
+}

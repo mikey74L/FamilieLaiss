@@ -1,0 +1,20 @@
+{
+  "Routes": [
+    {
+      "DownstreamPathTemplate": "/api/{version}/pictureconvertstatus/{everything}",
+      "DownstreamScheme": "http",
+      "UseServiceDiscovery": true,
+      "ServiceName": "PictureConvertService",
+      "UpstreamPathTemplate": "/api/{version}/pictureconvertstatus/{everything}",
+      "UpstreamHttpMethod": [ "GET" ]
+    },
+    {
+      "DownstreamPathTemplate": "/ws/pictureConvertStatusHub/{everything}",
+      "DownstreamScheme": "ws",
+      "UseServiceDiscovery": true,
+      "ServiceName": "PictureConvertService",
+      "UpstreamPathTemplate": "/pictureConvertStatusHub/{everything}",
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "OPTIONS" ]
+    }
+  ]
+}

@@ -1,0 +1,40 @@
+﻿@using FamilieLaissEnums
+@using FamilieLaissFrontend.Client.ViewModels.Pages.BaseData.Upload.Picture
+@using FamilieLaissResources.Resources.Pages.BaseData.Upload.Picture
+@using FamilieLaissSharedUI.Components
+
+@inherits FlComponentBase<PictureUploadPageViewModel>
+
+@page "/basedata-picture-upload"
+
+<NavigationLock OnBeforeInternalNavigation="(param) => ViewModel.BeforeInternalNavigationCommand.Execute(param)"
+                ConfirmExternalNavigation="@ViewModel.IsUploading" />
+
+<MudTabs Elevation="1"
+         Rounded="true"
+         KeepPanelsAlive="true"
+         ActivePanelIndexChanged="(param) => ViewModel.TabIndexChangedCommand.Execute(param)">
+    <MudTabPanel Icon="@Icons.Material.Filled.CloudUpload"
+                 Class="mr-10"
+                 Text="@PictureUploadPageRes.TabHeaderUploadControl"
+                 BadgeData="@ViewModel.UploadFileCount"
+                 Disabled="@ViewModel.IsUploading">
+        <UploadControl UploadMultipleFiles="true"
+                       UploadType="EnumUploadType.Picture"
+                       UploadCountChanged="(param) => ViewModel.UploadCountChangedCommand.Execute(param)"
+                       UploadStarted="() => ViewModel.UploadStartedCommand.Execute(null)"
+                       UploadFinished="() => ViewModel.UploadFinishedCommand.Execute(null)" />
+    </MudTabPanel>
+    <MudTabPanel Icon="@Icons.Material.Filled.Cloud"
+                 Text="@PictureUploadPageRes.TabHeaderUploadArea"
+                 BadgeData="@ViewModel.CurrentCountUploadPictures"
+                 Class="mr-10"
+                 Disabled="@ViewModel.IsUploading">
+        <PictureUploadList ShowLoading="ViewModel.IsLoading"
+                           ShowError="ViewModel.HasError"
+                           UploadItems="@ViewModel.UploadPictureItems"
+                           SortAndFilterService="ViewModel.SortAndFilterService"
+                           ShowFilterAppBar="@(ViewModel.CurrentTabIndex == 1)"
+                           ReloadUploadPictures="() => ViewModel.LoadUploadPicturesCommand.Execute(null)" />
+    </MudTabPanel>
+</MudTabs>

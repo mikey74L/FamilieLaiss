@@ -1,0 +1,93 @@
+﻿@using FamilieLaissResources.Resources.Pages.BaseData.Upload.Video
+
+<MudSpeedDial Color="Color.Primary" Icon="@Icons.Material.Filled.Settings" IconOnOpen="@Icons.Material.Filled.Close"
+              Padding="10" Origin="Origin.BottomRight" OpenOnHover="true" OpenOnClick="false">
+    <MudTooltip Placement="Placement.Left" Arrow="true" ShowOnFocus="false" Text="@VideoUploadListActionsRes.TooltipSetFilter">
+        <MudFab Color="Color.Secondary"
+                Size="Size.Small"
+                Disabled="IsBusy"
+                StartIcon="@Icons.Material.Filled.Filter"
+                OnClick="OnToggleFilterSidebar" />
+    </MudTooltip>
+    <MudTooltip Placement="Placement.Left" Arrow="true" ShowOnFocus="false" Text="@VideoUploadListActionsRes.TooltipSetSort">
+        <MudFab Color="Color.Secondary"
+                Size="Size.Small"
+                Disabled="IsBusy"
+                StartIcon="@Icons.Material.Filled.Sort"
+                OnClick="OnToggleSortSidebar" />
+    </MudTooltip>
+    <MudTooltip Placement="Placement.Left" Arrow="true" ShowOnFocus="false" Text="@VideoUploadListActionsRes.TooltipRefreshList">
+        <MudFab Color="Color.Primary"
+                Size="Size.Small"
+                Disabled="IsBusy"
+                StartIcon="@Icons.Material.Filled.Refresh"
+                OnClick="OnRefreshItems" />
+    </MudTooltip>
+    <MudTooltip Placement="Placement.Left" Arrow="true" ShowOnFocus="false" Text="@VideoUploadListActionsRes.TooltipDeleteAll">
+        <MudFab Color="Color.Error"
+                Size="Size.Small"
+                Disabled="IsBusy"
+                StartIcon="@Icons.Material.Filled.Delete"
+                OnClick="OnDeleteAllUploadVideos" />
+    </MudTooltip>
+    @{
+        string iconSelectMode = ShowSelectionMode ? Icons.Material.Filled.ToggleOn : Icons.Material.Filled.ToggleOff;
+    }
+    <MudTooltip Placement="Placement.Left" Arrow="true" ShowOnFocus="false" Text="@VideoUploadListActionsRes.TooltipToggleSelectMode">
+        <MudFab Color="Color.Secondary"
+                Size="Size.Small"
+                Disabled="IsBusy"
+                StartIcon="@iconSelectMode"
+                OnClick="OnToggleSelectionMode">
+        </MudFab>
+    </MudTooltip>
+    @if (ShowSelectionMode)
+    {
+        <MudTooltip Placement="Placement.Left" Arrow="true" ShowOnFocus="false" Text="@VideoUploadListActionsRes.TooltipSelectAll">
+            <MudFab Color="Color.Secondary"
+                    Size="Size.Small"
+                    Disabled="IsBusy"
+                    StartIcon="@Icons.Material.Filled.SelectAll"
+                    OnClick="OnSelectAll">
+            </MudFab>
+        </MudTooltip>
+        <MudTooltip Placement="Placement.Left" Arrow="true" ShowOnFocus="false" Text="@VideoUploadListActionsRes.TooltipDeSelectAll">
+            <MudFab Color="Color.Secondary"
+                    Size="Size.Small"
+                    Disabled="IsBusy"
+                    StartIcon="@Icons.Material.Filled.Deselect"
+                    OnClick="OnDeSelectAll">
+            </MudFab>
+        </MudTooltip>
+    }
+</MudSpeedDial>
+
+@code
+{
+    [Parameter]
+    public bool IsBusy { get; set; }
+
+    [Parameter]
+    public bool ShowSelectionMode { get; set; }
+
+    [Parameter]
+    public EventCallback OnToggleFilterSidebar { get; set; }
+
+    [Parameter]
+    public EventCallback OnToggleSortSidebar { get; set; }
+
+    [Parameter]
+    public EventCallback OnSelectAll { get; set; }
+
+    [Parameter]
+    public EventCallback OnDeSelectAll { get; set; }
+
+    [Parameter]
+    public EventCallback OnRefreshItems { get; set; }
+
+    [Parameter]
+    public EventCallback OnDeleteAllUploadVideos { get; set; }
+
+    [Parameter]
+    public EventCallback OnToggleSelectionMode { get; set; }
+}

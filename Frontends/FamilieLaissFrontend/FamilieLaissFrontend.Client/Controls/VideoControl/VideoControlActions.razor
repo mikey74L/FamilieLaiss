@@ -1,0 +1,133 @@
+﻿@using FamilieLaissEnums
+@using FamilieLaissFrontend.Client.ViewModels.Controls.VideoControl
+@using FamilieLaissInterfaces.Models.Data
+@using FamilieLaissResources.Resources.Controls.VideoControl
+@using FamilieLaissSharedUI.Components
+
+@inherits FlComponentBase<VideoControlActionsViewModel>
+
+<!-- Render edit button -->
+@if (ControlType == EnumVideoControlType.MediaItemBaseData)
+{
+    @if (ShowSkeleton)
+    {
+        <MudSkeleton Width="64px" Height="40px" Class="ml-2" />
+    }
+    else
+    {
+        <MudTooltip Placement="Placement.Top" Text="@VideoControlActionsRes.ButtonEditTooltip" ShowOnFocus="false">
+            <MudButton Variant="MudBlazor.Variant.Text"
+                       StartIcon="@Icons.Material.Filled.Edit"
+                       Color="Color.Primary"
+                       Disabled="IsDisabled"
+                       OnClick="async () => await ViewModel.EditCommand.ExecuteAsync(null)">@VideoControlActionsRes.ButtonEditText</MudButton>
+        </MudTooltip>
+    }
+}
+
+<!-- Render delete button -->
+@if (ControlType is EnumVideoControlType.Upload or EnumVideoControlType.MediaItemBaseData)
+{
+    @if (ShowSkeleton)
+    {
+        <MudSkeleton Width="64px" Height="40px" Class="ml-2" />
+    }
+    else
+    {
+        var textForTooltip = ControlType == EnumVideoControlType.Upload ? VideoControlActionsRes.ButtonDeleteTooltipUpload : VideoControlActionsRes.ButtonDeleteTooltipBaseData;
+
+        <MudTooltip Placement="Placement.Top" Text="@textForTooltip" ShowOnFocus="false">
+            <MudButton Variant="MudBlazor.Variant.Text"
+                       StartIcon="@Icons.Material.Filled.Delete"
+                       Color="Color.Error"
+                       Disabled="IsDisabled"
+                       OnClick="async () => await ViewModel.DeleteCommand.ExecuteAsync(null)">@VideoControlActionsRes.ButtonDeleteText</MudButton>
+        </MudTooltip>
+    }
+}
+
+<!-- Render choose button -->
+@if (ControlType == EnumVideoControlType.Choose)
+{
+    @if (ShowSkeleton)
+    {
+        <MudSkeleton Width="64px" Height="40px" Class="ml-2" />
+    }
+    else
+    {
+        <MudTooltip Placement="Placement.Top" Text="@VideoControlActionsRes.ButtonChooseTooltip" ShowOnFocus="false">
+            <MudButton Variant="MudBlazor.Variant.Text"
+                       StartIcon="@Icons.Material.Filled.SelectAll"
+                       Color="Color.Primary"
+                       Disabled="IsDisabled"
+                       OnClick="async () => await ViewModel.ChooseCommand.ExecuteAsync(null)">@VideoControlActionsRes.ButtonChooseText</MudButton>
+        </MudTooltip>
+    }
+}
+
+@code
+{
+    [Parameter]
+    [EditorRequired]
+    public EnumVideoControlType ControlType { get; set; }
+
+    [Parameter]
+    [EditorRequired]
+    public bool ShowSkeleton { get; set; }
+
+    [Parameter]
+    public IUploadVideoModel? UploadItem 
+    { 
+        get
+        {
+            return ViewModel.UploadItem;
+        }
+        set
+        {
+            ViewModel.UploadItem = value;
+        }
+    }
+
+    [Parameter]
+    [EditorRequired]
+    public bool IsDisabled { get; set; }
+
+    [Parameter]
+    public EventCallback<IUploadVideoModel> DeleteClicked 
+    { 
+        get
+        {
+            return ViewModel.DeleteClicked;
+        }
+        set
+        {
+            ViewModel.DeleteClicked = value;
+        }
+    }
+
+    [Parameter]
+    public EventCallback<IUploadVideoModel> ChooseClicked 
+    { 
+        get
+        {
+            return ViewModel.ChooseClicked;
+        }
+        set
+        {
+            ViewModel.ChooseClicked = value;
+        }
+    }
+
+    [Parameter]
+    public EventCallback<IUploadVideoModel> EditClicked 
+    { 
+        get
+        {
+            return ViewModel.EditClicked;
+        }
+        set
+        {
+            ViewModel.EditClicked = value;
+        }
+    }
+}

@@ -1,0 +1,67 @@
+﻿@using FamilieLaissFrontend.Client.ViewModels.Controls.Filter
+@using FamilieLaissInterfaces.Models
+@using FamilieLaissInterfaces.Services
+@using FamilieLaissResources.Resources.Controls.Filter
+@using FamilieLaissSharedUI.Components
+
+@inherits FlComponentBase<FilterStringOnlyControlViewModel>
+
+<MudStack Style="width: 100%">
+    <MudStack Row="true" Spacing="1">
+        <MudText Typo="Typo.body1">@FilterCriteria.DisplayText</MudText>
+        @if (ViewModel.SelectedValue is not null)
+        {
+            <MudTooltip Arrow="true"
+                        Placement="Placement.Top"
+                        ShowOnFocus="false"
+                        Text="@FilterStringOnlyControlRes.DeleteFilter">
+                <MudIconButton Color="Color.Error"
+                               Size="Size.Small"
+                               Icon="@Icons.Material.Filled.Clear"
+                               OnClick="async () => await ViewModel.ResetFilterCommand.ExecuteAsync(null)">
+                </MudIconButton>
+            </MudTooltip>
+        }
+    </MudStack>
+
+    <MudSelectExtended SearchBox="true"
+                       T="string"
+                       ItemCollection="ViewModel.FilterItems"
+                       SearchBoxAutoFocus="true"
+                       FullWidth="true"
+                       Dense="true"
+                       @bind-Value="ViewModel.SelectedValue"
+                       HelperText="@FilterStringOnlyControlRes.DropDownHelperText"
+                       SearchBoxClearable="true"></MudSelectExtended>
+</MudStack>
+
+@code
+{
+    [Parameter]
+    [EditorRequired]
+    public IGraphQlFilterCriteria FilterCriteria 
+    { 
+        get
+        {
+            return ViewModel.FilterCriteria;
+        }
+        set
+        {
+            ViewModel.FilterCriteria = value;
+        }
+    }
+
+    [Parameter]
+    [EditorRequired]
+    public EventCallback<(Guid id, bool hasValue)> ValueChanged 
+    { 
+        get
+        {
+            return ViewModel.ValueChanged;
+        }
+        set
+        {
+            ViewModel.ValueChanged = value;
+        }
+    }
+}

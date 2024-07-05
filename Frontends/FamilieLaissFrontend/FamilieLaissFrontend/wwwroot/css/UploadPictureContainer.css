@@ -1,0 +1,24 @@
+﻿.container-upload-picture {
+    height: 80vh;
+}
+
+.container-upload-picture-choose {
+    height: 70vh;
+}
+
+.container-upload-picture-items {
+    overflow: auto;
+    padding-bottom: 10px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, 340px);
+    justify-content: space-between;
+    grid-gap: 10px;
+}
+
+.container-upload-picture-items-upload {
+    height: 80vh;
+}
+
+.container-upload-picture-items-choose {
+    height: 70vh;
+}

@@ -1,0 +1,82 @@
+﻿@using FamilieLaissFrontend.Client.ViewModels.Controls.Filter
+@using FamilieLaissInterfaces.Enums
+@using FamilieLaissInterfaces.Models
+@using FamilieLaissInterfaces.Services
+@using FamilieLaissResources.Resources.Controls.Filter
+@using FamilieLaissSharedUI.Components
+
+@inherits FlComponentBase<FilterGroupControlViewModel>
+
+<MudStack AlignItems="MudBlazor.AlignItems.Start" Justify="Justify.FlexStart">
+    <MudStack Row="true" Spacing="1" Class="mb-1">
+        <MudText Typo="Typo.h6">@FilterGroup.DisplayText</MudText>
+        @if (ViewModel.ShowResetButton)
+        {
+            <MudTooltip Arrow="true"
+                        Placement="Placement.Top"
+                        ShowOnFocus="false"
+                        Text="@FilterGroupControlRes.TooltipResetFilterGroup">
+                <MudIconButton Class="pt-2"
+                               Color="Color.Error"
+                               Size="Size.Small"
+                               Icon="@Icons.Material.Filled.Clear"
+                               OnClick="async () => await ViewModel.ResetGroupFilterCommand.ExecuteAsync(null)">
+                </MudIconButton>
+            </MudTooltip>
+        }
+    </MudStack>
+
+    @foreach (var filterCriteria in FilterCriterias.OrderBy(x => x.Sort))
+    {
+        if (filterCriteria.FilterType == GraphQlFilterType.Number)
+        {
+            <FilterNumberControl></FilterNumberControl>
+        }
+
+        if (filterCriteria.FilterType == GraphQlFilterType.NumberRange)
+        {
+            <FilterNumberRangeControl FilterCriteria="filterCriteria" ValueChanged="() => ViewModel.FilterItemValueChangedCommand.Execute(null)"></FilterNumberRangeControl>
+        }
+
+        if (filterCriteria.FilterType == GraphQlFilterType.DateRange)
+        {
+            <FilterDateRangeControl FilterCriteria="filterCriteria" ValueChanged="() => ViewModel.FilterItemValueChangedCommand.Execute(null)"></FilterDateRangeControl>
+        }
+
+        if (filterCriteria.FilterType == GraphQlFilterType.ValueListInt || filterCriteria.FilterType == GraphQlFilterType.ValueListDouble)
+        {
+            <FilterNumberListControl FilterCriteria="filterCriteria" ValueChanged="() => ViewModel.FilterItemValueChangedCommand.Execute(null)"></FilterNumberListControl>
+        }
+
+        if (filterCriteria.FilterType == GraphQlFilterType.ValueListStringOnly)
+        {
+            <FilterStringOnlyControl FilterCriteria="filterCriteria" ValueChanged="() => ViewModel.FilterItemValueChangedCommand.Execute(null)"></FilterStringOnlyControl>
+        }
+
+        if (filterCriteria.FilterType == GraphQlFilterType.ValueListIntOnly || filterCriteria.FilterType == GraphQlFilterType.ValueListDoubleOnly)
+        {
+            <FilterNumberOnlyControl FilterCriteria="filterCriteria" ValueChanged="() => ViewModel.FilterItemValueChangedCommand.Execute(null)"></FilterNumberOnlyControl>
+        }
+    }
+</MudStack>
+
+@code
+{
+    [Parameter]
+    [EditorRequired]
+    public IGraphQlFilterGroup FilterGroup 
+    { 
+        get
+        {
+            return ViewModel.FilterGroup;
+        }
+        set
+        {
+            ViewModel.FilterGroup = value;
+        }
+    } 
+
+    [Parameter]
+    [EditorRequired]
+    public List<IGraphQlFilterCriteria> FilterCriterias { get; set; } = default!;
+}

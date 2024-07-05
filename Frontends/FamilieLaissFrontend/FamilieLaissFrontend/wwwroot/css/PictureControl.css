@@ -1,0 +1,18 @@
+﻿.fl-card-picture-selected {
+    background-color: skyblue !important;
+}
+
+.fl-card-picture-toggle-button {
+    padding: 0px !important;
+}
+
+.fl-card-picture-toggle-button-selected {
+    background-color: white !important;
+}
+
+.fl-card-picture-header-text {
+    width: 93% !important;
+    overflow: hidden !important;
+    white-space: nowrap !important;
+    text-overflow: ellipsis !important;
+}

@@ -1,0 +1,28 @@
+﻿@using FamilieLaissResources.Resources.Pages.BaseData.Upload.Video
+
+@if (ItemsCount == 0 && !HasError && !IsFilterActive)
+{
+    <MudText Typo="Typo.h5">@VideoUploadListMessageOutputRes.MessageNoItems</MudText>
+}
+
+@if (ItemsCount == 0 && !HasError && IsFilterActive)
+{
+    <MudText Typo="Typo.h5">@VideoUploadListMessageOutputRes.MessageNoItemsFilter</MudText>
+}
+
+@if (HasError)
+{
+    <MudText Color="Color.Error" Typo="Typo.h5">@VideoUploadListMessageOutputRes.MessageErrorLoading</MudText>
+}
+
+@code
+{
+    [Parameter]
+    public int ItemsCount { get; set; }
+
+    [Parameter]
+    public bool HasError { get; set; }
+
+    [Parameter]
+    public bool IsFilterActive { get; set; }
+}

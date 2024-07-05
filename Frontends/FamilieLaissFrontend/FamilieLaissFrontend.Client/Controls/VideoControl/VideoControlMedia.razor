@@ -1,0 +1,54 @@
+﻿@using FamilieLaissEnums
+@using FamilieLaissFrontend.Client.ViewModels.Controls.VideoControl
+@using FamilieLaissInterfaces.Models.Data
+@using FamilieLaissResources.Resources.Controls.VideoControl
+@using FamilieLaissSharedUI.Components
+
+@inherits FlComponentBase<VideoControlMediaViewModel>
+
+@if (ShowSkeleton)
+{
+    <MudSkeleton SkeletonType="SkeletonType.Rectangle" Height="255px" />
+}
+else
+{
+    <MudPaper Style="position: relative;" Height="255px"
+              @onmouseenter="() => ViewModel.ToggleOverlayVideoCommand.Execute(null)"
+              @onmouseleave="() => ViewModel.ToggleOverlayVideoCommand.Execute(null)">
+        <MudCardMedia Height="255" Image="@ViewModel.ImageUrlForVideo" />
+        <MudOverlay LightBackground="true" Absolute="true" Visible="@ViewModel.IsOverlayVideoActive">
+            <MudStack Row="true">
+                <MudTooltip Arrow="true" Placement="Placement.Top" Text="@VideoControlMediaRes.ButtonShowPlayerDialog" ShowOnFocus="false">
+                    <MudIconButton Class="fl-card-icon-button-extra-large" Color="Color.Primary" Size="Size.Large" Icon="@Icons.Material.Outlined.PlayCircle" OnClick="async () => await ViewModel.ShowPlayerDialogCommand.ExecuteAsync(null)" />
+                </MudTooltip>
+            </MudStack>
+        </MudOverlay>
+    </MudPaper>
+}
+
+@code
+{
+    [Parameter]
+    [EditorRequired]
+    public EnumVideoControlType ControlType { get; set; }
+
+    [Parameter]
+    public IUploadVideoModel? UploadItem 
+    { 
+        get
+        {
+            return ViewModel.UploadItem;
+        }
+        set
+        {
+            ViewModel.UploadItem = value;
+        }
+    }
+
+    [Parameter]
+    public IMediaItemModel? MediaItem { get; set; }
+
+    [Parameter]
+    [EditorRequired]
+    public bool ShowSkeleton { get; set; }
+}

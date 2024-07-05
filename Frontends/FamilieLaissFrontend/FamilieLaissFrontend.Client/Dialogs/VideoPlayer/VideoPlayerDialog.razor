@@ -1,0 +1,27 @@
+﻿@using FamilieLaissInterfaces.Models.Data
+@using FamilieLaissResources.Resources.Dialogs.VideoPlayer
+
+<MudDialog>
+    <TitleContent>
+
+    </TitleContent>
+    <DialogContent>
+        <div style="width: 90%">
+            <VideoPlayerControl VideoItemToPlay="UploadVideoItem" />
+        </div>
+    </DialogContent>
+    <DialogActions>
+        <MudTooltip Arrow="true" Placement="Placement.Top" Text="@VideoPlayerDialogRes.TooltipClose">
+            <MudButton Color="Color.Primary" StartIcon="@Icons.Material.Filled.Close" OnClick="() => { MudDialog.Close(); }">@VideoPlayerDialogRes.ButtonClose</MudButton>
+        </MudTooltip>
+    </DialogActions>
+</MudDialog>
+
+@code{
+    [CascadingParameter]
+    public MudDialogInstance MudDialog { get; set; } = default!;
+
+    [Parameter]
+    [EditorRequired]
+    public IUploadVideoModel UploadVideoItem { get; set; } = default!;
+}

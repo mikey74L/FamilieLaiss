@@ -1,0 +1,5 @@
+﻿Database_User_FILE       = Filename from Docker-Compose-Secrets for Database-User
+Database_Password_FILE   = Filename from Docker-Compose-Secrets for Database-Password
+
+Rabbit_User_FILE         = Filename from Docker-Compose-Secrets for RabbitMQ-User
+Rabbit_Password_FILE     = Filename from Docker-Compose-Secrets for RabbitMQ-Password

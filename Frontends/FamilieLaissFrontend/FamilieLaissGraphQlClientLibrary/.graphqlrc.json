@@ -1,0 +1,35 @@
+{
+  "schema": "schema.graphql",
+  "documents": "**/*.graphql",
+  "extensions": {
+    "strawberryShake": {
+      "name": "FamilieLaissClient",
+      "url": "http://localhost:9000/graphql/",
+      "dependencyInjection": true,
+      "strictSchemaValidation": true,
+      "hashAlgorithm": "md5",
+      "useSingleFile": true,
+      "requestStrategy": "Default",
+      "noStore": false,
+      "emitGeneratedCode": true,
+      "razorComponents": false,
+      "records": {
+        "inputs": false,
+        "entities": false
+      },
+      "transportProfiles": [
+        {
+          "name": "Default",
+          "default": "Http",
+          "subscription": "WebSocket"
+        },
+        {
+          "name": "FamilieLaissTransport",
+          "default": "Http",
+          "mutation": "Http",
+          "subscription": "Http"
+        }
+      ]
+    }
+  }
+}

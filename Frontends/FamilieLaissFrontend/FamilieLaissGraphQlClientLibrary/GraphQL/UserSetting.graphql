@@ -1,0 +1,129 @@
+fragment FrUserSettingOnlyId on UserSetting {
+  id
+}
+
+fragment FrUserSettingCreate on UserSetting {
+  createDate
+}
+
+fragment FrUserSettingChange on UserSetting {
+  changeDate
+}
+
+fragment FrUserSettingMain on UserSetting {
+  videoAutoPlay
+  videoVolume
+  videoLoop
+  videoAutoPlayOtherVideos
+  showButtonForward
+  showButtonRewind
+  showZoomMenu
+  showPlayRateMenu
+  showMirrorButton
+  showQualityMenu
+  showTooltipForPlaytimeOnMouseCursor
+  showTooltipForCurrentPlaytime
+  showZoomInfo
+  allowZoomingWithMouseWheel
+  videoTimeToPlayNextVideo
+  videoTimeSeekForwardRewind
+  galleryCloseEsc
+  galleryCloseDimmer
+  galleryMouseWheelChangeSlide
+  galleryShowThumbnails
+  galleryShowFullScreen
+  galleryTransitionDuration
+  galleryTransitionType
+  questionKeepUploadWhenDelete
+  defaultKeepUploadWhenDelete
+}
+
+fragment FrUserSettingFull on UserSetting {
+    ...FrUserSettingOnlyId
+    ...FrUserSettingMain
+    ...FrUserSettingCreate
+    ...FrUserSettingChange
+}
+
+fragment FrUserSettingUpdateResult on UserSetting {
+    ...FrUserSettingOnlyId
+    ...FrUserSettingChange
+}
+
+query GetUserSettings {
+  userSettings {
+    ...FrUserSettingFull
+  }
+}
+
+query GetUserSettingForUser ($id: String!) {
+    userSettings (where: {id: {eq: $id}}) {
+        ...FrUserSettingFull
+    }
+}
+
+mutation AddUserSetting ($id: String!) {
+  addUserSetting (input: {id: $id}) {
+    userSetting {
+      ...FrUserSettingFull
+    }
+  }
+}
+
+mutation UpdateUserSetting ($id: String!,
+                             $allowZoomingWithMouseWheel: Boolean!, 
+                             $defaultKeepUploadWhenDelete: Boolean!,
+                             $galleryCloseDimmer: Boolean!,
+                             $galleryCloseEsc: Boolean!,
+                             $galleryMouseWheelChangeSlide: Boolean!,
+                             $galleryShowFullScreen: Boolean!,
+                             $galleryShowThumbnails: Boolean!,
+                             $galleryTransitionDuration: Int!,
+                             $galleryTransitionType: String!,
+                             $questionKeepUploadWhenDelete: Boolean!,
+                             $showButtonForward: Boolean!,
+                             $showButtonRewind: Boolean!,
+                             $showMirrorButton: Boolean!,
+                             $showPlayRateMenu: Boolean!,
+                             $showQualityMenu: Boolean!,
+                             $showTooltipForCurrentPlaytime: Boolean!,
+                             $showTooltipForPlaytimeOnMouseCursor: Boolean!,
+                             $showZoomInfo: Boolean!,
+                             $showZoomMenu: Boolean!,
+                             $videoAutoPlay: Boolean!,
+                             $videoAutoPlayOtherVideos: Boolean!,
+                             $videoLoop: Boolean!,
+                             $videoTimeToPlayNextVideo: Int!,
+                             $videoVolume: Int!
+                             $videoTimeSeekForwardRewind: Int!) {
+  updateUserSetting (input: {id: $id,
+                              allowZoomingWithMouseWheel: $allowZoomingWithMouseWheel, 
+                              defaultKeepUploadWhenDelete: $defaultKeepUploadWhenDelete,
+                              galleryCloseDimmer: $galleryCloseDimmer,
+                              galleryCloseEsc: $galleryCloseEsc,
+                              galleryMouseWheelChangeSlide: $galleryMouseWheelChangeSlide,
+                              galleryShowFullScreen: $galleryShowFullScreen,
+                              galleryShowThumbnails: $galleryShowThumbnails,
+                              galleryTransitionDuration: $galleryTransitionDuration,
+                              galleryTransitionType: $galleryTransitionType,
+                              questionKeepUploadWhenDelete: $questionKeepUploadWhenDelete,
+                              showButtonForward: $showButtonForward,
+                              showButtonRewind: $showButtonRewind,
+                              showMirrorButton: $showMirrorButton,
+                              showPlayRateMenu: $showPlayRateMenu,
+                              showQualityMenu: $showQualityMenu,
+                              showTooltipForCurrentPlaytime: $showTooltipForCurrentPlaytime,
+                              showTooltipForPlaytimeOnMouseCursor: $showTooltipForPlaytimeOnMouseCursor,
+                              showZoomInfo: $showZoomInfo,
+                              showZoomMenu: $showZoomMenu,
+                              videoAutoPlay: $videoAutoPlay,
+                              videoAutoPlayOtherVideos: $videoAutoPlayOtherVideos,
+                              videoLoop: $videoLoop,
+                              videoTimeToPlayNextVideo: $videoTimeToPlayNextVideo,
+                              videoVolume: $videoVolume,
+                              videoTimeSeekForwardRewind: $videoTimeSeekForwardRewind}) {
+    userSetting {
+      ...FrUserSettingUpdateResult
+    }
+  }
+}

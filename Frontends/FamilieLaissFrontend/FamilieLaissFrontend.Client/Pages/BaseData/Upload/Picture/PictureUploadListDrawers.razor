@@ -1,0 +1,102 @@
+﻿@using FamilieLaissFrontend.Client.ViewModels.Pages.BaseData.Upload.Picture
+@using FamilieLaissGraphQlClientLibrary
+@using FamilieLaissInterfaces.Models
+@using FamilieLaissInterfaces.Models.Data
+@using FamilieLaissInterfaces.Services
+@using FamilieLaissResources.Resources.Pages.BaseData.Upload.Picture
+@using FamilieLaissSharedUI.Components
+
+@inherits FlComponentBase<PictureUploadListDrawersViewModel>
+
+<MudDrawer @bind-Open="@IsSortSidebarVisible" Width="400px" Height="100%" Anchor="Anchor.End" Elevation="1" Variant="DrawerVariant.Temporary">
+    <MudDrawerHeader>
+        <MudText Typo="Typo.h5">@PictureUploadListDrawersRes.HeaderSort</MudText>
+    </MudDrawerHeader>
+    <MudContainer MaxWidth="MaxWidth.Large">
+        <MudSelect T="IGraphQlSortCriteria<UploadPictureSortInput>"
+                   @bind-Value="ViewModel.SelectedSortCriteria"
+                   Dense="true"
+                   AnchorOrigin="Origin.BottomCenter">
+            @foreach (var item in SortAndFilterService.SortCriterias)
+            {
+                <MudSelectItem Value="item"></MudSelectItem>
+            }
+        </MudSelect>
+    </MudContainer>
+</MudDrawer>
+
+<MudDrawer @bind-Open="@IsFilterSidebarVisible" Width="400px" Height="100%" Anchor="Anchor.End" Elevation="1" Variant="DrawerVariant.Temporary">
+    <MudDrawerHeader>
+        <MudText Typo="Typo.h5">@PictureUploadListDrawersRes.HeaderFilter</MudText>
+    </MudDrawerHeader>
+    <MudContainer MaxWidth="MaxWidth.Large">
+        <FilterControl FilterGroups="@SortAndFilterService.FilterGroups" FilterCriterias="@SortAndFilterService.FilterCriterias" />
+    </MudContainer>
+</MudDrawer>
+
+@code
+{
+    [Parameter]
+    public bool IsSortSidebarVisible
+    {
+      get
+      {
+        return ViewModel.IsSortSidebarVisible;
+      }
+      set
+      {
+            ViewModel.IsSortSidebarVisible = value;
+        }
+    }
+    [Parameter]
+    public bool IsFilterSidebarVisible
+    {
+        get
+        {
+            return ViewModel.IsFilterSidebarVisible;
+        }
+        set
+        {
+            ViewModel.IsFilterSidebarVisible = value;
+        }
+    }
+
+    [Parameter]
+    public EventCallback<bool> IsSortSidebarVisibleChanged 
+    { 
+        get
+        {
+            return ViewModel.IsSortSidebarVisibleChanged;
+        }
+        set
+        {
+            ViewModel.IsSortSidebarVisibleChanged = value;
+        }
+    }
+
+    [Parameter]
+    public EventCallback<bool> IsFilterSidebarVisibleChanged 
+    { 
+        get
+        {
+            return ViewModel.IsFilterSidebarVisibleChanged;
+        }
+        set
+        {
+            ViewModel.IsFilterSidebarVisibleChanged = value;
+        }
+    }
+
+    [Parameter]
+    public IGraphQlSortAndFilterService<IUploadPictureModel, UploadPictureSortInput, UploadPictureFilterInput> SortAndFilterService 
+    { 
+        get
+        {
+            return ViewModel.SortAndFilterService;
+        }
+        set
+        {
+            ViewModel.SortAndFilterService = value;
+        }
+    }
+}

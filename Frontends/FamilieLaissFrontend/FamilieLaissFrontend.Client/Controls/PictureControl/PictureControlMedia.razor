@@ -1,0 +1,75 @@
+﻿@using FamilieLaissEnums
+@using FamilieLaissFrontend.Client.ViewModels.Controls.PictureControl
+@using FamilieLaissInterfaces.Models.Data
+@using FamilieLaissResources.Resources.Controls.PictureControl
+@using FamilieLaissSharedUI.Components
+
+@inherits FlComponentBase<PictureControlMediaViewModel>
+
+@if (ShowSkeleton)
+{
+    <MudSkeleton SkeletonType="SkeletonType.Rectangle" Height="255px" />
+}
+else
+{
+    <MudPaper Style="position: relative;" Height="255px" @onmouseenter="() => ViewModel.ToggleOverlayPictureCommand.Execute(null)" @onmouseleave="() => ViewModel.ToggleOverlayPictureCommand.Execute(null)">
+        <MudCardMedia Height="255" Image="@ViewModel.ImageUrl" />
+        @if (ControlType != EnumPictureControlType.EditDialog && ControlType != EnumPictureControlType.Choose)
+        {
+            <MudOverlay LightBackground="true" Absolute="true" Visible="@ViewModel.IsOverlayPictureActive">
+                <MudStack Row="true">
+                    <MudTooltip Arrow="true" Placement="Placement.Top" Text="@PictureControlMediaRes.ButtonShowInfoDialog" ShowOnFocus="false">
+                        <MudIconButton Color="Color.Primary" Size="Size.Large" Icon="@Icons.Material.Filled.Info" OnClick="async () => await ViewModel.ShowInfoDialogCommand.ExecuteAsync(null)" />
+                    </MudTooltip>
+                </MudStack>
+            </MudOverlay>
+        }
+    </MudPaper>
+}
+
+@code
+{
+    [Parameter]
+    [EditorRequired]
+    public EnumPictureControlType ControlType
+    {
+        get
+        {
+            return ViewModel.ControlType;
+        }
+        set
+        {
+            ViewModel.ControlType = value;
+        }
+    }
+
+    [Parameter]
+    public IUploadPictureModel? UploadItem
+    {
+        get
+        {
+            return ViewModel.UploadItem;
+        }
+        set
+        {
+            ViewModel.UploadItem = value;
+        }
+    }
+
+    [Parameter]
+    public IMediaItemModel? MediaItem
+    {
+        get
+        {
+            return ViewModel.MediaItem;
+        }
+        set
+        {
+            ViewModel.MediaItem = value;
+        }
+    }
+
+    [Parameter]
+    [EditorRequired]
+    public bool ShowSkeleton { get; set; }
+}

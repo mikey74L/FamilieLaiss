@@ -1,0 +1,61 @@
+﻿@using FamilieLaissResources.Resources.Layout
+
+<MudNavMenu>
+    <div class="ml-6 my-3">
+        <MudText Typo="Typo.caption"><b>@NavMenuRes.Application</b></MudText>
+    </div>
+    <MudNavLink Href="/" Icon="@Icons.Material.Filled.Dashboard" IconColor="Color.Info" Match="NavLinkMatch.All">@NavMenuRes.Dashboard</MudNavLink>
+    <MudNavLink Href="/fotomainpage" Icon="@Icons.Material.Filled.PhotoLibrary" IconColor="Color.Info" Match="NavLinkMatch.Prefix">@NavMenuRes.Fotos</MudNavLink>
+    <MudNavLink Href="/videomainpage" Icon="@Icons.Material.Filled.VideoLibrary" IconColor="Color.Info" Match="NavLinkMatch.Prefix">@NavMenuRes.Videos</MudNavLink>
+    <MudNavLink Href="/mixedmediamainpage" Icon="@Icons.Material.Filled.PhotoAlbum" IconColor="Color.Info" Match="NavLinkMatch.Prefix">@NavMenuRes.Mixed</MudNavLink>
+    <MudNavLink Href="/blog" Icon="@Icons.Material.Filled.Article" IconColor="Color.Info" Match="NavLinkMatch.Prefix">@NavMenuRes.Blog</MudNavLink>
+    <MudNavLink Href="/scheduler" Icon="@Icons.Material.Filled.CalendarMonth" IconColor="Color.Info" Match="NavLinkMatch.Prefix">@NavMenuRes.Scheduler</MudNavLink>
+
+    <div class="ml-6 my-3">
+        <MudText Typo="Typo.caption"><b>@NavMenuRes.BaseData</b></MudText>
+    </div>
+    <MudNavLink Href="/basedata-category" Icon="@Icons.Material.Filled.Category" IconColor="Color.Info" Match="NavLinkMatch.Prefix">@NavMenuRes.Category</MudNavLink>
+    <MudNavLink Href="/basedata-media" Icon="@Icons.Material.Filled.PhotoAlbum" IconColor="Color.Info" Match="NavLinkMatch.Prefix">@NavMenuRes.Media</MudNavLink>
+    <MudNavGroup Title="@NavMenuRes.UploadArea" Icon="@Icons.Material.Filled.CloudUpload">
+        <MudNavLink Href="/basedata-picture-upload" Icon="@Icons.Material.Filled.Photo" IconColor="Color.Info" Match="NavLinkMatch.Prefix">@NavMenuRes.Fotos</MudNavLink>
+        <MudNavLink Href="/basedata-video-upload" Icon="@Icons.Material.Filled.OndemandVideo" IconColor="Color.Info" Match="NavLinkMatch.Prefix">@NavMenuRes.Videos</MudNavLink>
+    </MudNavGroup>
+    <MudNavLink Href="/basedata-blog" Icon="@Icons.Material.Filled.Article" IconColor="Color.Info" Match="NavLinkMatch.Prefix">@NavMenuRes.Blog</MudNavLink>
+    <MudNavGroup Title="@NavMenuRes.Calendar" Icon="@Icons.Material.Filled.CalendarMonth">
+        <MudNavLink Href="/basedata-persons" Icon="@Icons.Material.Filled.Person" IconColor="Color.Info" Match="NavLinkMatch.Prefix">@NavMenuRes.Persons</MudNavLink>
+        <MudNavLink Href="/basedata-scheduler" Icon="@Icons.Material.Filled.EditCalendar" IconColor="Color.Info" Match="NavLinkMatch.Prefix">@NavMenuRes.Scheduler</MudNavLink>
+    </MudNavGroup>
+
+    <div class="ml-6 my-3">
+        <MudText Typo="Typo.caption"><b>@NavMenuRes.Converter</b></MudText>
+    </div>
+    <MudNavLink Href="/pictureconverter" Icon="@Icons.Material.Filled.Photo" IconColor="Color.Info" Match="NavLinkMatch.Prefix">@NavMenuRes.ConverterPhoto</MudNavLink>
+    <MudNavLink Href="/videoconverter" Icon="@Icons.Material.Filled.OndemandVideo" IconColor="Color.Info" Match="NavLinkMatch.Prefix">@NavMenuRes.ConverterVideo</MudNavLink>
+
+    <div class="ml-6 my-3">
+        <MudText Typo="Typo.caption"><b>@NavMenuRes.Administration</b></MudText>
+    </div>
+    <MudNavLink Href="/benutzerverwaltung" Icon="@Icons.Material.Filled.Person" IconColor="Color.Info" Match="NavLinkMatch.Prefix">@NavMenuRes.User</MudNavLink>
+
+    <div class="ml-6 my-3">
+        <MudText Typo="Typo.caption"><b>@NavMenuRes.Information</b></MudText>
+    </div>
+    <MudNavLink Href="/imprint" Icon="@Icons.Material.Filled.WebAsset" IconColor="Color.Info" Match="NavLinkMatch.Prefix">@NavMenuRes.Imprint</MudNavLink>
+    <MudNavLink Href="/dsgvo" Icon="@Icons.Material.Filled.WebAsset" IconColor="Color.Info" Match="NavLinkMatch.Prefix">@NavMenuRes.DSGVO</MudNavLink>
+    <MudNavLink Href="/contact" Icon="@Icons.Material.Filled.ContactPage" IconColor="Color.Info" Match="NavLinkMatch.Prefix">@NavMenuRes.Contact</MudNavLink>
+</MudNavMenu>
+
+<style>
+    .mud-nav-link {
+        white-space: normal !important;
+    }
+
+    .mud-nav-link.active:not(.mud-nav-link-disabled) {
+        border-left: 3px solid var(--mud-palette-primary);
+        background-color: rgba(var(--mud-palette-primary-rgb), 0.1)
+    }
+
+    .side-menu {
+        border-left: 1px solid var(--mud-palette-table-lines)
+    }
+</style>

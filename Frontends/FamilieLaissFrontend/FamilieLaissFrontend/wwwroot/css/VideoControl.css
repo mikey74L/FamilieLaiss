@@ -1,0 +1,28 @@
+﻿.fl-card-video-upload {
+    max-width: 340px !important;
+    max-height: 500px !important;
+    min-width: 340px !important;
+}
+
+.fl-card-video-selected {
+    background-color: skyblue !important;
+}
+
+.fl-card-video-toggle-button {
+    padding: 0px !important;
+}
+
+.fl-card-video-toggle-button-selected {
+    background-color: white !important;
+}
+
+.fl-card-video-header-text {
+    width: 93% !important;
+    overflow: hidden !important;
+    white-space: nowrap !important;
+    text-overflow: ellipsis !important;
+}
+
+.fl-card-icon-button-extra-large svg {
+    font-size: 5rem!important;
+}

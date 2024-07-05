@@ -1,0 +1,157 @@
+﻿@using FamilieLaissEnums
+@using FamilieLaissFrontend.Client.ViewModels.Controls.PictureControl
+@using FamilieLaissInterfaces.Models.Data
+@using FamilieLaissResources.Resources.Controls.PictureControl
+@using FamilieLaissSharedUI.Components
+@using Microsoft.Extensions.Localization
+
+@inherits FlComponentBase<PictureControlViewModel>
+
+<MudCard Class="@ClassAttributeCard" Style="@StyleAttributeCard" Outlined="true">
+    <!-- Card Header-Section -->
+    @if (ControlType != EnumPictureControlType.EditDialog && ControlType != EnumPictureControlType.Choose)
+    {
+        <PictureControlHeader ShowSelectionMode="ShowSelectionMode"
+                              ShowSkeleton="ShowSkeleton"
+                              UploadItem="UploadItem"
+                              ToggleChanged="() => ViewModel.ToggleChangedCommand.Execute(null)" />
+    }
+
+    <!-- Card Media-Section -->
+    <PictureControlMedia ControlType="ControlType"
+                         MediaItem="MediaItem"
+                         ShowSkeleton="ShowSkeleton"
+                         UploadItem="UploadItem" />
+
+    <!-- Card Content-Section -->
+    @if (ControlType != EnumPictureControlType.EditDialog && ControlType != EnumPictureControlType.Choose)
+    {
+        <MudCardContent>
+            <PictureControlInfo ShowSkeleton="ShowSkeleton"
+                                ControlType="ControlType"
+                                MediaItem="MediaItem"
+                                UploadItem="UploadItem" />
+        </MudCardContent>
+    }
+
+    <!-- Card Action-Section -->
+    @if (ControlType != EnumPictureControlType.EditDialog)
+    {
+        <MudCardActions>
+            <PictureControlActions ControlType="ControlType"
+                                   MediaItem="MediaItem"
+                                   UploadItem="UploadItem"
+                                   IsDisabled="IsDisabled"
+                                   ShowSkeleton="ShowSkeleton"
+                                   ChooseClicked="ChooseClicked"
+                                   DeleteUploadClicked="DeleteUploadClicked"
+                                   DeleteMediaClicked="DeleteMediaClicked"
+                                   EditClicked="EditClicked" />
+        </MudCardActions>
+    }
+</MudCard>
+
+@code
+{
+    [Parameter]
+    [EditorRequired]
+    public EnumPictureControlType ControlType { get; set; }
+
+    [Parameter]
+    [EditorRequired]
+    public bool ShowSkeleton { get; set; }
+
+    [Parameter]
+    public IUploadPictureModel? UploadItem
+    {
+        get
+        {
+            return ViewModel.UploadItem;
+        }
+        set
+        {
+            ViewModel.UploadItem = value;
+        }
+    }
+
+    [Parameter]
+    public IMediaItemModel? MediaItem
+    {
+        get
+        {
+            return ViewModel.MediaItem;
+        }
+        set
+        {
+            ViewModel.MediaItem = value;
+        }
+    }
+
+    [Parameter]
+    [EditorRequired]
+    public bool IsDisabled { get; set; }
+
+    [Parameter]
+    [EditorRequired]
+    public bool ShowSelectionMode
+    {
+        get
+        {
+            return ViewModel.ShowSelectionMode;
+        }
+        set
+        {
+            ViewModel.ShowSelectionMode = value;
+        }
+    }
+
+    [Parameter]
+    public EventCallback<IUploadPictureModel> DeleteUploadClicked { get; set; }
+
+    [Parameter]
+    public EventCallback<IMediaItemModel> DeleteMediaClicked { get; set; }
+
+    [Parameter]
+    public EventCallback<IUploadPictureModel> ChooseClicked { get; set; }
+
+    [Parameter]
+    public EventCallback<IMediaItemModel> EditClicked { get; set; }
+
+    private string StyleAttributeCard
+    {
+        get
+        {
+            string result = string.Empty;
+
+            switch (ControlType)
+            {
+                case EnumPictureControlType.EditDialog:
+                    result = "max-width: 340px; max-height: 255px;";
+                    break;
+                case EnumPictureControlType.Choose:
+                    result = "max-width: 340px; max-height: 460px; max-height: 315px;";
+                    break;
+                default:
+                    result = "min-width: 340px; max-width: 340px; max-height: 460px;";
+                    break;
+            }
+
+            return result;
+        }
+    }
+
+    private string ClassAttributeCard
+    {
+        get
+        {
+            string result = string.Empty;
+
+            if (UploadItem is not null && UploadItem.IsSelected)
+            {
+                result += "fl-card-picture-selected ";
+            }
+
+            return result;
+        }
+    }
+}

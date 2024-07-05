@@ -1,0 +1,86 @@
+﻿@using FamilieLaissFrontend.Client.ViewModels.Controls.Filter
+@using FamilieLaissInterfaces.Enums
+@using FamilieLaissInterfaces.Models
+@using FamilieLaissInterfaces.Services
+@using FamilieLaissResources.Resources.Controls.Filter
+@using FamilieLaissSharedUI.Components
+
+@inherits FlComponentBase<FilterNumberOnlyControlViewModel>
+
+<MudStack Style="width: 100%">
+    <MudStack Row="true" Spacing="1">
+        <MudText Typo="Typo.body1">@FilterCriteria.DisplayText</MudText>
+        @if (ViewModel.SelectedValueInt is not null || ViewModel.SelectedValueDouble is not null)
+        {
+            <MudTooltip Arrow="true"
+                        Placement="Placement.Top"
+                        ShowOnFocus="false"
+                        Text="@FilterNumberOnlyControlRes.DeleteFilter">
+                <MudIconButton Color="Color.Error"
+                               Size="Size.Small"
+                               Icon="@Icons.Material.Filled.Clear"
+                               OnClick="async () => await ViewModel.ResetFilterCommand.ExecuteAsync(null)">
+                </MudIconButton>
+            </MudTooltip>
+        }
+    </MudStack>
+
+    @if (FilterCriteria.FilterType == GraphQlFilterType.ValueListIntOnly)
+    {
+        <MudSelectExtended SearchBox="true"
+                           T="int?"
+                           ItemCollection="ViewModel.FilterItemsInt"
+                           SearchBoxAutoFocus="true"
+                           FullWidth="true"
+                           Dense="true"
+                           @bind-Value="ViewModel.SelectedValueInt"
+                           HelperText="@FilterNumberOnlyControlRes.DropDownHelperText"
+                           SearchBoxClearable="true">
+        </MudSelectExtended>
+    }
+
+    @if (FilterCriteria.FilterType == GraphQlFilterType.ValueListDoubleOnly)
+    {
+        <MudSelectExtended SearchBox="true"
+                           T="double?"
+                           ItemCollection="ViewModel.FilterItemsDouble"
+                           SearchBoxAutoFocus="true"
+                           FullWidth="true"
+                           Dense="true"
+                           @bind-Value="ViewModel.SelectedValueDouble"
+                           HelperText="@FilterNumberOnlyControlRes.DropDownHelperText"
+                           SearchBoxClearable="true">
+        </MudSelectExtended>
+    }
+</MudStack>
+
+@code
+{
+    [Parameter]
+    [EditorRequired]
+    public IGraphQlFilterCriteria FilterCriteria
+    {
+        get
+        {
+            return ViewModel.FilterCriteria;
+        }
+        set
+        {
+            ViewModel.FilterCriteria = value;
+        }
+    }
+
+    [Parameter]
+    [EditorRequired]
+    public EventCallback<(Guid id, bool hasValue)> ValueChanged
+    {
+        get
+        {
+            return ViewModel.ValueChanged;
+        }
+        set
+        {
+            ViewModel.ValueChanged = value;
+        }
+    }
+}

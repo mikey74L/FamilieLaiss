@@ -1,0 +1,20 @@
+﻿@using FamilieLaissResources.Resources.Dialogs.Choose.Picture
+
+@if (ItemsCount == 0 && !HasError)
+{
+    <MudText Typo="Typo.h5">@ChoosePictureDialogMessageOutputRes.MessageNoItems</MudText>
+}
+
+@if (HasError)
+{
+    <MudText Color="Color.Error" Typo="Typo.h5">@ChoosePictureDialogMessageOutputRes.MessageErrorLoading</MudText>
+}
+
+@code
+{
+    [Parameter]
+    public int ItemsCount { get; set; }
+
+    [Parameter]
+    public bool HasError { get; set; }
+}

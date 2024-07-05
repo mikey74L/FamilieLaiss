@@ -1,0 +1,77 @@
+version: '3.4'
+
+services:
+  messagebus:
+    image: rabbitmq:3.8.28-management
+    hostname: rabbitfamilielaiss
+    container_name: rabbitmq
+    environment:
+      - RABBITMQ_DEFAULT_USER_FILE=/run/secrets/rabbit_user_secret
+      - RABBITMQ_DEFAULT_PASS_FILE=/run/secrets/rabbit_password_secret
+    secrets:
+      - rabbit_user_secret
+      - rabbit_password_secret
+  eureka:
+    image: steeltoeoss/eureka-server
+    container_name: eureka
+  db_fl_backend:
+    image: postgres:16.1-alpine
+    container_name: postgres_fl_backend
+    environment:
+      - POSTGRES_USER_FILE=/run/secrets/postgres_user_secret
+      - POSTGRES_PASSWORD_FILE=/run/secrets/postgres_password_secret
+      - POSTGRES_DB=flbackend
+    secrets:
+      - postgres_user_secret
+      - postgres_password_secret
+  flbackend.api:
+    image: ${DOCKER_REGISTRY-}flbackend
+    container_name: flbackendservice
+    build:
+      context: .
+      dockerfile: Services/FlBackEnd/FlBackEnd.API/Dockerfile
+    secrets:
+      - rabbit_connection_string
+      - postgres_user_secret
+      - postgres_password_secret
+  pictureconvertexecute:
+    image: ${DOCKER_REGISTRY-}pictureconvertexecute
+    container_name: pictureconvertexecute
+    build:
+      context: .
+      dockerfile: Services/PictureConvert/PictureConvertExecuteService/Dockerfile
+    secrets:
+      - rabbit_connection_string
+      - postgres_user_secret
+      - postgres_password_secret
+  picture.api:
+    image: ${DOCKER_REGISTRY-}pictureapi
+    container_name: pictureservice
+    build:
+      context: .
+      dockerfile: Services/Picture/Picture.API/Dockerfile
+  videoconvertexecute:
+    image: ${DOCKER_REGISTRY-}videoconvertexecute
+    container_name: videoconvertexecute
+    build:
+      context: .
+      dockerfile: Services/VideoConvert/VideoConvertExecuteService/Dockerfile
+    secrets:
+      - rabbit_connection_string
+      - postgres_user_secret
+      - postgres_password_secret
+  video.api:
+    image: ${DOCKER_REGISTRY-}videoapi
+    container_name: videoservice
+    build:
+      context: .
+      dockerfile: Services/Video/Video.API/Dockerfile
+  google.api:
+    image: ${DOCKER_REGISTRY-}googleapi
+    container_name: googleapiservice
+    build:
+      context: .
+      dockerfile: Services/Google/Google.API/Dockerfile
+    secrets:
+      - rabbit_connection_string
+      - google_api_key_secret

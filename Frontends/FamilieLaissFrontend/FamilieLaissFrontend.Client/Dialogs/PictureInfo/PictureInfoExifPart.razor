@@ -1,0 +1,234 @@
+﻿@using FamilieLaissInterfaces.Models.Data
+@using FamilieLaissResources.Resources.Dialogs.PictureInfo
+
+<MudItem xs="12">
+    <MudText Typo="Typo.h6">Exif Informationen:</MudText>
+</MudItem>
+
+<!-- Marke -->
+@if (!string.IsNullOrWhiteSpace(UploadItem.UploadPictureExifInfo?.Make))
+{
+    <MudItem xs="5">
+        <MudText Style="font-weight: bold;">@PictureInfoExifPartRes.LabelMake</MudText>
+    </MudItem>
+    <MudItem xs="6">
+        <MudText>@UploadItem.UploadPictureExifInfo.Make</MudText>
+    </MudItem>
+}
+
+<!-- Modell -->
+@if (!string.IsNullOrWhiteSpace(UploadItem.UploadPictureExifInfo?.Model))
+{
+    <MudItem xs="5">
+        <MudText Style="font-weight: bold;">@PictureInfoExifPartRes.LabelModel</MudText>
+    </MudItem>
+    <MudItem xs="6">
+        <MudText>@UploadItem.UploadPictureExifInfo.Model</MudText>
+    </MudItem>
+}
+
+<!-- Auflösung X -->
+@if (UploadItem.UploadPictureExifInfo?.ResolutionX is not null)
+{
+    <MudItem xs="5">
+        <MudText Style="font-weight: bold;">@PictureInfoExifPartRes.LabelResolutionX</MudText>
+    </MudItem>
+    <MudItem xs="6">
+        <MudText>@UploadItem.UploadPictureExifInfo.ResolutionXText</MudText>
+    </MudItem>
+}
+
+<!-- Auflösung Y -->
+@if (UploadItem.UploadPictureExifInfo?.ResolutionY is not null)
+{
+    <MudItem xs="5">
+        <MudText Style="font-weight: bold;">@PictureInfoExifPartRes.LabelResolutionY</MudText>
+    </MudItem>
+    <MudItem xs="6">
+        <MudText>@UploadItem.UploadPictureExifInfo.ResolutionYText</MudText>
+    </MudItem>
+}
+
+<!-- Aufnahmedatum -->
+@if (UploadItem.UploadPictureExifInfo?.DdlRecorded is not null)
+{
+    <MudItem xs="5">
+        <MudText Style="font-weight:bold;">@PictureInfoExifPartRes.LabelDdlRecorded</MudText>
+    </MudItem>
+    <MudItem xs="6">
+        <MudText>@UploadItem.UploadPictureExifInfo.DdlRecorded.Value.LocalDateTime</MudText>
+    </MudItem>
+
+}
+
+<!-- Ausgeben der Bildausrichtung -->
+@if (UploadItem.UploadPictureExifInfo?.Orientation is not null)
+{
+    <MudItem xs="5">
+        <MudText Style="font-weight: bold;">@PictureInfoExifPartRes.LabelOrientation</MudText>
+    </MudItem>
+    <MudItem xs="6">
+        <MudText>@UploadItem.UploadPictureExifInfo.OrientationText</MudText>
+    </MudItem>
+}
+
+<!-- Ausgeben der Belichtungszeit -->
+@if (UploadItem.UploadPictureExifInfo?.ExposureTime is not null)
+{
+    <MudItem xs="5">
+        <MudText Style="font-weight: bold;">@PictureInfoExifPartRes.LabelExposureTime</MudText>
+    </MudItem>
+    <MudItem xs="6">
+        <MudText>@UploadItem.UploadPictureExifInfo.ExposureTimeText</MudText>
+    </MudItem>
+}
+
+<!-- Ausgeben des Belichtungsmodus -->
+@if (UploadItem.UploadPictureExifInfo?.ExposureMode is not null)
+{
+    <MudItem xs="5">
+        <MudText Style="font-weight: bold;">@PictureInfoExifPartRes.LabelExposureMode</MudText>
+    </MudItem>
+    <MudItem xs="6">
+        <MudText>@UploadItem.UploadPictureExifInfo.ExposureModeText</MudText>
+    </MudItem>
+}
+
+<!-- Ausgeben des Belichtungsprogramms -->
+@if (UploadItem.UploadPictureExifInfo?.ExposureProgram is not null)
+{
+    <MudItem xs="5">
+        <MudText Style="font-weight: bold;">@PictureInfoExifPartRes.LabelExposureProgram</MudText>
+    </MudItem>
+    <MudItem xs="6">
+        <MudText>@UploadItem.UploadPictureExifInfo.ExposureProgrammText</MudText>
+    </MudItem>
+}
+
+<!-- Ausgeben der Belichtungs-Messmethode -->
+@if (UploadItem.UploadPictureExifInfo?.MeteringMode is not null)
+{
+    <MudItem xs="5">
+        <MudText Style="font-weight: bold;">@PictureInfoExifPartRes.LabelMeteringMode</MudText>
+    </MudItem>
+    <MudItem xs="6">
+        <MudText>@UploadItem.UploadPictureExifInfo.MeteringModeText</MudText>
+    </MudItem>
+}
+
+<!-- Ausgeben des Sensors -->
+@if (UploadItem.UploadPictureExifInfo?.SensingMode is not null)
+{
+    <MudItem xs="5">
+        <MudText Style="font-weight: bold;">@PictureInfoExifPartRes.LabelSensingMode</MudText>
+    </MudItem>
+    <MudItem xs="6">
+        <MudText>@UploadItem.UploadPictureExifInfo.SensingModeText</MudText>
+    </MudItem>
+}
+
+<!-- Ausgeben der F-Nummer -->
+@if (UploadItem.UploadPictureExifInfo?.FNumber is not null)
+{
+    <MudItem xs="5">
+        <MudText Style="font-weight: bold;">@PictureInfoExifPartRes.LabelFNumber</MudText>
+    </MudItem>
+    <MudItem xs="6">
+        <MudText>@UploadItem.UploadPictureExifInfo.FNumberText</MudText>
+    </MudItem>
+}
+
+<!-- Ausgeben der ISO-Sensitivität -->
+@if (UploadItem.UploadPictureExifInfo?.IsoSensitivity is not null)
+{
+    <MudItem xs="5">
+        <MudText Style="font-weight: bold;">@PictureInfoExifPartRes.LabelIsoSensitivity</MudText>
+    </MudItem>
+    <MudItem xs="6">
+        <MudText>@UploadItem.UploadPictureExifInfo.IsoSensitivityText</MudText>
+    </MudItem>
+}
+
+<!-- Ausgeben der Verschlusszeit -->
+@if (UploadItem.UploadPictureExifInfo?.ShutterSpeed is not null)
+{
+    <MudItem xs="5">
+        <MudText Style="font-weight: bold;">@PictureInfoExifPartRes.LabelShutterSpeed</MudText>
+    </MudItem>
+    <MudItem xs="6">
+        <MudText>@UploadItem.UploadPictureExifInfo.ShutterSpeedText</MudText>
+    </MudItem>
+}
+
+<!-- Ausgeben der Brennweite -->
+@if (UploadItem.UploadPictureExifInfo?.FocalLength is not null)
+{
+    <MudItem xs="5">
+        <MudText Style="font-weight: bold;">@PictureInfoExifPartRes.LabelFocalLength</MudText>
+    </MudItem>
+    <MudItem xs="6">
+        <MudText>@UploadItem.UploadPictureExifInfo.FocalLengthText</MudText>
+    </MudItem>
+}
+
+<!-- Ausgeben des Blitzlichtmodus -->
+@if (UploadItem.UploadPictureExifInfo?.FlashMode is not null)
+{
+    <MudItem xs="5">
+        <MudText Style="font-weight: bold;">@PictureInfoExifPartRes.LabelFlashMode</MudText>
+    </MudItem>
+    <MudItem xs="6">
+        <MudText>@UploadItem.UploadPictureExifInfo.FlashModeText</MudText>
+    </MudItem>
+}
+
+<!-- Ausgeben des Weißabgleichs -->
+@if (UploadItem.UploadPictureExifInfo?.WhiteBalanceMode is not null)
+{
+    <MudItem xs="5">
+        <MudText Style="font-weight: bold;">@PictureInfoExifPartRes.LabelWhiteBalanceMode</MudText>
+    </MudItem>
+    <MudItem xs="6">
+        <MudText>@UploadItem.UploadPictureExifInfo.WhiteBalanceModeText</MudText>
+    </MudItem>
+}
+
+<!-- Ausgeben des Schärfeabgleichs -->
+@if (UploadItem.UploadPictureExifInfo?.Sharpness is not null)
+{
+    <MudItem xs="5">
+        <MudText Style="font-weight: bold;">@PictureInfoExifPartRes.LabelSharpness</MudText>
+    </MudItem>
+    <MudItem xs="6">
+        <MudText>@UploadItem.UploadPictureExifInfo.SharpnessText</MudText>
+    </MudItem>
+}
+
+<!-- Ausgeben der Sättigung -->
+@if (UploadItem.UploadPictureExifInfo?.Saturation is not null)
+{
+    <MudItem xs="5">
+        <MudText Style="font-weight: bold;">@PictureInfoExifPartRes.LabelSaturation</MudText>
+    </MudItem>
+    <MudItem xs="6">
+        <MudText>@UploadItem.UploadPictureExifInfo.SaturationText</MudText>
+    </MudItem>
+}
+
+<!-- Ausgeben des Kontrastes -->
+@if (UploadItem.UploadPictureExifInfo?.Contrast is not null)
+{
+    <MudItem xs="5">
+        <MudText Style="font-weight: bold;">@PictureInfoExifPartRes.LabelContrast</MudText>
+    </MudItem>
+    <MudItem xs="6">
+        <MudText>@UploadItem.UploadPictureExifInfo.ContrastText</MudText>
+    </MudItem>
+}
+
+@code
+{
+    [Parameter]
+    [EditorRequired]
+    public IUploadPictureModel UploadItem { get; set; } = default!;
+}

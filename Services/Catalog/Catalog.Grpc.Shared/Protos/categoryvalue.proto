@@ -1,0 +1,98 @@
+syntax = "proto3";
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/wrappers.proto";
+import "Protos/category.proto";
+
+option csharp_namespace = "Catalog.Grpc.Shared.CategoryValue";
+
+package Catalog;
+
+service CategoryValueService {
+	rpc GetAllCategoryValues (google.protobuf.Empty) returns (GetAllCategoryValuesResponce);
+	rpc GetCategoryValuesForCategory (GetCategoryValuesForCategoryRequest) returns (GetCategoryValuesForCategoryResponce);
+	rpc GetCategoryValue (GetCategoryValueRequest) returns (GetCategoryValueResponce);
+
+	rpc CreateCategoryValue (CreateCategoryValueRequest) returns (CreateCategoryValueResponce);
+	rpc UpdateCategoryValue (UpdateCategoryValueRequest) returns (UpdateCategoryValueResponce);
+	rpc DeleteCategoryValue (DeleteCategoryValueRequest) returns (google.protobuf.Empty);
+
+	rpc CheckCategoryValueGermanNameAlreadyExists (CheckCategoryValueGermanNameAlreadyExistsRequest) returns (CheckCategoryValueGermanNameAlreadyExistsResponce);
+	rpc CheckCategoryValueEnglishNameAlreadyExists (CheckCategoryValueEnglishNameAlreadyExistsRequest) returns (CheckCategoryValueEnglishNameAlreadyExistsResponce);
+}
+
+message GetAllCategoryValuesResponce {
+	repeated CategoryValueDTO categoryValues = 1;
+}
+
+message GetCategoryValuesForCategoryRequest {
+	int64 categoryId = 1;
+}
+
+message GetCategoryValuesForCategoryResponce {
+	CategoryDTO category = 1;
+	repeated CategoryValueDTO categoryValues = 2;
+}
+
+message GetCategoryValueRequest {
+	int64 id = 1;
+}
+
+message GetCategoryValueResponce {
+	CategoryValueDTO categoryValue = 1;
+}
+
+message CategoryValueDTO {
+	int64 id = 1;
+	int64 categoryId = 2;
+	string nameGerman = 3;
+	string nameEnglish = 4;
+	google.protobuf.Timestamp createDate = 5;
+	google.protobuf.Timestamp changeDate = 6;
+}
+
+message CreateCategoryValueRequest {
+	int64 categoryId = 1;
+	string nameGerman = 2;
+	string nameEnglish = 3;
+}
+
+message CreateCategoryValueResponce {
+	int64 id = 1;
+	google.protobuf.Timestamp createDate = 2;
+}
+
+message UpdateCategoryValueRequest {
+	int64 id = 1;
+	string nameGerman = 2;
+	string nameEnglish = 3;
+}
+
+message UpdateCategoryValueResponce {
+	google.protobuf.Timestamp changeDate = 1;
+}
+
+message DeleteCategoryValueRequest {
+	int64 id = 1;
+}
+
+message CheckCategoryValueGermanNameAlreadyExistsRequest {
+	google.protobuf.Int64Value id = 1;
+	int64 categoryId = 2;
+	string text = 3;
+}
+
+message CheckCategoryValueGermanNameAlreadyExistsResponce {
+	bool alreadyExists = 1;
+}
+
+message CheckCategoryValueEnglishNameAlreadyExistsRequest {
+	google.protobuf.Int64Value id = 1;
+	int64 categoryId = 2;
+	string text = 3;
+}
+
+message CheckCategoryValueEnglishNameAlreadyExistsResponce {
+	bool alreadyExists = 1;
+}

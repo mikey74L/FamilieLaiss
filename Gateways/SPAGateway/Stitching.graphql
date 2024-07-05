@@ -1,0 +1,16 @@
+extend type PictureConvertStatus {
+	"The related upload picture for this status entry"
+	uploadPicture: UploadPicture @delegate(schema: "upload", path: "uploadPicture(id: $fields:uploadPictureID)")
+}
+
+extend type VideoConvertStatus {
+	"The related upload video for this status entry"
+	uploadVideo: UploadVideo @delegate(schema: "upload", path: "uploadVideo(id: $fields:uploadVideoID)")
+}
+
+extend type MediaItem {
+	"The related upload picture for this media item"
+	uploadPicture: UploadPicture @delegate(schema: "upload", path: "uploadPicture(id: $fields:uploadPictureID)")
+	"The related upload video for this media item"
+	uploadVideo: UploadVideo @delegate(schema: "upload", path: "uploadVideo(id: $fields:uploadVideoID)")
+}

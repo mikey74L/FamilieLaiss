@@ -1,0 +1,231 @@
+------------------------------------------------------------------------------------------
+-- Muss in der Familie-Laiss-Datenbank eingespielt werden
+------------------------------------------------------------------------------------------
+alter table "Messages" alter column "MessageID" drop default;
+
+alter table "MessageUsers" alter column "Readed" default true;
+
+
+-- Funktion für das Löschen der Benutzerdaten wenn ein Benutzer gelöscht wird
+CREATE OR REPLACE FUNCTION public.sp_delete_user_data(IN p_user_name character varying)
+    RETURNS void
+    LANGUAGE 'plpgsql'
+AS $BODY$
+DECLARE
+   v_test integer := 1;
+BEGIN
+   -- Löschen der Kommentare
+   delete from "Media_Item_Comments" where "UserName" = p_user_name;
+
+   -- Löschen der Bewertungen
+   delete from "Media_Item_Ratings" where "UserName" = p_user_name;
+
+   -- Die Nachrichten für einen Benutzer löschen
+   delete from "MessageUsers" where "UserName" = p_user_name;
+
+   -- Die Benutzereinstellungen löschen
+   delete from "UserSettings" where "UserName" = p_user_name;
+
+   -- Das Profilbild löschen
+   delete from "UserProfilePicture" where "UserName" = p_user_name;
+END;
+$BODY$;
+
+-- Trigger Function für das Notify SignalR für neue Messages
+CREATE OR REPLACE FUNCTION public.message_notify()
+    RETURNS trigger
+    LANGUAGE 'plpgsql'
+AS $BODY$ 
+BEGIN 
+  PERFORM pg_notify('messagecount', ''); 
+  RETURN NEW;
+END; 
+$BODY$;
+
+-- Trigger für die Tabelle Message für das Notify SignalR für neue Messages
+CREATE TRIGGER message_notify
+    AFTER INSERT OR DELETE OR UPDATE 
+    ON public."Messages"
+    FOR EACH ROW
+    EXECUTE PROCEDURE public.message_notify();
+
+
+-- Trigger Function für das Notify SignalR für neue Message-User-Events
+CREATE FUNCTION public.message_user_notify()
+    RETURNS trigger
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE NOT LEAKPROOF 
+AS $BODY$
+
+    BEGIN
+        PERFORM pg_notify('messageusercount', NEW."UserName");
+        RETURN NULL;
+    END; 
+$BODY$;
+
+
+-- Trigger für die Tabelle MessageUsers zur SignalR-Benachrichtigung
+CREATE TRIGGER message_user_notify
+    AFTER UPDATE  
+    ON public."MessageUsers"
+    FOR EACH ROW
+    EXECUTE PROCEDURE public.message_user_notify();
+
+
+------------------------------------------------------------------------------------------
+-- Muss in der Identity-Datenbank eingespielt werden 
+------------------------------------------------------------------------------------------
+-- Erstellen eines Default-Settings-Eintrages für einen neuen Benutzer
+CREATE FUNCTION public.sp_create_default_user_settings(IN p_user_name character varying)
+    RETURNS void
+    LANGUAGE 'plpgsql'
+AS $BODY$
+DECLARE
+   v_connection_name character varying;
+   v_return_value    character varying;
+BEGIN
+   -- Setzen des Verbindungsnamens
+   v_connection_name := 'api_user_settings';
+
+   -- Öffnen der Verbindung
+   select dblink_connect(v_connection_name, 'host=localhost user=familie_laiss_app_user password=DominicKlaudijaMichael22_08 dbname=familielaiss') into v_return_value;
+
+   -- Absetzen des Insert-Statements
+   select dblink_exec(v_connection_name, 'INSERT INTO public."UserSettings"("UserName") VALUES (''' || p_user_name || ''');') into v_return_value;
+
+   -- Schließen der Verbindung
+   select dblink_disconnect(v_connection_name) into v_return_value;
+END;
+$BODY$;
+
+
+
+------------------------------------------------------------------------------------------
+-- Muss in die FamilieLaiss-Datenbank eingespielt werden 
+------------------------------------------------------------------------------------------
+-- Erstellen einer Nachricht für alle Benutzer
+CREATE OR REPLACE FUNCTION public.sp_create_message_all_users(IN p_prio smallint, IN p_text_german text, IN p_text_english text)
+    RETURNS void
+    LANGUAGE 'plpgsql'
+AS $BODY$
+DECLARE
+   v_connection_name character varying;
+   v_cursor_name     character varying;
+   v_sequence_value  bigint;
+
+   cursor_users CURSOR FOR SELECT * FROM dblink_fetch(v_connection_name, v_cursor_name, 1000000) AS (username character varying);
+
+   v_dummy           character varying;
+BEGIN
+   -- Setzen des Verbindungsnamens
+   v_connection_name := 'identity';
+   v_cursor_name := 'users';
+
+   -- Öffnen der Verbindung
+   select dblink_connect(v_connection_name, 'host=localhost user=familie_laiss_app_user password=DominicKlaudijaMichael22_08 dbname=familielaiss_identity') into v_dummy;
+
+   -- Ermitteln einer neuen Sequenz-Nummer für die Nachricht
+   SELECT nextval('"Messages_MessageID_seq"') into v_sequence_value;
+
+   -- Eintragen der Nachricht in die Nachrichtentabelle
+   insert into "Messages" ("MessageID", "Prio", "Text_German", "Text_English", "DDL_Created", "AdditionalData") values (v_sequence_value, p_prio, p_text_german, p_text_english, CURRENT_TIMESTAMP, null);
+
+   -- Öffnen des DB-Links mit einer Query über die existierenden Benutzer
+   SELECT dblink_open(v_connection_name, v_cursor_name, 'select "UserName" from "AspNetUsers"') into v_dummy;
+
+   -- Eine Schleife über alle existierenden User und erstellen des entsprechenden
+   -- Benutzerientrages
+   for c_users in cursor_users loop
+      insert into "MessageUsers" ("MessageID", "UserName", "Readed", "DDL_Readed") values (v_sequence_value, c_users.username, false, null);
+   end loop;
+
+   -- Schließen der Verbindung
+   select dblink_disconnect(v_connection_name) into v_dummy;
+END;
+$BODY$;
+
+
+-- Erstellen einer Nachricht für einen bestimmten Benutzer
+CREATE OR REPLACE FUNCTION public.sp_create_message_user(IN p_prio smallint, IN p_username text, IN p_text_german text, IN p_text_english text)
+    RETURNS void
+    LANGUAGE 'plpgsql'
+AS $BODY$
+DECLARE
+   v_sequence_value  bigint;
+
+   v_dummy           character varying;
+BEGIN
+   -- Ermitteln einer neuen Sequenz-Nummer für die Nachricht
+   SELECT nextval('"Messages_MessageID_seq"') into v_sequence_value;
+
+   -- Eintragen der Nachricht in die Nachrichtentabelle
+   insert into "Messages" ("MessageID", "Prio", "Text_German", "Text_English", "DDL_Created", "AdditionalData") values (v_sequence_value, p_prio, p_text_german, p_text_english, CURRENT_TIMESTAMP, null);
+
+   -- Eintragen der Nachricht in die Benutzertabelle
+   insert into "MessageUsers" ("MessageID", "UserName", "Readed", "DDL_Readed") values (v_sequence_value, p_username, false, null);
+END;
+$BODY$;
+
+
+-- Erstellen einer Nachricht für alle Benutzer einer bestimmten Benutzergruppe
+CREATE OR REPLACE FUNCTION public.sp_create_message_user_group(IN p_prio smallint, IN p_groupname text, IN p_text_german text, IN p_text_english text)
+    RETURNS void
+    LANGUAGE 'plpgsql'
+AS $BODY$
+DECLARE
+   v_connection_name character varying;
+   v_cursor_name     character varying;
+   v_sequence_value  bigint;
+
+   cursor_users CURSOR FOR SELECT * FROM dblink_fetch(v_connection_name, v_cursor_name, 1000000) AS (username character varying);
+
+   v_dummy           character varying;
+BEGIN
+   -- Setzen des Verbindungsnamens
+   v_connection_name := 'identity';
+   v_cursor_name := 'users';
+
+   -- Öffnen der Verbindung
+   select dblink_connect(v_connection_name, 'host=localhost user=familie_laiss_app_user password=DominicKlaudijaMichael22_08 dbname=familielaiss_identity') into v_dummy;
+
+   -- Ermitteln einer neuen Sequenz-Nummer für die Nachricht
+   SELECT nextval('"Messages_MessageID_seq"') into v_sequence_value;
+
+   -- Eintragen der Nachricht in die Nachrichtentabelle
+   insert into "Messages" ("MessageID", "Prio", "Text_German", "Text_English", "DDL_Created", "AdditionalData") values (v_sequence_value, p_prio, p_text_german, p_text_english, CURRENT_TIMESTAMP, null);
+
+   -- Öffnen des DB-Links mit einer Query über die existierenden Benutzer
+   SELECT dblink_open(v_connection_name, v_cursor_name, 'select c."UserName" from "AspNetRoles" as a, "AspNetUserRoles" as b, "AspNetUsers" as c where a."Name" = ''' || p_groupname || ''' and a."Id" = b."RoleId" and b."UserId" = c."Id"') into v_dummy;
+
+   -- Eine Schleife über alle existierenden User und erstellen des entsprechenden
+   -- Benutzerientrages
+   for c_users in cursor_users loop
+      insert into "MessageUsers" ("MessageID", "UserName", "Readed", "DDL_Readed") values (v_sequence_value, c_users.username, false, null);
+   end loop;
+
+   -- Schließen der Verbindung
+   select dblink_disconnect(v_connection_name) into v_dummy;
+END;
+$BODY$;
+
+
+-- Quittieren aller Nachrichten
+CREATE OR REPLACE FUNCTION public.sp_quit_all_messages(IN p_prio smallint, IN p_user_name character varying)
+    RETURNS void
+    LANGUAGE 'plpgsql'
+AS $BODY$
+DECLARE
+   v_dummy           character varying;
+BEGIN
+   -- Quittieren aller Nachrichten
+   update "MessageUsers" 
+      set "Readed" = true, 
+	      "DDL_Readed" = CURRENT_TIMESTAMP
+    where "MessageUserID" in (select a."MessageUserID" 
+                                from "MessageUsers" a, "Messages" b 
+							   where b."MessageID" = a."MessageID"
+								 and b."Prio" = p_prio)
+	  and "UserName" = p_user_name;
+END;
+$BODY$;

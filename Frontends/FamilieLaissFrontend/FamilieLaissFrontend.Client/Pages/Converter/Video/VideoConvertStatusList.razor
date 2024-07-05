@@ -1,0 +1,51 @@
+﻿@using FamilieLaissFrontend.Client.ViewModels.Pages.Converter.Video
+@using FamilieLaissInterfaces.Models.Data
+@using FamilieLaissResources.Resources.Pages.Converter.Video
+@using FamilieLaissSharedObjects.Enums
+@using FamilieLaissSharedUI.Components
+@using FamilieLaissSharedUI.Helper
+
+@inherits FlComponentBase<VideoConvertStatusListViewModel>
+
+@if (Items.Any())
+{
+    <MudTable Items="@Items" Height="@FullPageHeightCalculated(100)" FixedHeader="true">
+        <HeaderContent>
+            <MudTh>@VideoConvertStatusListRes.Filename</MudTh>
+            @if (ListType == EnumVideoConvertStatus.ConvertedWithErrors)
+            {
+                <MudTh>@VideoConvertStatusListRes.ErrorMessage</MudTh>
+            }
+            @if (ListType == EnumVideoConvertStatus.SucessfullyConverted)
+            {
+                <MudTh>@VideoConvertStatusListRes.ConvertedAt</MudTh>
+            }
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd DataLabel="@VideoConvertStatusListRes.Filename">@context.UploadVideo?.Filename</MudTd>
+            @if (ListType == EnumVideoConvertStatus.ConvertedWithErrors)
+            {
+                <MudTd DataLabel="@VideoConvertStatusListRes.ErrorMessage">@context.ErrorMessage</MudTd>
+            }
+            @if (ListType == EnumVideoConvertStatus.SucessfullyConverted)
+            {
+                <MudTd DataLabel="@VideoConvertStatusListRes.ConvertedAt">@context.FinishDateConvertPicture!.Value.LocalDateTime</MudTd>
+            }
+        </RowTemplate>
+    </MudTable>
+}
+else
+{
+    <MudText Class="mt-15" Align="Align.Center" Typo="Typo.h4">@VideoConvertStatusListRes.NoEntries</MudText>
+}
+
+@code
+{
+    [Parameter]
+    [EditorRequired]
+    public ExtendedObservableCollection<IVideoConvertStatusModel> Items { get; set; } = new();
+
+    [Parameter]
+    [EditorRequired]
+    public EnumVideoConvertStatus ListType { get; set; }
+}

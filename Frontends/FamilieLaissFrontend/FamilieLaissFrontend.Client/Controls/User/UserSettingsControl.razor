@@ -1,0 +1,66 @@
+﻿@using FamilieLaissFrontend.Client.ViewModels.Controls.User
+@using FamilieLaissInterfaces.Services
+@using FamilieLaissResources.Resources.Controls.User
+@using FamilieLaissSharedUI.Components
+
+@inherits FlComponentBase<UserSettingsControlViewModel>
+
+@page "/user-settings"
+
+<PageTitle>@UserSettingsRes.PageTitle</PageTitle>
+
+<NavigationLock OnBeforeInternalNavigation="async () => await ViewModel.BeforeInternalNavigationCommand.ExecuteAsync(null)" ConfirmExternalNavigation="true" />
+
+<MudText Typo="Typo.h4">@UserSettingsRes.PageTitle</MudText>
+<MudText Typo="Typo.body2">@UserSettingsRes.PageDescription</MudText>
+
+<MudForm Model="@ViewModel.Model" @ref="ViewModel.Form">
+    <MudTabs Class="mt-5" KeepPanelsAlive="true">
+        <MudTabPanel Text="Allgemein">
+            <MudItem Style="height: calc(100vh - 300px); overflow-y: scroll; overflow-x: hidden;">
+                <UserSettingsGeneral />
+            </MudItem>
+        </MudTabPanel>
+        <MudTabPanel Text="Foto">
+            <MudItem Style="height: calc(100vh - 300px); overflow-y: scroll; overflow-x: hidden;">
+                <UserSettingsPhoto />
+            </MudItem>
+        </MudTabPanel>
+        <MudTabPanel Text="Video">
+            @if (ViewModel.Model is not null)
+            {
+                <MudItem Style="height: calc(100vh - 300px); overflow-y: scroll; overflow-x: hidden;">
+                    <UserSettingsVideoControl Model="ViewModel.Model" />
+                </MudItem>
+            }
+        </MudTabPanel>
+    </MudTabs>
+</MudForm>
+
+<MudTooltip Arrow="true"
+            Placement="Placement.Top"
+            ShowOnFocus="false"
+            Text="@UserSettingsRes.TooltipSave">
+    <MudButton Class="mt-5"
+               Color="Color.Primary"
+               StartIcon="@Icons.Material.Filled.Save"
+               Variant="MudBlazor.Variant.Filled">
+        @UserSettingsRes.ButtonSave
+    </MudButton>
+</MudTooltip>
+
+@code
+{
+    [CascadingParameter]
+    private Task<AuthenticationState>? AuthenticationState 
+    { 
+        get
+        {
+            return ViewModel.AuthenticationState;
+        }
+        set
+        {
+            ViewModel.AuthenticationState = value;
+        }
+    }
+}

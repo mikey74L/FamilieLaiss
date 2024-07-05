@@ -1,0 +1,38 @@
+﻿@using FamilieLaissFrontend.Client.ViewModels.Controls.VideoPlayerControl
+@using FamilieLaissInterfaces.Models.Data
+@using FamilieLaissSharedUI.Components
+
+@inherits FlComponentBase<VideoPlayerControlViewModel>
+
+<video id="@ViewModel.IdPlayer" class="video-js vjs-16-9" style="width:100%" controls preload="auto" playsinline>
+</video>
+
+@code
+{
+    [Parameter]
+    [EditorRequired]
+    public IUploadVideoModel VideoItemToPlay 
+    { 
+        get
+        {
+            return ViewModel.VideoItemToPlay;
+        }
+        set
+        {
+            ViewModel.VideoItemToPlay = value;
+        }
+    }
+
+    [CascadingParameter]
+    public Task<AuthenticationState> AuthenticationState 
+    { 
+        get
+        {
+            return ViewModel.AuthenticationState;
+        }
+        set
+        {
+            ViewModel.AuthenticationState = value;
+        }
+    } 
+}

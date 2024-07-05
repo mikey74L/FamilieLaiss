@@ -1,0 +1,12 @@
+{
+  "projects": [
+    {
+      "schema": [
+        "FamilieLaissGraphQlClientLibrary/schema.graphql"
+      ],
+      "documents": [
+        "FamilieLaissGraphQlClientLibrary/**/*.graphql"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,119 @@
+fragment FrMediaItemOnlyId on MediaItem {
+    id
+}
+
+fragment FrMediaItemCreate on MediaItem {
+    createDate
+}
+
+fragment FrMediaItemChange on MediaItem {
+    changeDate
+}
+
+fragment FrMediaItemMain on MediaItem {
+    mediaType
+    nameGerman
+    nameEnglish
+    descriptionGerman
+    descriptionEnglish
+    onlyFamily
+}
+
+fragment FrMediaItemFull on MediaItem {
+    ...FrMediaItemOnlyId
+    ...FrMediaItemMain
+    uploadPicture {
+       ...FrUploadPictureForMediaItem
+    }
+    uploadVideo {
+       ...FrUploadVideoForMediaItem
+    }
+    ...FrMediaItemCreate
+    ...FrMediaItemChange
+    mediaItemCategoryValues {
+      categoryValue {
+        id
+        nameGerman
+        nameEnglish
+        category {
+          id
+          nameGerman
+          nameEnglish
+        }
+      }
+    }
+}
+
+fragment FrMediaItemAddResult on MediaItem {
+    ...FrMediaItemOnlyId
+    ...FrMediaItemCreate
+}
+
+fragment FrMediaItemUpdateResult on MediaItem {
+    ...FrMediaItemOnlyId
+    ...FrMediaItemChange            
+}
+
+fragment FrMediaItemDeleteResult on MediaItem {
+    ...FrMediaItemOnlyId
+}
+
+query GetMediaItemsForMediaGroup ($mediaGroupId: Long!) {
+  mediaItems (where: {mediaGroup: {id: {eq: $mediaGroupId}}}) {
+    ...FrMediaItemFull
+  }
+}
+
+query GetMediaItem ($id: Long!) {
+  mediaItems (where: { id: {eq: $id}}) {
+	...FrMediaItemFull
+  }
+}
+
+query EnglishMediaItemNameExists ($englishName: String!, $mediaGroupId: Long!, $iD: Long!) {
+    englishMediaItemNameExists(englishName: $englishName, mediaGroupId: $mediaGroupId, iD: $iD)
+}
+
+query GermanMediaItemNameExists ($germanName: String!, $mediaGroupId: Long!, $iD: Long!) {
+    germanMediaItemNameExists(germanName: $germanName, mediaGroupId: $mediaGroupId, iD: $iD)
+}
+
+mutation AddMediaItem ($mediaGroupId: Long!, $mediaType: EnumMediaType!, 
+                       $nameGerman: String!, $nameEnglish: String!, 
+                       $descriptionGerman: String, $descriptionEnglish: String, 
+                       $onlyFamily: Boolean!, $uploadID: Long!, 
+                       $categoryValues: [Long!]!) {
+  addMediaItem (input: { mediaGroupId: $mediaGroupId, mediaType: $mediaType, 
+                         nameGerman: $nameGerman, nameEnglish: $nameEnglish, 
+                         descriptionGerman: $descriptionGerman, descriptionEnglish: $descriptionEnglish, 
+                         onlyFamily: $onlyFamily, uploadItemId: $uploadID, 
+                         categoryValueIds: $categoryValues}) {
+    mediaItem {
+       ...FrMediaItemAddResult
+    }
+  }
+}
+
+mutation UpdateMediaItem ($id: Long!, 
+                          $nameGerman: String!, $nameEnglish: String!, 
+                          $descriptionGerman: String, $descriptionEnglish: String, 
+                          $onlyFamily: Boolean!, $categoryValues: [Long!]!) {
+  updateMediaItem (input: {id: $id, 
+                           nameGerman: $nameGerman, nameEnglish: $nameEnglish, 
+                           descriptionGerman: $descriptionGerman, descriptionEnglish: $descriptionEnglish, 
+                           onlyFamily: $onlyFamily, categoryValueIds: $categoryValues}) {
+    mediaItem {
+       ...FrMediaItemUpdateResult
+    }
+  }
+}
+
+mutation DeleteMediaItem ($mediaGroupId: Long!, $mediaItemId: Long!, $keepUploadItem: Boolean!) {
+  deleteMediaItem (input: {mediaGroupId: $mediaGroupId, 
+                           mediaItemId: $mediaItemId, 
+                           keepUploadItem: $keepUploadItem}) {
+    mediaItem {
+       ...FrMediaItemDeleteResult
+    }
+  }
+}

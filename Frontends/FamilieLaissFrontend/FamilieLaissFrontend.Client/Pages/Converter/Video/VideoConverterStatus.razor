@@ -1,0 +1,38 @@
+﻿@using FamilieLaissFrontend.Client.Pages.Converter.Picture
+@using FamilieLaissFrontend.Client.ViewModels.Pages.Converter.Video
+@using FamilieLaissResources.Resources.Pages.Converter.Video
+@using FamilieLaissSharedObjects.Enums
+@using FamilieLaissSharedUI.Components
+
+@inherits FlComponentBase<VideoConverterStatusViewModel>
+
+@page "/videoconverter"
+
+<NavigationLock OnBeforeInternalNavigation="async () => await ViewModel.BeforeInternalNavigationCommand.ExecuteAsync(null)" />
+
+<MudTabs Elevation="2" Rounded="true" Color="Color.Dark" KeepPanelsAlive="true">
+    <MudTabPanel Text="@VideoConverterStatusRes.Tab_Waiting">
+        @if (ViewModel.IsLoading)
+        {
+            <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="my-7" />
+        }
+        <VideoConvertStatusList Items="@ViewModel.ListWaiting" ListType="EnumVideoConvertStatus.WaitingForConversion" />
+    </MudTabPanel>
+    <MudTabPanel Text="@VideoConverterStatusRes.Tab_Current">
+        <VideoConvertStatusCurrent CurrentConversionItem="@ViewModel.CurrentConversionItem" />
+    </MudTabPanel>
+    <MudTabPanel Text="@VideoConverterStatusRes.Tab_Error">
+        @if (ViewModel.IsLoading)
+        {
+            <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="my-7" />
+        }
+        <VideoConvertStatusList Items="@ViewModel.ListError" ListType="EnumVideoConvertStatus.ConvertedWithErrors" />
+    </MudTabPanel>
+    <MudTabPanel Text="@VideoConverterStatusRes.Tab_Success">
+        @if (ViewModel.IsLoading)
+        {
+            <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="my-7" />
+        }
+        <VideoConvertStatusList Items="@ViewModel.ListSuccess" ListType="EnumVideoConvertStatus.SucessfullyConverted" />
+    </MudTabPanel>
+</MudTabs>

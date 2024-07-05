@@ -1,0 +1,63 @@
+syntax = "proto3";
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/wrappers.proto";
+
+option csharp_namespace = "Upload.Grpc.Shared.FileUpload";
+
+package FileUpload;
+
+service FileUploadService {
+	rpc GetUploadId(google.protobuf.Empty) returns (GetUploadIdResponce);
+	rpc AddUploadPictureChunk(AddUploadPictureChunkRequest) returns (AddUploadPictureChunkResponce);
+	rpc UploadPictureFinish(UploadPictureFinishRequest) returns (UploadPictureFinishResponce);
+	rpc AddUploadVideoChunk(AddUploadVideoChunkRequest) returns (AddUploadVideoChunkResponce);
+	rpc UploadVideoFinish(UploadVideoFinishRequest) returns (UploadVideoFinishResponce);
+}
+
+message GetUploadIdResponce {
+	int64 Id = 1;
+}
+
+message AddUploadPictureChunkRequest {
+	string TargetFilename = 1;
+	int64 ChunkNumber = 2;
+	int32 ChunkSize = 3;
+	string ChunkData = 4;
+}
+
+message AddUploadPictureChunkResponce {
+	bool Status = 1;
+}
+
+message UploadPictureFinishRequest {
+    string TargetFilename = 1;
+    string OriginalFilename = 2;
+    int64 LastChunkNumber = 3;
+}
+
+message UploadPictureFinishResponce {
+	bool Status = 1;
+}
+
+message AddUploadVideoChunkRequest {
+    string TargetFilename = 1;
+    int64 ChunkNumber = 2;
+    int32 ChunkSize = 3;
+    string ChunkData = 4;
+}
+
+message AddUploadVideoChunkResponce {
+	bool Status = 1;
+}
+
+message UploadVideoFinishRequest {
+    string TargetFilename = 1;
+    string OriginalFilename = 2;
+    int64 LastChunkNumber = 3;
+}
+
+message UploadVideoFinishResponce {
+	bool Status = 1;
+}

@@ -1,0 +1,48 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+	<Nullable>enable</Nullable>
+	<ImplicitUsings>enable</ImplicitUsings>
+	<DockerfileContext>..\..\..</DockerfileContext>
+	<GenerateDocumentationFile>True</GenerateDocumentationFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Commands\**" />
+    <Compile Remove="Consumer\**" />
+    <Content Remove="Commands\**" />
+    <Content Remove="Consumer\**" />
+    <EmbeddedResource Remove="Commands\**" />
+    <EmbeddedResource Remove="Consumer\**" />
+    <None Remove="Commands\**" />
+    <None Remove="Consumer\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+	<PackageReference Include="Asp.Versioning.Mvc" Version="8.0.0" />
+	<PackageReference Include="Asp.Versioning.Mvc.ApiExplorer" Version="8.0.0" />
+    <PackageReference Include="MassTransit" Version="8.2.2" />
+    <PackageReference Include="MassTransit.RabbitMQ" Version="8.2.2" />
+    <PackageReference Include="MediatR" Version="12.2.0" />
+    <PackageReference Include="Polly" Version="8.4.0" />
+    <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
+    <PackageReference Include="Steeltoe.Discovery.ClientCore" Version="3.2.7" />
+    <PackageReference Include="Steeltoe.Discovery.Eureka" Version="3.2.7" />
+    <PackageReference Include="Serilog.AspNetCore" Version="8.0.1" />
+    <PackageReference Include="Serilog.Enrichers.Environment" Version="2.3.0" />
+    <PackageReference Include="Serilog.Enrichers.Process" Version="2.0.2" />
+    <PackageReference Include="Serilog.Enrichers.Thread" Version="3.1.0" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\DDDHelpers\Infrastructure\InfrastructureHelper\InfrastructureHelper.csproj" />
+    <ProjectReference Include="..\..\..\DDDHelpers\ServiceLayer\ServiceLayerHelper\ServiceLayerHelper.csproj" />
+    <ProjectReference Include="..\..\..\FamilieLaissCoreHelpers\FamilieLaissCoreHelpers.csproj" />
+    <ProjectReference Include="..\..\..\FamilieLaissMassTransitDefinitions\FamilieLaissMassTransitDefinitions.csproj" />
+    <ProjectReference Include="..\Google.DTO\Google.DTO.csproj" />
+  </ItemGroup>
+	
+</Project>

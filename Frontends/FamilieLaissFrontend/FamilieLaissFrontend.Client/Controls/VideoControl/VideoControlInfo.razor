@@ -1,0 +1,93 @@
+﻿@using FamilieLaissEnums
+@using FamilieLaissInterfaces.Models.Data
+@using FamilieLaissResources.Resources.Controls.VideoControl
+
+<MudGrid Spacing="1">
+    @if (ShowSkeleton)
+    {
+        <!-- Skeleton für Datum -->
+        <MudItem xs="6">
+            <MudSkeleton SkeletonType="SkeletonType.Text" Width="70%" />
+        </MudItem>
+        <MudItem xs="6">
+            <MudSkeleton SkeletonType="SkeletonType.Text" Width="70%" />
+        </MudItem>
+
+        <!-- Skeleton für Auflösung -->
+        <MudItem xs="6">
+            <MudSkeleton SkeletonType="SkeletonType.Text" Width="70%" />
+        </MudItem>
+        <MudItem xs="6">
+            <MudSkeleton SkeletonType="SkeletonType.Text" Width="70%" />
+        </MudItem>
+
+        <!-- Skeleton für Laufzeit -->
+        <MudItem xs="6">
+            <MudSkeleton SkeletonType="SkeletonType.Text" Width="70%" />
+        </MudItem>
+        <MudItem xs="6">
+            <MudSkeleton SkeletonType="SkeletonType.Text" Width="70%" />
+        </MudItem>
+    }
+
+    <!-- Ausgeben des Hinzufügedatums nur wenn es sich um ein Media-Item handelt-->
+    @if (MediaItem?.CreateDate != null)
+    {
+        <MudItem xs="6">
+            <MudText>@VideoControlInfoRes.LabelAddDate:</MudText>
+        </MudItem>
+        <MudItem xs="6">
+            <MudText>@MediaItem.CreateDate.Value.LocalDateTime</MudText>
+        </MudItem>
+    }
+
+    <!-- Ausgeben des Hochladedatums -->
+    @if (ControlType != EnumVideoControlType.MediaItemBaseData && UploadItem?.CreateDate != null)
+    {
+        <MudItem xs="6">
+            <MudText>@VideoControlInfoRes.LabelUploadDatum:</MudText>
+        </MudItem>
+        <MudItem xs="6">
+            <MudText>@UploadItem.CreateDate.Value.LocalDateTime</MudText>
+        </MudItem>
+    }
+
+    <!-- Ausgeben der Laufzeit -->
+    @if (UploadItem is not null)
+    {
+        <MudItem xs="6">
+            <MudText>@VideoControlInfoRes.LabelVideoSize:</MudText>
+        </MudItem>
+        <MudItem xs="6">
+            <MudText>@UploadItem.VideoSize</MudText>
+        </MudItem>
+    }
+
+    <!-- Ausgeben der Laufzeit -->
+    @if (UploadItem is not null)
+    {
+        <MudItem xs="6">
+            <MudText>@VideoControlInfoRes.LabelVideoDuration:</MudText>
+        </MudItem>
+        <MudItem xs="6">
+            <MudText>@UploadItem.VideoLength</MudText>
+        </MudItem>
+    }
+</MudGrid>
+
+@code
+{
+    [Parameter]
+    [EditorRequired]
+    public bool ShowSkeleton { get; set; }
+
+    [Parameter]
+    [EditorRequired]
+    public EnumVideoControlType ControlType { get; set; }
+
+    [Parameter]
+    public IUploadVideoModel? UploadItem { get; set; }
+
+    [Parameter]
+    public IMediaItemModel? MediaItem { get; set; }
+}

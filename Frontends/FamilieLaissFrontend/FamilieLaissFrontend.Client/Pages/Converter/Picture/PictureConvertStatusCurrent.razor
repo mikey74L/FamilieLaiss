@@ -1,0 +1,56 @@
+﻿@using FamilieLaissGraphQlClientLibrary
+@using FamilieLaissInterfaces.Models.Data
+@using FamilieLaissResources.Resources.Pages.Converter.Picture
+
+@if (CurrentConversionItem is not null && CurrentConversionItem.Status != EnumPictureConvertStatus.WaitingForConversion &&
+    CurrentConversionItem.Status != EnumPictureConvertStatus.ConvertedWithErrors &&
+    CurrentConversionItem.Status != EnumPictureConvertStatus.SucessfullyConverted)
+{
+    <MudGrid Class="mt-10">
+        <MudItem xs="3"><b>@PictureConvertStatusCurrentRes.Filename</b></MudItem>
+        <MudItem xs="9">@CurrentConversionItem.UploadPicture?.Filename</MudItem>
+        <MudItem xs="3"><b>@PictureConvertStatusCurrentRes.Status</b></MudItem>
+        <MudItem xs="9">@CurrentConversionItem.PictureConvertStatusText</MudItem>
+        @if (CurrentConversionItem.StartDateInfo is not null)
+        {
+            <MudItem xs="3"><b>@PictureConvertStatusCurrentRes.Start_Info</b></MudItem>
+            <MudItem xs="9">@CurrentConversionItem.StartDateInfo.Value.LocalDateTime</MudItem>
+        }
+        @if (CurrentConversionItem.FinishDateInfo is not null)
+        {
+            <MudItem xs="3"><b>@PictureConvertStatusCurrentRes.Finish_Info</b></MudItem>
+            <MudItem xs="9">@CurrentConversionItem.FinishDateInfo.Value.LocalDateTime</MudItem>
+        }
+        @if (CurrentConversionItem.StartDateExif is not null)
+        {
+            <MudItem xs="3"><b>@PictureConvertStatusCurrentRes.Start_Exif</b></MudItem>
+            <MudItem xs="9">@CurrentConversionItem.StartDateExif.Value.LocalDateTime</MudItem>
+        }
+        @if (CurrentConversionItem.FinishDateExif is not null)
+        {
+            <MudItem xs="3"><b>@PictureConvertStatusCurrentRes.Finish_Exif</b></MudItem>
+            <MudItem xs="9">@CurrentConversionItem.FinishDateExif.Value.LocalDateTime</MudItem>
+        }
+        @if (CurrentConversionItem.StartDateConvert is not null)
+        {
+            <MudItem xs="3"><b>@PictureConvertStatusCurrentRes.Start_Convert</b></MudItem>
+            <MudItem xs="9">@CurrentConversionItem.StartDateConvert.Value.LocalDateTime</MudItem>
+        }
+        @if (CurrentConversionItem.FinishDateConvert is not null)
+        {
+            <MudItem xs="3"><b>@PictureConvertStatusCurrentRes.Finish_Convert</b></MudItem>
+            <MudItem xs="9">@CurrentConversionItem.FinishDateConvert.Value.LocalDateTime</MudItem>
+        }
+    </MudGrid>
+}
+else
+{
+    <MudText Class="mt-15" Align="Align.Center" Typo="Typo.h4">@PictureConvertStatusCurrentRes.NoItemActive</MudText>
+}
+
+@code
+{
+    [Parameter]
+    [EditorRequired]
+    public IPictureConvertStatusModel? CurrentConversionItem { get; set; }
+}

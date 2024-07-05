@@ -1,0 +1,67 @@
+﻿@using FamilieLaissFrontend.Client.ViewModels.Controls.Filter
+@using FamilieLaissInterfaces.Models.Data
+@using FamilieLaissInterfaces.Services
+@using FamilieLaissResources.Resources.Controls.Filter
+@using FamilieLaissSharedUI.Components
+
+@typeparam TModel where TModel : IBaseModel
+@typeparam TSortInput where TSortInput : class
+@typeparam TFilterInputType where TFilterInputType : class
+
+@inherits FlComponentBase<FilterAppBarControlViewModel<TModel, TSortInput, TFilterInputType>>
+
+<MudGrid Spacing="0" Justify="Justify.FlexStart">
+    <MudItem xs="5" sm="6" md="4" lg="3" xl="2">
+        <MudText Style="font-weight: bold; white-space: nowrap; text-overflow: ellipsis; overflow: hidden;">@FilterLocalizePlaceholderRes.LabelCurrentSortCriteria</MudText>
+    </MudItem>
+    <MudItem xs="7" sm="6" md="8" lg="9" xl="10">
+        <MudStack Row="true" Spacing="3">
+            <MudTooltip Arrow="true"
+                        Placement="Placement.Right"
+                        ShowOnFocus="false"
+                        Text="@FilterLocalizePlaceholderRes.TooltipChangeSortCriteria">
+                <MudIconButton Icon="@Icons.Material.Filled.Sort"
+                               Size="Size.Small"
+                               Style="color: white;"
+                               Variant="MudBlazor.Variant.Outlined"
+                               OnClick="async () => await ViewModel.ShowEditSortCriteriaCommand.ExecuteAsync(null)"></MudIconButton>
+            </MudTooltip>
+            <MudText Style="white-space: nowrap; text-overflow: ellipsis; overflow: hidden;">@ViewModel.CurrentSortCriteria</MudText>
+        </MudStack>
+    </MudItem>
+    <MudItem xs="5" sm="6" md="4" lg="3" xl="2">
+        <MudText Style="font-weight: bold; white-space: nowrap; text-overflow: ellipsis; overflow: hidden;">@FilterLocalizePlaceholderRes.LabelCurrentFilterCriteria</MudText>
+    </MudItem>
+    <MudItem xs="7" sm="6" md="8" lg="9" xl="10">
+        <MudStack Row="true" AlignItems="MudBlazor.AlignItems.Start" Justify="Justify.FlexStart">
+            <MudTooltip Arrow="true"
+                        Placement="Placement.Right"
+                        ShowOnFocus="false"
+                        Text="@FilterLocalizePlaceholderRes.TooltipChangeFilterCriteria">
+                <MudIconButton Icon="@Icons.Material.Filled.Filter"
+                               Size="Size.Small"
+                               Style="color: white;"
+                               OnClick="async () => await ViewModel.ShowEditFilterCriteriaCommand.ExecuteAsync(null)"
+                               Variant="MudBlazor.Variant.Outlined"></MudIconButton>
+            </MudTooltip>
+            <MudText Style="white-space: nowrap; text-overflow: ellipsis; overflow: hidden;">@ViewModel.CurrentFilterCriteria</MudText>
+        </MudStack>
+    </MudItem>
+</MudGrid>
+
+@code
+{
+    [Parameter]
+    [EditorRequired]
+    public IGraphQlSortAndFilterService<TModel, TSortInput, TFilterInputType> SortAndFilterService 
+    { 
+        get
+        {
+            return ViewModel.SortAndFilterService;
+        }
+        set
+        {
+            ViewModel.SortAndFilterService = value;
+        }
+    } 
+}

@@ -1,0 +1,60 @@
+﻿@using FamilieLaissFrontend.Client.ViewModels.Dialogs.PictureInfo
+@using FamilieLaissInterfaces.Models.Data
+@using FamilieLaissResources.Resources.Dialogs.PictureInfo
+@using FamilieLaissSharedUI.Components
+
+@inherits FlComponentBase<PictureInfoGeneralPartViewModel>
+
+<MudItem xs="12">
+    <MudText Typo="Typo.h6">@PictureInfoGeneralPartRes.Heading</MudText>
+</MudItem>
+<MudItem xs="5">
+    <MudText Style="font-weight: bold;">@PictureInfoGeneralPartRes.LabelUploaded</MudText>
+</MudItem>
+<MudItem xs="6">
+    <MudText>@ViewModel.PictureModel.CreateDate?.LocalDateTime</MudText>
+</MudItem>
+@if (MediaItem?.CreateDate is not null)
+{
+    <MudItem xs="5">
+        <MudText Style="font-weight: bold;">@PictureInfoGeneralPartRes.LabelAdded</MudText>
+    </MudItem>
+    <MudItem xs="6">
+        <MudText>@MediaItem?.CreateDate?.LocalDateTime</MudText>
+    </MudItem>
+}
+<MudItem xs="5">
+    <MudText Style="font-weight: bold;">@PictureInfoGeneralPartRes.LabelPictureSize</MudText>
+</MudItem>
+<MudItem xs="6">
+    <MudText>@ViewModel.PictureModel.PictureSize</MudText>
+</MudItem>
+
+@code
+{
+    [Parameter]
+    public IUploadPictureModel? UploadItem 
+    { 
+        get
+        {
+            return ViewModel.UploadItem;
+        }
+        set
+        {
+            ViewModel.UploadItem = value;
+        }
+    }
+
+    [Parameter]
+    public IMediaItemModel? MediaItem 
+    { 
+        get
+        {
+            return ViewModel.MediaItem;
+        }
+        set
+        {
+            ViewModel.MediaItem = value;
+        }
+    }
+}

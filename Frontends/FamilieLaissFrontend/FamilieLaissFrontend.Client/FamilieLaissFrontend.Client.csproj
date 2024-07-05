@@ -1,0 +1,56 @@
+<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <NoDefaultLaunchSettingsFile>true</NoDefaultLaunchSettingsFile>
+    <StaticWebAssetProjectMode>Default</StaticWebAssetProjectMode>
+	<NoWarn>$(NoWarn);BL0007</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Remove="Dialogs\Choose\ChoosePictureDialogSkeleton.razor" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Bromix.MudBlazor.MaterialDesignIcons" Version="7.4.47.56" />
+    <PackageReference Include="CodeBeam.MudBlazor.Extensions" Version="6.9.2" />
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.2" />
+    <PackageReference Include="EventAggregator.Blazor" Version="2.0.0" />
+    <PackageReference Include="FluentValidation" Version="11.9.1" />
+    <PackageReference Include="Majorsoft.Blazor.Components.Loading" Version="1.5.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="8.0.6" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="8.0.6" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Authentication" Version="8.0.6" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Http" Version="8.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Http.Polly" Version="8.0.6" />
+    <PackageReference Include="Microsoft.Extensions.Localization" Version="8.0.6" />
+    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="8.0.0" />
+    <PackageReference Include="MudBlazor" Version="6.19.1" />
+    <PackageReference Include="Radzen.Blazor" Version="4.32.3" />
+    <PackageReference Include="Tocronx.SimpleAsync" Version="1.7.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\FamilieLaissConstants\FamilieLaissConstants.csproj" />
+    <ProjectReference Include="..\FamilieLaissGraphQlClientLibrary\FamilieLaissGraphQlClientLibrary.csproj" />
+    <ProjectReference Include="..\FamilieLaissInterfaces\FamilieLaissInterfaces.csproj" />
+    <ProjectReference Include="..\FamilieLaissServices\FamilieLaissServices.csproj" />
+    <ProjectReference Include="..\FamilieLaissSharedUI\FamilieLaissSharedUI.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Dialogs\Choose\ChoosePictureDialogSkeleton.razor" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <_ContentIncludedByDefault Remove="Dialogs\Choose\ChoosePictureDialogSkeleton.razor" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="Dialogs\Choose\Picture\ChoosePictureDialogSkeleton.razor" />
+  </ItemGroup>
+
+</Project>

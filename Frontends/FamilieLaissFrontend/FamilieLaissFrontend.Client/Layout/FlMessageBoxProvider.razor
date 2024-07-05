@@ -1,0 +1,92 @@
+﻿@using FamilieLaissInterfaces.Services
+
+@inject IMessageBoxService MessageBoxService;
+
+<MudMessageBox @ref="MessageBoxService.MsgBoxQuestion">
+    <TitleContent>
+        <MudText Typo="Typo.h5">@MessageBoxService.MessageBoxTitle</MudText>
+    </TitleContent>
+    <MessageContent>
+        <MudText Typo="Typo.body2">@MessageBoxService.MessageBoxMessage</MudText>
+    </MessageContent>
+    <YesButton>
+        @if (MessageBoxService.YesButtonRed)
+        {
+            <MudButton Variant="MudBlazor.Variant.Filled" Color="Color.Error" StartIcon="@MessageBoxService.YesButtonIcon">@MessageBoxService.YesButtonText</MudButton>
+        }
+        else
+        {
+            <MudButton Variant="MudBlazor.Variant.Filled" StartIcon="@MessageBoxService.YesButtonIcon">@MessageBoxService.YesButtonText</MudButton>
+        }
+    </YesButton>
+    <NoButton>
+        @if (MessageBoxService.NoButtonRed)
+        {
+            <MudButton Class="mr-4" Variant="MudBlazor.Variant.Filled" Color="Color.Error" StartIcon="@MessageBoxService.NoButtonIcon">@MessageBoxService.NoButtonText</MudButton>
+        }
+        else
+        {
+            <MudButton Class="mr-4" Variant="MudBlazor.Variant.Filled" StartIcon="@MessageBoxService.NoButtonIcon">@MessageBoxService.NoButtonText</MudButton>
+        }
+    </NoButton>
+</MudMessageBox>
+
+<MudMessageBox @ref="MessageBoxService.MsgBoxQuestionCancel">
+    <TitleContent>
+        <MudText Typo="Typo.h5">@MessageBoxService.MessageBoxTitle</MudText>
+    </TitleContent>
+    <MessageContent>
+        <MudText Typo="Typo.body2">@MessageBoxService.MessageBoxMessage</MudText>
+    </MessageContent>
+
+    <CancelButton>
+        @if (MessageBoxService.CancelButtonRed)
+        {
+            <MudButton Class="mr-4" Variant="MudBlazor.Variant.Filled" Color="Color.Error" StartIcon="@MessageBoxService.CancelButtonIcon">@MessageBoxService.CancelButtonText</MudButton>
+        }
+        else
+        {
+            <MudButton Class="mr-4" Variant="MudBlazor.Variant.Filled" StartIcon="@MessageBoxService.CancelButtonIcon">@MessageBoxService.CancelButtonText</MudButton>
+        }
+    </CancelButton>
+    <YesButton>
+        @if (MessageBoxService.YesButtonRed)
+        {
+            <MudButton Variant="MudBlazor.Variant.Filled" Color="Color.Error" StartIcon="@MessageBoxService.YesButtonIcon">@MessageBoxService.YesButtonText</MudButton>
+        }
+        else
+        {
+            <MudButton Variant="MudBlazor.Variant.Filled" StartIcon="@MessageBoxService.YesButtonIcon">@MessageBoxService.YesButtonText</MudButton>
+        }
+    </YesButton>
+    <NoButton>
+        @if (MessageBoxService.NoButtonRed)
+        {
+            <MudButton Class="mr-4" Variant="MudBlazor.Variant.Filled" Color="Color.Error" StartIcon="@MessageBoxService.NoButtonIcon">@MessageBoxService.NoButtonText</MudButton>
+        }
+        else
+        {
+            <MudButton Class="mr-4" Variant="MudBlazor.Variant.Filled" StartIcon="@MessageBoxService.NoButtonIcon">@MessageBoxService.NoButtonText</MudButton>
+        }
+    </NoButton>
+
+</MudMessageBox>
+
+<MudMessageBox @ref="MessageBoxService.MsgBoxMessage">
+    <TitleContent>
+        <MudText Typo="Typo.h5">@MessageBoxService.MessageBoxTitle</MudText>
+    </TitleContent>
+    <MessageContent>
+        <MudText Typo="Typo.body2">@MessageBoxService.MessageBoxMessage</MudText>
+    </MessageContent>
+    <YesButton>
+        @if (MessageBoxService.YesButtonRed)
+        {
+            <MudButton Variant="MudBlazor.Variant.Filled" Color="Color.Error" StartIcon="@MessageBoxService.YesButtonIcon">@MessageBoxService.YesButtonText</MudButton>
+        }
+        else
+        {
+            <MudButton Variant="MudBlazor.Variant.Filled" StartIcon="@MessageBoxService.YesButtonIcon">@MessageBoxService.YesButtonText</MudButton>
+        }
+    </YesButton>
+</MudMessageBox>

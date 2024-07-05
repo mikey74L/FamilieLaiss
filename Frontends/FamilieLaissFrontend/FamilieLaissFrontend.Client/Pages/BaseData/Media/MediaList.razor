@@ -1,0 +1,110 @@
+﻿@using FamilieLaissFrontend.Client.ViewModels.Pages.BaseData.Media
+@using FamilieLaissInterfaces.Models.Data
+@using FamilieLaissInterfaces.Services
+@using FamilieLaissResources.Resources.Pages.BaseData.Media
+@using FamilieLaissSharedUI.Components
+
+@inherits FlComponentBase<MediaListViewModel>
+
+@page "/basedata-media"
+
+<PageTitle>@MediaListRes.PageTitle</PageTitle>
+
+<MudDataGrid @ref="ViewModel.DataGrid"
+             Items="@ViewModel.Items"
+             Sortable="true"
+             QuickFilter="@ViewModel.QuickFilter"
+             Hover="true"
+             Striped="true"
+             SortMode="SortMode.Single"
+             FixedHeader="true"
+             Dense="true"
+             ColumnResizeMode="ResizeMode.Container"
+             Loading="@ViewModel.IsLoading"
+             Height="@FullPageHeightGrid">
+    <ToolBarContent>
+        <div class="justify-start pt-3">
+            <MudText Typo="Typo.h6">@MediaListRes.GridToolbarText</MudText>
+            <MudTooltip Text="@MediaListRes.TooltipAdd" Placement="Placement.Top" ShowOnFocus="false">
+                <MudButton Size="Size.Small"
+                           Variant="MudBlazor.Variant.Outlined"
+                           StartIcon="@Icons.Material.Filled.Add"
+                           Disabled="@ViewModel.IsSaving"
+                           OnClick="async () => await ViewModel.AddMediaGroupCommand.ExecuteAsync(null)">@MediaListRes.ButtonAdd</MudButton>
+            </MudTooltip>
+            <MudTooltip Text="@MediaListRes.TooltipRefresh" Placement="Placement.Top" ShowOnFocus="false">
+                <MudButton Size="Size.Small"
+                           Variant="MudBlazor.Variant.Outlined"
+                           StartIcon="@Icons.Material.Filled.Refresh"
+                           Disabled="@ViewModel.IsBusy"
+                           OnClick="async () => await ViewModel.RefreshDataCommand.ExecuteAsync(null)">@MediaListRes.ButtonRefresh</MudButton>
+            </MudTooltip>
+        </div>
+        <MudSpacer />
+        <MudTextField @bind-Value="@ViewModel.SearchString" T="@string" Placeholder="@MediaListRes.GridToolbarSearch"
+                      Adornment="Adornment.Start" Immediate="true"
+                      AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+    </ToolBarContent>
+    <LoadingContent>
+        <MudText Align="Align.Center" Color="Color.Primary">@MediaListRes.PlaceholderLoading</MudText>
+    </LoadingContent>
+    <NoRecordsContent>
+        <MudText Align="Align.Center" Color="Color.Error">@MediaListRes.PlaceholderNoRecords</MudText>
+    </NoRecordsContent>
+    <Columns>
+        <PropertyColumn Property="x => x.EventDateForInput"
+                        Format="dd.MM.yyyy"
+                        Title="@MediaListRes.GridColumnEventDate" />
+        <PropertyColumn Property="x => x.NameGerman"
+                        Title="@MediaListRes.GridColumnGermanName" />
+        <PropertyColumn Property="x => x.NameEnglish"
+                        Title="@MediaListRes.GridColumnEnglishName" />
+        <TemplateColumn Sortable="false" Groupable="false" Title="@MediaListRes.GridColumnActions">
+            <CellTemplate>
+                <MudStack Row>
+                    <MudTooltip Text="@MediaListRes.TooltipEdit"
+                                Placement="Placement.Top"
+                                ShowOnFocus="false">
+                        <MudIconButton Icon="@Icons.Material.Filled.Edit" Disabled="@ViewModel.IsSaving"
+                                       OnClick="async () => await ViewModel.EditMediaGroupCommand.ExecuteAsync(context.Item)"></MudIconButton>
+                    </MudTooltip>
+                    <MudTooltip Text="@MediaListRes.TooltipMediaItems"
+                                Placement="Placement.Top"
+                                ShowOnFocus="false">
+                        <MudIconButton Icon="@Icons.Material.Outlined.VideoCameraBack" Disabled="@ViewModel.IsSaving"
+                                       OnClick="() => ViewModel.NavigateToItemsCommand.Execute(context.Item)"></MudIconButton>
+                    </MudTooltip>
+                    <MudTooltip Text="@MediaListRes.TooltipDelete"
+                                Placement="Placement.Top"
+                                ShowOnFocus="false">
+                        <MudIconButton Icon="@Icons.Material.Filled.Delete" Disabled="@ViewModel.IsSaving"
+                                       Color="Color.Error"
+                                       OnClick="async () => await ViewModel.DeleteMediaGroupCommand.ExecuteAsync(context.Item)"></MudIconButton>
+                    </MudTooltip>
+                </MudStack>
+            </CellTemplate>
+        </TemplateColumn>
+    </Columns>
+</MudDataGrid>
+
+<style>
+    .mud-table-toolbar {
+        height: 84px !important;
+    }
+</style>
+
+@code
+{
+    [CascadingParameter]
+    public Task<AuthenticationState> AuthenticationState 
+    { 
+        get
+        {
+            return ViewModel.AuthenticationState;
+        }
+        set
+        {
+            ViewModel.AuthenticationState = value;
+        }
+    } 
+}

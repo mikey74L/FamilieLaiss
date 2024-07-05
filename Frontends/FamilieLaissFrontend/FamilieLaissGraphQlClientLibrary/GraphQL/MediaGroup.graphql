@@ -1,0 +1,88 @@
+fragment FrMediaGroupOnlyId on MediaGroup {
+    id
+}
+
+fragment FrMediaGroupCreate on MediaGroup {
+    createDate
+}
+
+fragment FrMediaGroupChange on MediaGroup {
+    changeDate
+}
+
+fragment FrMediaGroupMain on MediaGroup {
+    nameGerman
+    nameEnglish
+    descriptionGerman
+    descriptionEnglish
+    eventDate
+}
+
+fragment FrMediaGroupFull on MediaGroup {
+    ...FrMediaGroupOnlyId
+    ...FrMediaGroupMain
+    ...FrMediaGroupCreate
+    ...FrMediaGroupChange            
+}
+
+fragment FrMediaGroupAddResult on MediaGroup {
+    ...FrMediaGroupOnlyId
+    ...FrMediaGroupCreate
+}
+
+fragment FrMediaGroupUpdateResult on MediaGroup {
+    ...FrMediaGroupOnlyId
+    ...FrMediaGroupChange            
+}
+
+fragment FrMediaGroupDeleteResult on MediaGroup {
+    ...FrMediaGroupOnlyId
+}
+
+query GetAllMediaGroups {
+    mediaGroups {
+        ...FrMediaGroupFull
+    }
+}
+
+query GetMediaGroup ($id: Long!) {
+    mediaGroups(where: {id: {eq: $id}}) {
+        ...FrMediaGroupFull
+    }
+}
+
+query EnglishMediaGroupNameExists ($englishName: String!, $iD: Long!) {
+    englishMediaGroupNameExists(englishName: $englishName, iD: $iD)
+}
+
+query GermanMediaGroupNameExists ($germanName: String!, $iD: Long!) {
+    germanMediaGroupNameExists(germanName: $germanName, iD: $iD)
+}
+
+mutation AddMediaGroup ($nameGerman: String!, $nameEnglish: String!, 
+                        $descriptionGerman: String!, $descriptionEnglish: String!, $eventDate: DateTime!) {
+    addMediaGroup(input: {nameGerman: $nameGerman, nameEnglish: $nameEnglish,  
+                          descriptionGerman: $descriptionGerman, descriptionEnglish: $descriptionEnglish, eventDate: $eventDate}) {
+        mediaGroup {
+            ...FrMediaGroupAddResult
+        }
+    }
+}
+
+mutation UpdateMediaGroup ($iD: Long!, $nameGerman: String!, $nameEnglish: String!,
+                           $descriptionGerman: String!, $descriptionEnglish: String!, $eventDate: DateTime!) {
+    updateMediaGroup(input: {id: $iD, nameGerman: $nameGerman, nameEnglish: $nameEnglish, 
+                             descriptionGerman: $descriptionGerman, descriptionEnglish: $descriptionEnglish, eventDate: $eventDate}) {
+        mediaGroup {
+            ...FrMediaGroupUpdateResult
+        }
+    }
+}
+
+mutation DeleteMediaGroup ($id: Long!, $keepUploadItems: Boolean!) {
+    deleteMediaGroup (input: { id : $id, keepUploadItems: $keepUploadItems}) {
+        mediaGroup {
+            ...FrMediaGroupDeleteResult
+        }
+    }
+}

@@ -1,0 +1,5 @@
+﻿Wird benötigt für System.Drawing.Common
+=======================================
+
+sudo apt install libc6-dev 
+sudo apt install libgdiplus

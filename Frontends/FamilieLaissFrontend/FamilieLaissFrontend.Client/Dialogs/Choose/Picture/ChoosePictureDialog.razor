@@ -1,0 +1,68 @@
+﻿@using FamilieLaissEnums
+@using FamilieLaissFrontend.Client.ViewModels.Dialogs.Choose.Picture
+@using FamilieLaissResources.Resources.Dialogs.Choose.Picture
+@using FamilieLaissSharedUI.Components
+
+@inherits FlComponentBase<ChoosePictureDialogViewModel>
+
+@{
+    var classForContainer = "";
+
+    if (ViewModel.UploadItems.Count == 0 && !ViewModel.HasError && !ViewModel.IsLoading || ViewModel.HasError)
+    {
+        classForContainer = "mt-5 container-upload-picture-choose";
+    }
+    else
+    {
+        classForContainer = "mt-5 container-upload-picture-items container-upload-picture-items-choose";
+    }
+}
+
+<MudDialog>
+    <DialogContent>
+        <MudItem Class="@classForContainer">
+            @if (ViewModel.IsLoading)
+            {
+                <ChoosePictureDialogSkeleton />
+            }
+            else
+            {
+                if (ViewModel.UploadItems.Count > 0)
+                {
+                    foreach (var item in ViewModel.UploadItems)
+                    {
+                        <PictureControl ControlType="EnumPictureControlType.Choose"
+                                        ShowSkeleton="false"
+                                        UploadItem="item"
+                                        IsDisabled="ViewModel.IsBusy"
+                                        ChooseClicked="(args) => ViewModel.ChoosePictureCommand.Execute(args)" 
+                                        ShowSelectionMode="false" />
+                    }
+                }
+
+                <ChoosePictureDialogMessageOutput HasError="ViewModel.HasError"
+                                                  ItemsCount="ViewModel.UploadItems.Count" />
+            }
+        </MudItem>
+    </DialogContent>
+    <DialogActions>
+        <MudTooltip Arrow="true" Placement="Placement.Top" ShowOnFocus="false" Text="@ChoosePictureDialogRes.Tooltip_Close">
+            <MudButton OnClick="() => ViewModel.CancelCommand.Execute(null)">@ChoosePictureDialogRes.Button_Close</MudButton>
+        </MudTooltip>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter]
+    public MudDialogInstance MudDialog
+    {
+        get
+        {
+            return ViewModel.MudDialog;
+        }
+        set
+        {
+            ViewModel.MudDialog = value;
+        }
+    }
+}

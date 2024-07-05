@@ -1,0 +1,24 @@
+﻿Zum Hinzufügen einer Migration:
+===============================
+
+1. Eine Windows Power Shell Console öffnen
+
+2. In der Console in das Verzeichnis der Class Library wechseln
+
+3. Folgendes Kommando ausführen:
+
+	dotnet ef migrations add <MigrationName> -c MessageServiceDBContext 
+
+
+
+
+Um die Datenbank zu aktualisieren:
+==================================
+
+1. Eine Windows Power Shell Console öffnen
+
+2. In der Console in das Verzeichnis der Class Library wechseln
+
+3. Folgendes Kommando ausführen:
+
+	dotnet ef database update -c MessageServiceDBContext --startup-project ..\Message.API

@@ -1,0 +1,13 @@
+﻿.container-upload-video {
+    height: 80vh;
+}
+
+.container-upload-video-items {
+    overflow: auto;
+    height: 80vh;
+    padding-bottom: 10px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, 340px);
+    justify-content: space-between;
+    grid-gap: 10px;
+}

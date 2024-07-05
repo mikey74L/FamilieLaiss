@@ -1,0 +1,67 @@
+﻿fragment FrUploadVideoOnlyId on UploadVideo {
+	id
+}
+
+fragment FrUploadVideoIdWithFilename on UploadVideo {
+    ...FrUploadVideoOnlyId
+	filename
+}
+
+fragment FrUploadVideoForConvert on UploadVideo {
+	...FrUploadVideoOnlyId
+	filename
+	height
+	width
+	durationHour
+	durationMinute
+	durationSecond
+}
+
+fragment FrUploadVideoForMediaItem on UploadVideo {
+	...FrUploadVideoOnlyId
+	filename
+	height
+	width
+	durationHour
+	durationMinute
+	durationSecond
+}
+
+fragment FrUploadVideoForUploadView on UploadVideo {
+	...FrUploadVideoOnlyId
+	filename
+	height
+	width
+	status
+	videoType
+	googleGeoCodingAddress {
+		...FrGoogleGeoCodingAddress
+	}
+	createDate
+} 
+
+query GetUploadVideosForUploadView ($sortCriteria: [UploadVideoSortInput!], $filterCriteria: UploadVideoFilterInput) {
+	uploadVideos (order: $sortCriteria, where: $filterCriteria) {
+       ...FrUploadVideoForUploadView
+	}
+}
+
+query GetUploadVideoCount {
+	uploadVideoCount
+}
+
+mutation DeleteUploadVideo ($id: Long!) {
+  deleteUploadVideo (input: {id: $id}) {
+    uploadVideo {
+      ...FrUploadVideoOnlyId
+    }
+  }
+}
+
+mutation DeleteAllUploadVideos ($uploadVideoIds: [Long!]!) {
+  deleteAllUploadVideos (input:{ uploadVideoIds: $uploadVideoIds}) {
+	  uploadVideos {
+        ...FrUploadVideoOnlyId
+	  }
+  }
+}

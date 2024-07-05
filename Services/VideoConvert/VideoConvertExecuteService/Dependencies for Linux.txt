@@ -1,0 +1,24 @@
+﻿Für die Konvertierung der Videos wird FFMPEG benötigt:
+======================================================
+
+sudo add-apt-repository ppa:jonathonf/ffmpeg-4
+sudo apt update
+sudo apt install ffmpeg -y
+sudo apt-get install libavcodec-extra 
+
+
+
+
+Für das Erstellen des DASH-Contents wird MP4Box beötigt:
+========================================================
+
+sudo apt-get install gpac 
+
+
+
+
+
+Für das Erstellen der Sprite-Images wird Montage benötigt welches sich im Paket von ????? befindet:
+===================================================================================================
+
+sudo apt-get install imagemagick imagemagick-doc 

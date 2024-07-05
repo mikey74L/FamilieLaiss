@@ -1,0 +1,7 @@
+--
+
+Wenn Hangfire beim hinzufügen eines Datenbankeintrages eine Meldung mit "Already disposed object"
+bringt, dann liegt das daran, dass der Wait in der Add Methode und der Wait in der Save_Changes vermutlich
+vergessen wurde
+
+--

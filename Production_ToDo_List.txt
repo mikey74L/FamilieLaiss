@@ -1,0 +1,65 @@
+Im Linux-Hostsystem muss folgendes ausgeführt werden:
+=====================================================
+
+Für docker-compose:
+-------------------
+
+export DOCKER_CLIENT_TIMEOUT=120
+export COMPOSE_HTTP_TIMEOUT=120
+
+Danach muss das System neu gebootet werden.
+
+
+
+Für elasticsearch:
+------------------
+
+nano /etc/sysctl.conf
+
+Dann im Editor folgende Zeile eintragen:
+vm.max_map_count=262144
+
+Dann speichern und System neu booten.
+
+Zum Überprüfen sysctl vm.max_map_count in der Konsole eingeben. Die Ausgabe sollte dann wie folgend sein:
+vm.max_map_count = 262144
+
+Informationen hierzu unter https://www.elastic.co/guide/en/elasticsearch/reference/current/docker.html#_set_vm_max_map_count_to_at_least_262144
+
+
+
+Für nginx:
+----------
+
+Da nginx als Reverse-Proxy verwendet wird muss für den Identity-Server eine spezielle Anpassung vorgenommen werden, da die Header aus IdentityServer 
+für die Standard-Config von NGINX zu groß sind.
+
+sudo nano /etc/nginx/nginx.conf
+
+Dann folgendes in dem File unter http zusätzlich eintragen:
+
+http{
+...
+proxy_buffer_size   128k;
+proxy_buffers   4 256k;
+proxy_busy_buffers_size   256k;
+large_client_header_buffers 4 16k;
+...
+}
+
+
+Zusätzlich muss in den sites-available folgendes bei den Proxy-Einstellungen ergänzt werden:
+
+proxy_pass http://localhost:5000;
+proxy_http_version 1.1;
+proxy_set_header Upgrade $http_upgrade;
+proxy_set_header Connection keep-alive;
+proxy_set_header Host $host;
+proxy_cache_bypass $http_upgrade;
+fastcgi_buffers 16 16k;
+fastcgi_buffer_size 32k;
+
+
+Zum Restart von nginx folgendes Kommando verwenden:
+
+sudo systemctl restart nginx

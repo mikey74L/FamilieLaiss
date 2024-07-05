@@ -1,0 +1,147 @@
+﻿@using FamilieLaissEnums
+@using FamilieLaissFrontend.Client.ViewModels.Pages.BaseData.Upload.Video
+@using FamilieLaissGraphQlClientLibrary
+@using FamilieLaissInterfaces.Enums
+@using FamilieLaissInterfaces.Models
+@using FamilieLaissInterfaces.Models.Data
+@using FamilieLaissInterfaces.Services
+@using FamilieLaissResources.Resources.Pages.BaseData.Upload.Video
+@using FamilieLaissSharedUI.Components
+@using FamilieLaissSharedUI.Helper
+
+@inherits FlComponentBase<VideoUploadListViewModel>
+
+<SectionContent SectionName="@nameof(FLSectionIdentifier.AppBar)">
+    @if (ShowFilterAppBar)
+    {
+        <FilterAppBarControl SortAndFilterService="SortAndFilterService"></FilterAppBarControl>
+    }
+</SectionContent>
+
+<VideoUploadListDrawers @bind-IsFilterSidebarVisible="ViewModel.IsFilterSidebarVisible"
+                        @bind-IsSortSidebarVisible="ViewModel.IsSortSidebarVisible"
+                        SortAndFilterService="SortAndFilterService" />
+
+@{
+    var classForContainer = "";
+
+    if (UploadItems.Count == 0 && !ViewModel.HasError && !ViewModel.IsLoading || ViewModel.HasError)
+    {
+        classForContainer = "mt-5 container-upload-video";
+    }
+    else
+    {
+        classForContainer = "mt-5 container-upload-video-items";
+    }
+}
+
+<MudItem Class="@classForContainer">
+    @if (ViewModel.IsLoading)
+    {
+        <VideoUploadListSkeleton />
+    }
+    else
+    {
+        if (UploadItems.Count > 0)
+        {
+            foreach (var item in UploadItems)
+            {
+                <VideoControl ControlType="EnumVideoControlType.Upload"
+                              ShowSkeleton="false"
+                              UploadItem="item"
+                              IsDisabled="ViewModel.IsBusy"
+                              DeleteClicked="async (data) => await ViewModel.DeleteUploadVideoCommand.ExecuteAsync(data)"
+                              ShowSelectionMode="ViewModel.ShowSelectionMode" />
+            }
+
+            <VideoUploadListActions IsBusy="ViewModel.IsBusy"
+                                    ShowSelectionMode="ViewModel.ShowSelectionMode"
+                                    OnDeleteAllUploadVideos="async () => await ViewModel.DeleteAllUploadVideosCommand.ExecuteAsync(null)"
+                                    OnDeSelectAll="async () => await ViewModel.DeSelectAllCommand.ExecuteAsync(null)"
+                                    OnRefreshItems="async () => await ViewModel.RefreshItemsCommand.ExecuteAsync(null)"
+                                    OnSelectAll="async () => await ViewModel.SelectAllCommand.ExecuteAsync(null)"
+                                    OnToggleFilterSidebar="() => ViewModel.ToggleFilterSidebarCommand.Execute(null)"
+                                    OnToggleSelectionMode="() => ViewModel.ToggleSelectionModeCommand.Execute(null)"
+                                    OnToggleSortSidebar="() => ViewModel.ToggleSortSidebarCommand.Execute(null)" />
+        }
+
+        <VideoUploadListMessageOutput HasError="ViewModel.HasError"
+                                      IsFilterActive="ViewModel.IsFilterActive"
+                                      ItemsCount="UploadItems.Count" />
+
+    }
+</MudItem>
+
+@code
+{
+    [Parameter]
+    [EditorRequired]
+    public ExtendedObservableCollection<IUploadVideoModel> UploadItems 
+    { 
+        get
+        {
+            return ViewModel.UploadItems;
+        }
+        set
+        {
+            ViewModel.UploadItems = value;
+        }
+    } 
+
+    [Parameter]
+    [EditorRequired]
+    public EventCallback ReloadUploadVideos 
+    { 
+        get
+        {
+            return ViewModel.ReloadUploadVideos;
+        }
+        set
+        {
+            ViewModel.ReloadUploadVideos = value;
+        }
+    }
+
+    [Parameter]
+    public bool ShowFilterAppBar { get; set; }
+
+    [Parameter]
+    public bool ShowLoading 
+    { 
+        get
+        {
+            return ViewModel.IsLoading;
+        }
+        set
+        {
+            ViewModel.IsLoading = value;
+        }
+    }
+
+    [Parameter]
+    public bool ShowError 
+    { 
+        get
+        {
+            return ViewModel.HasError;
+        }
+        set
+        {
+            ViewModel.HasError = value;
+        }
+    }
+
+    [Parameter]
+    [EditorRequired]
+    public IGraphQlSortAndFilterService<IUploadVideoModel, UploadVideoSortInput, UploadVideoFilterInput> SortAndFilterService 
+    { 
+        get
+        {
+            return ViewModel.SortAndFilterService;
+        }
+        set
+        {
+            ViewModel.SortAndFilterService = value;
+        }
+    }
+}

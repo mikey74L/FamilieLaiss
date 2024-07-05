@@ -1,0 +1,67 @@
+﻿@using FamilieLaissEnums
+@using FamilieLaissFrontend.Client.ViewModels.Dialogs.PictureInfo
+@using FamilieLaissInterfaces.Models.Data
+@using FamilieLaissSharedUI.Components
+
+@inherits FlComponentBase<PictureInfoGeneralPageViewModel>
+
+<MudGrid Class="mt-5" Style="height: 67vh" Justify="Justify.SpaceBetween">
+    <MudItem xs="6">
+        <MudImage Src="@ViewModel.UrlPicture" Fluid="true" ObjectFit="ObjectFit.Cover" ObjectPosition="ObjectPosition.Center"></MudImage>
+    </MudItem>
+
+    <MudItem xs="5">
+        <MudGrid Style="max-height: 67vh; overflow: auto" Justify="Justify.SpaceBetween">
+            <!-- Ausgeben des Bereiches für die allgemeinen Informationen -->
+            <PictureInfoGeneralPart MediaItem="MediaItem" UploadItem="UploadItem" />
+
+            <!-- Ausgeben des Bereiches für die Bewertungen -->
+            @if (MediaItem is not null)
+            {
+                <PictureInfoRatingPart />
+            }
+
+            <!-- Ausgeben des Bereiches für die Kategorien -->
+            @if (MediaItem is not null)
+            {
+                <PictureInfoCategoryPart />
+            }
+
+            <!-- Ausgeben des Bereiches für die Exif-Informationen -->
+            <PictureInfoExifPart UploadItem="ViewModel.PictureModel" />
+        </MudGrid>
+    </MudItem>
+</MudGrid>
+
+@code
+{
+    [Parameter]
+    [EditorRequired]
+    public EnumPictureControlType ControlType { get; set; }
+
+    [Parameter]
+    public IUploadPictureModel? UploadItem 
+    { 
+        get
+        {
+            return ViewModel.UploadItem;
+        }
+        set
+        {
+            ViewModel.UploadItem = value;
+        }
+    }
+
+    [Parameter]
+    public IMediaItemModel? MediaItem 
+    { 
+        get
+        {
+            return ViewModel.MediaItem;
+        }
+        set
+        {
+            ViewModel.MediaItem = value;
+        }
+    }
+}

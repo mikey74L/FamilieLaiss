@@ -1,0 +1,42 @@
+﻿@using FamilieLaissFrontend.Client.ViewModels.Controls.User
+@using FamilieLaissResources.Resources.Controls.User
+@using FamilieLaissSharedUI.Components
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+
+@inherits FlComponentBase<LoginLogoutControlViewModel>
+
+<AuthorizeView>
+    <Authorized>
+        <MudMenu AnchorOrigin="Origin.BottomRight" TransformOrigin="Origin.TopRight" Dense="true">
+            <ActivatorContent>
+                <MudStack Row="true" AlignItems="MudBlazor.AlignItems.Baseline">
+                    <MudAvatar Color="Color.Secondary">
+                        @(context.User.Identity?.Name?.FirstOrDefault() ?? 'A')
+                    </MudAvatar>
+                    <MudText>Michael Laiß</MudText>
+                </MudStack>
+            </ActivatorContent>
+            <ChildContent>
+                <MudText Class="ml-2">Hello Michael</MudText>
+                <MudDivider Class="my-1" />
+                <MudMenuItem Icon="@Icons.Material.Filled.Person" IconSize="Size.Small" OnClick="() => ViewModel.MyProfileCommand.Execute(null)">@LoginLogoutControlRes.NavItemProfile</MudMenuItem>
+                <MudMenuItem Icon="@Icons.Material.Filled.Settings" IconSize="Size.Small" OnClick="() => ViewModel.UserSettingsCommand.Execute(null)">@LoginLogoutControlRes.NavItemSettings</MudMenuItem>
+                <MudDivider Class="my-2" />
+                <MudMenuItem Icon="@Icons.Material.Filled.Logout" IconSize="Size.Small" OnClick="() => ViewModel.LogOutCommand.Execute(null)">@LoginLogoutControlRes.NavItemLogOut</MudMenuItem>
+            </ChildContent>
+        </MudMenu>
+    </Authorized>
+    <NotAuthorized>
+        <MudTooltip Arrow="true"
+                    Placement="Placement.Top"
+                    ShowOnFocus="false"
+                    Text="@LoginLogoutControlRes.LogInTooltip">
+            <MudButton StartIcon="@Icons.Material.Filled.Login"
+                       Variant="MudBlazor.Variant.Filled"
+                       Color="Color.Primary"
+                       OnClick="() => ViewModel.LogInCommand.Execute(null)">
+                @LoginLogoutControlRes.LogInButton
+            </MudButton>
+        </MudTooltip>
+    </NotAuthorized>
+</AuthorizeView>

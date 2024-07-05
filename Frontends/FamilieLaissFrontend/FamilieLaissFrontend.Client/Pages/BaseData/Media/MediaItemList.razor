@@ -1,0 +1,82 @@
+﻿@using FamilieLaissEnums
+@using FamilieLaissFrontend.Client.ViewModels.Pages.BaseData.Media
+@using FamilieLaissResources.Resources.Pages.BaseData.Media
+@using FamilieLaissSharedUI.Components
+
+@inherits FlComponentBase<MediaItemListViewModel>
+
+@page "/basedata-media-items"
+
+<div style="height: calc(100vh - var(--mud-appbar-height) - var(--fl-content-border-size) - var(--fl-additional-substract-content-page-height))">
+    <MudStack Style="height: 100%">
+        <MudPaper Elevation="25">
+            <MudStack Row="true" Justify="Justify.SpaceBetween">
+                <MudStack Row="true">
+                    <MudTooltip Arrow="true" Placement="Placement.Right" ShowOnFocus="false" Text="@MediaItemListRes.TooltipBack">
+                        <MudIconButton Class="pa-4"
+                                       Icon="@Icons.Material.Filled.ArrowBack"
+                                       Variant="MudBlazor.Variant.Filled"
+                                       Color="Color.Primary" Size="Size.Large"
+                                       OnClick="() => ViewModel.NavigateBackCommand.Execute(null)" />
+                    </MudTooltip>
+                    <MudStack>
+                        <MudText Typo="Typo.body1">@ViewModel.MediaGroup?.LocalizedName</MudText>
+                        <MudText Style="white-space: nowrap" Typo="Typo.body2">@ViewModel.MediaGroup?.LocalizedDescription</MudText>
+                    </MudStack>
+                </MudStack>
+                <div style="padding: 10px;">
+                    <MudTooltip Arrow="true"
+                                Placement="Placement.Left"
+                                ShowOnFocus="false"
+                                Text="@MediaItemListRes.TooltipAdd">
+                        <MudIconButton Icon="@Icons.Material.Filled.Add"
+                                       Variant="MudBlazor.Variant.Outlined"
+                                       Color="Color.Primary"
+                                       Size="Size.Large"
+                                       OnClick="async () => await ViewModel.AddNewItemCommand.ExecuteAsync(null)" />
+                    </MudTooltip>
+                </div>
+            </MudStack>
+        </MudPaper>
+        <MudPaper Style="height: 100%" Elevation="5">
+            <div style="padding: 10px;">
+                @if (ViewModel.IsLoading)
+                {
+                    <MediaItemListSkeleton />
+                }
+                else
+                {
+                    if (ViewModel.MediaItems.Count > 0)
+                    {
+                        foreach (var item in ViewModel.MediaItems)
+                        {
+                            <PictureControl ControlType="EnumPictureControlType.MediaItemBaseData"
+                                            ShowSkeleton="false"
+                                            MediaItem="item"
+                                            IsDisabled="ViewModel.IsBusy"
+                                            EditClicked="async (model) => await ViewModel.EditItemCommand.ExecuteAsync(model)"
+                                            DeleteMediaClicked="async (model) => await ViewModel.DeleteItemCommand.ExecuteAsync(model) "
+                                            ShowSelectionMode="false" />
+                        }
+                    }
+                }
+            </div>
+        </MudPaper>
+    </MudStack>
+</div>
+
+@code
+{
+    [CascadingParameter]
+    public Task<AuthenticationState> AuthenticationState
+    {
+        get
+        {
+            return ViewModel.AuthenticationState;
+        }
+        set
+        {
+            ViewModel.AuthenticationState = value;
+        }
+    }
+}

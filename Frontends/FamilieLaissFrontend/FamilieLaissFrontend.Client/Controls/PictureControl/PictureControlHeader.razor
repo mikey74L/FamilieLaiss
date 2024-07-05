@@ -1,0 +1,81 @@
+﻿@using FamilieLaissFrontend.Client.ViewModels.Controls.PictureControl
+@using FamilieLaissInterfaces.Models.Data
+@using FamilieLaissResources.Resources.Controls.PictureControl
+@using FamilieLaissSharedUI.Components
+
+@inherits FlComponentBase<PictureControlHeaderViewModel>
+
+<MudCardHeader>
+    <CardHeaderContent>
+        <!-- Print title -->
+        @if (ShowSkeleton)
+        {
+            <MudGrid Spacing="1">
+                <MudItem xs="11">
+                    <MudSkeleton SkeletonType="SkeletonType.Text" Width="60%" />
+                </MudItem>
+                <MudItem xs="1">
+                    <MudSkeleton SkeletonType="SkeletonType.Circle" />
+                </MudItem>
+            </MudGrid>
+        }
+        else
+        {
+            <MudTooltip Arrow="true" Placement="Placement.Top" RootStyle="width: 100%" Text="@UploadItem?.Filename">
+                <MudText Typo="Typo.h6" Class="fl-card-picture-header-text">@UploadItem?.Filename</MudText>
+            </MudTooltip>
+        }
+    </CardHeaderContent>
+
+    <CardHeaderActions>
+        @if (ShowSelectionMode)
+        {
+            <MudToggleIconButton Toggled="UploadItem!.IsSelected"
+                                 ToggledChanged="async () => await ViewModel.ChangeToggleCommand.ExecuteAsync(null)"
+                                 Class="@ViewModel.ClassAttributeToggleButton"
+                                 Icon="@Icons.Material.Filled.ToggleOff"
+                                 Color="Color.Error"
+                                 Title="@PictureControlHeaderRes.TooltipNotSelected"
+                                 ToggledIcon="@Icons.Material.Filled.ToggleOn"
+                                 ToggledColor="Color.Success"
+                                 ToggledTitle="@PictureControlHeaderRes.TooltipSelected" />
+        }
+    </CardHeaderActions>
+</MudCardHeader>
+
+@code
+{
+    [Parameter]
+    [EditorRequired]
+    public bool ShowSkeleton { get; set; }
+
+    [Parameter]
+    [EditorRequired]
+    public bool ShowSelectionMode { get; set; }
+
+    [Parameter]
+    public IUploadPictureModel? UploadItem
+    {
+        get
+        {
+            return ViewModel.UploadItem;
+        }
+        set
+        {
+            ViewModel.UploadItem = value;
+        }
+    }
+
+    [Parameter]
+    public EventCallback ToggleChanged 
+    { 
+        get
+        {
+            return ViewModel.ToggleChanged;
+        }
+        set
+        {
+            ViewModel.ToggleChanged = value;
+        }
+    }
+}

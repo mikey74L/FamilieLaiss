@@ -1,0 +1,137 @@
+version: '3.4'
+
+services:
+  messagebus:
+    ports:
+      - 8090:5672 
+      - 8091:15672
+  eureka:
+    ports:
+      - 8761:8761
+  db_fl_backend:
+    volumes:
+      - PostgresDataFlBackend:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+  flbackend.api:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80
+      - AppSettings__RabbitMqConnectionFile=/run/secrets/rabbit_connection_string
+      - AppSettings__PostgresUserFile=/run/secrets/postgres_user_secret
+      - AppSettings__PostgresPasswordFile=/run/secrets/postgres_password_secret
+    depends_on:
+      - eureka
+      - db_fl_backend
+      - pictureconvertexecute
+      - google.api 
+      - videoconvertexecute
+      # - picture.api
+      # - video.api
+    ports:
+      - 9000:80
+    volumes:
+      - C:\FamilieLaissContent:/var/lib/familielaiss/Content
+      - C:\FamilieLaissLogging\Backend:/var/lib/familielaiss/logs
+  pictureconvertexecute:
+    environment:
+      - Environment=Development
+      - AppSettings__PostgresUser_FILE=/run/secrets/postgres_user_secret
+      - AppSettings__PostgresPassword_FILE=/run/secrets/postgres_password_secret
+      - AppSettings__RabbitMQConnection_FILE=/run/secrets/rabbit_connection_string
+    volumes:
+      - C:\FamilieLaissContent:/var/lib/familielaiss/Content
+      - C:\FamilieLaissLogging\PictureConvert:/var/lib/familielaiss/logs
+  picture.api:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80
+    ports:
+      - 9002:80
+    depends_on:
+      - eureka
+    volumes:
+      - C:\FamilieLaissContent:/var/lib/familielaiss/Content
+      - C:\FamilieLaissLogging\Picture:/var/lib/familielaiss/logs
+  videoconvertexecute:
+    environment:
+      - Environment=Development
+      - AppSettings__PostgresUser_FILE=/run/secrets/postgres_user_secret
+      - AppSettings__PostgresPassword_FILE=/run/secrets/postgres_password_secret
+      - AppSettings__RabbitMQConnection_FILE=/run/secrets/rabbit_connection_string
+    volumes:
+      - C:\FamilieLaissContent:/var/lib/familielaiss/Content
+      - C:\FamilieLaissLogging\VideoConvert:/var/lib/familielaiss/logs
+  video.api:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80
+    depends_on:
+      - eureka
+    ports:
+      - 9004:80
+    volumes:
+      - C:\FamilieLaissContent:/var/lib/familielaiss/Content
+      - C:\FamilieLaissLogging\Video:/var/lib/familielaiss/logs
+  google.api:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80
+      - AppSettings__RabbitMQConnection_FILE=/run/secrets/rabbit_connection_string
+      - AppSettings__GoogleAPIKey_FILE=/run/secrets/google_api_key_secret
+    depends_on:
+      - eureka
+    ports:
+      - 9001:80
+    volumes:
+      - C:\FamilieLaissLogging\Google:/var/lib/familielaiss/logs
+volumes:
+  Database:
+  PostgresDataFlBackend:
+secrets:
+  db_user_secret:
+    file: C:\SecretsForFamilieLaiss\DBUsername.txt
+  db_password_secret:
+    file: C:\SecretsForFamilieLaiss\DBPassword.txt
+  postgres_user_secret:
+    file: C:\SecretsForFamilieLaiss\PostgresUsername.txt
+  postgres_password_secret:
+    file: C:\SecretsForFamilieLaiss\PostgresPassword.txt
+  rabbit_user_secret:
+    file: C:\SecretsForFamilieLaiss\RabbitUserName.txt
+  rabbit_password_secret:
+    file: C:\SecretsForFamilieLaiss\RabbitPassword.txt
+  rabbit_connection_string:
+    file: C:\SecretsForFamilieLaiss\RabbitMQConnection.txt
+  google_api_key_secret:
+    file: C:\SecretsForFamilieLaiss\GoogleAPIKey.txt
+  mailkit_user_administrator_secret:
+    file: C:\SecretsForFamilieLaiss\MailkitUserAdministrator.txt
+  mailkit_password_administrator_secret:
+    file: C:\SecretsForFamilieLaiss\MailkitPasswordAdministrator.txt
+  mailkit_user_account_secret:
+    file: C:\SecretsForFamilieLaiss\MailkitUserAccount.txt
+  mailkit_password_account_secret:
+    file: C:\SecretsForFamilieLaiss\MailkitPasswordAccount.txt
+  mailkit_user_notification_secret:
+    file: C:\SecretsForFamilieLaiss\MailkitUserNotification.txt
+  mailkit_password_notification_secret:
+    file: C:\SecretsForFamilieLaiss\MailkitPasswordNotification.txt
+  mailkit_user_support_secret:
+    file: C:\SecretsForFamilieLaiss\MailkitUserSupport.txt
+  mailkit_password_support_secret:
+    file: C:\SecretsForFamilieLaiss\MailkitPasswordSupport.txt
+  mailtrap_username_secret:
+    file: C:\SecretsForFamilieLaiss\MailtrapUsername.txt
+  mailtrap_password_secret:
+    file: C:\SecretsForFamilieLaiss\MailtrapPassword.txt
+  sendgrid_api_key_secret:
+    file: C:\SecretsForFamilieLaiss\SendgridAPIKey.txt
+  oidc_client_id_message_secret:
+    file: C:\SecretsForFamilieLaiss\OIDC_ClientID_Message_Service.txt
+  oidc_client_secret_message_secret:
+    file: C:\SecretsForFamilieLaiss\OIDC_ClientSecret_Message_Service.txt
+  oidc_client_id_upload_secret:
+    file: C:\SecretsForFamilieLaiss\OIDC_ClientID_Upload_Service.txt
+  oidc_client_secret_upload_secret:
+    file: C:\SecretsForFamilieLaiss\OIDC_ClientSecret_Upload_Service.txt    

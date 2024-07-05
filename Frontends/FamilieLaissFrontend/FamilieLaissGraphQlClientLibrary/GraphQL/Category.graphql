@@ -1,0 +1,106 @@
+fragment FrCategoryOnlyId on Category {
+    id
+}
+
+fragment FrCategoryCreate on Category {
+    createDate
+}
+
+fragment FrCategoryChange on Category {
+    changeDate
+}
+
+fragment FrCategoryMain on Category {
+    categoryType
+    nameGerman
+    nameEnglish
+}
+
+fragment FrCategoryFull on Category {
+    ...FrCategoryOnlyId
+    ...FrCategoryMain
+    ...FrCategoryCreate
+    ...FrCategoryChange            
+}
+
+fragment FrCategoryIdWithMain on Category {
+    ...FrCategoryOnlyId
+    ...FrCategoryMain
+}
+
+fragment FrGetCategoryValuesForCategory on Category {
+    ...FrCategoryIdWithMain
+    categoryValues {
+       ...FrCategoryValueFull
+    }
+}
+
+fragment FrCategoryAddResult on Category {
+    ...FrCategoryOnlyId
+    ...FrCategoryCreate
+}
+
+fragment FrCategoryUpdateResult on Category {
+    ...FrCategoryOnlyId
+    ...FrCategoryChange            
+}
+
+fragment FrCategoryDeleteResult on Category {
+    ...FrCategoryOnlyId
+}
+
+query GetAllCategories {
+    categories {
+        ...FrCategoryFull
+    }
+}
+
+query GetAllPhotoCategories {
+  categories(where: { or: [{categoryType: {eq: PICTURE}}, {categoryType: {eq: BOTH}}]}) {
+      ...FrGetCategoryValuesForCategory
+  }
+}
+
+query GetAllVideoCategories {
+  categories(where: { or: [{categoryType: {eq: VIDEO}}, {categoryType: {eq: BOTH}}]}) {
+      ...FrGetCategoryValuesForCategory
+  }
+}
+
+query GetCategory ($id: Long!) {
+    categories(where: {id: {eq: $id}}) {
+        ...FrCategoryFull
+    }
+}
+
+query EnglishCategoryNameExists ($categoryType: EnumCategoryType!, $englishName: String!, $iD: Long!) {
+    englishCategoryNameExists(categoryType: $categoryType, englishName: $englishName, iD: $iD)
+}
+
+query GermanCategoryNameExists ($categoryType: EnumCategoryType!, $germanName: String!, $iD: Long!) {
+    germanCategoryNameExists(categoryType: $categoryType, germanName: $germanName, iD: $iD)
+}
+
+mutation AddCategory ($categoryType: EnumCategoryType!, $nameGerman: String!, $nameEnglish: String!) {
+    addCategory(input: {nameGerman: $nameGerman, nameEnglish: $nameEnglish, categoryType: $categoryType}) {
+        category {
+            ...FrCategoryAddResult
+        }
+    }
+}
+
+mutation UpdateCategory ($iD: Long!, $nameGerman: String!, $nameEnglish: String!) {
+    updateCategory(input: {id: $iD, nameGerman: $nameGerman, nameEnglish: $nameEnglish}) {
+        category {
+            ...FrCategoryUpdateResult
+        }
+    }
+}
+
+mutation DeleteCategory ($id: Long!) {
+    deleteCategory (input: { id : $id}) {
+        category {
+            ...FrCategoryDeleteResult
+        }
+    }
+}

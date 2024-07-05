@@ -1,0 +1,69 @@
+﻿fragment FrPictureConvertStatusOnlyId on PictureConvertStatus {
+    id
+}
+
+fragment FrPictureConvertStatusMain on PictureConvertStatus {
+    status
+    startDateInfo
+    finishDateInfo
+    startDateExif
+    finishDateExif
+    startDateConvert
+    finishDateConvert
+}
+
+fragment FrPictureConvertStatusWaiting on PictureConvertStatus {
+    ...FrPictureConvertStatusOnlyId
+    uploadPicture {
+        ...FrUploadPictureIdWithFilename
+    }
+}
+
+fragment FrPictureConvertStatusSuccess on PictureConvertStatus {
+    ...FrPictureConvertStatusOnlyId
+    finishDateConvert
+    uploadPicture {
+        ...FrUploadPictureIdWithFilename
+    }
+}  
+
+fragment FrPictureConvertStatusError on PictureConvertStatus {
+    ...FrPictureConvertStatusOnlyId
+    startDateInfo
+    errorMessage
+    uploadPicture {
+        ...FrUploadPictureIdWithFilename
+    }
+}  
+
+fragment FrPictureConvertStatusCurrent on PictureConvertStatus {
+    ...FrPictureConvertStatusOnlyId
+    ...FrPictureConvertStatusMain
+    uploadPicture {
+        ...FrUploadPictureIdWithFilename
+    }
+}  
+
+subscription PictureConvertStatusWaitingSubscription {
+	onPictureConvertStatusWaiting {
+        ...FrPictureConvertStatusWaiting
+    }
+}
+
+subscription PictureConvertStatusSuccessSubscription {
+	onPictureConvertStatusSuccess {
+       ...FrPictureConvertStatusSuccess
+	}
+}
+
+subscription PictureConvertStatusErrorSubscription {
+	onPictureConvertStatusError {
+        ...FrPictureConvertStatusError
+	}
+}
+
+subscription PictureConvertStatusCurrentSubscription {
+    onPictureConvertStatusCurrent {
+        ...FrPictureConvertStatusCurrent
+    }
+}

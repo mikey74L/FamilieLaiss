@@ -1,0 +1,72 @@
+﻿@using FamilieLaissFrontend.Client.ViewModels.Controls.Filter
+@using FamilieLaissInterfaces.Models
+@using FamilieLaissResources.Resources.Controls.Filter
+@using FamilieLaissSharedUI.Components
+
+@inherits FlComponentBase<FilterDateRangeControlViewModel>
+
+<MudStack>
+    <MudStack Row="true" Spacing="1">
+        <MudText Typo="Typo.body1">@FilterCriteria.DisplayText</MudText>
+        @if (ViewModel.DateRangeValue.Start.HasValue || ViewModel.DateRangeValue.End.HasValue)
+        {
+            <MudTooltip Arrow="true"
+                        Placement="Placement.Top"
+                        ShowOnFocus="false"
+                        Text="@FilterDateRangeControlRes.TooltipResetFilterItem">
+                <MudIconButton Color="Color.Error"
+                               Size="Size.Small"
+                               Icon="@Icons.Material.Filled.Clear"
+                               OnClick="async () => await ViewModel.ResetFilterCommand.ExecuteAsync(null)">
+                </MudIconButton>
+            </MudTooltip>
+        }
+    </MudStack>
+
+    <MudDateRangePicker @ref="ViewModel.PickerControl"
+                        Label="@FilterDateRangeControlRes.DateEditPlaceholder"
+                        @bind-DateRange="ViewModel.DateRangeValue"
+                        AutoClose="true"
+                        Error="!FilterCriteria.IsValid"
+                        ErrorText="@FilterCriteria.ErrorMessage"
+                        Editable="true"
+                        Clearable="true"
+                        Style="margin-bottom: 15px;">
+        <PickerActions>
+            <MudButton Class="mr-auto align-self-start" OnClick="@(() => ViewModel.PickerControl.Clear())">@FilterDateRangeControlRes.DateEditReset</MudButton>
+            <MudButton OnClick="@(() => ViewModel.PickerControl.Close(false))">@FilterDateRangeControlRes.DateEditCancel</MudButton>
+            <MudButton Color="Color.Primary" OnClick="@(() => ViewModel.PickerControl.Close())">@FilterDateRangeControlRes.DateEditOk</MudButton>
+        </PickerActions>
+    </MudDateRangePicker>
+</MudStack>
+
+@code
+{
+    [Parameter]
+    [EditorRequired]
+    public IGraphQlFilterCriteria FilterCriteria 
+    { 
+        get
+        {
+            return ViewModel.FilterCriteria;
+        }
+        set
+        {
+            ViewModel.FilterCriteria = value;
+        }
+    } 
+
+    [Parameter]
+    [EditorRequired]
+    public EventCallback<(Guid id, bool hasValue)> ValueChanged 
+    { 
+        get
+        {
+            return ViewModel.ValueChanged;
+        }
+        set
+        {
+            ViewModel.ValueChanged = value;
+        }
+    }
+}

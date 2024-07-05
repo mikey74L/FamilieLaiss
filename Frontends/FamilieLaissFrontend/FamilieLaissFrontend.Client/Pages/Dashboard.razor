@@ -1,0 +1,14 @@
+﻿@using FamilieLaissInterfaces.Enums
+
+@page "/"
+
+<h1>Das ist Michael Hallo Test Mega Super Duper.  </h1>
+
+@if(OperatingSystem.IsBrowser())
+{
+    <p>WebAssembly</p>
+}
+else
+{
+    <p>Server</p>
+}

@@ -1,0 +1,84 @@
+fragment FrCategoryValueIdOnly on CategoryValue {
+    id
+}
+
+fragment FrCategoryValueCreate on CategoryValue {
+    createDate
+}
+
+fragment FrCategoryValueChange on CategoryValue {
+    changeDate
+}
+
+fragment FrCategoryValueMain on CategoryValue {
+    nameGerman
+    nameEnglish
+}
+
+fragment FrCategoryValueAddResult on CategoryValue {
+    ...FrCategoryValueIdOnly
+    ...FrCategoryValueCreate
+}
+
+fragment FrCategoryValueUpdateResult on CategoryValue {
+    ...FrCategoryValueIdOnly
+    ...FrCategoryValueChange
+}
+
+fragment FrCategoryValueDeleteResult on CategoryValue {
+    ...FrCategoryValueIdOnly
+}
+
+fragment FrCategoryValueFull on CategoryValue {
+    ...FrCategoryValueIdOnly
+    ...FrCategoryValueMain
+    ...FrCategoryValueCreate
+    ...FrCategoryValueChange
+}
+
+query GetCategoryValuesForCategory($categoryID: Long!) {
+    categories(where: {id: {eq: $categoryID}}) {
+       ...FrGetCategoryValuesForCategory
+    }
+}
+
+query GetCategoryValue ($id: Long!) {
+    categoryValues(where: {id: {eq: $id}}) {
+        ...FrCategoryValueFull
+        category {
+            ...FrCategoryFull
+        }
+    }
+}
+
+query EnglishCategoryValueNameExists ($categoryId: Long!, $englishName: String!, $iD: Long!) {
+    englishCategoryValueNameExists(categoryId: $categoryId, englishName: $englishName, iD: $iD)
+}
+
+query GermanCategoryValueNameExists ($categoryId: Long!, $germanName: String!, $iD: Long!) {
+    germanCategoryValueNameExists(categoryId: $categoryId, germanName: $germanName, iD: $iD)
+}
+
+mutation AddCategoryValue ($categoryId: Long!, $nameGerman: String!, $nameEnglish: String!) {
+    addCategoryValue(input: {categoryId: $categoryId, nameGerman: $nameGerman, nameEnglish: $nameEnglish}) {
+        categoryValue {
+            ...FrCategoryValueAddResult
+        }
+    }
+}
+
+mutation UpdateCategoryValue ($id: Long!, $nameGerman: String!, $nameEnglish: String!) {
+    updateCategoryValue(input: {id: $id, nameGerman: $nameGerman, nameEnglish: $nameEnglish}) {
+        categoryValue {
+            ...FrCategoryValueUpdateResult
+        }
+    }
+}
+
+mutation DeleteCategoryValue ($id: Long!) {
+    deleteCategoryValue (input: {id : $id}) {
+        categoryValue {
+            ...FrCategoryValueDeleteResult
+        }
+    }
+}

@@ -1,0 +1,143 @@
+﻿@using FamilieLaissFrontend.Client.ViewModels.Pages.BaseData.Upload.Picture
+@using FamilieLaissGraphQlClientLibrary
+@using FamilieLaissInterfaces.Enums
+@using FamilieLaissInterfaces.Models
+@using FamilieLaissInterfaces.Models.Data
+@using FamilieLaissInterfaces.Services
+@using FamilieLaissResources.Resources.Pages.BaseData.Upload.Picture
+@using FamilieLaissSharedUI.Components
+@using FamilieLaissSharedUI.Helper
+@using Microsoft.Extensions.Localization
+@using FamilieLaissEnums
+
+@inherits FlComponentBase<PictureUploadListViewModel>
+
+<SectionContent SectionName="@nameof(FLSectionIdentifier.AppBar)">
+    @if (ShowFilterAppBar)
+    {
+        <FilterAppBarControl SortAndFilterService="SortAndFilterService"></FilterAppBarControl>
+    }
+</SectionContent>
+
+<PictureUploadListDrawers @bind-IsFilterSidebarVisible="ViewModel.IsFilterSidebarVisible"
+                          @bind-IsSortSidebarVisible="ViewModel.IsSortSidebarVisible"
+                          SortAndFilterService="SortAndFilterService" />
+
+@{
+    var classForContainer = "";
+
+    if (UploadItems.Count == 0 && !ViewModel.HasError && !ViewModel.IsLoading || ViewModel.HasError)
+    {
+        classForContainer = "mt-5 container-upload-picture";
+    }
+    else
+    {
+        classForContainer = "mt-5 container-upload-picture-items container-upload-picture-items-upload";
+    }
+}
+
+<MudItem Class="@classForContainer">
+    @if (ViewModel.IsLoading)
+    {
+        <PictureUploadListSkeleton />
+    }
+    else
+    {
+        if (UploadItems.Count > 0)
+        {
+            foreach (var item in UploadItems)
+            {
+                <PictureControl ControlType="EnumPictureControlType.Upload" ShowSkeleton="false" UploadItem="item" IsDisabled="ViewModel.IsBusy"
+                                DeleteUploadClicked="async (args) => await ViewModel.DeleteUploadPictureCommand.ExecuteAsync(args)" ShowSelectionMode="ViewModel.ShowSelectionMode" />
+            }
+
+            <PictureUploadListActions IsBusy="ViewModel.IsBusy"
+                                      ShowSelectionMode="ViewModel.ShowSelectionMode"
+                                      OnDeleteAllUploadPictures="async () => await ViewModel.DeleteAllUploadPicturesCommand.ExecuteAsync(null)"
+                                      OnDeSelectAll="ViewModel.DeSelectAll"
+                                      OnRefreshItems="async () => await ViewModel.RefreshItemsCommand.ExecuteAsync(null)"
+                                      OnSelectAll="async () => await ViewModel.SelectAllCommand.ExecuteAsync(null)"
+                                      OnShowFilterSidebar="() => ViewModel.ShowFilterSidebarCommand.Execute(null)"
+                                      OnToggleSelectionMode="() => ViewModel.ToggleSelectionModeCommand.Execute(null)"
+                                      OnShowSortSidebar="() => ViewModel.ShowSortSidebarCommand.Execute(null)" />
+        }
+
+        <PictureUploadListMessageOutput HasError="ViewModel.HasError"
+                                        IsFilterActive="ViewModel.IsFilterActive"
+                                        ItemsCount="UploadItems.Count" />
+    }
+</MudItem>
+
+@code
+{
+    [Parameter]
+    [EditorRequired]
+    public ExtendedObservableCollection<IUploadPictureModel> UploadItems
+    {
+        get
+        {
+            return ViewModel.UploadItems;
+        }
+        set
+        {
+            ViewModel.UploadItems = value;
+        }
+    }
+
+    [Parameter]
+    [EditorRequired]
+    public EventCallback ReloadUploadPictures
+    {
+        get
+        {
+            return ViewModel.ReloadUploadPictures;
+        }
+        set
+        {
+            ViewModel.ReloadUploadPictures = value;
+        }
+    }
+
+    [Parameter]
+    public bool ShowFilterAppBar { get; set; }
+
+    [Parameter]
+    public bool ShowLoading
+    {
+        get
+        {
+            return ViewModel.IsLoading;
+        }
+        set
+        {
+            ViewModel.IsLoading = value;
+        }
+    }
+
+    [Parameter]
+    public bool ShowError
+    {
+        get
+        {
+            return ViewModel.HasError;
+        }
+        set
+        {
+            ViewModel.HasError = value;
+        }
+    }
+
+    [Parameter]
+    [EditorRequired]
+    public IGraphQlSortAndFilterService<IUploadPictureModel, UploadPictureSortInput, UploadPictureFilterInput> SortAndFilterService
+    {
+        get
+        {
+            return ViewModel.SortAndFilterService;
+        }
+        set
+        {
+            ViewModel.SortAndFilterService = value;
+        }
+    }
+}

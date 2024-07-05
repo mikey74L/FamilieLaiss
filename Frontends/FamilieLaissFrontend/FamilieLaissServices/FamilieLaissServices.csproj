@@ -1,0 +1,35 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net8.0</TargetFramework>
+		<Nullable>enable</Nullable>
+		<LangVersion>12</LangVersion>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="AutoMapper" Version="13.0.1" />
+		<PackageReference Include="EventAggregator.Blazor" Version="2.0.0" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Authentication" Version="8.0.6" />
+		<PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="8.0.6" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="8.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Http" Version="8.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="8.0.0" />
+		<PackageReference Include="System.Reactive" Version="6.0.1" />
+		<PackageReference Include="Tocronx.SimpleAsync" Version="1.7.0" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\FamilieLaissConstants\FamilieLaissConstants.csproj" />
+		<ProjectReference Include="..\FamilieLaissEnums\FamilieLaissEnums.csproj" />
+		<ProjectReference Include="..\FamilieLaissGraphQlClientLibrary\FamilieLaissGraphQlClientLibrary.csproj" />
+		<ProjectReference Include="..\FamilieLaissInterfaces\FamilieLaissInterfaces.csproj" />
+		<ProjectReference Include="..\FamilieLaissMappingExtensions\FamilieLaissMappingExtensions.csproj" />
+		<ProjectReference Include="..\FamilieLaissModels\FamilieLaissModels.csproj" />
+		<ProjectReference Include="..\FamilieLaissResources\FamilieLaissResources.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="SignalRServices\" />
+	</ItemGroup>
+
+</Project>

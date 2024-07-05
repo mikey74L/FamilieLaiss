@@ -1,0 +1,1 @@
+https://stackoverflow.com/questions/48741170/how-to-stop-a-masstransit-bus-in-an-asp-net-core-server

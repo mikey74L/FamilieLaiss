@@ -1,0 +1,532 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Blog.API</name>
+    </assembly>
+    <members>
+        <member name="T:Blog.API.Automapper.AutoMapperHelper">
+            <summary>
+            Helper class for generating an <see cref="T:AutoMapper.IMapper"/>
+            </summary>
+        </member>
+        <member name="M:Blog.API.Automapper.AutoMapperHelper.RegisterProfiles(AutoMapper.IMapperConfigurationExpression)">
+            <summary>
+            Creates an <see cref="T:AutoMapper.IMapper"/> that can be added to dependency injection as singleton
+            </summary>
+            <param name="cfg">The <paramref name="cfg"/> the profiles should be added to</param>
+        </member>
+        <member name="T:Blog.API.Automapper.Profiles.ProfileBlogEntry">
+            <summary>
+            Blog-Entry Profile class for Auto-Mapper
+            </summary>
+        </member>
+        <member name="M:Blog.API.Automapper.Profiles.ProfileBlogEntry.#ctor">
+            <summary>
+            C'tor
+            </summary>
+        </member>
+        <member name="T:Blog.API.Commands.Category.MtrDeleteBlogEntryCmd">
+            <summary>
+            Mediatr Command for delete blog entry
+            </summary>
+        </member>
+        <member name="P:Blog.API.Commands.Category.MtrDeleteBlogEntryCmd.ID">
+            <summary>
+            Identifier for blog entry
+            </summary>
+        </member>
+        <member name="M:Blog.API.Commands.Category.MtrDeleteBlogEntryCmd.#ctor(System.Int64)">
+            <summary>
+            C'tor
+            </summary>
+            <param name="id">Identifier for blog entry</param>
+        </member>
+        <member name="T:Blog.API.Commands.Category.MtrDeleteBlogEntryCmdHandler">
+            <summary>
+            Mediatr Command-Handler for delete blog entry
+            </summary>
+        </member>
+        <member name="M:Blog.API.Commands.Category.MtrDeleteBlogEntryCmdHandler.#ctor(DomainHelper.Interfaces.iUnitOfWork,Microsoft.Extensions.Logging.ILogger{Blog.API.Commands.Category.MtrDeleteBlogEntryCmdHandler})">
+            <summary>
+            C'tor
+            </summary>
+            <param name="unitOfWork">Unit of work. Will be injected by DI-Container</param>
+            <param name="logger">NLog-Logger. Will be injected by DI-Container</param>
+        </member>
+        <member name="M:Blog.API.Commands.Category.MtrDeleteBlogEntryCmdHandler.Handle(Blog.API.Commands.Category.MtrDeleteBlogEntryCmd,System.Threading.CancellationToken)">
+            <summary>
+            Will be called by Mediatr
+            </summary>
+            <param name="request">The request data</param>
+            <param name="cancellationToken">The cancelation token</param>
+            <returns>Task</returns>
+        </member>
+        <member name="T:Blog.API.Commands.Category.MtrMakeNewBlogEntryCmd">
+            <summary>
+            Mediatr Command for make new category entry
+            </summary>
+        </member>
+        <member name="P:Blog.API.Commands.Category.MtrMakeNewBlogEntryCmd.HeaderGerman">
+            <summary>
+            German header text for Blog-Entry
+            </summary>
+        </member>
+        <member name="P:Blog.API.Commands.Category.MtrMakeNewBlogEntryCmd.HeaderEnglish">
+            <summary>
+            English header text for Blog-Entry
+            </summary>
+        </member>
+        <member name="P:Blog.API.Commands.Category.MtrMakeNewBlogEntryCmd.TextGerman">
+            <summary>
+            German text for Blog-Entry
+            </summary>
+        </member>
+        <member name="P:Blog.API.Commands.Category.MtrMakeNewBlogEntryCmd.TextEnglish">
+            <summary>
+            English text for Blog-Entry
+            </summary>
+        </member>
+        <member name="M:Blog.API.Commands.Category.MtrMakeNewBlogEntryCmd.#ctor(System.String,System.String,System.String,System.String)">
+            <summary>
+            C'tor
+            </summary>
+            <param name="headerGerman">German header text for Blog-Entry</param>
+            <param name="headerEnglish">English header text for Blog-Entry</param>
+            <param name="textGerman">German text for Blog-Entry</param>
+            <param name="textEnglish">English text for Blog-Entry</param>
+        </member>
+        <member name="T:Blog.API.Commands.Category.MtrMakeNewBlogEntryCmdHandler">
+            <summary>
+            Mediatr Command-Handler for Make new category entry command
+            </summary>
+        </member>
+        <member name="M:Blog.API.Commands.Category.MtrMakeNewBlogEntryCmdHandler.#ctor(DomainHelper.Interfaces.iUnitOfWork,AutoMapper.IMapper,Microsoft.Extensions.Logging.ILogger{Blog.API.Commands.Category.MtrMakeNewBlogEntryCmdHandler})">
+            <summary>
+            C'tor
+            </summary>
+            <param name="unitOfWork">Unit of Work. Will be injected by DI-Container</param>
+            <param name="mapper">Automapper instence. Will be injected by DI-Container</param>
+            <param name="logger">NLog-Logger. Will be injected by DI-Container</param>
+        </member>
+        <member name="M:Blog.API.Commands.Category.MtrMakeNewBlogEntryCmdHandler.Handle(Blog.API.Commands.Category.MtrMakeNewBlogEntryCmd,System.Threading.CancellationToken)">
+            <summary>
+            Will be called by Mediatr
+            </summary>
+            <param name="request">The request data</param>
+            <param name="cancellationToken">The cancelation token</param>
+            <returns>Task</returns>
+        </member>
+        <member name="T:Blog.API.Commands.Category.MtrUpdateBlogEntryCmd">
+            <summary>
+            Mediatr Command for update blog entry 
+            </summary>
+        </member>
+        <member name="P:Blog.API.Commands.Category.MtrUpdateBlogEntryCmd.ID">
+            <summary>
+            Identifier for blog entry
+            </summary>
+        </member>
+        <member name="P:Blog.API.Commands.Category.MtrUpdateBlogEntryCmd.HeaderGerman">
+            <summary>
+            German header text for Blog-Entry
+            </summary>
+        </member>
+        <member name="P:Blog.API.Commands.Category.MtrUpdateBlogEntryCmd.HeaderEnglish">
+            <summary>
+            English header text for Blog-Entry
+            </summary>
+        </member>
+        <member name="P:Blog.API.Commands.Category.MtrUpdateBlogEntryCmd.TextGerman">
+            <summary>
+            German text for Blog-Entry
+            </summary>
+        </member>
+        <member name="P:Blog.API.Commands.Category.MtrUpdateBlogEntryCmd.TextEnglish">
+            <summary>
+            English text for Blog-Entry
+            </summary>
+        </member>
+        <member name="M:Blog.API.Commands.Category.MtrUpdateBlogEntryCmd.#ctor(System.Int64,System.String,System.String,System.String,System.String)">
+            <summary>
+            C'tor
+            </summary>
+            <param name="id">Identifier for blog entry</param>
+            <param name="headerGerman">German header text for Blog-Entry</param>
+            <param name="headerEnglish">English header text for Blog-Entry</param>
+            <param name="textGerman">German text for Blog-Entry</param>
+            <param name="textEnglish">English text for Blog-Entry</param>
+        </member>
+        <member name="T:Blog.API.Commands.Category.MtrUpdateBlogEntryCmdHandler">
+            <summary>
+            Mediatr Command-Handler for update blog entry
+            </summary>
+        </member>
+        <member name="M:Blog.API.Commands.Category.MtrUpdateBlogEntryCmdHandler.#ctor(DomainHelper.Interfaces.iUnitOfWork,Microsoft.Extensions.Logging.ILogger{Blog.API.Commands.Category.MtrUpdateBlogEntryCmdHandler})">
+            <summary>
+            C'tor
+            </summary>
+            <param name="unitOfWork">Unit of work. Will be injected by DI-Container</param>
+            <param name="logger">NLog-Logger. Will be injected by DI-Container</param>
+        </member>
+        <member name="M:Blog.API.Commands.Category.MtrUpdateBlogEntryCmdHandler.Handle(Blog.API.Commands.Category.MtrUpdateBlogEntryCmd,System.Threading.CancellationToken)">
+            <summary>
+            Will be called by Mediatr
+            </summary>
+            <param name="request">The request data</param>
+            <param name="cancellationToken">The cancelation token</param>
+            <returns>Task</returns>
+        </member>
+        <member name="T:Blog.API.Controllers.BlogController">
+            <summary>
+            API-Controller for blog entries
+            </summary>
+        </member>
+        <member name="M:Blog.API.Controllers.BlogController.#ctor(MediatR.IMediator,Microsoft.Extensions.Logging.ILogger{Blog.API.Controllers.BlogController})">
+            <summary>
+            C'tor
+            </summary>
+            <param name="mediator">Mediatr Object. Will be injected by DI-Container</param>
+            <param name="logger">Logger. Will be injected by DI-Container</param>
+        </member>
+        <member name="M:Blog.API.Controllers.BlogController.Get(ServiceLayerHelper.QueryParams)">
+            <summary>
+            Get all blog entries
+            </summary>
+            <param name="queryParams">Additional query params like additional where clause to get data</param>
+            <returns>Get all blog entries</returns>
+        </member>
+        <member name="M:Blog.API.Controllers.BlogController.GetOne(System.Int64,ServiceLayerHelper.QueryParams)">
+            <summary>
+            Get blog entry
+            </summary>
+            <param name="id">Identifier for blog entries</param>
+            <param name="queryParams">Additional query params like additional where clause to get data</param>
+            <returns>Get a single blog entry by identifier</returns>
+        </member>
+        <member name="M:Blog.API.Controllers.BlogController.GetCountBlog">
+            <summary>
+            Get count of blog
+            </summary>
+            <returns>Action-Result</returns>
+        </member>
+        <member name="M:Blog.API.Controllers.BlogController.GetLatest">
+            <summary>
+            Get latest 5 Blog-Entries
+            </summary>
+            <returns>Get latest 5 Blog-Entries</returns>
+        </member>
+        <member name="M:Blog.API.Controllers.BlogController.Post(Blog.DTO.BlogEntryCreateDTOModel)">
+            <summary>
+            Add new blog entry
+            </summary>
+            <param name="model">Blog entry data</param>
+            <remarks>Adding a new blog entry to the store.</remarks>
+        </member>
+        <member name="M:Blog.API.Controllers.BlogController.Put(System.Int64,Blog.DTO.BlogEntryUpdateDTOModel)">
+            <summary>
+            Update existing blog entry
+            </summary>
+            <param name="id">Primary key for blog entry to update</param>
+            <param name="model">blog entry data to update</param>
+            <remarks>Updating an existing blog entry in the store.</remarks>
+        </member>
+        <member name="M:Blog.API.Controllers.BlogController.Delete(System.Int64)">
+            <summary>
+            Delete existing blog entry
+            </summary>
+            <param name="id">Identifier for blog entry</param>
+            <remarks>Deleting an existing blog entry from the store.</remarks>
+        </member>
+        <member name="T:Blog.API.Logging.LogNLog">
+            <summary>
+            Class for Implementing general logging for global Exception-Handling
+            </summary>
+        </member>
+        <member name="M:Blog.API.Logging.LogNLog.#ctor">
+            <summary>
+            C*tor
+            </summary>
+        </member>
+        <member name="M:Blog.API.Logging.LogNLog.Information(System.String)">
+            <summary>
+            Logging Message for level information
+            </summary>
+            <param name="message"></param>
+        </member>
+        <member name="M:Blog.API.Logging.LogNLog.Warning(System.String)">
+            <summary>
+            Logging message for level warning
+            </summary>
+            <param name="message"></param>
+        </member>
+        <member name="M:Blog.API.Logging.LogNLog.Debug(System.String)">
+            <summary>
+            Logging message for level debug
+            </summary>
+            <param name="message"></param>
+        </member>
+        <member name="M:Blog.API.Logging.LogNLog.Error(System.String)">
+            <summary>
+            Logging message for level error
+            </summary>
+            <param name="message"></param>
+        </member>
+        <member name="T:Blog.API.Models.AppSettings">
+            <summary>
+            App-Settings - Class
+            </summary>
+        </member>
+        <member name="P:Blog.API.Models.AppSettings.RabbitMQServer_URL">
+            <summary>
+            RabbitMQ server URL
+            </summary>
+        </member>
+        <member name="P:Blog.API.Models.AppSettings.RabbitMQServer_User_FILE">
+            <summary>
+            RabbitMQ user - Filename for Secret
+            </summary>
+        </member>
+        <member name="P:Blog.API.Models.AppSettings.RabbitMQServer_User">
+            <summary>
+            RabbitMQ user
+            </summary>
+        </member>
+        <member name="P:Blog.API.Models.AppSettings.RabbitMQServer_Password_FILE">
+            <summary>
+            RabbitMQ password - Filename for Secret
+            </summary>
+        </member>
+        <member name="P:Blog.API.Models.AppSettings.RabbitMQServer_Password">
+            <summary>
+            RabbitMQ password
+            </summary>
+        </member>
+        <member name="P:Blog.API.Models.AppSettings.Endpoint_BlogService">
+            <summary>
+            Endpoint for Blog-Service
+            </summary>
+        </member>
+        <member name="P:Blog.API.Models.AppSettings.PostgresUser_FILE">
+            <summary>
+            Postgres user - Filename for Secret
+            </summary>
+        </member>
+        <member name="P:Blog.API.Models.AppSettings.PostgresUser">
+            <summary>
+            Postgres user
+            </summary>
+        </member>
+        <member name="P:Blog.API.Models.AppSettings.PostgresPassword_FILE">
+            <summary>
+            Postgres password - Filename for Secret
+            </summary>
+        </member>
+        <member name="P:Blog.API.Models.AppSettings.PostgresPassword">
+            <summary>
+            Postgres password
+            </summary>
+        </member>
+        <member name="T:Blog.API.Program">
+            <summary>
+            Programm class for ASP.NET Core
+            </summary>
+        </member>
+        <member name="M:Blog.API.Program.Main(System.String[])">
+            <summary>
+            Mein-Entry point for ASP.NET Core
+            </summary>
+            <param name="args">Command line params</param>
+        </member>
+        <member name="P:Blog.API.Program.Configuration">
+            <summary>
+            Configuration
+            </summary>
+        </member>
+        <member name="M:Blog.API.Program.BuildWebHost(System.String[])">
+            <summary>
+            Build web host
+            </summary>
+            <param name="args">Arguments</param>
+            <returns>Web host</returns>
+        </member>
+        <member name="T:Blog.API.Queries.QueryBlogEntry">
+            <summary>
+            Query for get blog entry
+            </summary>
+        </member>
+        <member name="P:Blog.API.Queries.QueryBlogEntry.ID">
+            <summary>
+            Identifier for blog entry (used when single blog entry is requested)
+            </summary>
+        </member>
+        <member name="P:Blog.API.Queries.QueryBlogEntry.Params">
+            <summary>
+            Query Parameter
+            </summary>
+        </member>
+        <member name="M:Blog.API.Queries.QueryBlogEntry.#ctor(ServiceLayerHelper.QueryParams,System.Nullable{System.Int64})">
+            <summary>
+            C'tor
+            </summary>
+            <param name="queryParams">Query Parameter</param>
+            <param name="id">Identifier for blog entry (used when single blog entry is requested)</param>
+        </member>
+        <member name="T:Blog.API.Queries.QueryHandlerBlogEntry">
+            <summary>
+            Mediatr-Query-Handler for get blog entry 
+            </summary>
+        </member>
+        <member name="M:Blog.API.Queries.QueryHandlerBlogEntry.#ctor(DomainHelper.Interfaces.iUnitOfWork,AutoMapper.IMapper,Microsoft.Extensions.Logging.ILogger{Blog.API.Queries.QueryHandlerBlogEntry})">
+            <summary>
+            C'tor
+            </summary>
+            <param name="unitOfWork">The Unit of Work. Will be injected by DI.</param>
+            <param name="mapper">Auto-Mapper-Service. Will be injected by container.</param>
+            <param name="logger">Logger. Will be injected by DI-Container.</param>
+        </member>
+        <member name="M:Blog.API.Queries.QueryHandlerBlogEntry.Handle(Blog.API.Queries.QueryBlogEntry,System.Threading.CancellationToken)">
+            <summary>
+            Will be called by Mediatr
+            </summary>
+            <param name="request">The request data</param>
+            <param name="cancellationToken">The cancelation token</param>
+            <returns>Task</returns>
+        </member>
+        <member name="T:Blog.API.Queries.QueryCountBlog">
+            <summary>
+            Query for count blog entries
+            </summary>
+        </member>
+        <member name="M:Blog.API.Queries.QueryCountBlog.#ctor">
+            <summary>
+            C'tor
+            </summary>
+        </member>
+        <member name="T:Blog.API.Queries.QueryHandlerCountBlog">
+            <summary>
+            Mediatr-Query-Handler for count blog entries
+            </summary>
+        </member>
+        <member name="M:Blog.API.Queries.QueryHandlerCountBlog.#ctor(DomainHelper.Interfaces.iUnitOfWork,Microsoft.Extensions.Logging.ILogger{Blog.API.Queries.QueryHandlerCountBlog})">
+            <summary>
+            C'tor
+            </summary>
+            <param name="unitOfWork">The Unit of Work. Will be injected by DI.</param>
+            <param name="logger">Logger. Injected by DI</param>
+        </member>
+        <member name="M:Blog.API.Queries.QueryHandlerCountBlog.Handle(Blog.API.Queries.QueryCountBlog,System.Threading.CancellationToken)">
+            <summary>
+            Will be called by Mediatr
+            </summary>
+            <param name="request">The request data</param>
+            <param name="cancellationToken">The cancelation token</param>
+            <returns>Task</returns>
+        </member>
+        <member name="T:Blog.API.Queries.QueryGetLatest">
+            <summary>
+            Query for get blog entry
+            </summary>
+        </member>
+        <member name="P:Blog.API.Queries.QueryGetLatest.Counter">
+            <summary>
+            Count of items to get
+            </summary>
+        </member>
+        <member name="M:Blog.API.Queries.QueryGetLatest.#ctor(System.Int32)">
+            <summary>
+            C'tor
+            </summary>
+            <param name="counter">Count of items to get</param>
+        </member>
+        <member name="T:Blog.API.Queries.QueryHandlerGetLatest">
+            <summary>
+            Mediatr-Query-Handler for get blog entry 
+            </summary>
+        </member>
+        <member name="M:Blog.API.Queries.QueryHandlerGetLatest.#ctor(DomainHelper.Interfaces.iUnitOfWork,AutoMapper.IMapper,Microsoft.Extensions.Logging.ILogger{Blog.API.Queries.QueryHandlerGetLatest})">
+            <summary>
+            C'tor
+            </summary>
+            <param name="unitOfWork">The Unit of Work. Will be injected by DI.</param>
+            <param name="mapper">Auto-Mapper-Service. Will be injected by container.</param>
+            <param name="logger">Logger. Will be injected by DI-Container.</param>
+        </member>
+        <member name="M:Blog.API.Queries.QueryHandlerGetLatest.Handle(Blog.API.Queries.QueryGetLatest,System.Threading.CancellationToken)">
+            <summary>
+            Will be called by Mediatr
+            </summary>
+            <param name="request">The request data</param>
+            <param name="cancellationToken">The cancelation token</param>
+            <returns>Task</returns>
+        </member>
+        <member name="T:Blog.API.ServiceOptions.ConfigureIdentityServerAuthenticationOptions">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:Blog.API.ServiceOptions.ConfigureIdentityServerAuthenticationOptions.#ctor(Microsoft.Extensions.DependencyInjection.IServiceScopeFactory)">
+            <summary>
+            C'tor
+            </summary>
+            <param name="serviceScopeFactory">The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceScopeFactory"/> will be injected by DI-Container</param>
+        </member>
+        <member name="M:Blog.API.ServiceOptions.ConfigureIdentityServerAuthenticationOptions.Configure(System.String,IdentityServer4.AccessTokenValidation.IdentityServerAuthenticationOptions)">
+            <summary>
+            Configures the specified options.
+            </summary>
+            <param name="options">The options to configure</param>
+            <param name="name">The name for the options</param>
+        </member>
+        <member name="M:Blog.API.ServiceOptions.ConfigureIdentityServerAuthenticationOptions.Configure(IdentityServer4.AccessTokenValidation.IdentityServerAuthenticationOptions)">
+            <summary>
+            Configures the specified options.
+            </summary>
+            <param name="options">The options to configure</param>
+        </member>
+        <member name="T:Blog.API.Startup">
+            <summary>
+            Startup-Class for ASP.NET Core
+            </summary>
+        </member>
+        <member name="M:Blog.API.Startup.#ctor(Microsoft.Extensions.Configuration.IConfiguration,Microsoft.AspNetCore.Hosting.IWebHostEnvironment,Microsoft.Extensions.Logging.ILoggerFactory)">
+            <summary>
+            C'tor
+            </summary>
+            <param name="configuration">The current configuration. Injected by DI</param>
+            <param name="environment">The current hosting environment. Injected by DI</param>
+            <param name="loggerFactory">Logger factory. Injected by DI</param>
+        </member>
+        <member name="M:Blog.API.Startup.ConfigureServices(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            Configure the IOC-Container
+            </summary>
+            <param name="services">The service collection for the IOC-Container</param>
+        </member>
+        <member name="M:Blog.API.Startup.Configure(Microsoft.AspNetCore.Builder.IApplicationBuilder,Microsoft.AspNetCore.Hosting.IWebHostEnvironment,Microsoft.Extensions.Logging.ILoggerFactory,Microsoft.Extensions.Hosting.IHostApplicationLifetime,Microsoft.AspNetCore.Mvc.ApiExplorer.IApiVersionDescriptionProvider,ServiceLayerHelper.Logging.ILog)">
+            <summary>
+            Configure the pipeline for ASP.NET Core
+            </summary>
+            <param name="app">The application builder for the request pipeline. Will be injected by container.</param>
+            <param name="env">The current hosting environment. Will be injected by container.</param>
+            <param name="loggerFactory">The logger factory. Will be injected by container.</param>
+            <param name="lifetime">The application lifetime for the web application. Will be injected by container.</param>
+            <param name="provider">The versioned API Description Provider. Will be injected by container.</param>
+            <param name="globalLogger">The Logger for global exception handling. Injected by DI</param>
+        </member>
+        <member name="P:Blog.API.Startup.LoggerFactory">
+            <summary>
+            The used Logger factory
+            </summary>
+        </member>
+        <member name="P:Blog.API.Startup._Env">
+            <summary>
+            Current Environment
+            </summary>
+        </member>
+        <member name="P:Blog.API.Startup.Configuration">
+            <summary>
+            Configuration-Object for current environment
+            </summary>
+        </member>
+    </members>
+</doc>

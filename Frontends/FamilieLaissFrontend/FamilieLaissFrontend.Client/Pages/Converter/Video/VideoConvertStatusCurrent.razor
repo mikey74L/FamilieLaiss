@@ -1,0 +1,438 @@
+﻿@using FamilieLaissGraphQlClientLibrary
+@using FamilieLaissInterfaces.Models.Data
+@using FamilieLaissResources.Resources.Pages.Converter.Video
+
+@if (CurrentConversionItem is not null && CurrentConversionItem.Status != EnumVideoConvertStatus.WaitingForConversion &&
+    CurrentConversionItem.Status != EnumVideoConvertStatus.ConvertedWithErrors &&
+    CurrentConversionItem.Status != EnumVideoConvertStatus.SucessfullyConverted)
+{
+    <MudGrid Class="mt-10">
+        <MudItem xs="3"><b>@VideoConvertStatusCurrentRes.Filename</b></MudItem>
+        <MudItem xs="3">@CurrentConversionItem.UploadVideo?.Filename</MudItem>
+        <MudItem xs="6">&nbsp;</MudItem>
+
+        <MudItem xs="3"><b>@VideoConvertStatusCurrentRes.Status</b></MudItem>
+        <MudItem xs="3">@CurrentConversionItem.VideoConvertStatusText</MudItem>
+        <MudItem xs="6">&nbsp;</MudItem>
+
+        @if (CurrentConversionItem.FinishDateMediaInfo is not null)
+        {
+            <MudItem xs="3"><b>@VideoConvertStatusCurrentRes.Resolution</b></MudItem>
+            <MudItem xs="3">@CurrentConversionItem.Resolution</MudItem>
+            <MudItem xs="6">&nbsp;</MudItem>
+
+            <MudItem xs="3"><b>@VideoConvertStatusCurrentRes.Duration</b></MudItem>
+            <MudItem xs="3">@CurrentConversionItem.Duration</MudItem>
+            <MudItem xs="6">&nbsp;</MudItem>
+        }
+
+        @if (CurrentConversionItem.StartDateMediaInfo is not null || CurrentConversionItem.FinishDateMediaInfo is not null)
+        {
+            <MudItem xs="3"><b>@VideoConvertStatusCurrentRes.StartInfo</b></MudItem>
+            @if (CurrentConversionItem.StartDateMediaInfo is not null)
+            {
+                <MudItem xs="3">@CurrentConversionItem.StartDateMediaInfo.Value.LocalDateTime</MudItem>
+            }
+            else
+            {
+                <MudItem xs="3">&nbsp;</MudItem>
+            }
+        }
+
+        @if (CurrentConversionItem.StartDateMediaInfo is not null || CurrentConversionItem.FinishDateMediaInfo is not null)
+        {
+            <MudItem xs="3"><b>@VideoConvertStatusCurrentRes.FinishInfo</b></MudItem>
+            @if (CurrentConversionItem.FinishDateMediaInfo.HasValue)
+            {
+                <MudItem xs="3">@CurrentConversionItem.FinishDateMediaInfo.Value.LocalDateTime</MudItem>
+            }
+            else
+            {
+                <MudItem xs="3">&nbsp;</MudItem>
+            }
+        }
+
+        @if (CurrentConversionItem.StartDateMp4 is not null || CurrentConversionItem.FinishDateMp4 is not null)
+        {
+            <MudItem xs="3"><b>@VideoConvertStatusCurrentRes.StartMp4</b></MudItem>
+            @if (CurrentConversionItem.StartDateMp4 is not null)
+            {
+                <MudItem xs="3">@CurrentConversionItem.StartDateMp4.Value.LocalDateTime</MudItem>
+            }
+            else
+            {
+                <MudItem xs="3">&nbsp;</MudItem>
+            }
+        }
+
+        @if (CurrentConversionItem.StartDateMp4 is not null || CurrentConversionItem.FinishDateMp4 is not null)
+        {
+            <MudItem xs="3"><b>@VideoConvertStatusCurrentRes.FinishMp4</b></MudItem>
+            @if (CurrentConversionItem.FinishDateMp4.HasValue)
+            {
+                <MudItem xs="3">@CurrentConversionItem.FinishDateMp4.Value.LocalDateTime</MudItem>
+            }
+            else
+            {
+                <MudItem xs="3">&nbsp;</MudItem>
+            }
+        }
+
+        @if (CurrentConversionItem.StartDateMp4360 is not null || CurrentConversionItem.FinishDateMp4360 is not null)
+        {
+            <MudItem xs="3"><b>@VideoConvertStatusCurrentRes.StartMp4360</b></MudItem>
+            @if (CurrentConversionItem.StartDateMp4360 is not null)
+            {
+                <MudItem xs="3">@CurrentConversionItem.StartDateMp4360.Value.LocalDateTime</MudItem>
+            }
+            else
+            {
+                <MudItem xs="3">&nbsp;</MudItem>
+            }
+        }
+
+        @if (CurrentConversionItem.StartDateMp4360 is not null || CurrentConversionItem.FinishDateMp4360 is not null)
+        {
+            <MudItem xs="3"><b>@VideoConvertStatusCurrentRes.FinishMp4360</b></MudItem>
+            @if (CurrentConversionItem.FinishDateMp4360.HasValue)
+            {
+                <MudItem xs="3">@CurrentConversionItem.FinishDateMp4360.Value.LocalDateTime</MudItem>
+            }
+            else
+            {
+                <MudItem xs="3">&nbsp;</MudItem>
+            }
+        }
+
+        @if (CurrentConversionItem.StartDateMp4480 is not null || CurrentConversionItem.FinishDateMp4480 is not null)
+        {
+            <MudItem xs="3"><b>@VideoConvertStatusCurrentRes.StartMp4480</b></MudItem>
+            @if (CurrentConversionItem.StartDateMp4480 is not null)
+            {
+                <MudItem xs="3">@CurrentConversionItem.StartDateMp4480.Value.LocalDateTime</MudItem>
+            }
+            else
+            {
+                <MudItem xs="3">&nbsp;</MudItem>
+            }
+        }
+
+        @if (CurrentConversionItem.StartDateMp4480 is not null || CurrentConversionItem.FinishDateMp4480 is not null)
+        {
+            <MudItem xs="3"><b>@VideoConvertStatusCurrentRes.FinishMp4480</b></MudItem>
+            @if (CurrentConversionItem.FinishDateMp4480.HasValue)
+            {
+                <MudItem xs="3">@CurrentConversionItem.FinishDateMp4480.Value.LocalDateTime</MudItem>
+            }
+            else
+            {
+                <MudItem xs="3">&nbsp;</MudItem>
+            }
+        }
+
+        @if (CurrentConversionItem.StartDateMp4720 is not null || CurrentConversionItem.FinishDateMp4720 is not null)
+        {
+            <MudItem xs="3"><b>@VideoConvertStatusCurrentRes.StartMp4720</b></MudItem>
+            @if (CurrentConversionItem.StartDateMp4720 is not null)
+            {
+                <MudItem xs="3">@CurrentConversionItem.StartDateMp4720.Value.LocalDateTime</MudItem>
+            }
+            else
+            {
+                <MudItem xs="3">&nbsp;</MudItem>
+            }
+        }
+
+        @if (CurrentConversionItem.StartDateMp4720 is not null || CurrentConversionItem.FinishDateMp4720 is not null)
+        {
+            <MudItem xs="3"><b>@VideoConvertStatusCurrentRes.FinishMp4720</b></MudItem>
+            @if (CurrentConversionItem.FinishDateMp4720.HasValue)
+            {
+                <MudItem xs="3">@CurrentConversionItem.FinishDateMp4720.Value.LocalDateTime</MudItem>
+            }
+            else
+            {
+                <MudItem xs="3">&nbsp;</MudItem>
+            }
+        }
+
+        @if (CurrentConversionItem.StartDateMp41080 is not null || CurrentConversionItem.FinishDateMp41080 is not null)
+        {
+            <MudItem xs="3"><b>@VideoConvertStatusCurrentRes.StartMp41080</b></MudItem>
+            @if (CurrentConversionItem.StartDateMp41080 is not null)
+            {
+                <MudItem xs="3">@CurrentConversionItem.StartDateMp41080.Value.LocalDateTime</MudItem>
+            }
+            else
+            {
+                <MudItem xs="3">&nbsp;</MudItem>
+            }
+        }
+
+        @if (CurrentConversionItem.StartDateMp41080 is not null || CurrentConversionItem.FinishDateMp41080 is not null)
+        {
+            <MudItem xs="3"><b>@VideoConvertStatusCurrentRes.FinishMp41080</b></MudItem>
+            @if (CurrentConversionItem.FinishDateMp41080.HasValue)
+            {
+                <MudItem xs="3">@CurrentConversionItem.FinishDateMp41080.Value.LocalDateTime</MudItem>
+            }
+            else
+            {
+                <MudItem xs="3">&nbsp;</MudItem>
+            }
+        }
+
+        @if (CurrentConversionItem.StartDateMp42160 is not null || CurrentConversionItem.FinishDateMp42160 is not null)
+        {
+            <MudItem xs="3"><b>@VideoConvertStatusCurrentRes.StartMp42160</b></MudItem>
+            @if (CurrentConversionItem.StartDateMp42160 is not null)
+            {
+                <MudItem xs="3">@CurrentConversionItem.StartDateMp42160.Value.LocalDateTime</MudItem>
+            }
+            else
+            {
+                <MudItem xs="3">&nbsp;</MudItem>
+            }
+        }
+
+        @if (CurrentConversionItem.StartDateMp42160 is not null || CurrentConversionItem.FinishDateMp42160 is not null)
+        {
+            <MudItem xs="3"><b>@VideoConvertStatusCurrentRes.FinishMp42160</b></MudItem>
+            @if (CurrentConversionItem.FinishDateMp42160.HasValue)
+            {
+                <MudItem xs="3">@CurrentConversionItem.FinishDateMp42160.Value.LocalDateTime</MudItem>
+            }
+            else
+            {
+                <MudItem xs="3">&nbsp;</MudItem>
+            }
+        }
+
+        @if (CurrentConversionItem.StartDateThumbnail is not null || CurrentConversionItem.FinishDateThumbnail is not null)
+        {
+            <MudItem xs="3"><b>@VideoConvertStatusCurrentRes.StartThumbnail</b></MudItem>
+            @if (CurrentConversionItem.StartDateThumbnail is not null)
+            {
+                <MudItem xs="3">@CurrentConversionItem.StartDateThumbnail.Value.LocalDateTime</MudItem>
+            }
+            else
+            {
+                <MudItem xs="3">&nbsp;</MudItem>
+            }
+        }
+
+        @if (CurrentConversionItem.StartDateThumbnail is not null || CurrentConversionItem.FinishDateThumbnail is not null)
+        {
+            <MudItem xs="3"><b>@VideoConvertStatusCurrentRes.FinishThumbnail</b></MudItem>
+            @if (CurrentConversionItem.FinishDateThumbnail.HasValue)
+            {
+                <MudItem xs="3">@CurrentConversionItem.FinishDateThumbnail.Value.LocalDateTime</MudItem>
+            }
+            else
+            {
+                <MudItem xs="3">&nbsp;</MudItem>
+            }
+        }
+
+        @if (CurrentConversionItem.StartDateHls is not null || CurrentConversionItem.FinishDateHls is not null)
+        {
+            <MudItem xs="3"><b>@VideoConvertStatusCurrentRes.StartHls</b></MudItem>
+            @if (CurrentConversionItem.StartDateHls is not null)
+            {
+                <MudItem xs="3">@CurrentConversionItem.StartDateHls.Value.LocalDateTime</MudItem>
+            }
+            else
+            {
+                <MudItem xs="3">&nbsp;</MudItem>
+            }
+        }
+
+        @if (CurrentConversionItem.StartDateHls is not null || CurrentConversionItem.FinishDateHls is not null)
+        {
+            <MudItem xs="3"><b>@VideoConvertStatusCurrentRes.FinishHls</b></MudItem>
+            @if (CurrentConversionItem.FinishDateHls.HasValue)
+            {
+                <MudItem xs="3">@CurrentConversionItem.FinishDateHls.Value.LocalDateTime</MudItem>
+            }
+            else
+            {
+                <MudItem xs="3">&nbsp;</MudItem>
+            }
+        }
+
+        @if (CurrentConversionItem.StartDateVtt is not null || CurrentConversionItem.FinishDateVtt is not null)
+        {
+            <MudItem xs="3"><b>@VideoConvertStatusCurrentRes.StartVtt</b></MudItem>
+            @if (CurrentConversionItem.StartDateVtt is not null)
+            {
+                <MudItem xs="3">@CurrentConversionItem.StartDateVtt.Value.LocalDateTime</MudItem>
+            }
+            else
+            {
+                <MudItem xs="3">&nbsp;</MudItem>
+            }
+        }
+
+        @if (CurrentConversionItem.StartDateVtt is not null || CurrentConversionItem.FinishDateVtt is not null)
+        {
+            <MudItem xs="3"><b>@VideoConvertStatusCurrentRes.FinishVtt</b></MudItem>
+            @if (CurrentConversionItem.FinishDateVtt.HasValue)
+            {
+                <MudItem xs="3">@CurrentConversionItem.FinishDateVtt.Value.LocalDateTime</MudItem>
+            }
+            else
+            {
+                <MudItem xs="3">&nbsp;</MudItem>
+            }
+        }
+
+        @if (CurrentConversionItem.StartDateConvertPicture is not null || CurrentConversionItem.FinishDateConvertPicture is not null)
+        {
+            <MudItem xs="3"><b>@VideoConvertStatusCurrentRes.StartPicture</b></MudItem>
+            @if (CurrentConversionItem.StartDateConvertPicture is not null)
+            {
+                <MudItem xs="3">@CurrentConversionItem.StartDateConvertPicture.Value.LocalDateTime</MudItem>
+            }
+            else
+            {
+                <MudItem xs="3">&nbsp;</MudItem>
+            }
+        }
+
+        @if (CurrentConversionItem.StartDateConvertPicture is not null || CurrentConversionItem.FinishDateConvertPicture is not null)
+        {
+            <MudItem xs="3"><b>@VideoConvertStatusCurrentRes.FinishPicture</b></MudItem>
+            @if (CurrentConversionItem.FinishDateConvertPicture.HasValue)
+            {
+                <MudItem xs="3">@CurrentConversionItem.FinishDateConvertPicture.Value.LocalDateTime</MudItem>
+            }
+            else
+            {
+                <MudItem xs="3">&nbsp;</MudItem>
+            }
+        }
+
+        @if (CurrentConversionItem.StartDateCopyConverted is not null || CurrentConversionItem.FinishDateCopyConverted is not null)
+        {
+            <MudItem xs="3"><b>@VideoConvertStatusCurrentRes.StartCopyConverted</b></MudItem>
+            @if (CurrentConversionItem.StartDateCopyConverted is not null)
+            {
+                <MudItem xs="3">@CurrentConversionItem.StartDateCopyConverted.Value.LocalDateTime</MudItem>
+            }
+            else
+            {
+                <MudItem xs="3">&nbsp;</MudItem>
+            }
+        }
+
+        @if (CurrentConversionItem.StartDateCopyConverted is not null || CurrentConversionItem.FinishDateCopyConverted is not null)
+        {
+            <MudItem xs="3"><b>@VideoConvertStatusCurrentRes.FinishCopyConverted</b></MudItem>
+            @if (CurrentConversionItem.FinishDateCopyConverted.HasValue)
+            {
+                <MudItem xs="3">@CurrentConversionItem.FinishDateCopyConverted.Value.LocalDateTime</MudItem>
+            }
+            else
+            {
+                <MudItem xs="3">&nbsp;</MudItem>
+            }
+        }
+
+        @if (CurrentConversionItem.StartDateDeleteTemp is not null || CurrentConversionItem.FinishDateDeleteTemp is not null)
+        {
+            <MudItem xs="3"><b>@VideoConvertStatusCurrentRes.StartDeleteConverting</b></MudItem>
+            @if (CurrentConversionItem.StartDateDeleteTemp is not null)
+            {
+                <MudItem xs="3">@CurrentConversionItem.StartDateDeleteTemp.Value.LocalDateTime</MudItem>
+            }
+            else
+            {
+                <MudItem xs="3">&nbsp;</MudItem>
+            }
+        }
+
+        @if (CurrentConversionItem.StartDateDeleteTemp is not null || CurrentConversionItem.FinishDateDeleteTemp is not null)
+        {
+            <MudItem xs="3"><b>@VideoConvertStatusCurrentRes.FinishDeleteConverting</b></MudItem>
+            @if (CurrentConversionItem.FinishDateDeleteTemp.HasValue)
+            {
+                <MudItem xs="3">@CurrentConversionItem.FinishDateDeleteTemp.Value.LocalDateTime</MudItem>
+            }
+            else
+            {
+                <MudItem xs="3">&nbsp;</MudItem>
+            }
+        }
+
+        @if (CurrentConversionItem.StartDateDeleteOriginal is not null || CurrentConversionItem.FinishDateDeleteOriginal is not null)
+        {
+            <MudItem xs="3"><b>@VideoConvertStatusCurrentRes.StartDeleteOriginal</b></MudItem>
+            @if (CurrentConversionItem.StartDateDeleteOriginal is not null)
+            {
+                <MudItem xs="3">@CurrentConversionItem.StartDateDeleteOriginal.Value.LocalDateTime</MudItem>
+            }
+            else
+            {
+                <MudItem xs="3">&nbsp;</MudItem>
+            }
+        }
+
+        @if (CurrentConversionItem.StartDateDeleteOriginal is not null || CurrentConversionItem.FinishDateDeleteOriginal is not null)
+        {
+            <MudItem xs="3"><b>@VideoConvertStatusCurrentRes.FinishDeleteOriginal</b></MudItem>
+            @if (CurrentConversionItem.FinishDateDeleteOriginal.HasValue)
+            {
+                <MudItem xs="3">@CurrentConversionItem.FinishDateDeleteOriginal.Value.LocalDateTime</MudItem>
+            }
+            else
+            {
+                <MudItem xs="3">&nbsp;</MudItem>
+            }
+        }
+
+        @if (CurrentConversionItem.Status == EnumVideoConvertStatus.Convert640x360Begin ||
+       CurrentConversionItem.Status == EnumVideoConvertStatus.Convert852x480Begin ||
+       CurrentConversionItem.Status == EnumVideoConvertStatus.Convert1280x720Begin ||
+       CurrentConversionItem.Status == EnumVideoConvertStatus.Convert1920x1080Begin ||
+       CurrentConversionItem.Status == EnumVideoConvertStatus.Convert3840x2160Begin ||
+       CurrentConversionItem.Status == EnumVideoConvertStatus.ConvertMp4VideoBegin)
+        {
+            <MudItem xs="3"><b>@VideoConvertStatusCurrentRes.ConversionTime</b></MudItem>
+            <MudItem xs="3">@CurrentConversionItem.ElapsedTime</MudItem>
+            <MudItem xs="3"><b>@VideoConvertStatusCurrentRes.RestConversionTime</b></MudItem>
+            <MudItem xs="3">@CurrentConversionItem.RemainingDuration</MudItem>
+
+            <MudItem xs="3"><b>@VideoConvertStatusCurrentRes.Progress</b></MudItem>
+            <MudItem xs="3">
+                @if (CurrentConversionItem.Progress.HasValue)
+                {
+                    <MudProgressLinear Color="Color.Info" Size="Size.Large" Value="@CurrentConversionItem.Progress.Value" Class="my-7">
+                        <MudText Typo="Typo.subtitle1" Color="Color.Dark">
+                            <b>@CurrentConversionItem.Progress %</b>
+                        </MudText>
+                    </MudProgressLinear>
+                }
+                else
+                {
+                    <MudProgressLinear Color="Color.Info" Size="Size.Large" Value="0" Class="my-7">
+                        <MudText Typo="Typo.subtitle1" Color="Color.Dark">
+                            <b>0 %</b>
+                        </MudText>
+                    </MudProgressLinear>
+                }
+            </MudItem>
+            <MudItem xs="6">&nbsp;</MudItem>
+        }
+    </MudGrid>
+}
+else
+{
+    <MudText Class="mt-15" Align="Align.Center" Typo="Typo.h4">@VideoConvertStatusCurrentRes.NoItemActive</MudText>
+}
+
+@code
+{
+    [Parameter]
+    [EditorRequired]
+    public IVideoConvertStatusModel? CurrentConversionItem { get; set; }
+}

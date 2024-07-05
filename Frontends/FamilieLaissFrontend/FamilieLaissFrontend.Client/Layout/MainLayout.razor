@@ -1,0 +1,27 @@
+﻿@using FamilieLaissInterfaces.Enums
+
+@inherits LayoutComponentBase
+
+<MudThemingProvider />
+<MudProviders />
+
+<MudLayout>
+    <MudAppBar Elevation="1">
+        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
+        <MudText Typo="Typo.h5" Class="ml-3">Familie Laiß</MudText>
+        <div class="ml-15 mr-5" style="width: 60vw;">
+            <SectionOutlet SectionName="@nameof(FLSectionIdentifier.AppBar)"></SectionOutlet>
+        </div>
+        <MudSpacer />
+        <LoginLogoutControl />
+    </MudAppBar>
+    <MudDrawer @bind-Open="DrawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2">
+        <NavMenu></NavMenu>
+    </MudDrawer>
+    <MudMainContent>
+        <MudContainer Style="margin-top: var(--fl-content-border-size); margin-bottom: var(--fl-content-border-size)" MaxWidth="MaxWidth.ExtraExtraLarge">
+            @Body
+        </MudContainer>
+    </MudMainContent>
+</MudLayout>
+

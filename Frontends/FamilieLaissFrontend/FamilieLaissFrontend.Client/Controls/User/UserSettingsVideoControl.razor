@@ -1,0 +1,126 @@
+﻿@using FamilieLaissInterfaces.Models.Data
+@using FamilieLaissResources.Resources.Controls.User
+
+<MudStack Row="true" Spacing="5">
+    <MudStack>
+        <MudTooltip Arrow="true" Placement="Placement.Top" Text="@UserSettingsVideoRes.VideoVolumeTooltip">
+            <MudText Class="mt-5">@UserSettingsVideoRes.VideoVolumeText</MudText>
+        </MudTooltip>
+        <MudTooltip Arrow="true" Placement="Placement.Top" Text="@UserSettingsVideoRes.VideoAutoPlayTooltip">
+            <MudText Class="mt-6">@UserSettingsVideoRes.VideoAutoPlayText</MudText>
+        </MudTooltip>
+        <MudTooltip Arrow="true" Placement="Placement.Top" Text="@UserSettingsVideoRes.VideoLoopTooltip">
+            <MudText Class="mt-4">@UserSettingsVideoRes.VideoLoopText</MudText>
+        </MudTooltip>
+        <MudTooltip Arrow="true" Placement="Placement.Top" Text="@UserSettingsVideoRes.ShowButtonRewindTooltip">
+            <MudText Class="mt-4">@UserSettingsVideoRes.ShowButtonRewindText</MudText>
+        </MudTooltip>
+        <MudTooltip Arrow="true" Placement="Placement.Top" Text="@UserSettingsVideoRes.ShowButtonForwardTooltip">
+            <MudText Class="mt-4">@UserSettingsVideoRes.ShowButtonForwardText</MudText>
+        </MudTooltip>
+        <MudTooltip Arrow="true" Placement="Placement.Top" Text="@UserSettingsVideoRes.SeekTimeForwardRewindTooltip">
+            <MudText Class="mt-8">@UserSettingsVideoRes.SeekTimeForwardRewindText</MudText>
+        </MudTooltip>
+        <MudTooltip Arrow="true" Placement="Placement.Top" Text="@UserSettingsVideoRes.ShowMirrorButtonTooltip">
+            <MudText Class="mt-4">@UserSettingsVideoRes.ShowMirrorButtonText</MudText>
+        </MudTooltip>
+        <MudTooltip Arrow="true" Placement="Placement.Top" Text="@UserSettingsVideoRes.ShowPlayRateMenuTooltip">
+            <MudText Class="mt-4">@UserSettingsVideoRes.ShowPlayRateMenuText</MudText>
+        </MudTooltip>
+        <MudTooltip Arrow="true" Placement="Placement.Top" Text="@UserSettingsVideoRes.ShowQualityMenuTooltip">
+            <MudText Class="mt-4">@UserSettingsVideoRes.ShowQualityMenuText</MudText>
+        </MudTooltip>
+        <MudTooltip Arrow="true" Placement="Placement.Top" Text="@UserSettingsVideoRes.ShowZoomMenuTooltip">
+            <MudText Class="mt-4">@UserSettingsVideoRes.ShowZoomMenuText</MudText>
+        </MudTooltip>
+        <MudTooltip Arrow="true" Placement="Placement.Top" Text="@UserSettingsVideoRes.ShowZoomInfoTooltip">
+            <MudText Class="mt-4">@UserSettingsVideoRes.ShowZoomInfoText</MudText>
+        </MudTooltip>
+        <MudTooltip Arrow="true" Placement="Placement.Top" Text="@UserSettingsVideoRes.AllowZoomingWithMouseWheelTooltip">
+            <MudText Class="mt-4">@UserSettingsVideoRes.AllowZoomingWithMouseWheelText</MudText>
+        </MudTooltip>
+        <MudTooltip Arrow="true" Placement="Placement.Top" Text="@UserSettingsVideoRes.VideoAutoPlayOtherVideosTooltip">
+            <MudText Class="mt-4">@UserSettingsVideoRes.VideoAutoPlayOtherVideosText</MudText>
+        </MudTooltip>
+        <MudTooltip Arrow="true" Placement="Placement.Top" Text="@UserSettingsVideoRes.VideoTimeToPlayNextVideoTooltip">
+            <MudText Class="mt-8">@UserSettingsVideoRes.VideoTimeToPlayNextVideoText</MudText>
+        </MudTooltip>
+    </MudStack>
+
+    <MudStack>
+        <MudSlider @bind-Value="Model.VideoVolume"
+                   Min="0"
+                   Max="100"
+                   Variant="MudBlazor.Variant.Filled"
+                   Size="Size.Medium">
+            @UserSettingsVideoRes.LabelVolume: @Model.VideoVolume.ToString()%
+        </MudSlider>
+        <MudSwitchM3 @bind-Value="Model.VideoAutoPlay"
+                     ThumbIcon="@Icons.Material.Filled.Done"
+                     ThumbOffIcon="@Icons.Material.Filled.Close">
+        </MudSwitchM3>
+        <MudSwitchM3 @bind-Value="Model.VideoLoop"
+                     ThumbIcon="@Icons.Material.Filled.Done"
+                     ThumbOffIcon="@Icons.Material.Filled.Close">
+        </MudSwitchM3>
+        <MudSwitchM3 @bind-Value="Model.ShowButtonRewind"
+                     ThumbIcon="@Icons.Material.Filled.Done"
+                     ThumbOffIcon="@Icons.Material.Filled.Close">
+        </MudSwitchM3>
+        <MudSwitchM3 @bind-Value="Model.ShowButtonForward"
+                     ThumbIcon="@Icons.Material.Filled.Done"
+                     ThumbOffIcon="@Icons.Material.Filled.Close">
+        </MudSwitchM3>
+        <MudSelect @bind-Value="Model.VideoTimeSeekForwardRewind" Clearable="false" Required="true" AnchorOrigin="Origin.BottomLeft" TransformOrigin="Origin.TopLeft">
+            @foreach (int? seekTime in AvailableSeekTimes)
+            {
+                <MudSelectItem Value="@seekTime" />
+            }
+        </MudSelect>
+        <MudSwitchM3 @bind-Value="Model.ShowMirrorButton"
+                     ThumbIcon="@Icons.Material.Filled.Done"
+                     ThumbOffIcon="@Icons.Material.Filled.Close">
+        </MudSwitchM3>
+        <MudSwitchM3 @bind-Value="Model.ShowPlayRateMenu"
+                     ThumbIcon="@Icons.Material.Filled.Done"
+                     ThumbOffIcon="@Icons.Material.Filled.Close">
+        </MudSwitchM3>
+        <MudSwitchM3 @bind-Value="Model.ShowQualityMenu"
+                     ThumbIcon="@Icons.Material.Filled.Done"
+                     ThumbOffIcon="@Icons.Material.Filled.Close">
+        </MudSwitchM3>
+        <MudSwitchM3 @bind-Value="Model.ShowZoomMenu"
+                     ThumbIcon="@Icons.Material.Filled.Done"
+                     ThumbOffIcon="@Icons.Material.Filled.Close">
+        </MudSwitchM3>
+        <MudSwitchM3 @bind-Value="Model.ShowZoomInfo"
+                     ThumbIcon="@Icons.Material.Filled.Done"
+                     ThumbOffIcon="@Icons.Material.Filled.Close">
+        </MudSwitchM3>
+        <MudSwitchM3 @bind-Value="Model.AllowZoomingWithMouseWheel"
+                     ThumbIcon="@Icons.Material.Filled.Done"
+                     ThumbOffIcon="@Icons.Material.Filled.Close">
+        </MudSwitchM3>
+        <MudSwitchM3 @bind-Value="Model.VideoAutoPlayOtherVideos"
+                     ThumbIcon="@Icons.Material.Filled.Done"
+                     ThumbOffIcon="@Icons.Material.Filled.Close">
+        </MudSwitchM3>
+        <MudSelect @bind-Value="Model.VideoTimeToPlayNextVideo" Clearable="false" Required="true" AnchorOrigin="Origin.BottomLeft" TransformOrigin="Origin.TopLeft">
+            @foreach (int? waitTime in AvailableNextPlayWaitTimes)
+            {
+                <MudSelectItem Value="@waitTime" />
+            }
+        </MudSelect>
+    </MudStack>
+</MudStack>
+
+@code
+{
+    [Parameter]
+    [EditorRequired]
+    public IUserSettingsModel Model { get; set; } = default!;
+
+    private int[] AvailableSeekTimes { get; set; } = [5, 10, 20, 30];
+
+    private int[] AvailableNextPlayWaitTimes { get; set; } = [1, 2, 3, 4, 5, 10];
+}

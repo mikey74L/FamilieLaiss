@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "VideoConvertExecuteService": {
+      "commandName": "Project"
+    },
+    "Docker": {
+      "commandName": "Docker"
+    }
+  }
+}

@@ -1,0 +1,130 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+	<PropertyGroup>
+		<TargetFramework>net8.0</TargetFramework>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<_ContentIncludedByDefault Remove="wwwroot\UploadPictureContainer.css" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<None Include="wwwroot\videojs\examples\assets\images\slides\demo.vtt" />
+		<None Include="wwwroot\videojs\examples\assets\tracks\steel_de.vtt" />
+		<None Include="wwwroot\videojs\examples\assets\tracks\steel_en.vtt" />
+		<None Include="wwwroot\videojs\examples\assets\tracks\steel_es.vtt" />
+		<None Include="wwwroot\videojs\examples\assets\vtt\demo.vtt" />
+		<None Include="wwwroot\videojs\lang\ar.js" />
+		<None Include="wwwroot\videojs\lang\az.js" />
+		<None Include="wwwroot\videojs\lang\ba.js" />
+		<None Include="wwwroot\videojs\lang\bg.js" />
+		<None Include="wwwroot\videojs\lang\bn.js" />
+		<None Include="wwwroot\videojs\lang\ca.js" />
+		<None Include="wwwroot\videojs\lang\cs.js" />
+		<None Include="wwwroot\videojs\lang\cy.js" />
+		<None Include="wwwroot\videojs\lang\da.js" />
+		<None Include="wwwroot\videojs\lang\de.js" />
+		<None Include="wwwroot\videojs\lang\el.js" />
+		<None Include="wwwroot\videojs\lang\en-GB.js" />
+		<None Include="wwwroot\videojs\lang\en.js" />
+		<None Include="wwwroot\videojs\lang\es.js" />
+		<None Include="wwwroot\videojs\lang\et.js" />
+		<None Include="wwwroot\videojs\lang\eu.js" />
+		<None Include="wwwroot\videojs\lang\fa.js" />
+		<None Include="wwwroot\videojs\lang\fi.js" />
+		<None Include="wwwroot\videojs\lang\fr.js" />
+		<None Include="wwwroot\videojs\lang\gd.js" />
+		<None Include="wwwroot\videojs\lang\gl.js" />
+		<None Include="wwwroot\videojs\lang\he.js" />
+		<None Include="wwwroot\videojs\lang\hi.js" />
+		<None Include="wwwroot\videojs\lang\hr.js" />
+		<None Include="wwwroot\videojs\lang\hu.js" />
+		<None Include="wwwroot\videojs\lang\it.js" />
+		<None Include="wwwroot\videojs\lang\ja.js" />
+		<None Include="wwwroot\videojs\lang\ko.js" />
+		<None Include="wwwroot\videojs\lang\lv.js" />
+		<None Include="wwwroot\videojs\lang\nb.js" />
+		<None Include="wwwroot\videojs\lang\nl.js" />
+		<None Include="wwwroot\videojs\lang\nn.js" />
+		<None Include="wwwroot\videojs\lang\np.js" />
+		<None Include="wwwroot\videojs\lang\oc.js" />
+		<None Include="wwwroot\videojs\lang\pl.js" />
+		<None Include="wwwroot\videojs\lang\pt-BR.js" />
+		<None Include="wwwroot\videojs\lang\pt-PT.js" />
+		<None Include="wwwroot\videojs\lang\ro.js" />
+		<None Include="wwwroot\videojs\lang\ru.js" />
+		<None Include="wwwroot\videojs\lang\sk.js" />
+		<None Include="wwwroot\videojs\lang\sl.js" />
+		<None Include="wwwroot\videojs\lang\sr.js" />
+		<None Include="wwwroot\videojs\lang\sv.js" />
+		<None Include="wwwroot\videojs\lang\te.js" />
+		<None Include="wwwroot\videojs\lang\th.js" />
+		<None Include="wwwroot\videojs\lang\tr.js" />
+		<None Include="wwwroot\videojs\lang\uk.js" />
+		<None Include="wwwroot\videojs\lang\vi.js" />
+		<None Include="wwwroot\videojs\lang\zh-CN.js" />
+		<None Include="wwwroot\videojs\lang\zh-Hans.js" />
+		<None Include="wwwroot\videojs\lang\zh-Hant.js" />
+		<None Include="wwwroot\videojs\lang\zh-TW.js" />
+		<None Include="wwwroot\videojs\nuevo.min.js" />
+		<None Include="wwwroot\videojs\plugins\hlsjs.js" />
+		<None Include="wwwroot\videojs\plugins\index.php" />
+		<None Include="wwwroot\videojs\plugins\liveclock.min.js" />
+		<None Include="wwwroot\videojs\plugins\nuevo-dash.js" />
+		<None Include="wwwroot\videojs\plugins\videojs-chromecast.min.js" />
+		<None Include="wwwroot\videojs\plugins\videojs-contrib-ads.js" />
+		<None Include="wwwroot\videojs\plugins\videojs-contrib-ads.min.js" />
+		<None Include="wwwroot\videojs\plugins\videojs-contrib-eme.js" />
+		<None Include="wwwroot\videojs\plugins\videojs-contrib-eme.min.js" />
+		<None Include="wwwroot\videojs\plugins\videojs.airplay.js" />
+		<None Include="wwwroot\videojs\plugins\videojs.filters.js" />
+		<None Include="wwwroot\videojs\plugins\videojs.hotkeys.min.js" />
+		<None Include="wwwroot\videojs\plugins\videojs.ima.js" />
+		<None Include="wwwroot\videojs\plugins\videojs.ima.min.js" />
+		<None Include="wwwroot\videojs\plugins\videojs.offline.js" />
+		<None Include="wwwroot\videojs\plugins\videojs.skipintro.js" />
+		<None Include="wwwroot\videojs\plugins\videojs.thumbnails.js" />
+		<None Include="wwwroot\videojs\plugins\visualizer.js" />
+		<None Include="wwwroot\videojs\plugins\vroll.js" />
+		<None Include="wwwroot\videojs\skins\chrome\symbol-defs.svg" />
+		<None Include="wwwroot\videojs\skins\flow\symbol-defs.svg" />
+		<None Include="wwwroot\videojs\skins\nuevo\symbol-defs.svg" />
+		<None Include="wwwroot\videojs\skins\pinko\symbol-defs.svg" />
+		<None Include="wwwroot\videojs\skins\roundal\symbol-defs.svg" />
+		<None Include="wwwroot\videojs\skins\treso\symbol-defs.svg" />
+		<None Include="wwwroot\videojs\video.js" />
+		<None Include="wwwroot\videojs\video.min.js" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="CodeBeam.MudBlazor.Extensions" Version="6.9.2" />
+		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.2" />
+		<PackageReference Include="EventAggregator.Blazor" Version="2.0.0" />
+		<PackageReference Include="FluentValidation" Version="11.9.1" />
+		<PackageReference Include="Majorsoft.Blazor.Components.Loading" Version="1.5.0" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.Authorization" Version="8.0.6" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="8.0.6" />
+		<PackageReference Include="Auth0.AspNetCore.Authentication" Version="1.4.1" />
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Http" Version="8.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Http.Polly" Version="8.0.6" />
+		<PackageReference Include="Microsoft.Extensions.Localization" Version="8.0.6" />
+		<PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="8.0.0" />
+		<PackageReference Include="MudBlazor" Version="6.19.1" />
+		<PackageReference Include="Radzen.Blazor" Version="4.32.3" />
+		<PackageReference Include="Yarp.ReverseProxy" Version="2.1.0" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\FamilieLaissFrontend.Client\FamilieLaissFrontend.Client.csproj" />
+		<ProjectReference Include="..\FamilieLaissInterfaces\FamilieLaissInterfaces.csproj" />
+		<ProjectReference Include="..\FamilieLaissServices\FamilieLaissServices.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Folder Include="Components\Layout\" />
+	</ItemGroup>
+
+</Project>

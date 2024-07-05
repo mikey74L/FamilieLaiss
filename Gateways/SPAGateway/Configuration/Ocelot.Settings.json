@@ -1,0 +1,28 @@
+{
+  "Routes": [
+    {
+      "DownstreamPathTemplate": "/api/{version}/UserSettings",
+      "DownstreamScheme": "http",
+      "UseServiceDiscovery": true,
+      "ServiceName": "SettingsService",
+      "UpstreamPathTemplate": "/api/{version}/UserSettings",
+      "UpstreamHttpMethod": [ "GET" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/{version}/UserSettings/{id}",
+      "DownstreamScheme": "http",
+      "UseServiceDiscovery": true,
+      "ServiceName": "SettingsService",
+      "UpstreamPathTemplate": "/api/{version}/UserSettings/{id}",
+      "UpstreamHttpMethod": [ "GET" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/{version}/UserSettings/{id}",
+      "DownstreamScheme": "http",
+      "UseServiceDiscovery": true,
+      "ServiceName": "SettingsService",
+      "UpstreamPathTemplate": "/api/{version}/UserSettings/{id}",
+      "UpstreamHttpMethod": [ "PUT" ]
+    }
+  ]
+}

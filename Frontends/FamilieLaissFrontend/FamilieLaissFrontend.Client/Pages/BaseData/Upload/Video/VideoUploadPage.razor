@@ -1,0 +1,36 @@
+﻿@using FamilieLaissEnums
+@using FamilieLaissFrontend.Client.ViewModels.Pages.BaseData.Upload.Video
+@using FamilieLaissResources.Resources.Pages.BaseData.Upload.Video
+@using FamilieLaissSharedUI.Components
+
+@inherits FlComponentBase<VideoUploadPageViewModel>
+
+@page "/basedata-video-upload"
+
+<NavigationLock OnBeforeInternalNavigation="async () => await ViewModel.BeforeInternalNavigationCommand.ExecuteAsync(null)" ConfirmExternalNavigation="@ViewModel.IsUploading" />
+
+<MudTabs Elevation="2" Rounded="true" KeepPanelsAlive="true" ActivePanelIndexChanged="async (data) => await ViewModel.TabIndexChangedCommand.ExecuteAsync(data)">
+    <MudTabPanel Icon="@Icons.Material.Filled.CloudUpload"
+                 Class="mr-10"
+                 Text="@VideoUploadPageRes.TabHeaderUploadControl"
+                 BadgeData="@ViewModel.UploadFileCount"
+                 Disabled="@ViewModel.IsUploading">
+        <UploadControl UploadMultipleFiles="true"
+                       UploadType="EnumUploadType.Video"
+                       UploadCountChanged="() => ViewModel.UploadCountChangedCommand.Execute(null)"
+                       UploadStarted="() => ViewModel.UploadStartedCommand.Execute(null)"
+                       UploadFinished="() => ViewModel.UploadFinishedCommand.Execute(null)" />
+    </MudTabPanel>
+    <MudTabPanel Icon="@Icons.Material.Filled.Cloud"
+                 Text="@VideoUploadPageRes.TabHeaderUploadArea"
+                 BadgeData="@ViewModel.CurrentCountUploadVideos"
+                 Class="mr-10"
+                 Disabled="@ViewModel.IsUploading">
+        <VideoUploadList ShowLoading="ViewModel.IsLoading"
+                         ShowError="ViewModel.HasError"
+                         UploadItems="ViewModel.UploadVideoItems"
+                         SortAndFilterService="ViewModel.SortAndFilterService"
+                         ShowFilterAppBar="@(ViewModel.CurrentTabIndex == 1)"
+                         ReloadUploadVideos="() => ViewModel.LoadUploadVideosCommand.Execute(null)"/>
+    </MudTabPanel>
+</MudTabs>

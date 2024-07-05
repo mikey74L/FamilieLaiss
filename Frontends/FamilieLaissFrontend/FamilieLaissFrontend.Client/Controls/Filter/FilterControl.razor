@@ -1,0 +1,44 @@
+﻿@using FamilieLaissFrontend.Client.ViewModels.Controls.Filter
+@using FamilieLaissInterfaces.Models
+@using FamilieLaissInterfaces.Services
+@using FamilieLaissResources.Resources.Controls.Filter
+@using FamilieLaissSharedUI.Components
+
+@inherits FlComponentBase<FilterControlViewModel>
+
+<MudStack>
+    <MudStack Row="true" Spacing="3">
+        <MudButton Color="Color.Primary" OnClick="async () => await ViewModel.SetFilterCommand.ExecuteAsync(null)">@FilterControlRes.ButtonSet</MudButton>
+        <MudButton Color="Color.Secondary" OnClick="async () => await ViewModel.ResetFilterCommand.ExecuteAsync(null)">@FilterControlRes.ButtonReset</MudButton>
+    </MudStack>
+
+    <MudStack Style="max-height: 85vh; overflow-y: auto; overflow-x: hidden;">
+        @foreach (var filterGroup in FilterGroups.OrderBy(x => x.Sort))
+        {
+            <FilterGroupControl FilterGroup="@filterGroup"
+                                FilterCriterias="@FilterCriterias.Where(x => x.GroupId == filterGroup.Id).ToList()">
+            </FilterGroupControl>
+        }
+    </MudStack>
+</MudStack>
+
+@code
+{
+    [Parameter]
+    [EditorRequired]
+    public List<IGraphQlFilterGroup> FilterGroups { get; set; } = default!;
+
+    [Parameter]
+    [EditorRequired]
+    public List<IGraphQlFilterCriteria> FilterCriterias 
+    { 
+        get
+        {
+            return ViewModel.FilterCriterias;
+        }
+        set
+        {
+            ViewModel.FilterCriterias = value;
+        }
+    } 
+}

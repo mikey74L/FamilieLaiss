@@ -1,0 +1,237 @@
+﻿@using FamilieLaissFrontend.Client.ViewModels.Controls.UploadControl
+@using FamilieLaissEnums
+@using FamilieLaissResources.Resources.Controls
+@using FamilieLaissResources.Resources.Controls.UploadControl
+@using FamilieLaissSharedUI.Components
+
+@inherits FlComponentBase<UploadControlViewModel>
+
+<!-- Ausgeben der Darg-Drop-Zone mit dem Input-File -->
+<MudPaper Class="relative rounded-lg border-2 border-dashed pa-4 mt-4 mud-width-full mud-height-full" Height="150px" Outlined="true">
+    @if (UploadMultipleFiles)
+    {
+        <InputFile id="@ViewModel.IdInputFile" class="absolute mud-width-full mud-height-full overflow-hidden z-2" style="opacity:0;" disabled="@ViewModel.IsUploading" OnChange="async (param) => await ViewModel.SelectFileCommand.ExecuteAsync(param)" multiple accept="@ViewModel.AllowedFileExtensions"></InputFile>
+    }
+    else
+    {
+        <InputFile id="@ViewModel.IdInputFile" class="absolute mud-width-full mud-height-full overflow-hidden z-2" style="opacity:0;" disabled="@ViewModel.IsUploading" OnChange="async (param) => await ViewModel.SelectFileCommand.ExecuteAsync(param)" accept="@ViewModel.AllowedFileExtensions"></InputFile>
+    }
+    <MudText Typo="Typo.h6">@ViewModel.StatusText</MudText>
+</MudPaper>
+
+<!-- Ausgeben der Buttons für den Upload und das leeren der Liste -->
+@if (ViewModel.UploadFileInfoList.Count > 0)
+{
+    <div class="mt-10 mb-3">
+        <MudTooltip Text="@UploadControlRes.ButtonDeleteAllTooltip" Placement="Placement.Top" ShowOnFocus="false">
+            <MudButton Variant="MudBlazor.Variant.Filled"
+                       StartIcon="@Icons.Material.Filled.Delete"
+                       Color="Color.Error"
+                       Disabled="ViewModel.IsUploading"
+                       OnClick="async () => await ViewModel.ClearListCommand.ExecuteAsync(null)">@UploadControlRes.ButtonDeleteAllText</MudButton>
+        </MudTooltip>
+        <MudTooltip Text="@UploadControlRes.ButtonUploadTooltip" Placement="Placement.Top" ShowOnFocus="false">
+            <MudButton Variant="MudBlazor.Variant.Filled"
+                       StartIcon="@Icons.Material.Filled.UploadFile"
+                       Color="Color.Primary"
+                       Disabled="ViewModel.IsUploading"
+                       OnClick="async () => await ViewModel.StartUploadCommand.ExecuteAsync(null)">@UploadControlRes.ButtonUploadText</MudButton>
+        </MudTooltip>
+    </div>
+}
+
+<!-- Ausgeben der Liste der Files -->
+@if (ViewModel.UploadFileInfoList.Count > 0)
+{
+    <MudTable Items="ViewModel.UploadFileInfoList" Hover="true" Height="calc(100vh - 340px - var(--mud-appbar-height) - var(--fl-content-border-size))" FixedHeader="true" HorizontalScrollbar="false">
+        <HeaderContent>
+            @if (UploadType == EnumUploadType.Picture)
+            {
+                <MudTh>@UploadControlRes.ColumnHeaderImage</MudTh>
+            }
+            <MudTh>@UploadControlRes.ColumnHeaderFilename</MudTh>
+            <MudTh>@UploadControlRes.ColumnHeaderStatus</MudTh>
+            <MudTh>@UploadControlRes.ColumnHeaderProgress</MudTh>
+            <MudTh>@UploadControlRes.ColumnHeaderActions</MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            @if (UploadType == EnumUploadType.Picture)
+            {
+                <MudTd DataLabel="@UploadControlRes.ColumnHeaderImage">
+                    <MudImage ObjectFit="ObjectFit.Cover" Width="50" Src="@(@context.PreviewImage)" Elevation="25" Class="rounded-lg" />
+                </MudTd>
+            }
+            <MudTd DataLabel="@UploadControlRes.ColumnHeaderFilename">@context.FileName</MudTd>
+            <MudTd DataLabel="@UploadControlRes.ColumnHeaderStatus">@context.StatusAsString</MudTd>
+            @if (context.Status != EnumUploadStatus.Added)
+            {
+                <MudTd DataLabel="@UploadControlRes.ColumnHeaderProgress">
+                    <MudProgressLinear Color="Color.Info" Size="Size.Large" Value="@context.PercentageDone" Class="my-7">
+                        <MudText Typo="Typo.subtitle1" Color="Color.Dark">
+                            <b>@context.PercentageDone %</b>
+                        </MudText>
+                    </MudProgressLinear>
+                </MudTd>
+            }
+            else
+            {
+                <MudTd>
+                </MudTd>
+            }
+            <MudTd DataLabel="@UploadControlRes.ColumnHeaderActions">
+                <MudTooltip Text="@UploadControlRes.ButtonRemoveTooltip" Placement="Placement.Top" ShowOnFocus="false">
+                    <MudIconButton Icon="@Icons.Material.Filled.Delete"
+                                   Color="Color.Error"
+                                   Disabled="ViewModel.IsUploading"
+                                   OnClick="async () => await ViewModel.RemoveItemCommand.ExecuteAsync(context.Id)" />
+                </MudTooltip>
+            </MudTd>
+        </RowTemplate>
+    </MudTable>
+}
+
+@code
+{
+    [Parameter] 
+    public bool UploadMultipleFiles 
+    { 
+        get
+        {
+            return ViewModel.UploadMultipleFiles;
+        }
+        set
+        {
+            ViewModel.UploadMultipleFiles = value;
+        }
+    }
+
+    [Parameter] 
+    public int UploadFileMaxSelectCount 
+    { 
+        get
+        {
+            return ViewModel.UploadFileMaxSelectCount;
+        }
+        set
+        {
+            ViewModel.UploadFileMaxSelectCount = value;
+        }
+    }
+
+    [Parameter] 
+    public EnumUploadType UploadType 
+    { 
+        get
+        {
+            return ViewModel.UploadType;
+        }
+        set
+        {
+            ViewModel.UploadType = value;
+        }
+    }
+
+    [Parameter] 
+    public int ChunkSize 
+    { 
+        get
+        {
+            return ViewModel.ChunkSize;
+        }
+        set
+        {
+            ViewModel.ChunkSize = value;
+        }
+    }
+
+    [Parameter] 
+    public EventCallback UploadStarted 
+    { 
+        get
+        {
+            return ViewModel.UploadStarted;
+        }
+        set
+        {
+            ViewModel.UploadStarted = value;
+        }
+    }
+
+    [Parameter] 
+    public EventCallback UploadFinished 
+    { 
+        get
+        {
+            return ViewModel.UploadFinished;
+        }
+        set
+        {
+            ViewModel.UploadFinished = value;
+        }
+    }
+
+    [Parameter] 
+    public EventCallback UploadFinishedWithFailure 
+    { 
+        get
+        {
+            return ViewModel.UploadFinishedWithFailure;
+        }
+        set
+        {
+            ViewModel.UploadFinishedWithFailure = value;
+        }
+    }
+
+    [Parameter] 
+    public EventCallback UploadFinishedWithSuccess 
+    { 
+        get
+        {
+            return ViewModel.UploadFinishedWithSuccess;
+        }
+        set
+        {
+            ViewModel.UploadFinishedWithSuccess = value;
+        }
+    }
+
+    [Parameter] 
+    public EventCallback<string> FileUploadedWithError 
+    { 
+        get
+        {
+            return ViewModel.FileUploadedWithError;
+        }
+        set
+        {
+            ViewModel.FileUploadedWithError = value;
+        }
+    }
+
+    [Parameter] 
+    public EventCallback<string> FileUploadedWithSuccess 
+    { 
+        get
+        {
+            return ViewModel.FileUploadedWithSuccess;
+        }
+        set
+        {
+            ViewModel.FileUploadedWithSuccess = value;
+        }
+    }
+
+    [Parameter] 
+    public EventCallback<int> UploadCountChanged 
+    { 
+        get
+        {
+            return ViewModel.UploadCountChanged;
+        }
+        set
+        {
+            ViewModel.UploadCountChanged = value;
+        }
+    }
+}

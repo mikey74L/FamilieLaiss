@@ -1,0 +1,97 @@
+﻿@using FamilieLaissFrontend.Client.ViewModels.Pages.BaseData.Category
+@using FamilieLaissResources.Resources.Pages.BaseData.Category
+@using FamilieLaissSharedUI.Components
+
+@inherits FlComponentBase<CategoryListViewModel>
+
+@page "/basedata-category"
+
+<PageTitle>@CategoryListRes.PageTitle</PageTitle>
+
+<MudDataGrid Items="@ViewModel.Items"
+             Sortable="true"
+             QuickFilter="@ViewModel.QuickFilter"
+             Hover="true"
+             Striped="true"
+             SortMode="SortMode.Single"
+             FixedHeader="true"
+             Dense="true"
+             ColumnResizeMode="ResizeMode.Container"
+             Groupable="true"
+             GroupExpanded="true"
+             Loading="@ViewModel.IsLoading"
+             Height="@FullPageHeightGrid">
+    <ToolBarContent>
+        <div class="justify-start pt-3">
+            <MudText Typo="Typo.h6">@CategoryListRes.GridToolbarText</MudText>
+            <MudTooltip Text="@CategoryListRes.TooltipAdd" Placement="Placement.Top" ShowOnFocus="false">
+                <MudButton Size="Size.Small"
+                           Variant="MudBlazor.Variant.Outlined"
+                            StartIcon="@Icons.Material.Filled.Add"
+                            Disabled="@ViewModel.IsSaving"
+                            OnClick="async () => await ViewModel.AddCategoryCommand.ExecuteAsync(null)">@CategoryListRes.ButtonAdd</MudButton>
+            </MudTooltip>
+            <MudTooltip Text="@CategoryListRes.TooltipRefresh" Placement="Placement.Top" ShowOnFocus="false">
+                <MudButton Size="Size.Small"
+                           Variant="MudBlazor.Variant.Outlined"
+                            StartIcon="@Icons.Material.Filled.Refresh"
+                            Disabled="@ViewModel.IsBusy"
+                            OnClick="async () => await ViewModel.RefreshDataCommand.ExecuteAsync(null)">@CategoryListRes.ButtonRefresh</MudButton>
+            </MudTooltip>
+        </div>
+        <MudSpacer />
+        <MudTextField @bind-Value="@ViewModel.SearchString" T="@string" Placeholder="@CategoryListRes.GridToolbarSearch"
+                        Adornment="Adornment.Start" Immediate="true"
+                        AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+    </ToolBarContent>
+    <LoadingContent>
+        <MudText Align="Align.Center" Color="Color.Primary">@CategoryListRes.PlaceholderLoading</MudText>
+    </LoadingContent>
+    <NoRecordsContent>
+        <MudText Align="Align.Center" Color="Color.Error">@CategoryListRes.PlaceholderNoRecords</MudText>
+    </NoRecordsContent>
+    <Columns>
+        <TemplateColumn Grouping="true"
+                        GroupBy="@ViewModel.GroupByFunction"
+                        Title="@CategoryListRes.GridColumnCategoryType">
+            <CellTemplate>
+                <MudText Typo="Typo.body2">@context.Item.CategoryTypeText</MudText>
+            </CellTemplate>
+            <GroupTemplate>
+                <span style="font-weight:bold">@CategoryListRes.Group: @context.Grouping.Key <MudChip Variant="MudBlazor.Variant.Outlined" Color="Color.Primary" Size="Size.Small">@CategoryListRes.GroupCount @context.Grouping.Count()</MudChip></span>
+            </GroupTemplate>
+        </TemplateColumn>
+        <PropertyColumn Property="x => x.NameGerman"
+                        Groupable="false"
+                        Title="@CategoryListRes.GridColumnGermanName" />
+        <PropertyColumn Property="x => x.NameEnglish"
+                        Groupable="false"
+                        Title="@CategoryListRes.GridColumnEnglishName" />
+        <TemplateColumn Sortable="false" Groupable="false" Title="@CategoryListRes.GridColumnActions">
+            <CellTemplate>
+                <MudStack Row>
+                    <MudTooltip Text="@CategoryListRes.TooltipEdit" Placement="Placement.Top" ShowOnFocus="false">
+                        <MudIconButton Icon="@Icons.Material.Filled.Edit" Disabled="@ViewModel.IsSaving"
+                                        OnClick="async () => await ViewModel.EditCategoryCommand.ExecuteAsync(context.Item)"></MudIconButton>
+                    </MudTooltip>
+                    <MudTooltip Text="@CategoryListRes.TooltipCategoryValues" Placement="Placement.Top" ShowOnFocus="false">
+                        <MudIconButton Icon="@Icons.Material.Filled.Animation" Disabled="@ViewModel.IsSaving"
+                                        OnClick="() => ViewModel.NavigateToValuesCommand.Execute(context.Item)"></MudIconButton>
+                    </MudTooltip>
+                    <MudTooltip Text="@CategoryListRes.TooltipDelete" Placement="Placement.Top" ShowOnFocus="false">
+                        <MudIconButton Icon="@Icons.Material.Filled.Delete" Disabled="@ViewModel.IsSaving"
+                                        Color="Color.Error"
+                                        OnClick="async () => await ViewModel.DeleteCategoryCommand.ExecuteAsync(context.Item)"></MudIconButton>
+                    </MudTooltip>
+                </MudStack>
+            </CellTemplate>
+        </TemplateColumn>
+    </Columns>
+</MudDataGrid>
+
+<style>
+    .mud-table-toolbar {
+        height: 84px !important;
+    }
+</style>
+

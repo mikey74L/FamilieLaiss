@@ -1,0 +1,20 @@
+{
+  "projects": [
+    {
+      "schema": [
+        "Frontends/FamilieLaissFrontendNew/schema.graphql"
+      ],
+      "documents": [
+        "Frontends/FamilieLaissFrontendNew/**/*.graphql"
+      ]
+    },
+    {
+      "schema": [
+        "Frontends/FamilieLaissFrontendNew/FamilieLaissGraphQlClientLibrary/schema.graphql"
+      ],
+      "documents": [
+        "Frontends/FamilieLaissFrontendNew/FamilieLaissGraphQlClientLibrary/**/*.graphql"
+      ]
+    }
+  ]
+}

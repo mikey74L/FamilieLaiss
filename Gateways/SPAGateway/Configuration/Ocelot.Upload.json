@@ -1,0 +1,20 @@
+{
+  "Routes": [
+    {
+      "DownstreamPathTemplate": "/api/{version}/fileupload/GetUploadId",
+      "DownstreamScheme": "http",
+      "UseServiceDiscovery": true,
+      "ServiceName": "UploadService",
+      "UpstreamPathTemplate": "/api/{version}/fileupload/GetUploadId",
+      "UpstreamHttpMethod": [ "GET" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/{version}/fileupload/{everything}",
+      "DownstreamScheme": "http",
+      "UseServiceDiscovery": true,
+      "ServiceName": "UploadService",
+      "UpstreamPathTemplate": "/api/{version}/fileupload/{everything}",
+      "UpstreamHttpMethod": [ "POST" ]
+    }
+  ]
+}

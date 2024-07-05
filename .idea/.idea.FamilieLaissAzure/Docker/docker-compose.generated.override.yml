@@ -1,0 +1,113 @@
+# This is a generated file. Not intended for manual editing.
+version: "3.4"
+services:
+  flbackend.api:
+    build:
+      context: "C:\\DevOps\\FamilieLaissAzure"
+      dockerfile: "Services/FlBackEnd/FlBackEnd.API/Dockerfile"
+      target: "base"
+    command: []
+    entrypoint:
+    - "dotnet"
+    - "/app/bin/Debug/net8.0/FLBackEnd.API.dll"
+    environment:
+      DOTNET_USE_POLLING_FILE_WATCHER: "true"
+    image: "flbackend:dev"
+    ports: []
+    volumes:
+    - "C:\\Users\\mikey\\.nuget\\packages:/home/app/.nuget/packages"
+    - "C:\\DevOps\\FamilieLaissAzure\\Services\\FLBackEnd\\FLBackEnd.API:/app:rw"
+    - "C:\\DevOps\\FamilieLaissAzure:/src:rw"
+    working_dir: "/app"
+  google.api:
+    build:
+      context: "C:\\DevOps\\FamilieLaissAzure"
+      dockerfile: "Services/Google/Google.API/Dockerfile"
+      target: "base"
+    command: []
+    entrypoint:
+    - "dotnet"
+    - "/app/bin/Debug/net8.0/Google.API.dll"
+    environment:
+      DOTNET_USE_POLLING_FILE_WATCHER: "true"
+    image: "googleapi:dev"
+    ports: []
+    volumes:
+    - "C:\\Users\\mikey\\.nuget\\packages:/home/app/.nuget/packages"
+    - "C:\\DevOps\\FamilieLaissAzure\\Services\\Google\\Google.API:/app:rw"
+    - "C:\\DevOps\\FamilieLaissAzure:/src:rw"
+    working_dir: "/app"
+  picture.api:
+    build:
+      context: "C:\\DevOps\\FamilieLaissAzure"
+      dockerfile: "Services/Picture/Picture.API/Dockerfile"
+      target: "base"
+    command: []
+    entrypoint:
+    - "dotnet"
+    - "/app/bin/Debug/net8.0/Picture.API.dll"
+    environment:
+      DOTNET_USE_POLLING_FILE_WATCHER: "true"
+    image: "pictureapi:dev"
+    ports: []
+    volumes:
+    - "C:\\Users\\mikey\\.nuget\\packages:/home/app/.nuget/packages"
+    - "C:\\DevOps\\FamilieLaissAzure\\Services\\Picture\\Picture.API:/app:rw"
+    - "C:\\DevOps\\FamilieLaissAzure:/src:rw"
+    working_dir: "/app"
+  pictureconvertexecute:
+    build:
+      context: "C:\\DevOps\\FamilieLaissAzure"
+      dockerfile: "Services/PictureConvert/PictureConvertExecuteService/Dockerfile"
+      target: "base"
+    command: []
+    entrypoint:
+    - "dotnet"
+    - "/app/bin/Debug/net8.0/PictureConvertExecuteService.dll"
+    environment:
+      DOTNET_ENVIRONMENT: "Development"
+      DOTNET_USE_POLLING_FILE_WATCHER: "true"
+    image: "pictureconvertexecute:dev"
+    ports: []
+    volumes:
+    - "C:\\Users\\mikey\\.nuget\\packages:/home/app/.nuget/packages"
+    - "C:\\DevOps\\FamilieLaissAzure\\Services\\PictureConvert\\PictureConvertExecuteService:/app:rw"
+    - "C:\\DevOps\\FamilieLaissAzure:/src:rw"
+    working_dir: "/app"
+  video.api:
+    build:
+      context: "C:\\DevOps\\FamilieLaissAzure"
+      dockerfile: "Services/Video/Video.API/Dockerfile"
+      target: "base"
+    command: []
+    entrypoint:
+    - "dotnet"
+    - "/app/bin/Debug/net8.0/Video.API.dll"
+    environment:
+      DOTNET_USE_POLLING_FILE_WATCHER: "true"
+    image: "videoapi:dev"
+    ports: []
+    volumes:
+    - "C:\\Users\\mikey\\.nuget\\packages:/home/app/.nuget/packages"
+    - "C:\\DevOps\\FamilieLaissAzure\\Services\\Video\\Video.API:/app:rw"
+    - "C:\\DevOps\\FamilieLaissAzure:/src:rw"
+    working_dir: "/app"
+  videoconvertexecute:
+    build:
+      context: "C:\\DevOps\\FamilieLaissAzure"
+      dockerfile: "Services/VideoConvert/VideoConvertExecuteService/Dockerfile"
+      target: "base"
+    command: []
+    entrypoint:
+    - "dotnet"
+    - "/app/bin/Debug/net8.0/VideoConvertExecuteService.dll"
+    environment:
+      DOTNET_ENVIRONMENT: "Development"
+      DOTNET_USE_POLLING_FILE_WATCHER: "true"
+    image: "videoconvertexecute:dev"
+    ports: []
+    volumes:
+    - "C:\\Users\\mikey\\.nuget\\packages:/home/app/.nuget/packages"
+    - "C:\\DevOps\\FamilieLaissAzure\\Services\\VideoConvert\\VideoConvertExecuteService:/app:rw"
+    - "C:\\DevOps\\FamilieLaissAzure:/src:rw"
+    working_dir: "/app"

@@ -1,0 +1,159 @@
+﻿@using FamilieLaissEnums
+@using FamilieLaissFrontend.Client.ViewModels.Controls.PictureControl
+@using FamilieLaissInterfaces.Models.Data
+@using FamilieLaissResources.Resources.Controls.PictureControl
+@using FamilieLaissSharedUI.Components
+
+@inherits FlComponentBase<PictureControlActionsViewModel>
+
+<!-- Render edit button -->
+@if (ControlType == EnumPictureControlType.MediaItemBaseData)
+{
+    @if (ShowSkeleton)
+    {
+        <MudSkeleton Width="64px" Height="40px" Class="ml-2" />
+    }
+    else
+    {
+        <MudTooltip Placement="Placement.Top" Text="@PictureControlActionsRes.ButtonEditTooltip" ShowOnFocus="false">
+            <MudButton Variant="MudBlazor.Variant.Text"
+                       StartIcon="@Icons.Material.Filled.Edit"
+                       Color="Color.Primary"
+                       Disabled="IsDisabled"
+                       OnClick="async () => await ViewModel.EditCommand.ExecuteAsync(null)">@PictureControlActionsRes.ButtonEditText</MudButton>
+        </MudTooltip>
+    }
+}
+
+<!-- Render delete button -->
+@if (ControlType is EnumPictureControlType.Upload or EnumPictureControlType.MediaItemBaseData)
+{
+    @if (ShowSkeleton)
+    {
+        <MudSkeleton Width="64px" Height="40px" Class="ml-2" />
+    }
+    else
+    {
+        var textForTooltip = ControlType == EnumPictureControlType.Upload ? PictureControlActionsRes.ButtonDeleteTooltipUpload : PictureControlActionsRes.ButtonDeleteTooltipBaseData;
+
+        <MudTooltip Placement="Placement.Top" Text="@textForTooltip" ShowOnFocus="false">
+            <MudButton Variant="MudBlazor.Variant.Text"
+                       StartIcon="@Icons.Material.Filled.Delete"
+                       Color="Color.Error"
+                       Disabled="IsDisabled"
+                       OnClick="async () => await ViewModel.DeleteCommand.ExecuteAsync(null)">@PictureControlActionsRes.ButtonDeleteText</MudButton>
+        </MudTooltip>
+    }
+}
+
+<!-- Render choose button -->
+@if (ControlType == EnumPictureControlType.Choose)
+{
+    @if (ShowSkeleton)
+    {
+        <MudSkeleton Width="64px" Height="40px" Class="ml-2" />
+    }
+    else
+    {
+        <MudTooltip Placement="Placement.Top" Text="@PictureControlActionsRes.ButtonChooseTooltip" ShowOnFocus="false">
+            <MudButton Variant="MudBlazor.Variant.Text"
+                       StartIcon="@Icons.Material.Filled.SelectAll"
+                       Color="Color.Primary"
+                       Disabled="IsDisabled"
+                       OnClick="async () => await ViewModel.ChooseCommand.ExecuteAsync(null)">@PictureControlActionsRes.ButtonChooseText</MudButton>
+        </MudTooltip>
+    }
+}
+
+@code
+{
+    [Parameter]
+    [EditorRequired]
+    public EnumPictureControlType ControlType { get; set; }
+
+    [Parameter]
+    [EditorRequired]
+    public bool ShowSkeleton { get; set; }
+
+    [Parameter]
+    public IMediaItemModel? MediaItem
+    {
+        get
+        {
+            return ViewModel.MediaItem;
+        }
+        set
+        {
+            ViewModel.MediaItem = value;
+        }
+    }
+
+    [Parameter]
+    public IUploadPictureModel? UploadItem 
+    {
+        get
+        {
+            return ViewModel.UploadItem;
+        }
+        set
+        {
+            ViewModel.UploadItem = value;
+        }
+    }
+
+    [Parameter]
+    [EditorRequired]
+    public bool IsDisabled { get; set; }
+
+    [Parameter]
+    public EventCallback<IUploadPictureModel> DeleteUploadClicked 
+    {
+        get
+        {
+            return ViewModel.DeleteUploadClicked;
+        }
+        set
+        {
+            ViewModel.DeleteUploadClicked = value;
+        }
+    }
+
+    [Parameter]
+    public EventCallback<IMediaItemModel> DeleteMediaClicked
+    {
+        get
+        {
+            return ViewModel.DeleteMediaClicked;
+        }
+        set
+        {
+            ViewModel.DeleteMediaClicked = value;
+        }
+    }
+
+    [Parameter]
+    public EventCallback<IUploadPictureModel> ChooseClicked 
+    { 
+        get
+        {
+            return ViewModel.ChooseClicked;
+        }
+        set
+        {
+            ViewModel.ChooseClicked = value;
+        }
+    }
+
+    [Parameter]
+    public EventCallback<IMediaItemModel> EditClicked 
+    { 
+        get
+        {
+            return ViewModel.EditClicked;
+        }
+        set
+        {
+            ViewModel.EditClicked = value;
+        }
+    }
+}

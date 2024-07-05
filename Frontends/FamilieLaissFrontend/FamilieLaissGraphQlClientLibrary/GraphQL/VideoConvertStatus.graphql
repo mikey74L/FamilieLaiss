@@ -1,0 +1,101 @@
+﻿fragment FrVideoConvertStatusOnlyId on VideoConvertStatus {
+    id
+}
+
+fragment FrVideoConvertStatusMain on VideoConvertStatus {
+    status
+    videoType
+    startDateMp4
+    finishDateMp4
+    startDateConvertPicture
+    finishDateConvertPicture
+    startDateMp4360
+    finishDateMp4360
+    startDateMp4480
+    finishDateMp4480
+    startDateMp4720
+    finishDateMp4720
+    startDateMp41080
+    finishDateMp41080
+    startDateMp42160
+    finishDateMp42160
+    startDateHls
+    finishDateHls
+    startDateThumbnail
+    finishDateThumbnail
+    startDateMediaInfo
+    finishDateMediaInfo
+    startDateVtt
+    finishDateVtt
+    startDateCopyConverted
+    finishDateCopyConverted
+    startDateDeleteTemp
+    finishDateDeleteTemp
+    startDateDeleteOriginal
+    finishDateDeleteOriginal
+    startDateConvertPicture
+    finishDateConvertPicture
+    convertHour
+    convertMinute
+    convertSecond
+    convertRestHour
+    convertRestMinute
+    convertRestSecond
+    progress
+}
+
+fragment FrVideoConvertStatusWaiting on VideoConvertStatus {
+    ...FrVideoConvertStatusOnlyId
+    uploadVideo {
+        ...FrUploadVideoIdWithFilename
+    }
+}
+
+fragment FrVideoConvertStatusSuccess on VideoConvertStatus {
+    ...FrVideoConvertStatusOnlyId
+    finishDateConvertPicture
+    uploadVideo {
+        ...FrUploadVideoIdWithFilename
+    }
+}  
+
+fragment FrVideoConvertStatusError on VideoConvertStatus {
+    ...FrVideoConvertStatusOnlyId
+    startDateMediaInfo
+    errorMessage
+    uploadVideo {
+        ...FrUploadVideoIdWithFilename
+    }
+}  
+
+fragment FrVideoConvertStatusCurrent on VideoConvertStatus {
+    ...FrVideoConvertStatusOnlyId
+    ...FrVideoConvertStatusMain
+    uploadVideo {
+        ...FrUploadVideoForConvert
+    }
+}
+
+subscription VideoConvertStatusWaitingSubscription {
+	onVideoConvertStatusWaiting {
+        ...FrVideoConvertStatusWaiting
+    }
+}
+
+subscription VideoConvertStatusSuccessSubscription {
+	onVideoConvertStatusSuccess {
+       ...FrVideoConvertStatusSuccess
+	}
+}
+
+subscription VideoConvertStatusErrorSubscription {
+	onVideoConvertStatusError {
+        ...FrVideoConvertStatusError
+	}
+}
+
+subscription VideoConvertStatusCurrentSubscription {
+    onVideoConvertStatusCurrent {
+        ...FrVideoConvertStatusCurrent
+    }
+}

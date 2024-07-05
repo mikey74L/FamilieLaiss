@@ -1,0 +1,51 @@
+﻿@using FamilieLaissEnums
+@using FamilieLaissFrontend.Client.ViewModels.Dialogs.PictureInfo
+@using FamilieLaissInterfaces.Models.Data
+@using FamilieLaissSharedUI.Components
+
+@inherits FlComponentBase<PictureInfoMapPageViewModel>
+
+<RadzenGoogleMap @ref=ViewModel.MapControl
+                 ApiKey="@ViewModel.secretDataService.GoogleMapsApiKey"
+                 Center="@ViewModel.GoogleMapPosition"
+                 Style="height: 67vh;"
+                 Zoom="17"
+                 MarkerClick="async (data) => await ViewModel.MarkerClickCommand.ExecuteAsync(data)">
+    <Markers>
+        <RadzenGoogleMapMarker Title="@UploadItem!.Filename"
+                               Position="@(new GoogleMapPosition() { Lng = UploadItem!.GoogleGeoCodingAddress!.Longitude!.Value, Lat = UploadItem!.GoogleGeoCodingAddress!.Latitude!.Value})" />
+    </Markers>
+</RadzenGoogleMap>
+
+@code
+{
+    [Parameter]
+    [EditorRequired]
+    public EnumPictureControlType ControlType { get; set; }
+
+    [Parameter]
+    public IUploadPictureModel? UploadItem 
+    { 
+        get
+        {
+            return ViewModel.UploadItem;
+        }
+        set
+        {
+            ViewModel.UploadItem = value;
+        }
+    }
+
+    [Parameter]
+    public IMediaItemModel? MediaItem 
+    { 
+        get
+        {
+            return ViewModel.MediaItem;
+        }
+        set
+        {
+            ViewModel.MediaItem = value;
+        }
+    }
+}

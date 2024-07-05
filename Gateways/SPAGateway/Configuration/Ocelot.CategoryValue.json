@@ -1,0 +1,36 @@
+{
+  "Routes": [
+    {
+      "DownstreamPathTemplate": "/api/{version}/categoryvalue/{everything}",
+      "DownstreamScheme": "http",
+      "UseServiceDiscovery": true,
+      "ServiceName": "CatalogService",
+      "UpstreamPathTemplate": "/api/{version}/categoryvalue/{everything}",
+      "UpstreamHttpMethod": [ "GET", "PUT", "DELETE" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/{version}/categoryvalue",
+      "DownstreamScheme": "http",
+      "UseServiceDiscovery": true,
+      "ServiceName": "CatalogService",
+      "UpstreamPathTemplate": "/api/{version}/categoryvalue",
+      "UpstreamHttpMethod": [ "POST" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/{version}/categoryvalue/CheckGermanCategoryValueNameAlreadyExists",
+      "DownstreamScheme": "http",
+      "UseServiceDiscovery": true,
+      "ServiceName": "CatalogService",
+      "UpstreamPathTemplate": "/api/{version}/categoryvalue/CheckGermanCategoryValueNameAlreadyExists",
+      "UpstreamHttpMethod": [ "POST" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/{version}/categoryvalue/CheckEnglishCategoryValueNameAlreadyExists",
+      "DownstreamScheme": "http",
+      "UseServiceDiscovery": true,
+      "ServiceName": "CatalogService",
+      "UpstreamPathTemplate": "/api/{version}/categoryvalue/CheckEnglishCategoryValueNameAlreadyExists",
+      "UpstreamHttpMethod": [ "POST" ]
+    }
+  ]
+}

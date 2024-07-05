@@ -1,0 +1,33 @@
+:root {
+    --fl-content-border-size: 5px;
+    --fl-additional-substract-content-page-height: 5px;
+    --fl-grid-additional: 100px;
+}
+
+.mud-tabs-toolbar-wrapper {
+    column-gap: 5px;
+}
+
+.mud-tab {
+    margin: 5px;
+}
+
+    .mud-tab:hover {
+        border-radius: 4px;
+    }
+
+    .mud-tab.mud-tab-active {
+        background-color: var(--mud-palette-primary-hover);
+        border: none !important;
+        border-radius: 4px;
+    }
+
+.mud-tab-slider.mud-tab-slider-horizontal {
+    height: 0 !important;
+}
+
+.blury-dialog {
+    backdrop-filter: blur(10px);
+}
+
+

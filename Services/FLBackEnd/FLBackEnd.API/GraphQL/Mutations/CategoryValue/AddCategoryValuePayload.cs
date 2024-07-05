@@ -1,0 +1,8 @@
+﻿namespace FLBackEnd.API.GraphQL.Mutations.CategoryValue;
+
+[GraphQLDescription("The result for a new added category value")]
+public class AddCategoryValuePayload
+{
+    [GraphQLDescription("The new added category value")]
+    public Domain.Entities.CategoryValue CategoryValue { get; set; } = default!;
+}

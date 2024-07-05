@@ -1,0 +1,60 @@
+syntax = "proto3";
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/wrappers.proto";
+
+option csharp_namespace = "Upload.Grpc.Shared.UploadPicture";
+
+package FileUpload;
+
+service UploadPictureService {
+	rpc GetAllUploadPictures(google.protobuf.Empty) returns (GetAllUploadPicturesResponce);
+	rpc GetUnAssignedUploadPictures(google.protobuf.Empty) returns (GetUnAssignedUploadPicturesResponce);
+	rpc GetUploadPictureCountUnAssigned(google.protobuf.Empty) returns (GetUploadPictureCountUnAssignedResponce);
+	rpc DeleteUploadPicture(DeleteUploadPictureRequest) returns (DeleteUploadPictureResponce);
+	rpc DeleteAllUnAssignedUploadPictures(google.protobuf.Empty) returns (DeleteAllUnAssignedUploadPicturesResponce);
+}
+
+message GetAllUploadPicturesResponce {
+	repeated UploadPictureDTO uploadPictures = 1;
+}
+
+message GetUnAssignedUploadPicturesResponce {
+	repeated UploadPictureDTO uploadPictures = 2;
+}
+
+message GetUploadPictureCountUnAssignedResponce {
+	int32 count = 1;
+}
+
+message DeleteUploadPictureRequest {
+	int64 id = 1;
+}
+
+message DeleteUploadPictureResponce {
+	bool status = 1;
+}
+
+message DeleteAllUnAssignedUploadPicturesResponce {
+	int32 countDeleted = 1;
+}
+
+message UploadPictureDTO {
+    int64 id = 1;
+	string filename = 2;
+	google.protobuf.Int32Value height = 3;
+	google.protobuf.Int32Value width = 4;
+	int32 status = 5;
+	UploadPictureExifInfoDTO uploadPictureExifInfo = 6;
+	GoogleGeoCodingAdressDTO googleGeoCodingAdress = 7;
+	google.protobuf.Timestamp createDate = 8;
+}
+
+message UploadPictureExifInfoDTO {
+
+}
+
+message GoogleGeoCodingAdressDTO {
+
+}

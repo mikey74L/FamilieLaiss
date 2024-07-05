@@ -1,0 +1,264 @@
+﻿@using FamilieLaissEnums
+@using FamilieLaissFrontend.Client.ViewModels.Dialogs.BaseData.MediaItem
+@using FamilieLaissGraphQlClientLibrary
+@using FamilieLaissInterfaces.Models.Data
+@using FamilieLaissResources.Resources.Dialogs.BaseData.MediaItem
+@using FamilieLaissSharedUI.Components
+
+@inherits FlComponentBase<MediaItemEditDialogViewModel>
+
+<MudDialog>
+    <DialogContent>
+        <MudContainer Style="max-height: 460px; overflow-y: scroll">
+            @if (ViewModel.IsLoading)
+            {
+                <div style="height: 200px;">
+                    <MudLoading @bind-Loading="ViewModel.IsLoading" Overlap="false" LoaderType="LoaderType.Linear" />
+                </div>
+            }
+            else
+            {
+                <MudForm Model="@Model" @ref="ViewModel.Form" Validation="@(ViewModel.Validator.ValidateValue)">
+                    @if (Model is not null)
+                    {
+                        @if (ViewModel.CurrentMediaType is null)
+                        {
+                            <MudStack Row="true">
+                                <MudTooltip Arrow="true"
+                                            Placement="Placement.Top"
+                                            ShowOnFocus="false"
+                                            Text="@MediaItemEditDialogRes.TooltipChoosePhoto">
+                                    <MudButton Variant="MudBlazor.Variant.Outlined"
+                                               Color="Color.Primary"
+                                               OnClick="async () => await ViewModel.ShowChoosePictureDialogCommand.ExecuteAsync(null)">
+                                        @MediaItemEditDialogRes.ButtonChoosePhoto
+                                    </MudButton>
+                                </MudTooltip>
+                                <MudTooltip Arrow="true"
+                                            Placement="Placement.Top"
+                                            ShowOnFocus="false"
+                                            Text="@MediaItemEditDialogRes.TooltipChooseVideo">
+                                    <MudButton Variant="MudBlazor.Variant.Outlined"
+                                               Color="Color.Primary"
+                                               OnClick="async () => await ViewModel.ShowChooseVideoDialogCommand.ExecuteAsync(null)">
+                                        @MediaItemEditDialogRes.ButtonChooseVideo
+                                    </MudButton>
+                                </MudTooltip>
+                            </MudStack>
+                        }
+
+                        @if (ViewModel.CurrentMediaType == EnumMediaType.Picture && ViewModel.SelectedPicture is not null)
+                        {
+                            <PictureControl ControlType="EnumPictureControlType.EditDialog"
+                                            IsDisabled="false"
+                                            UploadItem="ViewModel.SelectedPicture"
+                                            ShowSelectionMode="false"
+                                            ShowSkeleton="false" />
+                        }
+
+                        @if (ViewModel.CurrentMediaType == EnumMediaType.Video && ViewModel.SelectedVideo is not null)
+                        {
+                            <VideoControl ControlType="EnumVideoControlType.EditDialog"
+                                          UploadItem="ViewModel.SelectedVideo"
+                                          IsDisabled="false"
+                                          ShowSelectionMode="false"
+                                          ShowSkeleton="false" />
+                        }
+
+                        @if (ViewModel.CurrentMediaType is not null && ViewModel.CurrentMediaType == EnumMediaType.Video)
+                        {
+                            <MudTextField Disabled="@ViewModel.IsBusy"
+                                          @bind-Value="Model.NameGerman"
+                                          For="@(() => Model.NameGerman)"
+                                          Label="@MediaItemEditDialogRes.LabelNameGerman"
+                                          HelperText="@MediaItemEditDialogRes.DescriptionNameGerman"
+                                          HelperTextOnFocus="true"
+                                          Variant="MudBlazor.Variant.Text" />
+                            <MudTextField Disabled="@ViewModel.IsBusy"
+                                          @bind-Value="Model.NameEnglish"
+                                          For="@(() => Model.NameEnglish)"
+                                          Label="@MediaItemEditDialogRes.LabelNameEnglish"
+                                          HelperText="@MediaItemEditDialogRes.DescriptionNameEnglish"
+                                          HelperTextOnFocus="true"
+                                          Variant="MudBlazor.Variant.Text" />
+                            <MudTextField Disabled="@ViewModel.IsBusy"
+                                          @bind-Value="Model.DescriptionGerman"
+                                          For="@(() => Model.DescriptionGerman)"
+                                          Lines="4"
+                                          Label="@MediaItemEditDialogRes.LabelDescriptionGerman"
+                                          HelperText="@MediaItemEditDialogRes.DescriptionDescriptionGerman"
+                                          HelperTextOnFocus="true"
+                                          Variant="MudBlazor.Variant.Text" />
+                            <MudTextField Disabled="@ViewModel.IsBusy"
+                                          @bind-Value="Model.DescriptionEnglish"
+                                          For="@(() => Model.DescriptionEnglish)"
+                                          Lines="4"
+                                          Label="@MediaItemEditDialogRes.LabelDescriptionEnglish"
+                                          HelperText="@MediaItemEditDialogRes.DescriptionDescriptionEnglish"
+                                          HelperTextOnFocus="true"
+                                          Variant="MudBlazor.Variant.Text" />
+                        }
+
+                        @if (ViewModel.CurrentMediaType is not null)
+                        {
+                            string labelForDropdown = "";
+                            if (ViewModel.CurrentMediaType == EnumMediaType.Picture)
+                            {
+                                labelForDropdown = MediaItemEditDialogRes.LabelForDropdownPhoto;
+                            }
+                            else
+                            {
+                                labelForDropdown = MediaItemEditDialogRes.LabelForDropdownVideo;
+                            }
+                            string placeholderForDropdown = MediaItemEditDialogRes.PlaceholderForDropdown;
+                            string searchPlaceHolderForDropdown = MediaItemEditDialogRes.PlaceholderForDropdownFilter;
+
+                            <MudSelectExtended Class="mt-5"
+                                               AnchorOrigin="Origin.BottomCenter"
+                                               ItemCollection="ViewModel.CategoryValues"
+                                               @bind-SelectedValues="ViewModel.SelectedCategoryValues"
+                                               MultiSelection="true"
+                                               SearchBox="true"
+                                               SearchBoxAutoFocus="true"
+                                               SearchBoxClearable="true"
+                                               SearchBoxVariant="MudBlazor.Variant.Outlined"
+                                               SearchBoxPlaceholder="@searchPlaceHolderForDropdown"
+                                               ValuePresenter="ValuePresenter.Chip"
+                                               ChipCloseable="true"
+                                               ChipSize="Size.Small"
+                                               ChipVariant="MudBlazor.Variant.Filled"
+                                               SelectAll="true"
+                                               SelectAllPosition="SelectAllPosition.NextToSearchBox"
+                                               Placeholder="@placeholderForDropdown"
+                                               Label="@labelForDropdown">
+                                <ItemTemplate>
+                                    <MudStack Class="mud-width-full"
+                                              Row="true"
+                                              Justify="Justify.SpaceBetween"
+                                              AlignItems="MudBlazor.AlignItems.Center">
+                                        <MudText>@context.Value.LocalizedName</MudText>
+                                        <MudChip Color="Color.Info"
+                                                 Variant="MudBlazor.Variant.Outlined">@context.Value.Category!.LocalizedName</MudChip>
+                                    </MudStack>
+                                </ItemTemplate>
+                            </MudSelectExtended>
+
+                            <MudCheckBox @bind-Value="Model.OnlyFamily"
+                                         Class="mt-5"
+                                         Disabled="ViewModel.IsBusy"
+                                         For="@(() => Model.OnlyFamily)"
+                                         Label="@MediaItemEditDialogRes.LabelForCheckBoxFamily" />
+                        }
+                    }
+                </MudForm>
+            }
+        </MudContainer>
+    </DialogContent>
+
+    <DialogActions>
+        @if (!ViewModel.IsLoading)
+        {
+            @if (ViewModel.CurrentMediaType is not null)
+            {
+                @if (ViewModel.SaveMode == EnumSaveMode.Save)
+                {
+                    <MudTooltip Placement="Placement.Top" Arrow="true" Text="@MediaItemEditDialogRes.TooltipSave" ShowOnFocus="false">
+                        <MudLoadingButton Loading="@ViewModel.IsSaving"
+                                          LoadingAdornment="Adornment.Start"
+                                          StartIcon="@Icons.Material.Filled.Save"
+                                          Color="Color.Primary"
+                                          Variant="MudBlazor.Variant.Filled"
+                                          OnClick="async () => await ViewModel.SaveCommand.ExecuteAsync(false)">@MediaItemEditDialogRes.ButtonSave</MudLoadingButton>
+                    </MudTooltip>
+                }
+                else
+                {
+                    <MudTooltip Placement="Placement.Top" Arrow="true" Text="@MediaItemEditDialogRes.TooltipSaveContinue" ShowOnFocus="false">
+                        <MudLoadingButton Loading="@ViewModel.IsSaving"
+                                          LoadingAdornment="Adornment.Start"
+                                          StartIcon="@Icons.Material.Filled.Save"
+                                          Color="Color.Primary"
+                                          Variant="MudBlazor.Variant.Filled"
+                                          OnClick="async () => await ViewModel.SaveCommand.ExecuteAsync(true)">@MediaItemEditDialogRes.ButtonSaveContinue</MudLoadingButton>
+                    </MudTooltip>
+                }
+                @if (!IsInEditMode)
+                {
+                    <MudMenu Style="margin-left: 1px!important">
+                        <ActivatorContent>
+                            <MudTooltip Text="@MediaItemEditDialogRes.TooltipShowSaveOptions" ShowOnFocus="false">
+                                <MudIconButton Icon="@Icons.Material.Filled.ArrowDropDown"
+                                               Variant="MudBlazor.Variant.Filled"
+                                               Color="Color.Primary"
+                                               Disabled="@ViewModel.IsSaving">
+                                </MudIconButton>
+                            </MudTooltip>
+                        </ActivatorContent>
+                        <ChildContent>
+                            <MudMenuItem OnClick="async () => await ViewModel.SaveCommand.ExecuteAsync(false)">@MediaItemEditDialogRes.ButtonSave</MudMenuItem>
+                            <MudMenuItem OnClick="async () => await ViewModel.SaveCommand.ExecuteAsync(true)">@MediaItemEditDialogRes.TooltipSaveContinue</MudMenuItem>
+                        </ChildContent>
+                    </MudMenu>
+                }
+            }
+            <MudTooltip Placement="Placement.Top" Arrow="true" Text="@MediaItemEditDialogRes.TooltipCancel" ShowOnFocus="false">
+                <MudButton Disabled="@ViewModel.IsSaving" OnClick="async () => await ViewModel.CancelCommand.ExecuteAsync(null)">@MediaItemEditDialogRes.ButtonCancel</MudButton>
+            </MudTooltip>
+        }
+    </DialogActions>
+</MudDialog>
+
+@code
+{
+    [CascadingParameter]
+    public MudDialogInstance MudDialog
+    {
+        get
+        {
+            return ViewModel.MudDialog;
+        }
+        set
+        {
+            ViewModel.MudDialog = value;
+        }
+    }
+
+    [Parameter]
+    public bool IsInEditMode
+    {
+        get
+        {
+            return ViewModel.IsInEditMode;
+        }
+        set
+        {
+            ViewModel.IsInEditMode = value;
+        }
+    }
+
+    [Parameter]
+    public long? MediaGroupId
+    {
+        get
+        {
+            return ViewModel.MediaGroupId;
+        }
+        set
+        {
+            ViewModel.MediaGroupId = value;
+        }
+    }
+
+    [Parameter]
+    public IMediaItemModel? Model
+    {
+        get
+        {
+            return ViewModel.Model;
+        }
+        set
+        {
+            ViewModel.Model = value;
+        }
+    }
+}

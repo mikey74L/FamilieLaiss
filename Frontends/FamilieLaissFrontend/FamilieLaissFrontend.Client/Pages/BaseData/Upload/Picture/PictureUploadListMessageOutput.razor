@@ -1,0 +1,28 @@
+﻿@using FamilieLaissResources.Resources.Pages.BaseData.Upload.Picture
+
+@if (ItemsCount == 0 && !HasError && !IsFilterActive)
+{
+    <MudText Typo="Typo.h5">@PictureUploadListMessageOutputRes.MessageNoItems</MudText>
+}
+
+@if (ItemsCount == 0 && !HasError && IsFilterActive)
+{
+    <MudText Typo="Typo.h5">@PictureUploadListMessageOutputRes.MessageNoItemsFilter</MudText>
+}
+
+@if (HasError)
+{
+    <MudText Color="Color.Error" Typo="Typo.h5">@PictureUploadListMessageOutputRes.MessageErrorLoading</MudText>
+}
+
+@code
+{
+    [Parameter]
+    public int ItemsCount { get; set; }
+
+    [Parameter]
+    public bool HasError { get; set; }
+
+    [Parameter]
+    public bool IsFilterActive { get; set; }
+}

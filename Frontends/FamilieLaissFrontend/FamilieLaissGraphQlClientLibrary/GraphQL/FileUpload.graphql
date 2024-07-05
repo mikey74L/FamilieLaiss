@@ -1,0 +1,27 @@
+﻿query GetNextUploadId {
+    nextUploadId
+}
+
+mutation AddPictureUploadChunk($chunkNumber: Long!, $chunkSize: Int!, $chunkData: String!, $targetFilename: String!) {
+    addPictureUploadChunk(input: {chunkNumber: $chunkNumber, chunkSize: $chunkSize, chunkData: $chunkData, targetFilename: $targetFilename }) {
+        status
+    }
+}
+
+mutation AddVideoUploadChunk($chunkNumber: Long!, $chunkSize: Int!, $chunkData: String!, $targetFilename: String!) {
+    addVideoUploadChunk(input: {chunkNumber: $chunkNumber, chunkSize: $chunkSize, chunkData: $chunkData, targetFilename: $targetFilename }) {
+        status
+    }
+}
+
+mutation PictureUploadFinish($lastChunkNumber: Long!, $targetFilename: String!, $originalFilename: String!) {
+    pictureUploadFinish(input: {lastChunkNumber: $lastChunkNumber, targetFilename: $targetFilename, originalFilename: $originalFilename}) {
+        status
+    }
+}
+
+mutation VideoUploadFinish($lastChunkNumber: Long!, $targetFilename: String!, $originalFilename: String!) {
+    videoUploadFinish(input: {lastChunkNumber: $lastChunkNumber, targetFilename: $targetFilename, originalFilename: $originalFilename}) {
+        status
+    }
+}

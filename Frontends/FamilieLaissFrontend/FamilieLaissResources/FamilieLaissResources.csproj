@@ -1,0 +1,55 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net8.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<Folder Include="Resources\Components\Layout\" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Aigamo.ResXGenerator" Version="4.2.0">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Compile Update="Resources\Validation\Blog\BlogItemModelValidator.Designer.cs">
+	    <DesignTime>True</DesignTime>
+	    <AutoGen>True</AutoGen>
+	    <DependentUpon>BlogItemModelValidator.resx</DependentUpon>
+	  </Compile>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <EmbeddedResource Update="Resources\Layout\NavMenu.resx">
+	    <Generator></Generator>
+	  </EmbeddedResource>
+	  <EmbeddedResource Update="Resources\Pages\BaseData\Media\MediaItemListActions.resx">
+	    <Generator>ResXFileCodeGenerator</Generator>
+	    <LastGenOutput>MediaItemListActions.Designer.cs</LastGenOutput>
+	  </EmbeddedResource>
+	  <EmbeddedResource Update="Resources\Validation\Blog\BlogItemModelValidator.resx">
+	    <Generator>ResXFileCodeGenerator</Generator>
+	    <LastGenOutput>BlogItemModelValidator.Designer.cs</LastGenOutput>
+	  </EmbeddedResource>
+	  <EmbeddedResource Update="Resources\ViewModels\Controls\Filter\FilterAppBarControlViewModel.resx">
+	    <Generator>ResXFileCodeGenerator</Generator>
+	    <LastGenOutput>FilterAppBarControlViewModel.Designer.cs</LastGenOutput>
+	  </EmbeddedResource>
+	  <EmbeddedResource Update="Resources\ViewModels\Controls\UploadControl\UploadFileInfo.resx">
+	    <Generator>ResXFileCodeGenerator</Generator>
+	    <LastGenOutput>UploadFileInfo.Designer.cs</LastGenOutput>
+	  </EmbeddedResource>
+	</ItemGroup>
+
+	<PropertyGroup>
+		<ResXGenerator_ClassNamePostfix>Res</ResXGenerator_ClassNamePostfix>
+		<ResXGenerator_PublicClass>true</ResXGenerator_PublicClass>
+		<ResXGenerator_NullForgivingOperators>true</ResXGenerator_NullForgivingOperators>
+	</PropertyGroup>
+</Project>

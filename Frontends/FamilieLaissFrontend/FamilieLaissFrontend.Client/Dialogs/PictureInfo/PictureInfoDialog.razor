@@ -1,0 +1,72 @@
+﻿@using FamilieLaissEnums
+@using FamilieLaissFrontend.Client.ViewModels.Dialogs.PictureInfo
+@using FamilieLaissInterfaces.Models.Data
+@using FamilieLaissResources.Resources.Dialogs.PictureInfo
+@using FamilieLaissSharedUI.Components
+@using Microsoft.Extensions.Localization
+
+@inherits FlComponentBase<PictureInfoDialogViewModel>
+
+<MudDialog>
+    <TitleContent>
+        <MudText Typo="Typo.h6">
+            <MudIcon Icon="@Icons.Material.Filled.Info" Class="mr-3" /> @string.Format(PictureInfoDialogRes.DialogHeader, ViewModel.PictureModel.Filename)
+        </MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudPaper Height="75vh" Width="100%" Elevation="0">
+            <MudTabs Elevation="1" KeepPanelsAlive="true">
+                <MudTabPanel Text="@PictureInfoDialogRes.TabHeaderGeneral">
+                    <PictureInfoGeneralPage UploadItem="UploadItem" MediaItem="MediaItem" ControlType="ControlType" />
+                </MudTabPanel>
+                @if (ViewModel.PictureModel.GoogleGeoCodingAddress?.Longitude is not null)
+                {
+                    <MudTabPanel Text="@PictureInfoDialogRes.TabHeaderMap">
+                        <PictureInfoMapPage ControlType="ControlType" MediaItem="MediaItem" UploadItem="UploadItem" />
+                    </MudTabPanel>
+                }
+            </MudTabs>
+        </MudPaper>
+    </DialogContent>
+    <DialogActions>
+        <MudTooltip Arrow="true" Placement="Placement.Top" Text="@PictureInfoDialogRes.TooltipClose">
+            <MudButton Color="Color.Primary" StartIcon="@Icons.Material.Filled.Close" OnClick="() => {MudDialog.Close();}">@PictureInfoDialogRes.ButtonClose</MudButton>
+        </MudTooltip>
+    </DialogActions>
+</MudDialog>
+
+@code
+{
+    [CascadingParameter]
+    public MudDialogInstance MudDialog { get; set; } = default!;
+
+    [Parameter]
+    [EditorRequired]
+    public EnumPictureControlType ControlType { get; set; }
+
+    [Parameter]
+    public IUploadPictureModel? UploadItem 
+    { 
+        get
+        {
+            return ViewModel.UploadItem;
+        }
+        set
+        {
+            ViewModel.UploadItem = value;
+        }
+    }
+
+    [Parameter]
+    public IMediaItemModel? MediaItem 
+    { 
+        get
+        {
+            return ViewModel.MediaItem;
+        }
+        set
+        {
+            ViewModel.MediaItem = value;
+        }
+    }
+}

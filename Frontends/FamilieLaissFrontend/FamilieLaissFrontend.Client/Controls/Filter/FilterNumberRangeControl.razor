@@ -1,0 +1,73 @@
+﻿@using FamilieLaissFrontend.Client.ViewModels.Controls.Filter
+@using FamilieLaissInterfaces.Models
+@using FamilieLaissInterfaces.Services
+@using FamilieLaissResources.Resources.Controls.Filter
+@using FamilieLaissSharedUI.Components
+
+@inherits FlComponentBase<FilterNumberRangeControlViewModel>
+
+<MudStack>
+    <MudStack Row="true" Spacing="1">
+        <MudText Typo="Typo.body1">@FilterCriteria.DisplayText</MudText>
+        @if (ViewModel.IntValueFrom.HasValue || ViewModel.IntValueTo.HasValue)
+        {
+            <MudTooltip Arrow="true"
+                        Placement="Placement.Top"
+                        ShowOnFocus="false"
+                        Text="@FilterNumberRangeControlRes.TooltipResetFilterItem">
+                <MudIconButton Color="Color.Error"
+                               Size="Size.Small"
+                               Icon="@Icons.Material.Filled.Clear"
+                               OnClick="async () => await ViewModel.ResetFilterCommand.ExecuteAsync(null)">
+                </MudIconButton>
+            </MudTooltip>
+        }
+    </MudStack>
+
+    <MudStack Row="true" Spacing="1">
+        <MudNumericField @bind-Value="ViewModel.IntValueFrom"
+                         Label="@FilterNumberRangeControlRes.LabelMin"
+                         Variant="MudBlazor.Variant.Text"
+                         Min="0"></MudNumericField>
+
+        <MudText Typo="Typo.h5" Class="ma-5" Style="font-weight: bolder"> - </MudText>
+
+        <MudNumericField @bind-Value="ViewModel.IntValueTo"
+                         Label="@FilterNumberRangeControlRes.LabelMax"
+                         Variant="MudBlazor.Variant.Text"
+                         Error="@(!FilterCriteria.IsValid)"
+                         ErrorText="@FilterCriteria.ErrorMessage"
+                         Min="0"></MudNumericField>
+    </MudStack>
+</MudStack>
+
+@code
+{
+    [Parameter]
+    [EditorRequired]
+    public IGraphQlFilterCriteria FilterCriteria 
+    { 
+        get
+        {
+            return ViewModel.FilterCriteria;
+        }
+        set
+        {
+            ViewModel.FilterCriteria = value;
+        }
+    } 
+
+    [Parameter]
+    [EditorRequired]
+    public EventCallback<(Guid id, bool hasValue)> ValueChanged 
+    { 
+        get
+        {
+            return ViewModel.ValueChanged;
+        }
+        set
+        {
+            ViewModel.ValueChanged = value;
+        }
+    }
+}

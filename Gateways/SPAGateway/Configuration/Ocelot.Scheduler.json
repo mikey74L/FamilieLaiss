@@ -1,0 +1,44 @@
+{
+  "Routes": [
+    {
+      "DownstreamPathTemplate": "/api/{version}/SchedulerResource",
+      "DownstreamScheme": "http",
+      "UseServiceDiscovery": true,
+      "ServiceName": "SchedulerService",
+      "UpstreamPathTemplate": "/api/{version}/SchedulerResource",
+      "UpstreamHttpMethod": [ "GET", "POST" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/{version}/SchedulerResource/{everything}",
+      "DownstreamScheme": "http",
+      "UseServiceDiscovery": true,
+      "ServiceName": "SchedulerService",
+      "UpstreamPathTemplate": "/api/{version}/SchedulerResource/{everything}",
+      "UpstreamHttpMethod": [ "GET", "PUT", "DELETE" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/{version}/SchedulerEvent",
+      "DownstreamScheme": "http",
+      "UseServiceDiscovery": true,
+      "ServiceName": "SchedulerService",
+      "UpstreamPathTemplate": "/api/{version}/SchedulerEvent",
+      "UpstreamHttpMethod": [ "GET", "POST" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/{version}/SchedulerEvent/{everything}",
+      "DownstreamScheme": "http",
+      "UseServiceDiscovery": true,
+      "ServiceName": "SchedulerService",
+      "UpstreamPathTemplate": "/api/{version}/SchedulerEvent/{everything}",
+      "UpstreamHttpMethod": [ "GET", "PUT", "DELETE" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/{version}/SchedulerResource/CheckSchedulerResourceName",
+      "DownstreamScheme": "http",
+      "UseServiceDiscovery": true,
+      "ServiceName": "SchedulerService",
+      "UpstreamPathTemplate": "/api/{version}/CheckSchedulerResourceName",
+      "UpstreamHttpMethod": [ "POST" ]
+    }
+  ]
+}

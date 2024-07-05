@@ -1,0 +1,586 @@
+version: '3.4'
+
+services:
+  messagebus:
+    image: rabbitmq:3.7.15-management
+    hostname: rabbitfamilielaiss
+    container_name: rabbitmq
+    environment:
+      - RABBITMQ_DEFAULT_USER_FILE=/run/secrets/rabbit_user_secret
+      - RABBITMQ_DEFAULT_PASS_FILE=/run/secrets/rabbit_password_secret
+    secrets:
+      - rabbit_user_secret
+      - rabbit_password_secret
+    volumes:
+      - /var/lib/familielaiss/rabbitmq:/var/lib/rabbitmq
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: pgadmin4                
+    ports:
+      - 9001:80
+    volumes:
+      - /var/lib/familielaiss/pgadmin:/var/lib/pgadmin
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=mikey74@hotmail.de
+      - PGADMIN_DEFAULT_PASSWORD=DominicKlaudijaMichael22_08
+  eureka:
+    image: mikey74l/familielaiss-eureka:1.0
+    container_name: eureka
+  db_blog:
+    image: postgres:12.2-alpine
+    container_name: postgres_blog
+    environment:
+      - POSTGRES_USER_FILE=/run/secrets/postgres_user_secret
+      - POSTGRES_PASSWORD_FILE=/run/secrets/postgres_password_secret
+      - POSTGRES_DB=blogservice
+    secrets:
+      - postgres_user_secret
+      - postgres_password_secret
+    volumes:
+      - /var/lib/familielaiss/db/blog:/var/lib/postgresql/data
+  db_catalog:
+    image: postgres:12.2-alpine
+    container_name: postgres_catalog
+    environment:
+      - POSTGRES_USER_FILE=/run/secrets/postgres_user_secret
+      - POSTGRES_PASSWORD_FILE=/run/secrets/postgres_password_secret
+      - POSTGRES_DB=catalogservice
+    secrets:
+      - postgres_user_secret
+      - postgres_password_secret
+    volumes:
+      - /var/lib/familielaiss/db/catalog:/var/lib/postgresql/data
+  db_pictureconvert:
+    image: postgres:12.2-alpine
+    container_name: postgres_pictureconvert
+    environment:    
+      - POSTGRES_USER_FILE=/run/secrets/postgres_user_secret
+      - POSTGRES_PASSWORD_FILE=/run/secrets/postgres_password_secret
+      - POSTGRES_DB=pictureconvertservice
+    secrets:
+      - postgres_user_secret
+      - postgres_password_secret
+    volumes:
+      - /var/lib/familielaiss/db/pictureconvert:/var/lib/postgresql/data
+  db_videoconvert:
+    image: postgres:12.2-alpine
+    container_name: postgres_videoconvert
+    environment:    
+      - POSTGRES_USER_FILE=/run/secrets/postgres_user_secret
+      - POSTGRES_PASSWORD_FILE=/run/secrets/postgres_password_secret
+      - POSTGRES_DB=videoconvertservice
+    secrets:
+      - postgres_user_secret
+      - postgres_password_secret
+    volumes:
+      - /var/lib/familielaiss/db/videoconvert:/var/lib/postgresql/data
+  db_upload:
+    image: postgres:12.2-alpine
+    container_name: postgres_upload
+    environment:    
+      - POSTGRES_USER_FILE=/run/secrets/postgres_user_secret
+      - POSTGRES_PASSWORD_FILE=/run/secrets/postgres_password_secret
+      - POSTGRES_DB=uploadservice
+    secrets:
+      - postgres_user_secret
+      - postgres_password_secret
+    volumes:
+      - /var/lib/familielaiss/db/upload:/var/lib/postgresql/data
+  db_identity:
+    image: postgres:12.2-alpine
+    container_name: postgres_identity
+    environment:
+      - POSTGRES_USER_FILE=/run/secrets/postgres_user_secret
+      - POSTGRES_PASSWORD_FILE=/run/secrets/postgres_password_secret
+      - POSTGRES_DB=identityservice
+    secrets:
+      - postgres_user_secret
+      - postgres_password_secret
+    volumes:
+      - /var/lib/familielaiss/db/identity:/var/lib/postgresql/data
+  db_settings:
+    image: postgres:12.2-alpine
+    container_name: postgres_settings
+    environment:
+      - POSTGRES_USER_FILE=/run/secrets/postgres_user_secret
+      - POSTGRES_PASSWORD_FILE=/run/secrets/postgres_password_secret
+      - POSTGRES_DB=settingsservice
+    secrets:
+      - postgres_user_secret
+      - postgres_password_secret
+    volumes:
+      - /var/lib/familielaiss/db/settings:/var/lib/postgresql/data
+  db_message:
+    image: postgres:12.2-alpine
+    container_name: postgres_message
+    environment:
+      - POSTGRES_USER_FILE=/run/secrets/postgres_user_secret
+      - POSTGRES_PASSWORD_FILE=/run/secrets/postgres_password_secret
+      - POSTGRES_DB=messageservice
+    secrets:
+      - postgres_user_secret
+      - postgres_password_secret
+    volumes:
+      - /var/lib/familielaiss/db/message:/var/lib/postgresql/data
+  db_mail:
+    image: postgres:12.2-alpine
+    container_name: postgres_mail
+    environment:
+      - POSTGRES_USER_FILE=/run/secrets/postgres_user_secret
+      - POSTGRES_PASSWORD_FILE=/run/secrets/postgres_password_secret
+      - POSTGRES_DB=mailservice
+    secrets:
+      - postgres_user_secret
+      - postgres_password_secret
+    volumes:
+      - /var/lib/familielaiss/db/mail:/var/lib/postgresql/data
+  db_userinteraction:
+    image: postgres:12.2-alpine
+    container_name: postgres_userinteraction
+    environment:
+      - POSTGRES_USER_FILE=/run/secrets/postgres_user_secret
+      - POSTGRES_PASSWORD_FILE=/run/secrets/postgres_password_secret
+      - POSTGRES_DB=userinteractionservice
+    secrets:
+      - postgres_user_secret
+      - postgres_password_secret
+    volumes:
+      - /var/lib/familielaiss/db/userinteraction:/var/lib/postgresql/data
+  db_scheduler:
+    image: postgres:12.2-alpine
+    container_name: postgres_scheduler
+    environment:
+      - POSTGRES_USER_FILE=/run/secrets/postgres_user_secret
+      - POSTGRES_PASSWORD_FILE=/run/secrets/postgres_password_secret
+      - POSTGRES_DB=schedulerservice
+    secrets:
+      - postgres_user_secret
+      - postgres_password_secret
+    volumes:
+      - /var/lib/familielaiss/db/scheduler:/var/lib/postgresql/data
+  gateway.spa:
+    image: mikey74l/familielaiss-gateway-spa
+    container_name: gatewayspa
+    depends_on:
+      - upload.api
+      - pictureconvert.api
+      - videoconvert.api
+      - settings.api
+      - mail.api
+      - message.api
+      - catalog.api
+      - blog.api
+      - picture.api
+      - video.api
+      - userinteraction.api
+      - scheduler.api
+      - eureka
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:80
+    ports:
+      - 8001:80
+    volumes:
+      - /var/lib/familielaiss/logging:/var/lib/familielaiss/logs
+  upload.api:
+    image: mikey74l/familielaiss-upload-service
+    container_name: uploadservice
+    secrets:
+      - rabbit_user_secret
+      - rabbit_password_secret
+      - postgres_user_secret
+      - postgres_password_secret
+      - oidc_client_id_upload_secret
+      - oidc_client_secret_upload_secret
+    depends_on:
+      - messagebus
+      - eureka
+      - db_upload
+      - userinteraction.api
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:80
+      - AppSettings__RabbitMQServer_User_FILE=/run/secrets/rabbit_user_secret
+      - AppSettings__RabbitMQServer_Password_FILE=/run/secrets/rabbit_password_secret
+      - AppSettings__PostgresUser_FILE=/run/secrets/postgres_user_secret
+      - AppSettings__PostgresPassword_FILE=/run/secrets/postgres_password_secret
+      - AppSettings__OIDC_ClientID_FILE=/run/secrets/oidc_client_id_upload_secret
+      - AppSettings__OIDC_ClientSecret_FILE=/run/secrets/oidc_client_secret_upload_secret
+    volumes:
+      - /var/lib/familielaiss/settings:/var/lib/familielaiss/settings
+      - /var/lib/familielaiss/Content:/var/lib/familielaiss/Content
+      - /var/lib/familielaiss/logging:/var/lib/familielaiss/logs
+  pictureconvert.api:
+    image: mikey74l/familielaiss-picture-convert-service
+    container_name: pictureconverterservice
+    secrets:
+      - rabbit_user_secret
+      - rabbit_password_secret
+      - postgres_user_secret
+      - postgres_password_secret
+    depends_on:
+      - messagebus
+      - eureka
+      - db_pictureconvert
+      - userinteraction.api
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:80
+      - AppSettings__RabbitMQServer_User_FILE=/run/secrets/rabbit_user_secret
+      - AppSettings__RabbitMQServer_Password_FILE=/run/secrets/rabbit_password_secret
+      - AppSettings__PostgresUser_FILE=/run/secrets/postgres_user_secret
+      - AppSettings__PostgresPassword_FILE=/run/secrets/postgres_password_secret
+    volumes:
+      - /var/lib/familielaiss/logging:/var/lib/familielaiss/logs
+  pictureconvertexecute:
+    image: mikey74l/familielaiss-picture-convert-execute-service
+    container_name: pictureconvertexecute
+    secrets:
+      - rabbit_user_secret
+      - rabbit_password_secret
+      - postgres_user_secret
+      - postgres_password_secret
+    depends_on:
+      - messagebus
+      - db_pictureconvert
+      - pictureconvert.api
+    environment:
+      - Environment=Production
+      - AppSettings__Database_User_FILE=/run/secrets/postgres_user_secret
+      - AppSettings__Database_Password_FILE=/run/secrets/postgres_password_secret
+      - AppSettings__Rabbit_User_FILE=/run/secrets/rabbit_user_secret
+      - AppSettings__Rabbit_Password_FILE=/run/secrets/rabbit_password_secret
+    volumes:
+      - /var/lib/familielaiss/Content:/var/lib/familielaiss/Content
+      - /var/lib/familielaiss/logging:/var/lib/familielaiss/logs
+  picture.api:
+    image: mikey74l/familielaiss-picture-service
+    container_name: pictureservice
+    depends_on:
+      - eureka
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:80
+    volumes:
+      - /var/lib/familielaiss/Content:/var/lib/familielaiss/Content
+      - /var/lib/familielaiss/logging:/var/lib/familielaiss/logs
+  videoconvert.api:
+    image: mikey74l/familielaiss-video-convert-service
+    container_name: videoconverterservice
+    secrets:
+      - rabbit_user_secret
+      - rabbit_password_secret
+      - postgres_user_secret
+      - postgres_password_secret
+    depends_on:
+      - messagebus
+      - eureka
+      - db_videoconvert
+      - userinteraction.api
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:80
+      - AppSettings__RabbitMQServer_User_FILE=/run/secrets/rabbit_user_secret
+      - AppSettings__RabbitMQServer_Password_FILE=/run/secrets/rabbit_password_secret
+      - AppSettings__PostgresUser_FILE=/run/secrets/postgres_user_secret
+      - AppSettings__PostgresPassword_FILE=/run/secrets/postgres_password_secret
+    volumes:
+      - /var/lib/familielaiss/logging:/var/lib/familielaiss/logs
+  videoconvertexecute:
+    image: mikey74l/familielaiss-video-convert-execute-service
+    container_name: videoconvertexecute
+    secrets:
+      - rabbit_user_secret
+      - rabbit_password_secret
+      - postgres_user_secret
+      - postgres_password_secret
+    depends_on:
+      - messagebus
+      - db_videoconvert
+      - videoconvert.api
+    environment:
+      - Environment=Production
+      - AppSettings__Database_User_FILE=/run/secrets/postgres_user_secret
+      - AppSettings__Database_Password_FILE=/run/secrets/postgres_password_secret
+      - AppSettings__Rabbit_User_FILE=/run/secrets/rabbit_user_secret
+      - AppSettings__Rabbit_Password_FILE=/run/secrets/rabbit_password_secret
+    volumes:
+      - /var/lib/familielaiss/Content:/var/lib/familielaiss/Content
+      - /var/lib/familielaiss/logging:/var/lib/familielaiss/logs
+  video.api:
+    image: mikey74l/familielaiss-video-service
+    container_name: videoservice
+    depends_on:
+      - eureka
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:80
+    volumes:
+      - /var/lib/familielaiss/Content:/var/lib/familielaiss/Content
+      - /var/lib/familielaiss/logging:/var/lib/familielaiss/logs
+  settings.api:
+    image: mikey74l/familielaiss-settings-service
+    container_name: settingsservice
+    secrets:
+      - rabbit_user_secret
+      - rabbit_password_secret
+      - postgres_user_secret
+      - postgres_password_secret
+    depends_on:
+      - messagebus
+      - eureka
+      - db_settings
+      - userinteraction.api
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:80
+      - AppSettings__RabbitMQServer_User_FILE=/run/secrets/rabbit_user_secret
+      - AppSettings__RabbitMQServer_Password_FILE=/run/secrets/rabbit_password_secret
+      - AppSettings__PostgresUser_FILE=/run/secrets/postgres_user_secret
+      - AppSettings__PostgresPassword_FILE=/run/secrets/postgres_password_secret
+    volumes:
+      - /var/lib/familielaiss/logging:/var/lib/familielaiss/logs
+  mail.api:
+    image: mikey74l/familielaiss-mail-service
+    container_name: mailservice
+    secrets:
+      - rabbit_user_secret
+      - rabbit_password_secret
+      - postgres_user_secret
+      - postgres_password_secret
+      - mailkit_user_administrator_secret
+      - mailkit_password_administrator_secret
+      - mailkit_user_account_secret
+      - mailkit_password_account_secret
+      - mailkit_user_notification_secret
+      - mailkit_password_notification_secret
+      - mailkit_user_support_secret
+      - mailkit_password_support_secret
+      - mailtrap_username_secret
+      - mailtrap_password_secret
+      - sendgrid_api_key_secret
+    depends_on:
+      - messagebus
+      - eureka
+      - db_mail
+      - userinteraction.api
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:80
+      - AppSettings__RabbitMQServer_User_FILE=/run/secrets/rabbit_user_secret
+      - AppSettings__RabbitMQServer_Password_FILE=/run/secrets/rabbit_password_secret
+      - AppSettings__PostgresUser_FILE=/run/secrets/postgres_user_secret
+      - AppSettings__PostgresPassword_FILE=/run/secrets/postgres_password_secret
+      - AppSettings__MailkitUserAdministrator_FILE=/run/secrets/mailkit_user_administrator_secret
+      - AppSettings__MailkitPasswordAdministrator_FILE=/run/secrets/mailkit_password_administrator_secret
+      - AppSettings__MailkitUserAccount_FILE=/run/secrets/mailkit_user_account_secret
+      - AppSettings__MailkitPasswordAccount_FILE=/run/secrets/mailkit_password_account_secret
+      - AppSettings__MailkitUserNotification_FILE=/run/secrets/mailkit_user_notification_secret
+      - AppSettings__MailkitPasswordNotification_FILE=/run/secrets/mailkit_password_notification_secret
+      - AppSettings__MailkitUserSupport_FILE=/run/secrets/mailkit_user_support_secret
+      - AppSettings__MailkitPasswordSupport_FILE=/run/secrets/mailkit_password_support_secret
+      - AppSettings__MailtrapUsername_FILE=/run/secrets/mailtrap_username_secret
+      - AppSettings__MailtrapPassword_FILE=/run/secrets/mailtrap_password_secret
+      - AppSettings__SendGridAPIKey_FILE=/run/secrets/sendgrid_api_key_secret
+    volumes:
+      - /var/lib/familielaiss/logging:/var/lib/familielaiss/logs
+  message.api:
+    image: mikey74l/familielaiss-message-service
+    container_name: messageservice
+    secrets:
+      - rabbit_user_secret
+      - rabbit_password_secret
+      - postgres_user_secret
+      - postgres_password_secret
+      - oidc_client_id_message_secret
+      - oidc_client_secret_message_secret
+    depends_on:
+      - messagebus
+      - eureka
+      - db_message
+      - userinteraction.api
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:80
+      - AppSettings__RabbitMQServer_User_FILE=/run/secrets/rabbit_user_secret
+      - AppSettings__RabbitMQServer_Password_FILE=/run/secrets/rabbit_password_secret
+      - AppSettings__PostgresUser_FILE=/run/secrets/postgres_user_secret
+      - AppSettings__PostgresPassword_FILE=/run/secrets/postgres_password_secret
+      - AppSettings__OIDC_ClientID_FILE=/run/secrets/oidc_client_id_message_secret
+      - AppSettings__OIDC_ClientSecret_FILE=/run/secrets/oidc_client_secret_message_secret
+    volumes:
+      - /var/lib/familielaiss/logging:/var/lib/familielaiss/logs
+  google.api:
+    image: mikey74l/familielaiss-google-service
+    container_name: googleapiservice
+    secrets:
+      - rabbit_user_secret
+      - rabbit_password_secret
+      - google_api_key_secret
+    depends_on:
+      - messagebus
+      - eureka
+      - userinteraction.api
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:80
+      - AppSettings__RabbitMQServer_User_FILE=/run/secrets/rabbit_user_secret
+      - AppSettings__RabbitMQServer_Password_FILE=/run/secrets/rabbit_password_secret
+      - AppSettings__GoogleAPIKey_FILE=/run/secrets/google_api_key_secret
+    volumes:
+      - /var/lib/familielaiss/logging:/var/lib/familielaiss/logs
+  catalog.api:
+    image: mikey74l/familielaiss-catalog-service
+    container_name: catalogapiservice
+    secrets:
+      - rabbit_user_secret
+      - rabbit_password_secret
+      - postgres_user_secret
+      - postgres_password_secret
+    depends_on:
+      - messagebus
+      - eureka
+      - db_catalog
+      - userinteraction.api
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:80
+      - AppSettings__RabbitMQServer_User_FILE=/run/secrets/rabbit_user_secret
+      - AppSettings__RabbitMQServer_Password_FILE=/run/secrets/rabbit_password_secret
+      - AppSettings__PostgresUser_FILE=/run/secrets/postgres_user_secret
+      - AppSettings__PostgresPassword_FILE=/run/secrets/postgres_password_secret
+    volumes:
+      - /var/lib/familielaiss/logging:/var/lib/familielaiss/logs
+  user.api:
+    image: mikey74l/familielaiss-user-service
+    container_name: userapiservice
+    secrets:
+      - rabbit_user_secret
+      - rabbit_password_secret
+      - postgres_user_secret
+      - postgres_password_secret
+    depends_on:
+      - messagebus
+      - eureka
+      - db_user
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:80
+      - AppSettings__RabbitMQServer_User_FILE=/run/secrets/rabbit_user_secret
+      - AppSettings__RabbitMQServer_Password_FILE=/run/secrets/rabbit_password_secret
+      - AppSettings__PostgresUser_FILE=/run/secrets/postgres_user_secret
+      - AppSettings__PostgresPassword_FILE=/run/secrets/postgres_password_secret
+  blog.api:
+    image: mikey74l/familielaiss-blog-service
+    container_name: blogapiservice
+    secrets:
+      - rabbit_user_secret
+      - rabbit_password_secret
+      - postgres_user_secret
+      - postgres_password_secret
+    depends_on:
+      - messagebus
+      - eureka
+      - db_blog
+      - userinteraction.api
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:80
+      - AppSettings__RabbitMQServer_User_FILE=/run/secrets/rabbit_user_secret
+      - AppSettings__RabbitMQServer_Password_FILE=/run/secrets/rabbit_password_secret
+      - AppSettings__PostgresUser_FILE=/run/secrets/postgres_user_secret
+      - AppSettings__PostgresPassword_FILE=/run/secrets/postgres_password_secret
+    volumes:
+      - /var/lib/familielaiss/logging:/var/lib/familielaiss/logs
+  userinteraction.api:
+    image: mikey74l/familielaiss-user-interaction-service
+    container_name: userinteractionapiservice
+    secrets:
+      - rabbit_user_secret
+      - rabbit_password_secret
+      - postgres_user_secret
+      - postgres_password_secret
+    depends_on:
+      - messagebus
+      - eureka
+      - db_userinteraction
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:80
+      - AppSettings__RabbitMQServer_User_FILE=/run/secrets/rabbit_user_secret
+      - AppSettings__RabbitMQServer_Password_FILE=/run/secrets/rabbit_password_secret
+      - AppSettings__PostgresUser_FILE=/run/secrets/postgres_user_secret
+      - AppSettings__PostgresPassword_FILE=/run/secrets/postgres_password_secret
+    volumes:
+      - /var/lib/familielaiss/logging:/var/lib/familielaiss/logs
+  scheduler.api:
+    image: mikey74l/familielaiss-scheduler-service
+    container_name: schedulerapiservice
+    secrets:
+      - rabbit_user_secret
+      - rabbit_password_secret
+      - postgres_user_secret
+      - postgres_password_secret
+    depends_on:
+      - messagebus
+      - eureka
+      - db_scheduler
+      - userinteraction.api
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:80
+      - AppSettings__RabbitMQServer_User_FILE=/run/secrets/rabbit_user_secret
+      - AppSettings__RabbitMQServer_Password_FILE=/run/secrets/rabbit_password_secret
+      - AppSettings__PostgresUser_FILE=/run/secrets/postgres_user_secret
+      - AppSettings__PostgresPassword_FILE=/run/secrets/postgres_password_secret
+    volumes:
+      - /var/lib/familielaiss/logging:/var/lib/familielaiss/logs
+  frontend:
+    container_name: webspafrontend
+    image: mikey74l/familielaiss-webspafrontend
+    depends_on:
+      - gateway.spa
+    ports:
+      - 8000:80
+    restart: unless-stopped
+secrets:
+  postgres_user_secret:
+    file: /var/lib/familielaiss/Secrets/PostgresUsername.txt
+  postgres_password_secret:
+    file: /var/lib/familielaiss/Secrets/PostgresPassword.txt
+  rabbit_user_secret:
+    file: /var/lib/familielaiss/Secrets/RabbitUser.txt
+  rabbit_password_secret:
+    file: /var/lib/familielaiss/Secrets/RabbitPassword.txt
+  google_api_key_secret:
+    file: /var/lib/familielaiss/Secrets/GoogleAPIKey.txt
+  mailkit_user_administrator_secret:
+    file: /var/lib/familielaiss/Secrets/MailkitUserAdministrator.txt
+  mailkit_password_administrator_secret:
+    file: /var/lib/familielaiss/Secrets/MailkitPasswordAdministrator.txt
+  mailkit_user_account_secret:
+    file: /var/lib/familielaiss/Secrets/MailkitUserAccount.txt
+  mailkit_password_account_secret:
+    file: /var/lib/familielaiss/Secrets/MailkitPasswordAccount.txt
+  mailkit_user_notification_secret:
+    file: /var/lib/familielaiss/Secrets/MailkitUserNotification.txt
+  mailkit_password_notification_secret:
+    file: /var/lib/familielaiss/Secrets/MailkitPasswordNotification.txt
+  mailkit_user_support_secret:
+    file: /var/lib/familielaiss/Secrets/MailkitUserSupport.txt
+  mailkit_password_support_secret:
+    file: /var/lib/familielaiss/Secrets/MailkitPasswordSupport.txt
+  mailtrap_username_secret:
+    file: /var/lib/familielaiss/Secrets/MailtrapUsername.txt
+  mailtrap_password_secret:
+    file: /var/lib/familielaiss/Secrets/MailtrapPassword.txt
+  sendgrid_api_key_secret:
+    file: /var/lib/familielaiss/Secrets/SendgridAPIKey.txt
+  oidc_client_id_message_secret:
+    file: /var/lib/familielaiss/Secrets/OIDC_ClientID_Message_Service.txt
+  oidc_client_secret_message_secret:
+    file: /var/lib/familielaiss/Secrets/OIDC_ClientSecret_Message_Service.txt
+  oidc_client_id_upload_secret:
+    file: /var/lib/familielaiss/Secrets/OIDC_ClientID_Upload_Service.txt
+  oidc_client_secret_upload_secret:
+    file: /var/lib/familielaiss/Secrets/OIDC_ClientSecret_Upload_Service.txt    

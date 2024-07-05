@@ -1,0 +1,37 @@
+﻿@using FamilieLaissFrontend.Client.ViewModels.Pages.Converter.Picture
+@using FamilieLaissResources.Resources.Pages.Converter.Picture
+@using FamilieLaissSharedObjects.Enums
+@using FamilieLaissSharedUI.Components
+
+@inherits FlComponentBase<PictureConverterStatusViewModel>
+
+@page "/pictureconverter"
+
+<NavigationLock OnBeforeInternalNavigation="async () => await ViewModel.BeforeInternalNavigationCommand.ExecuteAsync(null)" />
+
+<MudTabs Elevation="2" Rounded="true" Color="Color.Dark" KeepPanelsAlive="true">
+    <MudTabPanel Text="@PictureConverterStatusRes.Tab_Waiting">
+        @if (ViewModel.IsLoading)
+        {
+            <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="my-7" />
+        }
+        <PictureConvertStatusList Items="@ViewModel.ListWaiting" ListType="EnumPictureConvertStatus.WaitingForConversion" />
+    </MudTabPanel>
+    <MudTabPanel Text="@PictureConverterStatusRes.Tab_Current">
+        <PictureConvertStatusCurrent CurrentConversionItem="@ViewModel.CurrentConversionItem" />
+    </MudTabPanel>
+    <MudTabPanel Text="@PictureConverterStatusRes.Tab_Error">
+        @if (ViewModel.IsLoading)
+        {
+            <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="my-7" />
+        }
+        <PictureConvertStatusList Items="@ViewModel.ListError" ListType="EnumPictureConvertStatus.ConvertedWithErrors" />
+    </MudTabPanel>
+    <MudTabPanel Text="@PictureConverterStatusRes.Tab_Success">
+        @if (ViewModel.IsLoading)
+        {
+            <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="my-7" />
+        }
+        <PictureConvertStatusList Items="@ViewModel.ListSuccess" ListType="EnumPictureConvertStatus.SucessfullyConverted" />
+    </MudTabPanel>
+</MudTabs>
