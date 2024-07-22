@@ -1,5 +1,7 @@
 using Catalog.API;
 using Catalog.API.GraphQL;
+using Catalog.API.GraphQL.DataLoader.UploadPicture;
+using Catalog.API.GraphQL.DataLoader.UploadVideo;
 using Catalog.API.GraphQL.Filter;
 using Catalog.API.GraphQL.Mutations;
 using Catalog.API.GraphQL.Mutations.Category;
@@ -9,6 +11,8 @@ using Catalog.API.GraphQL.Mutations.MediaItem;
 using Catalog.API.GraphQL.Queries.Category;
 using Catalog.API.GraphQL.Queries.CategoryValue;
 using Catalog.API.GraphQL.Queries.Media;
+using Catalog.API.GraphQL.Queries.UploadPicture;
+using Catalog.API.GraphQL.Queries.UploadVideo;
 using Catalog.API.GraphQL.Types.Category;
 using Catalog.API.GraphQL.Types.CategoryValue;
 using Catalog.API.GraphQL.Types.Media;
@@ -94,11 +98,15 @@ var graphQlBuilder = builder.Services.AddGraphQLServer()
     .AddTypeExtension<GraphQlQueryCategory>()
     .AddTypeExtension<GraphQlQueryCategoryValue>()
     .AddTypeExtension<GraphQlQueryMedia>()
+    .AddTypeExtension<GraphQlQueryUploadPicture>()
+    .AddTypeExtension<GraphQlQueryUploadVideo>()
     .AddType<GraphQlCategoryType>()
     .AddType<GraphQlCategoryValueType>()
     .AddType<GraphQlMediaGroupType>()
     .AddType<GraphQlMediaItemType>()
     .AddType<GraphQlMediaItemCategoryValueType>()
+    .AddDataLoader<UploadPictureDataLoader>()
+    .AddDataLoader<UploadVideoDataLoader>()
     .AddProjections()
     .AddFiltering()
     .AddSorting()
