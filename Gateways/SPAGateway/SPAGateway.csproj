@@ -8,28 +8,28 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <_ContentIncludedByDefault Remove="configuration\Ocelot.UploadPicture.json" />
-  </ItemGroup>
-
-  <ItemGroup>
-	<PackageReference Include="HotChocolate.AspNetCore" Version="14.0.0-p.42" />
-	<PackageReference Include="HotChocolate.Stitching.Redis" Version="14.0.0-p.42" />
-	<PackageReference Include="Mapster" Version="7.4.0" />
-    <PackageReference Include="Mapster.DependencyInjection" Version="1.0.1" />
-    <PackageReference Include="Ocelot" Version="22.0.1" />
-    <PackageReference Include="Ocelot.Provider.Eureka" Version="22.0.1" />
-    <PackageReference Include="Serilog" Version="3.1.1" />
+	<PackageReference Include="HotChocolate.AspNetCore" Version="13.9.7" />
+	<PackageReference Include="HotChocolate.AspNetCore.CommandLine" Version="13.9.7" />
+	<PackageReference Include="HotChocolate.Stitching.Redis" Version="13.9.7" />
+    <PackageReference Include="Serilog" Version="4.0.0" />
     <PackageReference Include="Serilog.AspNetCore" Version="8.0.1" />
-    <PackageReference Include="Serilog.Enrichers.AssemblyName" Version="1.0.9" />
-    <PackageReference Include="Serilog.Enrichers.Environment" Version="2.3.0" />
-    <PackageReference Include="Serilog.Enrichers.Process" Version="2.0.2" />
-    <PackageReference Include="Serilog.Enrichers.Thread" Version="3.1.0" />
-    <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
-    <PackageReference Include="StackExchange.Redis" Version="2.6.80" />
+    <PackageReference Include="Serilog.Enrichers.AssemblyName" Version="2.0.0" />
+    <PackageReference Include="Serilog.Enrichers.Environment" Version="3.0.1" />
+    <PackageReference Include="Serilog.Enrichers.Process" Version="3.0.0" />
+    <PackageReference Include="Serilog.Enrichers.Thread" Version="4.0.0" />
+    <PackageReference Include="Serilog.Sinks.File" Version="6.0.0" />
+    <PackageReference Include="StackExchange.Redis" Version="2.8.0" />
+    <PackageReference Include="Steeltoe.Discovery.Eureka" Version="3.2.8" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\DDDHelpers\ServiceLayer\ServiceLayerHelper\ServiceLayerHelper.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Stitching.graphql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

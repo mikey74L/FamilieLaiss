@@ -222,7 +222,7 @@ public class JobExecutor(
                     logger.LogDebug("Publish picture uploaded event over service bus");
                     if (newPicture is not null && newPictureStatus is not null)
                     {
-                        await bus.Send<IConvertPictureCmd>(new ConvertPictureCmd()
+                        await bus.Send<IMassConvertPictureCmd>(new MassConvertPictureCmd()
                         {
                             Id = newPicture.Id, ConvertStatusId = newPictureStatus.Id,
                             OriginalName = newPicture.Filename
@@ -237,7 +237,7 @@ public class JobExecutor(
                     logger.LogDebug("Publish video uploaded event over service bus");
                     if (newVideo is not null && newVideoStatus is not null)
                     {
-                        await bus.Send<IConvertVideoCmd>(new ConvertVideoCmd()
+                        await bus.Send<IMassConvertVideoCmd>(new MassConvertVideoCmd()
                         {
                             Id = newVideo.Id,
                             ConvertStatusId = newVideoStatus.Id,

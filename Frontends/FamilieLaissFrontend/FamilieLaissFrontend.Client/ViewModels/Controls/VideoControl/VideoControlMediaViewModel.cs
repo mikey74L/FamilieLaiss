@@ -8,13 +8,13 @@ using MudBlazor;
 
 namespace FamilieLaissFrontend.Client.ViewModels.Controls.VideoControl;
 
-public partial class VideoControlMediaViewModel : ViewModelBase
+public partial class VideoControlMediaViewModel(
+    ISnackbar snackbarService,
+    IMessageBoxService messageBoxService,
+    IUrlHelperService urlHelperService,
+    IDialogService dialogService)
+    : ViewModelBase(snackbarService, messageBoxService)
 {
-    #region Services
-    private readonly IUrlHelperService urlHelperService;
-    private readonly IDialogService dialogService;
-    #endregion
-
     #region Parameters
     public IUploadVideoModel? UploadItem { get; set; }
     #endregion
@@ -24,15 +24,6 @@ public partial class VideoControlMediaViewModel : ViewModelBase
 
     [ObservableProperty]
     private bool _isOverlayVideoActive;
-    #endregion
-
-    #region C'tor
-    public VideoControlMediaViewModel(ISnackbar snackbarService, IMessageBoxService messageBoxService,
-        IUrlHelperService urlHelperService, IDialogService dialogService) : base(snackbarService, messageBoxService)
-    {
-        this.urlHelperService = urlHelperService;
-        this.dialogService = dialogService;
-    }
     #endregion
 
     #region Commands

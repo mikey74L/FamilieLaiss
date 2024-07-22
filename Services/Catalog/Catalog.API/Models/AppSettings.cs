@@ -6,36 +6,33 @@
 public class AppSettings
 {
     #region RabbitMQ
+
     /// <summary>
     /// RabbitMQ Connection-String - Filename 
     /// </summary>
-    public string RabbitMQConnection_FILE { get; set; }
+    public string RabbitMQConnection_FILE { get; set; } = string.Empty;
 
     /// <summary>
     /// RabbitMQ Connection-String for CloudAMP
     /// </summary>
     public string RabbitMQConnection
     {
-        get
-        {
-            return System.IO.File.ReadAllText(RabbitMQConnection_FILE);
-        }
+        get { return System.IO.File.ReadAllText(RabbitMQConnection_FILE); }
     }
 
     #region Endpoints
+
     /// <summary>
     /// Endpoint for Catalog-Service
     /// </summary>
-    public string Endpoint_CatalogService { get; set; }
+    public string EndpointCatalogService { get; set; } = string.Empty;
 
-    /// <summary>
-    /// Endpoint for Message-Service
-    /// </summary>
-    public string Endpoint_MessageService { get; set; }
     #endregion
+
     #endregion
 
     #region Postgres
+
     /// <summary>
     /// Postgres user - Filename for Secret
     /// </summary>
@@ -46,10 +43,7 @@ public class AppSettings
     /// </summary>
     public string PostgresUser
     {
-        get
-        {
-            return System.IO.File.ReadAllText(PostgresUser_FILE);
-        }
+        get { return System.IO.File.ReadAllText(PostgresUser_FILE); }
     }
 
     /// <summary>
@@ -62,10 +56,7 @@ public class AppSettings
     /// </summary>
     public string PostgresPassword
     {
-        get
-        {
-            return System.IO.File.ReadAllText(PostgresPassword_FILE);
-        }
+        get { return System.IO.File.ReadAllText(PostgresPassword_FILE); }
     }
 
     /// <summary>
@@ -87,5 +78,6 @@ public class AppSettings
     /// Postgres - Use Multiplexing for faster connections
     /// </summary>
     public bool PostgresMultiplexing { get; set; }
+
     #endregion
 }

@@ -17,13 +17,14 @@ using MudBlazor;
 
 namespace FamilieLaissFrontend.Client.ViewModels.Pages.BaseData.Upload.Video;
 
-public partial class VideoUploadListViewModel : ViewModelBase, IHandle<AggFilterChanged>, IHandle<AggEditSortCriteria>, IHandle<AggEditFilterCriteria>
+public partial class VideoUploadListViewModel(
+    ISnackbar snackbarService,
+    IMessageBoxService messageBoxService,
+    IUploadVideoDataService uploadVideoService,
+    IEventAggregator eventAggregator)
+    : ViewModelBase(snackbarService, messageBoxService), IHandle<AggFilterChanged>, IHandle<AggEditSortCriteria>,
+        IHandle<AggEditFilterCriteria>
 {
-    #region Services
-    private readonly IUploadVideoDataService uploadVideoService;
-    private readonly IEventAggregator eventAggregator;
-    #endregion
-
     #region Parameters
     public ExtendedObservableCollection<IUploadVideoModel> UploadItems { get; set; } = [];
     public IGraphQlSortAndFilterService<IUploadVideoModel, UploadVideoSortInput, UploadVideoFilterInput> SortAndFilterService { get; set; } = default!;
@@ -41,15 +42,6 @@ public partial class VideoUploadListViewModel : ViewModelBase, IHandle<AggFilter
     private bool _isFilterActive;
     [ObservableProperty]
     private bool _showSelectionMode;
-    #endregion
-
-    #region C'tor
-    public VideoUploadListViewModel(ISnackbar snackbarService, IMessageBoxService messageBoxService,
-        IUploadVideoDataService uploadVideoService, IEventAggregator eventAggregator) : base(snackbarService, messageBoxService)
-    {
-        this.uploadVideoService = uploadVideoService;
-        this.eventAggregator = eventAggregator;
-    }
     #endregion
 
     #region Lifecycle
@@ -121,8 +113,8 @@ public partial class VideoUploadListViewModel : ViewModelBase, IHandle<AggFilter
     [RelayCommand]
     private async Task DeleteAllUploadVideos()
     {
-        bool? result = null;
-        List<IUploadVideoModel> UploadVideoIds = [];
+        bool? result;
+        List<IUploadVideoModel> uploadVideoIds = [];
         if (ShowSelectionMode && UploadItems.Any(x => x.IsSelected))
         {
             result = await QuestionConfirmWithCancel(VideoUploadListViewModelRes.QuestionDeleteAllSelectedTitle,
@@ -133,11 +125,11 @@ public partial class VideoUploadListViewModel : ViewModelBase, IHandle<AggFilter
 
             if (result.HasValue && result.Value)
             {
-                UploadVideoIds = UploadItems.Where(x => x.IsSelected).ToList();
+                uploadVideoIds = UploadItems.Where(x => x.IsSelected).ToList();
             }
             if (result.HasValue && !result.Value)
             {
-                UploadVideoIds = UploadItems.ToList();
+                uploadVideoIds = UploadItems.ToList();
             }
         }
         else
@@ -149,18 +141,18 @@ public partial class VideoUploadListViewModel : ViewModelBase, IHandle<AggFilter
 
             if (result.HasValue && result.Value)
             {
-                UploadVideoIds = UploadItems.ToList();
+                uploadVideoIds = UploadItems.ToList();
             }
         }
 
-        if (UploadVideoIds.Any())
+        if (uploadVideoIds.Any())
         {
             IsSaving = true;
 
-            await uploadVideoService.DeleteAllUploadVideosAsync(UploadVideoIds)
+            await uploadVideoService.DeleteAllUploadVideosAsync(uploadVideoIds)
                 .HandleSuccess((_) =>
                 {
-                    UploadItems?.Clear();
+                    UploadItems.Clear();
 
                     ShowSuccessToast(VideoUploadListViewModelRes.ToastDeleteAllSuccess);
 

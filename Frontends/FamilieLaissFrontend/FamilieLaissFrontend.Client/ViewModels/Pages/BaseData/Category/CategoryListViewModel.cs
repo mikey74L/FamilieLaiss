@@ -17,32 +17,21 @@ using MudBlazor;
 
 namespace FamilieLaissFrontend.Client.ViewModels.Pages.BaseData.Category;
 
-public partial class CategoryListViewModel : ViewModelBase, IHandle<AggCategoryCreated>, IHandle<AggCategoryChanged>
+public partial class CategoryListViewModel(
+    ICategoryDataService categoryService,
+    IDialogService dialogService,
+    IEventAggregator eventAggregator,
+    IMvvmNavigationManager navigationManager,
+    ISnackbar snackbarService,
+    IMessageBoxService messageBoxService)
+    : ViewModelBase(snackbarService, messageBoxService), IHandle<AggCategoryCreated>, IHandle<AggCategoryChanged>
 {
-    #region Private Services
-    private readonly ICategoryDataService categoryService;
-    private readonly IDialogService dialogService;
-    private readonly IEventAggregator eventAggregator;
-    private readonly IMvvmNavigationManager navigationManager;
-    #endregion
-
     #region Public Properties
     [ObservableProperty]
+    // ReSharper disable once InconsistentNaming
     public ExtendedObservableCollection<ICategoryModel> _items = [];
 
     public string SearchString { get; set; } = string.Empty;
-    #endregion
-
-    #region C'tor
-    public CategoryListViewModel(ICategoryDataService categoryService, IDialogService dialogService, IEventAggregator eventAggregator,
-        IMvvmNavigationManager navigationManager, ISnackbar snackbarService, IMessageBoxService messageBoxService)
-        : base(snackbarService, messageBoxService)
-    {
-        this.categoryService = categoryService;
-        this.dialogService = dialogService;
-        this.eventAggregator = eventAggregator;
-        this.navigationManager = navigationManager;
-    }
     #endregion
 
     #region Public Methods

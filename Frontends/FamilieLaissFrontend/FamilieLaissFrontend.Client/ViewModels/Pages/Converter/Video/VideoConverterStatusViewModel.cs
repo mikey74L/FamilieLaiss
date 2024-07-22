@@ -10,12 +10,12 @@ using MudBlazor;
 
 namespace FamilieLaissFrontend.Client.ViewModels.Pages.Converter.Video;
 
-public partial class VideoConverterStatusViewModel : ViewModelBase
+public partial class VideoConverterStatusViewModel(
+    ISnackbar snackbarService,
+    IMessageBoxService messageBoxService,
+    IVideoConvertStatusDataService statusService)
+    : ViewModelBase(snackbarService, messageBoxService)
 {
-    #region Services
-    private readonly IVideoConvertStatusDataService statusService;
-    #endregion
-
     #region Public Properties
     [ObservableProperty]
     private ExtendedObservableCollection<IVideoConvertStatusModel> _listWaiting = [];
@@ -25,14 +25,6 @@ public partial class VideoConverterStatusViewModel : ViewModelBase
     private ExtendedObservableCollection<IVideoConvertStatusModel> _listError = [];
     [ObservableProperty]
     private IVideoConvertStatusModel? _currentConversionItem;
-    #endregion
-
-    #region C'tor
-    public VideoConverterStatusViewModel(ISnackbar snackbarService, IMessageBoxService messageBoxService,
-        IVideoConvertStatusDataService statusService) : base(snackbarService, messageBoxService)
-    {
-        this.statusService = statusService;
-    }
     #endregion
 
     #region Lifecycle

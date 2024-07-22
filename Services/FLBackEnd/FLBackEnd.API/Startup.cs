@@ -45,8 +45,9 @@ public static class Startup
         //Set endpoint mappings for MassTransit
         if (appSettings is not null)
         {
-            EndpointConvention.Map<IConvertPictureCmd>(new Uri("queue:" + appSettings.EndpointPictureConvertService));
-            EndpointConvention.Map<IConvertVideoCmd>(new Uri("queue:" + appSettings.EndpointVideoConvertService));
+            EndpointConvention.Map<IMassConvertPictureCmd>(
+                new Uri("queue:" + appSettings.EndpointPictureConvertService));
+            EndpointConvention.Map<IMassConvertVideoCmd>(new Uri("queue:" + appSettings.EndpointVideoConvertService));
         }
     }
 

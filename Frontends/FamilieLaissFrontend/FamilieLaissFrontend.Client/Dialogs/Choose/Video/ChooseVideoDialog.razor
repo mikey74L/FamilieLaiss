@@ -1,5 +1,62 @@
-﻿<h3>ChooseVideoDialog</h3>
+﻿@using FamilieLaissEnums
+@using FamilieLaissSharedUI.Components
+@using FamilieLaissFrontend.Client.ViewModels.Dialogs.Choose.Video
+@using FamilieLaissResources.Resources.Dialogs.Choose.Video
+
+@inherits FlComponentBase<ChooseVideoDialogViewModel>
+
+@{
+    string classForContainer;
+
+    if (ViewModel.UploadItems.Count == 0 && ViewModel is { HasError: false, IsLoading: false } || ViewModel.HasError)
+    {
+        classForContainer = "mt-5 container-upload-video-choose";
+    }
+    else
+    {
+        classForContainer = "mt-5 container-upload-video-items container-upload-video-items-choose";
+    }
+}
+
+<MudDialog>
+    <DialogContent>
+        <MudItem Class="@classForContainer">
+            @if (ViewModel.IsLoading)
+            {
+                <ChooseVideoDialogSkeleton />
+            }
+            else
+            {
+                if (ViewModel.UploadItems.Count > 0)
+                {
+                    foreach (var item in ViewModel.UploadItems)
+                    {
+                        <VideoControl ControlType="EnumVideoControlType.Choose"
+                                      ShowSkeleton="false"
+                                      UploadItem="item"
+                                      IsDisabled="ViewModel.IsBusy"
+                                      ChooseClicked="(args) => ViewModel.ChooseVideoCommand.Execute(args)"
+                                      ShowSelectionMode="false" />
+                    }
+                }
+
+                <ChooseVideoDialogMessageOutput HasError="ViewModel.HasError"
+                                                ItemsCount="ViewModel.UploadItems.Count" />
+            }
+        </MudItem>
+    </DialogContent>
+    <DialogActions>
+        <MudTooltip Arrow="true" Placement="Placement.Top" ShowOnFocus="false" Text="@ChooseVideoDialogRes.Tooltip_Close">
+            <MudButton OnClick="() => ViewModel.CancelCommand.Execute(null)">@ChooseVideoDialogRes.Button_Close</MudButton>
+        </MudTooltip>
+    </DialogActions>
+</MudDialog>
 
 @code {
-
+    [CascadingParameter]
+    public MudDialogInstance MudDialog
+    {
+        get => ViewModel.MudDialog;
+        set => ViewModel.MudDialog = value;
+    }
 }

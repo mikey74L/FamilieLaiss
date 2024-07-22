@@ -17,7 +17,7 @@
                  Disabled="@ViewModel.IsUploading">
         <UploadControl UploadMultipleFiles="true"
                        UploadType="EnumUploadType.Video"
-                       UploadCountChanged="() => ViewModel.UploadCountChangedCommand.Execute(null)"
+                       UploadCountChanged="(param) => ViewModel.UploadCountChangedCommand.Execute(param)"
                        UploadStarted="() => ViewModel.UploadStartedCommand.Execute(null)"
                        UploadFinished="() => ViewModel.UploadFinishedCommand.Execute(null)" />
     </MudTabPanel>

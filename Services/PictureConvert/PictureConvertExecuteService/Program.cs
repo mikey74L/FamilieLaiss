@@ -1,5 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using FamilieLaissMassTransitDefinitions.Contracts.Commands;
 using InfrastructureHelper.EventDispatchHandler;
 using MassTransit;
 using Microsoft.Extensions.Configuration;
@@ -14,6 +13,8 @@ using Serilog;
 using ServiceHelper.Interfaces;
 using Steeltoe.Discovery.Client;
 using Steeltoe.Discovery.Eureka;
+using System;
+using System.Threading.Tasks;
 
 namespace PictureConvertExecuteService;
 
@@ -29,8 +30,16 @@ public class Program
 {
     #region Private Static Methods
 
-    private static void ConfigureEndpointConventions(AppSettings appSettings)
+    private static void ConfigureEndpointConventions(AppSettings? appSettings)
     {
+        //Set endpoint mappings for MassTransit
+        if (appSettings is not null)
+        {
+            EndpointConvention.Map<IMassSetUploadPictureExifInfoCmd>(
+                new Uri("queue:" + appSettings.EndpointNameUploadService));
+            EndpointConvention.Map<IMassSetUploadPictureDimensionsCmd>(
+                new Uri("queue:" + appSettings.EndpointNameUploadService));
+        }
     }
 
     #endregion

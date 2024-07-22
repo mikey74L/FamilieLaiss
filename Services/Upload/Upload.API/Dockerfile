@@ -1,9 +1,11 @@
-FROM mcr.microsoft.com/dotnet/aspnet:8.0.2 AS base
+#See https://aka.ms/customizecontainer to learn how to customize your debug container and how Visual Studio uses this Dockerfile to build your images for faster debugging.
+
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
 USER app
 WORKDIR /app
 EXPOSE 8080
 
-FROM mcr.microsoft.com/dotnet/sdk:8.0.201 AS build
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY ["NuGet.config", "."]
@@ -15,10 +17,10 @@ COPY ["DDDHelpers/Infrastructure/InfrastructureHelper/InfrastructureHelper.cspro
 COPY ["FamilieLaissCoreHelpers/FamilieLaissCoreHelpers.csproj", "FamilieLaissCoreHelpers/"]
 COPY ["FamilieLaissMassTransitDefinitions/FamilieLaissMassTransitDefinitions.csproj", "FamilieLaissMassTransitDefinitions/"]
 COPY ["FamilieLaissSharedObjects/FamilieLaissSharedObjects.csproj", "FamilieLaissSharedObjects/"]
+COPY ["Services/Google/Google.DTO/Google.DTO.csproj", "Services/Google/Google.DTO/"]
 COPY ["Services/Upload/Upload.Domain/Upload.Domain.csproj", "Services/Upload/Upload.Domain/"]
-COPY ["Services/Upload/Upload.DTO/Upload.DTO.csproj", "Services/Upload/Upload.DTO/"]
 COPY ["Services/Upload/Upload.Infrastructure/Upload.Infrastructure.csproj", "Services/Upload/Upload.Infrastructure/"]
-RUN dotnet restore "./Services/Upload/Upload.API/./Upload.API.csproj"
+RUN dotnet restore "./Services/Upload/Upload.API/Upload.API.csproj"
 COPY . .
 WORKDIR "/src/Services/Upload/Upload.API"
 RUN dotnet build "./Upload.API.csproj" -c $BUILD_CONFIGURATION -o /app/build

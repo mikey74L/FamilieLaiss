@@ -10,14 +10,14 @@ using Upload.Infrastructure.DBContext;
 
 namespace Upload.Infrastructure.Migrations
 {
-    [DbContext(typeof(UploadServiceDBContext))]
-    partial class UploadServiceDBContextModelSnapshot : ModelSnapshot
+    [DbContext(typeof(UploadServiceDbContext))]
+    partial class UploadServiceDbContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.0")
+                .HasAnnotation("ProductVersion", "8.0.7")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -33,7 +33,7 @@ namespace Upload.Infrastructure.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseHiLo(b.Property<long>("Id"), "SequenceUploadIdentifier");
 
-                    b.Property<DateTimeOffset>("CreateDate")
+                    b.Property<DateTimeOffset?>("CreateDate")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("PseudoText")
@@ -51,7 +51,7 @@ namespace Upload.Infrastructure.Migrations
                     b.Property<long>("Id")
                         .HasColumnType("bigint");
 
-                    b.Property<DateTimeOffset>("CreateDate")
+                    b.Property<DateTimeOffset?>("CreateDate")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Filename")
@@ -59,13 +59,13 @@ namespace Upload.Infrastructure.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("character varying(255)");
 
-                    b.Property<int?>("Height")
+                    b.Property<int>("Height")
                         .HasColumnType("integer");
 
                     b.Property<byte>("Status")
                         .HasColumnType("smallint");
 
-                    b.Property<int?>("Width")
+                    b.Property<int>("Width")
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
@@ -73,38 +73,21 @@ namespace Upload.Infrastructure.Migrations
                     b.ToTable("UploadPictures");
                 });
 
-            modelBuilder.Entity("Upload.Domain.Entities.UploadPortrait", b =>
-                {
-                    b.Property<long>("Id")
-                        .HasColumnType("bigint");
-
-                    b.Property<DateTimeOffset>("CreateDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("UserName")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("UploadPortraits");
-                });
-
             modelBuilder.Entity("Upload.Domain.Entities.UploadVideo", b =>
                 {
                     b.Property<long>("Id")
                         .HasColumnType("bigint");
 
-                    b.Property<DateTimeOffset>("CreateDate")
+                    b.Property<DateTimeOffset?>("CreateDate")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<int?>("DurationHour")
+                    b.Property<int>("DurationHour")
                         .HasColumnType("integer");
 
-                    b.Property<int?>("DurationMinute")
+                    b.Property<int>("DurationMinute")
                         .HasColumnType("integer");
 
-                    b.Property<int?>("DurationSecond")
+                    b.Property<int>("DurationSecond")
                         .HasColumnType("integer");
 
                     b.Property<string>("Filename")
@@ -118,16 +101,16 @@ namespace Upload.Infrastructure.Migrations
                     b.Property<double?>("GpsLongitude")
                         .HasColumnType("double precision");
 
-                    b.Property<int?>("Height")
+                    b.Property<int>("Height")
                         .HasColumnType("integer");
 
                     b.Property<byte>("Status")
                         .HasColumnType("smallint");
 
-                    b.Property<byte?>("VideoType")
+                    b.Property<byte>("VideoType")
                         .HasColumnType("smallint");
 
-                    b.Property<int?>("Width")
+                    b.Property<int>("Width")
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
@@ -163,19 +146,19 @@ namespace Upload.Infrastructure.Migrations
                             b1.Property<double>("Longitude")
                                 .HasColumnType("double precision");
 
-                            b1.Property<string>("Plz")
-                                .IsRequired()
-                                .HasMaxLength(10)
-                                .HasColumnType("character varying(10)");
-
                             b1.Property<string>("StreetName")
                                 .IsRequired()
                                 .HasMaxLength(100)
                                 .HasColumnType("character varying(100)");
 
+                            b1.Property<string>("Zip")
+                                .IsRequired()
+                                .HasMaxLength(10)
+                                .HasColumnType("character varying(10)");
+
                             b1.HasKey("UploadPictureId");
 
-                            b1.ToTable("GoogleGeoCodingAdressesPicture", (string)null);
+                            b1.ToTable("GoogleGeoCodingAddressesPicture", (string)null);
 
                             b1.WithOwner()
                                 .HasForeignKey("UploadPictureId");
@@ -198,10 +181,9 @@ namespace Upload.Infrastructure.Migrations
                             b1.Property<short?>("ExposureProgram")
                                 .HasColumnType("smallint");
 
-                            b1.Property<string>("ExposureTime")
-                                .IsRequired()
+                            b1.Property<double?>("ExposureTime")
                                 .HasMaxLength(50)
-                                .HasColumnType("character varying(50)");
+                                .HasColumnType("double precision");
 
                             b1.Property<double?>("FNumber")
                                 .HasColumnType("double precision");
@@ -237,10 +219,9 @@ namespace Upload.Infrastructure.Migrations
                             b1.Property<short?>("Orientation")
                                 .HasColumnType("smallint");
 
-                            b1.Property<string>("ResolutionUnit")
-                                .IsRequired()
+                            b1.Property<short?>("ResolutionUnit")
                                 .HasMaxLength(100)
-                                .HasColumnType("character varying(100)");
+                                .HasColumnType("smallint");
 
                             b1.Property<double?>("ResolutionX")
                                 .HasColumnType("double precision");
@@ -278,7 +259,7 @@ namespace Upload.Infrastructure.Migrations
 
             modelBuilder.Entity("Upload.Domain.Entities.UploadVideo", b =>
                 {
-                    b.OwnsOne("Upload.Domain.ValueObjects.GoogleGeoCodingAddress", "GoogleGeoCodingAdress", b1 =>
+                    b.OwnsOne("Upload.Domain.ValueObjects.GoogleGeoCodingAddress", "GoogleGeoCodingAddress", b1 =>
                         {
                             b1.Property<long>("UploadVideoId")
                                 .HasColumnType("bigint");
@@ -304,25 +285,25 @@ namespace Upload.Infrastructure.Migrations
                             b1.Property<double>("Longitude")
                                 .HasColumnType("double precision");
 
-                            b1.Property<string>("Plz")
-                                .IsRequired()
-                                .HasMaxLength(10)
-                                .HasColumnType("character varying(10)");
-
                             b1.Property<string>("StreetName")
                                 .IsRequired()
                                 .HasMaxLength(100)
                                 .HasColumnType("character varying(100)");
 
+                            b1.Property<string>("Zip")
+                                .IsRequired()
+                                .HasMaxLength(10)
+                                .HasColumnType("character varying(10)");
+
                             b1.HasKey("UploadVideoId");
 
-                            b1.ToTable("GoogleGeoCodingAdressesVideo", (string)null);
+                            b1.ToTable("GoogleGeoCodingAddressesVideo", (string)null);
 
                             b1.WithOwner()
                                 .HasForeignKey("UploadVideoId");
                         });
 
-                    b.Navigation("GoogleGeoCodingAdress");
+                    b.Navigation("GoogleGeoCodingAddress");
                 });
 #pragma warning restore 612, 618
         }

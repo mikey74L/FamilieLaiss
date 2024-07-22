@@ -1,5 +1,6 @@
 ﻿@using FamilieLaissEnums
 @using FamilieLaissFrontend.Client.ViewModels.Pages.BaseData.Media
+@using FamilieLaissGraphQlClientLibrary
 @using FamilieLaissResources.Resources.Pages.BaseData.Media
 @using FamilieLaissSharedUI.Components
 
@@ -39,10 +40,21 @@
             </MudStack>
         </MudPaper>
         <MudPaper Style="height: 100%" Elevation="5">
-            <div style="padding: 10px;">
+            @{
+                string classForContainer;
+                if (ViewModel.MediaItems.Count == 0 && ViewModel is { HasError: false, IsLoading: false } || ViewModel.HasError)
+                {
+                    classForContainer = "container-base-data-media";
+                }
+                else
+                {
+                    classForContainer = "container-base-data-media-items";
+                }
+            }
+            <div class="@classForContainer">
                 @if (ViewModel.IsLoading)
                 {
-                    <MediaItemListSkeleton />
+                    <MediaItemListSkeleton/>
                 }
                 else
                 {
@@ -50,13 +62,26 @@
                     {
                         foreach (var item in ViewModel.MediaItems)
                         {
-                            <PictureControl ControlType="EnumPictureControlType.MediaItemBaseData"
-                                            ShowSkeleton="false"
-                                            MediaItem="item"
-                                            IsDisabled="ViewModel.IsBusy"
-                                            EditClicked="async (model) => await ViewModel.EditItemCommand.ExecuteAsync(model)"
-                                            DeleteMediaClicked="async (model) => await ViewModel.DeleteItemCommand.ExecuteAsync(model) "
-                                            ShowSelectionMode="false" />
+                            if (item.MediaType == EnumMediaType.Picture)
+                            {
+                                <PictureControl ControlType="EnumPictureControlType.MediaItemBaseData"
+                                                ShowSkeleton="false"
+                                                MediaItem="item"
+                                                IsDisabled="ViewModel.IsBusy"
+                                                EditClicked="async (model) => await ViewModel.EditItemCommand.ExecuteAsync(model)"
+                                                DeleteMediaClicked="async (model) => await ViewModel.DeleteItemCommand.ExecuteAsync(model)"
+                                                ShowSelectionMode="false"/>
+                            }
+                            else
+                            {
+                                <VideoControl ControlType="EnumVideoControlType.MediaItemBaseData"
+                                              ShowSkeleton="false"
+                                              MediaItem="item"
+                                              IsDisabled="ViewModel.IsBusy"
+                                              EditClicked="async (model) => await ViewModel.EditItemCommand.ExecuteAsync(model)"
+                                              DeleteMediaClicked="async (model) => await ViewModel.DeleteItemCommand.ExecuteAsync(model)"
+                                              ShowSelectionMode="false"/>
+                            }
                         }
                     }
                 }

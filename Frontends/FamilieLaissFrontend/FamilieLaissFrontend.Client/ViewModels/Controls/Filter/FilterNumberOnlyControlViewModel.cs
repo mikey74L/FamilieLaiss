@@ -11,12 +11,13 @@ using Tocronx.SimpleAsync;
 
 namespace FamilieLaissFrontend.Client.ViewModels.Controls.Filter;
 
-public partial class FilterNumberOnlyControlViewModel : ViewModelBase, IHandle<AggSetFilter>, IHandle<AggResetFilter>, IHandle<AggResetFilterGroup>, IHandle<AggFilterValuesSet>
+public partial class FilterNumberOnlyControlViewModel(
+    ISnackbar snackbarService,
+    IMessageBoxService messageBoxService,
+    IEventAggregator eventAggregator)
+    : ViewModelBase(snackbarService, messageBoxService), IHandle<AggSetFilter>, IHandle<AggResetFilter>,
+        IHandle<AggResetFilterGroup>, IHandle<AggFilterValuesSet>
 {
-    #region Services
-    private readonly IEventAggregator eventAggregator;
-    #endregion
-
     #region Parameters
     public IGraphQlFilterCriteria FilterCriteria { get; set; } = default!;
     public EventCallback<(Guid id, bool hasValue)> ValueChanged { get; set; }
@@ -42,14 +43,6 @@ public partial class FilterNumberOnlyControlViewModel : ViewModelBase, IHandle<A
 
     [ObservableProperty]
     private List<double?> _filterItemsDouble = [];
-    #endregion
-
-    #region C'tor
-    public FilterNumberOnlyControlViewModel(ISnackbar snackbarService, IMessageBoxService messageBoxService,
-        IEventAggregator eventAggregator) : base(snackbarService, messageBoxService)
-    {
-        this.eventAggregator = eventAggregator;
-    }
     #endregion
 
     #region Lifecycle

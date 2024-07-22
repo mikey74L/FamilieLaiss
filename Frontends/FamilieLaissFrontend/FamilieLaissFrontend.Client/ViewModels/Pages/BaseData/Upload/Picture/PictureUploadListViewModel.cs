@@ -17,13 +17,14 @@ using MudBlazor;
 
 namespace FamilieLaissFrontend.Client.ViewModels.Pages.BaseData.Upload.Picture;
 
-public partial class PictureUploadListViewModel : ViewModelBase, IHandle<AggFilterChanged>, IHandle<AggEditSortCriteria>, IHandle<AggEditFilterCriteria>
+public partial class PictureUploadListViewModel(
+    ISnackbar snackbarService,
+    IMessageBoxService messageBoxService,
+    IUploadPictureDataService uploadPictureService,
+    IEventAggregator eventAggregator)
+    : ViewModelBase(snackbarService, messageBoxService), IHandle<AggFilterChanged>, IHandle<AggEditSortCriteria>,
+        IHandle<AggEditFilterCriteria>
 {
-    #region Services
-    private readonly IUploadPictureDataService uploadPictureService;
-    private readonly IEventAggregator eventAggregator;
-    #endregion
-
     #region Public Parameters
     public ExtendedObservableCollection<IUploadPictureModel> UploadItems { get; set; } = [];
     public IGraphQlSortAndFilterService<IUploadPictureModel, UploadPictureSortInput, UploadPictureFilterInput> SortAndFilterService { get; set; } = default!;
@@ -41,15 +42,6 @@ public partial class PictureUploadListViewModel : ViewModelBase, IHandle<AggFilt
     private bool _isFilterActive;
     [ObservableProperty]
     private bool _showSelectionMode;
-    #endregion
-
-    #region C'tor
-    public PictureUploadListViewModel(ISnackbar snackbarService, IMessageBoxService messageBoxService,
-        IUploadPictureDataService uploadPictureService, IEventAggregator eventAggregator) : base(snackbarService, messageBoxService)
-    {
-        this.uploadPictureService = uploadPictureService;
-        this.eventAggregator = eventAggregator;
-    }
     #endregion
 
     #region Lifecycle
@@ -121,8 +113,8 @@ public partial class PictureUploadListViewModel : ViewModelBase, IHandle<AggFilt
     [RelayCommand]
     private async Task DeleteAllUploadPictures()
     {
-        bool? result = null;
-        List<IUploadPictureModel> UploadPictureIds = [];
+        bool? result;
+        List<IUploadPictureModel> uploadPictureIds = [];
         if (ShowSelectionMode && UploadItems.Any(x => x.IsSelected))
         {
             result = await QuestionConfirmWithCancel(PictureUploadListViewModelRes.QuestionDeleteAllSelectedTitle,
@@ -133,11 +125,11 @@ public partial class PictureUploadListViewModel : ViewModelBase, IHandle<AggFilt
 
             if (result.HasValue && result.Value)
             {
-                UploadPictureIds = UploadItems.Where(x => x.IsSelected).ToList();
+                uploadPictureIds = UploadItems.Where(x => x.IsSelected).ToList();
             }
             if (result.HasValue && !result.Value)
             {
-                UploadPictureIds = UploadItems.ToList();
+                uploadPictureIds = UploadItems.ToList();
             }
         }
         else
@@ -149,18 +141,18 @@ public partial class PictureUploadListViewModel : ViewModelBase, IHandle<AggFilt
 
             if (result.HasValue && result.Value)
             {
-                UploadPictureIds = UploadItems.ToList();
+                uploadPictureIds = UploadItems.ToList();
             }
         }
 
-        if (UploadPictureIds.Any())
+        if (uploadPictureIds.Any())
         {
             IsSaving = true;
 
-            await uploadPictureService.DeleteAllUploadPicturesAsync(UploadPictureIds)
+            await uploadPictureService.DeleteAllUploadPicturesAsync(uploadPictureIds)
                 .HandleSuccess((_) =>
                 {
-                    UploadItems?.Clear();
+                    UploadItems.Clear();
 
                     ShowSuccessToast(PictureUploadListViewModelRes.ToastDeleteAllSuccess);
 

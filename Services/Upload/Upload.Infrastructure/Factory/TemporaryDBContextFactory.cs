@@ -3,25 +3,25 @@ using Microsoft.EntityFrameworkCore.Design;
 using System.Reflection;
 using Upload.Infrastructure.DBContext;
 
-namespace PictureConvert.Infrastructure.Factory;
+namespace Upload.Infrastructure.Factory;
 
 /// <summary>
-/// A factory for creating <see cref="UploadServiceDBContext"/>. Would be used for Design-Time operations like migrations.
+/// A factory for creating <see cref="UploadServiceDbContext"/>. Would be used for Design-Time operations like migrations.
 /// </summary>
-public class TemporaryDBContextFactory : IDesignTimeDbContextFactory<UploadServiceDBContext>
+public class TemporaryDbContextFactory : IDesignTimeDbContextFactory<UploadServiceDbContext>
 {
     /// <summary>
-    /// Creates a new instance of <see cref="UploadServiceDBContext"/>.
+    /// Creates a new instance of <see cref="UploadServiceDbContext"/>.
     /// </summary>
     /// <param name="args">Arguments provided by the design-time service.</param>
-    /// <returns>An instance of <see cref="UploadServiceDBContext"/></returns>
-    public UploadServiceDBContext CreateDbContext(string[] args)
+    /// <returns>An instance of <see cref="UploadServiceDbContext"/></returns>
+    public UploadServiceDbContext CreateDbContext(string[] args)
     {
-        var optionsBuilder = new DbContextOptionsBuilder<UploadServiceDBContext>();
+        var optionsBuilder = new DbContextOptionsBuilder<UploadServiceDbContext>();
 
         optionsBuilder.UseNpgsql("",
-            opt => opt.MigrationsAssembly(typeof(UploadServiceDBContext).GetTypeInfo().Assembly.GetName().Name));
+            opt => opt.MigrationsAssembly(typeof(UploadServiceDbContext).GetTypeInfo().Assembly.GetName().Name));
 
-        return new UploadServiceDBContext(optionsBuilder.Options);
+        return new UploadServiceDbContext(optionsBuilder.Options);
     }
 }

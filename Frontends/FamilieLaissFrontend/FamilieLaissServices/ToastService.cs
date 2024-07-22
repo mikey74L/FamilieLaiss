@@ -10,42 +10,42 @@ namespace FamilieLaissServices;
 public class ToastService : IToastService
 {
     /// <summary>
-    /// A event that will be invoked when showing a toast
+    /// An event that will be invoked when showing a toast
     /// </summary>
     public event Action<FLToastLevel, RenderFragment, Action<IFlToastSettings>?>? OnShow;
 
     /// <summary>
-    /// A event that will be invoked when clearing all toasts
+    /// An event that will be invoked when clearing all toasts
     /// </summary>
     public event Action? OnClearAll;
 
     /// <summary>
-    /// A event that will be invoked when showing a toast with a custom component
+    /// An event that will be invoked when showing a toast with a custom component
     /// </summary>
     public event Action<Type, IFlToastParameters?, Action<IFlToastSettings>?>? OnShowComponent;
 
     /// <summary>
-    /// A event that will be invoked when clearing toasts
+    /// An event that will be invoked when clearing toasts
     /// </summary>
     public event Action<FLToastLevel>? OnClearToasts;
 
     /// <summary>
-    /// A event that will be invoked when clearing custom toast components
+    /// An event that will be invoked when clearing custom toast components
     /// </summary>
     public event Action? OnClearCustomToasts;
 
     /// <summary>
-    /// A event that will be invoked to clear all queued toasts
+    /// An event that will be invoked to clear all queued toasts
     /// </summary>
     public event Action? OnClearQueue;
 
     /// <summary>
-    /// A event that will be invoked to clear queued toast of specified level
+    /// An event that will be invoked to clear queued toast of specified level
     /// </summary>
     public event Action<FLToastLevel>? OnClearQueueToasts;
 
     /// <summary>
-    /// Shows a information toast 
+    /// Shows an information toast 
     /// </summary>
     /// <param name="message">Text to display on the toast</param>
     /// <param name="settings">Settings to configure the toast instance</param>
@@ -53,7 +53,7 @@ public class ToastService : IToastService
         => ShowToast(FLToastLevel.Info, message, settings);
 
     /// <summary>
-    /// Shows a information toast 
+    /// Shows an information toast 
     /// </summary>
     /// <param name="message">RenderFragment to display on the toast</param>
     /// <param name="settings">Settings to configure the toast instance</param>
@@ -93,7 +93,7 @@ public class ToastService : IToastService
         => ShowToast(FLToastLevel.Warning, message, settings);
 
     /// <summary>
-    /// Shows a error toast 
+    /// Shows an error toast 
     /// </summary>
     /// <param name="message">Text to display on the toast</param>
     /// <param name="settings">Settings to configure the toast instance</param>
@@ -101,7 +101,7 @@ public class ToastService : IToastService
         => ShowToast(FLToastLevel.Error, message, settings);
 
     /// <summary>
-    /// Shows a error toast 
+    /// Shows an error toast 
     /// </summary>
     /// <param name="message">RenderFragment to display on the toast</param>
     /// <param name="settings">Settings to configure the toast instance</param>

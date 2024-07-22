@@ -23,9 +23,18 @@
 	    <AutoGen>True</AutoGen>
 	    <DependentUpon>BlogItemModelValidator.resx</DependentUpon>
 	  </Compile>
+	  <Compile Update="Resources\ViewModels\Dialogs\Choose\Video\ChooseVideoDialogViewModel.Designer.cs">
+	    <DesignTime>True</DesignTime>
+	    <AutoGen>True</AutoGen>
+	    <DependentUpon>ChooseVideoDialogViewModel.resx</DependentUpon>
+	  </Compile>
 	</ItemGroup>
 
 	<ItemGroup>
+	  <EmbeddedResource Update="Resources\Dialogs\Choose\Video\ChooseVideoDialog.resx">
+	    <Generator>ResXFileCodeGenerator</Generator>
+	    <LastGenOutput>ChooseVideoDialog.Designer.cs</LastGenOutput>
+	  </EmbeddedResource>
 	  <EmbeddedResource Update="Resources\Layout\NavMenu.resx">
 	    <Generator></Generator>
 	  </EmbeddedResource>
@@ -44,6 +53,10 @@
 	  <EmbeddedResource Update="Resources\ViewModels\Controls\UploadControl\UploadFileInfo.resx">
 	    <Generator>ResXFileCodeGenerator</Generator>
 	    <LastGenOutput>UploadFileInfo.Designer.cs</LastGenOutput>
+	  </EmbeddedResource>
+	  <EmbeddedResource Update="Resources\ViewModels\Dialogs\Choose\Video\ChooseVideoDialogViewModel.resx">
+	    <Generator>ResXFileCodeGenerator</Generator>
+	    <LastGenOutput>ChooseVideoDialogViewModel.Designer.cs</LastGenOutput>
 	  </EmbeddedResource>
 	</ItemGroup>
 

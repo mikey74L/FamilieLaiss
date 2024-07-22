@@ -11,9 +11,52 @@ services:
     secrets:
       - rabbit_user_secret
       - rabbit_password_secret
+  redis:
+    image: redis
+    container_name: redis
   eureka:
     image: steeltoeoss/eureka-server
     container_name: eureka
+  db_catalog:
+    image: postgres:16.1-alpine
+    container_name: postgres_catalog
+    environment:
+      - POSTGRES_USER_FILE=/run/secrets/postgres_user_secret
+      - POSTGRES_PASSWORD_FILE=/run/secrets/postgres_password_secret
+      - POSTGRES_DB=catalog
+    secrets:
+      - postgres_user_secret
+      - postgres_password_secret
+  db_upload:
+    image: postgres:16.1-alpine
+    container_name: postgres_upload
+    environment:
+      - POSTGRES_USER_FILE=/run/secrets/postgres_user_secret
+      - POSTGRES_PASSWORD_FILE=/run/secrets/postgres_password_secret
+      - POSTGRES_DB=upload
+    secrets:
+      - postgres_user_secret
+      - postgres_password_secret
+  db_pictureconvert:
+    image: postgres:16.1-alpine
+    container_name: postgres_pictureconvert
+    environment:
+      - POSTGRES_USER_FILE=/run/secrets/postgres_user_secret
+      - POSTGRES_PASSWORD_FILE=/run/secrets/postgres_password_secret
+      - POSTGRES_DB=pictureconvert
+    secrets:
+      - postgres_user_secret
+      - postgres_password_secret
+  db_videoconvert:
+    image: postgres:16.1-alpine
+    container_name: postgres_videoconvert
+    environment:
+      - POSTGRES_USER_FILE=/run/secrets/postgres_user_secret
+      - POSTGRES_PASSWORD_FILE=/run/secrets/postgres_password_secret
+      - POSTGRES_DB=videoconvert
+    secrets:
+      - postgres_user_secret
+      - postgres_password_secret
   db_fl_backend:
     image: postgres:16.1-alpine
     container_name: postgres_fl_backend
@@ -24,12 +67,48 @@ services:
     secrets:
       - postgres_user_secret
       - postgres_password_secret
+  gateway.spa:
+    image: ${DOCKER_REGISTRY-}gatewayspa
+    container_name: gatewayspa
+    build:
+      context: .
+      dockerfile: Gateways/SPAGateway/Dockerfile
+  catalog.api:
+    image: ${DOCKER_REGISTRY-}catalogapi
+    container_name: catalogservice
+    build:
+      context: .
+      dockerfile: Services/Catalog/Catalog.API/Dockerfile
+    secrets:
+      - rabbit_connection_string
+      - postgres_user_secret
+      - postgres_password_secret
+  upload.api:
+    image: ${DOCKER_REGISTRY-}uploadapi
+    container_name: uploadservice
+    build:
+      context: .
+      dockerfile: Services/Upload/Upload.API/Dockerfile
+    secrets:
+      - rabbit_connection_string
+      - postgres_user_secret
+      - postgres_password_secret
   flbackend.api:
     image: ${DOCKER_REGISTRY-}flbackend
     container_name: flbackendservice
     build:
       context: .
       dockerfile: Services/FlBackEnd/FlBackEnd.API/Dockerfile
+    secrets:
+      - rabbit_connection_string
+      - postgres_user_secret
+      - postgres_password_secret
+  pictureconvert.api:
+    image: ${DOCKER_REGISTRY-}pictureconvertapi
+    container_name: pictureconvertservice
+    build:
+      context: .
+      dockerfile: Services/PictureConvert/PictureConvert.API/Dockerfile
     secrets:
       - rabbit_connection_string
       - postgres_user_secret
@@ -50,6 +129,16 @@ services:
     build:
       context: .
       dockerfile: Services/Picture/Picture.API/Dockerfile
+  videoconvert.api:
+    image: ${DOCKER_REGISTRY-}videoconvertapi
+    container_name: videoconvertservice
+    build:
+      context: .
+      dockerfile: Services/VideoConvert/VideoConvert.API/Dockerfile
+    secrets:
+      - rabbit_connection_string
+      - postgres_user_secret
+      - postgres_password_secret
   videoconvertexecute:
     image: ${DOCKER_REGISTRY-}videoconvertexecute
     container_name: videoconvertexecute

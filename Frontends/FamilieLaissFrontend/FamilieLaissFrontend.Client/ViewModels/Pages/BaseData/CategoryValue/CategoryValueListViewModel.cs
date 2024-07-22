@@ -21,11 +21,11 @@ namespace FamilieLaissFrontend.Client.ViewModels.Pages.BaseData.CategoryValue;
 public partial class CategoryValueListViewModel : ViewModelBase, IHandle<AggCategoryValueCreated>, IHandle<AggCategoryValueChanged>
 {
     #region Private Services
-    private readonly ICategoryDataService categoryService;
-    private readonly ICategoryValueDataService categoryValueService;
-    private readonly IDialogService dialogService;
-    private readonly IEventAggregator eventAggregator;
-    private readonly IMvvmNavigationManager navigationManager;
+    private readonly ICategoryDataService _categoryService;
+    private readonly ICategoryValueDataService _categoryValueService;
+    private readonly IDialogService _dialogService;
+    private readonly IEventAggregator _eventAggregator;
+    private readonly IMvvmNavigationManager _navigationManager;
     #endregion
 
     #region Query Parameters
@@ -56,11 +56,11 @@ public partial class CategoryValueListViewModel : ViewModelBase, IHandle<AggCate
     {
         this.QueryStringParameters.Add(nameof(CategoryId), typeof(long));
 
-        this.categoryService = categoryService;
-        this.categoryValueService = categoryValueService;
-        this.dialogService = dialogService;
-        this.eventAggregator = eventAggregator;
-        this.navigationManager = navigationManager;
+        this._categoryService = categoryService;
+        this._categoryValueService = categoryValueService;
+        this._dialogService = dialogService;
+        this._eventAggregator = eventAggregator;
+        this._navigationManager = navigationManager;
     }
     #endregion
 
@@ -69,14 +69,14 @@ public partial class CategoryValueListViewModel : ViewModelBase, IHandle<AggCate
     {
         base.OnInitialized();
 
-        eventAggregator.Subscribe(this);
+        _eventAggregator.Subscribe(this);
     }
 
     public override async Task OnInitializedAsync()
     {
         IsLoading = true;
 
-        await categoryService.GetAllCategoriesAsync()
+        await _categoryService.GetAllCategoriesAsync()
             .HandleSuccess(async (result) =>
             {
                 Categories.AddRange(result);
@@ -85,7 +85,7 @@ public partial class CategoryValueListViewModel : ViewModelBase, IHandle<AggCate
 
                 await RefreshDataAsync(false);
             })
-            .HandleErrors((result) =>
+            .HandleErrors((_) =>
             {
                 ShowErrorToast(CategoryValueListViewModelRes.ToastInitializeError);
 
@@ -139,7 +139,7 @@ public partial class CategoryValueListViewModel : ViewModelBase, IHandle<AggCate
             { "ModelCategory", Category }
         };
 
-        var dialogRef = dialogService.Show<CategoryValueEditDialog>(
+        var dialogRef = await _dialogService.ShowAsync<CategoryValueEditDialog>(
             CategoryValueListViewModelRes.DialogTitleAdd, dialogParam, GetDialogOptions());
 
         await dialogRef.Result;
@@ -155,7 +155,7 @@ public partial class CategoryValueListViewModel : ViewModelBase, IHandle<AggCate
             { "ModelCategory", Category }
         };
 
-        var dialogRef = dialogService.Show<CategoryValueEditDialog>(
+        var dialogRef = await _dialogService.ShowAsync<CategoryValueEditDialog>(
             CategoryValueListViewModelRes.DialogTitleEdit, dialogParam, GetDialogOptions());
         await dialogRef.Result;
     }
@@ -173,7 +173,7 @@ public partial class CategoryValueListViewModel : ViewModelBase, IHandle<AggCate
         {
             IsSaving = true;
 
-            await categoryValueService.DeleteCategoryValueAsync(model)
+            await _categoryValueService.DeleteCategoryValueAsync(model)
                 .HandleSuccess(() =>
                 {
                     var itemToRemove = Items.SingleOrDefault(x => x.Id == model.Id);
@@ -222,39 +222,42 @@ public partial class CategoryValueListViewModel : ViewModelBase, IHandle<AggCate
             IsLoading = true;
         }
 
-        await categoryValueService.GetCategoryValuesForCategoryAsync(CategoryId.Value)
-            .HandleStatus(APIResultErrorType.NoError, (result) =>
-            {
-                Items.Clear();
-                Items.AddRange(result?.CategoryValues);
-
-                Category = result;
-
-                if (Category is not null)
+        if (CategoryId is not null)
+        {
+            await _categoryValueService.GetCategoryValuesForCategoryAsync(CategoryId.Value)
+                .HandleStatus(APIResultErrorType.NoError, (result) =>
                 {
-                    SelectedCategory = Categories.SingleOrDefault(x => x.Id == Category.Id);
-                }
+                    Items.Clear();
+                    Items.AddRange(result?.CategoryValues);
 
-                return Task.CompletedTask;
-            })
-            .HandleStatus(APIResultErrorType.NotAuthorized, (result) =>
-            {
-                ShowErrorToast(CategoryValueListViewModelRes.ToastLoadingErrorNotAuthorized);
+                    Category = result;
 
-                return Task.CompletedTask;
-            })
-            .HandleStatus(APIResultErrorType.ServerError, (result) =>
-            {
-                ShowErrorToast(CategoryValueListViewModelRes.ToastLoadingErrorServerError);
+                    if (Category is not null)
+                    {
+                        SelectedCategory = Categories.SingleOrDefault(x => x.Id == Category.Id);
+                    }
 
-                return Task.CompletedTask;
-            })
-            .HandleStatus(APIResultErrorType.CommunicationError, (result) =>
-            {
-                ShowErrorToast(CategoryValueListViewModelRes.ToastLoadingErrorCommunication);
+                    return Task.CompletedTask;
+                })
+                .HandleStatus(APIResultErrorType.NotAuthorized, (_) =>
+                {
+                    ShowErrorToast(CategoryValueListViewModelRes.ToastLoadingErrorNotAuthorized);
 
-                return Task.CompletedTask;
-            });
+                    return Task.CompletedTask;
+                })
+                .HandleStatus(APIResultErrorType.ServerError, (_) =>
+                {
+                    ShowErrorToast(CategoryValueListViewModelRes.ToastLoadingErrorServerError);
+
+                    return Task.CompletedTask;
+                })
+                .HandleStatus(APIResultErrorType.CommunicationError, (_) =>
+                {
+                    ShowErrorToast(CategoryValueListViewModelRes.ToastLoadingErrorCommunication);
+
+                    return Task.CompletedTask;
+                });
+        }
 
         if (calledDirectly)
         {
@@ -265,7 +268,7 @@ public partial class CategoryValueListViewModel : ViewModelBase, IHandle<AggCate
     [RelayCommand]
     private void JumpBackToCategory()
     {
-        navigationManager.NavigateTo<CategoryListViewModel>();
+        _navigationManager.NavigateTo<CategoryListViewModel>();
     }
     #endregion
 
@@ -300,7 +303,7 @@ public partial class CategoryValueListViewModel : ViewModelBase, IHandle<AggCate
 
     public override void Dispose()
     {
-        eventAggregator.Unsubscribe(this);
+        _eventAggregator.Unsubscribe(this);
     }
     #endregion
 }

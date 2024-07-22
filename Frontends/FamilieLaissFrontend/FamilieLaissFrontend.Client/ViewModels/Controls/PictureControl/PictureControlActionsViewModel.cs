@@ -7,24 +7,22 @@ using MudBlazor;
 
 namespace FamilieLaissFrontend.Client.ViewModels.Controls.PictureControl;
 
-public partial class PictureControlActionsViewModel : ViewModelBase
+public partial class PictureControlActionsViewModel(ISnackbar snackbarService, IMessageBoxService messageBoxService)
+    : ViewModelBase(snackbarService, messageBoxService)
 {
     #region Parameters
-    public IUploadPictureModel? UploadItem;
-    public IMediaItemModel? MediaItem;
-    public EventCallback<IUploadPictureModel> DeleteUploadClicked;
-    public EventCallback<IMediaItemModel> DeleteMediaClicked;
-    public EventCallback<IUploadPictureModel> ChooseClicked;
-    public EventCallback<IMediaItemModel> EditClicked;
-    #endregion
 
-    #region C'tor
-    public PictureControlActionsViewModel(ISnackbar snackbarService, IMessageBoxService messageBoxService) : base(snackbarService, messageBoxService)
-    {
-    }
+    public IUploadPictureModel? UploadItem { get; set; }
+    public IMediaItemModel? MediaItem { get; set; }
+    public EventCallback<IUploadPictureModel> DeleteUploadClicked { get; set; }
+    public EventCallback<IMediaItemModel> DeleteMediaClicked { get; set; }
+    public EventCallback<IUploadPictureModel> ChooseClicked { get; set; }
+    public EventCallback<IMediaItemModel> EditClicked { get; set; }
+
     #endregion
 
     #region Commands
+
     [RelayCommand]
     public async Task OnDelete()
     {
@@ -61,11 +59,14 @@ public partial class PictureControlActionsViewModel : ViewModelBase
             await EditClicked.InvokeAsync(MediaItem);
         }
     }
+
     #endregion
 
     #region Abstract overrides
+
     public override void Dispose()
     {
     }
+
     #endregion
 }

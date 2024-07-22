@@ -9,13 +9,13 @@ using MudBlazor;
 
 namespace FamilieLaissFrontend.Client.ViewModels.Controls.PictureControl;
 
-public partial class PictureControlMediaViewModel : ViewModelBase
+public partial class PictureControlMediaViewModel(
+    IUrlHelperService urlHelperService,
+    IDialogService dialogService,
+    ISnackbar snackbarService,
+    IMessageBoxService messageBoxService)
+    : ViewModelBase(snackbarService, messageBoxService)
 {
-    #region Private Services
-    private readonly IUrlHelperService urlHelperService;
-    private readonly IDialogService dialogService;
-    #endregion
-
     #region Parameters
     public EnumPictureControlType ControlType { get; set; }
     public IUploadPictureModel? UploadItem { get; set; }
@@ -27,15 +27,6 @@ public partial class PictureControlMediaViewModel : ViewModelBase
     private bool _isOverlayPictureActive;
 
     public string ImageUrl => UploadItem is not null ? urlHelperService.GetUrlForUploadPictureCard(UploadItem) : "";
-    #endregion
-
-    #region C'tor
-    public PictureControlMediaViewModel(IUrlHelperService urlHelperService, IDialogService dialogService,
-        ISnackbar snackbarService, IMessageBoxService messageBoxService) : base(snackbarService, messageBoxService)
-    {
-        this.urlHelperService = urlHelperService;
-        this.dialogService = dialogService;
-    }
     #endregion
 
     #region Commands

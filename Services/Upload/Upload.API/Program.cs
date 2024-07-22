@@ -1,30 +1,40 @@
-﻿using Asp.Versioning;
+﻿using System.Globalization;
+using GraphQL.Server.Ui.Voyager;
 using Hangfire;
 using Hangfire.PostgreSql;
 using InfrastructureHelper.EventDispatchHandler;
 using MassTransit;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 using Npgsql;
 using Serilog;
 using ServiceLayerHelper;
 using ServiceLayerHelper.Logging;
+using StackExchange.Redis;
 using Steeltoe.Discovery.Client;
 using Steeltoe.Discovery.Eureka;
-using Swashbuckle.AspNetCore.SwaggerGen;
-using System.Globalization;
-using System.Reflection;
 using Upload.API;
+using Upload.API.GraphQL.DataLoader.UploadPicture;
+using Upload.API.GraphQL.DataLoader.UploadVideo;
+using Upload.API.GraphQL.Filter;
+using Upload.API.GraphQL.Mutations;
+using Upload.API.GraphQL.Mutations.FileUpload;
+using Upload.API.GraphQL.Mutations.UploadPicture;
+using Upload.API.GraphQL.Mutations.UploadVideo;
+using Upload.API.GraphQL.Queries;
+using Upload.API.GraphQL.Queries.FileUpload;
+using Upload.API.GraphQL.Queries.UploadPicture;
+using Upload.API.GraphQL.Queries.UploadVideo;
+using Upload.API.GraphQL.Types.UploadPicture;
+using Upload.API.GraphQL.Types.UploadVideo;
 using Upload.API.Hangfire;
 using Upload.API.Interfaces;
 using Upload.API.Logging;
-using Upload.API.MassTransit.Consumers;
+using Upload.API.MassTransit.Consumers.MediaItem;
+using Upload.API.MassTransit.Consumers.UploadPicture;
 using Upload.API.MicroServices;
 using Upload.API.Models;
 using Upload.API.Services;
-using Upload.API.Swagger;
-using Upload.DTO.FileUpload;
 using Upload.Infrastructure.DBContext;
 
 //Den Titel für das Konsolenfenster setzen
@@ -34,15 +44,15 @@ var builder = WebApplication.CreateBuilder(args);
 
 //Logging
 var logger = new LoggerConfiguration()
-  .ReadFrom.Configuration(builder.Configuration)
-  .CreateLogger();
+    .ReadFrom.Configuration(builder.Configuration)
+    .CreateLogger();
 builder.Logging.ClearProviders();
 builder.Host.UseSerilog(logger);
 
 //Den Logger für Serilog erstellen
 Log.Logger = new LoggerConfiguration()
-  .ReadFrom.Configuration(builder.Configuration)
-  .CreateBootstrapLogger();
+    .ReadFrom.Configuration(builder.Configuration)
+    .CreateBootstrapLogger();
 
 //Hinzufügen der Service-Discovery
 builder.AddServiceDiscovery(options => options.UseEureka());
@@ -53,48 +63,14 @@ builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 //Hinzufügen der Hosted-Services (Background-Services)
 builder.Services.AddHostedService<EventDispatcherBackgroundService>();
 
-//Hinzufügen det globalen Exception-Handler Middleware
-builder.Services.AddSingleton<ILog, LogSerilog>();
-
-//Add auto mapper with assembly registration
-builder.Services.AddAutoMapper(typeof(Program));
-
-//Alles für API-Versioning hinzufügen
-var apiVersioningBuilder = builder.Services.AddApiVersioning(o =>
-{
-    o.AssumeDefaultVersionWhenUnspecified = true;
-    o.DefaultApiVersion = new ApiVersion(1, 0);
-    o.ReportApiVersions = true;
-});
-apiVersioningBuilder.AddApiExplorer(
-    options =>
-    {
-        options.GroupNameFormat = "'v'VVV";
-        options.SubstituteApiVersionInUrl = true;
-    });
-
-//Alles für WebApi hinzufügen
-builder.Services.AddControllers();
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
-builder.Services.AddSwaggerGen(options =>
-{
-    options.OperationFilter<SwaggerDefaultValues>();
-
-    var fileNameMain = Assembly.GetExecutingAssembly().GetName().Name + ".xml";
-    var fileNameDto = typeof(AddUploadChunckDto).Assembly.GetName().Name + ".xml";
-    var filePathMain = Path.Combine(AppContext.BaseDirectory, fileNameMain);
-    var filePathDto = Path.Combine(AppContext.BaseDirectory, fileNameDto);
-
-    options.IncludeXmlComments(filePathMain);
-    options.IncludeXmlComments(filePathDto);
-});
-
-//Hinzufügen des Service für den Unique-Identifier
+//Adding unique identifier service
 builder.Services.AddTransient<IUniqueIdentifierGenerator, UniqueIdentifierGeneratorService>();
 
-//Hinzufügen der Services für die Microservice Zugriffe
+//Adding Google MicroService
 builder.Services.AddSingleton<IGoogleMicroService, GoogleMicroService>();
+
+//Hinzufügen det globalen Exception-Handler Middleware
+builder.Services.AddSingleton<ILog, LogSerilog>();
 
 //Hinzufügen der Konfiguration (App-Settings) zum IOC-Container
 var appSettingsSection = builder.Configuration.GetSection("AppSettings");
@@ -102,29 +78,62 @@ builder.Services.Configure<AppSettings>(appSettingsSection);
 AppSettings? appSettings = appSettingsSection.Get<AppSettings>();
 
 //Die DB-Context Factory hinzufügen inklusive der UnitOfWork
-NpgsqlConnectionStringBuilder postgresConnectionStringBuilder = new();
-postgresConnectionStringBuilder.ApplicationName = "Upload-Service";
-postgresConnectionStringBuilder.Host = appSettings?.PostgresHost;
-postgresConnectionStringBuilder.Port = appSettings?.PostgresPort ?? 0;
-postgresConnectionStringBuilder.Multiplexing = appSettings?.PostgresMultiplexing ?? false;
-postgresConnectionStringBuilder.Database = appSettings?.PostgresDatabase;
-postgresConnectionStringBuilder.Username = appSettings?.PostgresUser;
-postgresConnectionStringBuilder.Password = appSettings?.PostgresPassword;
-builder.Services.AddPooledDbContextFactory<UploadServiceDBContext>(
+NpgsqlConnectionStringBuilder postgresConnectionStringBuilder = new()
+{
+    ApplicationName = "Upload-Service",
+    Host = appSettings?.PostgresHost,
+    Port = appSettings?.PostgresPort ?? 0,
+    Multiplexing = appSettings?.PostgresMultiplexing ?? false,
+    Database = appSettings?.PostgresDatabase,
+    Username = appSettings?.PostgresUser,
+    Password = appSettings?.PostgresPassword
+};
+builder.Services.AddPooledDbContextFactory<UploadServiceDbContext>(
         o => o.UseNpgsql(postgresConnectionStringBuilder.ToString()))
-    .AddUnitOfWork<UploadServiceDBContext>();
+    .AddUnitOfWork<UploadServiceDbContext>();
 
-//Hangfire konfigurieren
-if (postgresConnectionStringBuilder is not null)
-    _ = builder.Services.AddHangfire(options => options.UsePostgreSqlStorage(postgresConnectionStringBuilder.ConnectionString));
-builder.Services.AddTransient<iJobOperations, JobOperationsService>();
-builder.Services.AddTransient<JobExecuter>();
-//Den Hangfire-Server zur Pipeline hinzufügen
-//Dieser wird hier im Upload benötigt um eine Entkopplung zwischen dem Upload der Chuncks und dem Zusammenführen 
-//der Chuncks zu einer Dateien zu realisieren.
-//Beim löschen der Chuncks gab es im selben Aufruf immer eine Datei ist gesperrt. Durch Hangfire werden die Dateien
-//erst später gelöscht und somit greift kein anderer Prozess mehr darauf zu
+//Add hangfire 
+builder.Services.AddHangfire(options =>
+    options.UsePostgreSqlStorage(o => { o.UseNpgsqlConnection(postgresConnectionStringBuilder.ConnectionString); }));
+builder.Services.AddTransient<IJobOperations, JobOperationsService>();
+builder.Services.AddTransient<JobExecutor>();
 builder.Services.AddHangfireServer(x => x.ServerTimeout = TimeSpan.FromDays(1));
+
+//Redis Multiplexer hinzufügen wird für GraphQL Schema Stitching verwendet
+builder.Services.AddSingleton(ConnectionMultiplexer.Connect("redis"));
+
+//Adding GraphQL Server
+var graphQlBuilder = builder.Services.AddGraphQLServer()
+    .RegisterDbContext<UploadServiceDbContext>(DbContextKind.Pooled)
+    //.AddDiagnosticEventListener<QueryLogger>()
+    .AddMutationType<Mutation>()
+    .AddTypeExtension<GraphQlMutationUploadPicture>()
+    .AddTypeExtension<GraphQlMutationUploadVideo>()
+    .AddTypeExtension<GraphQlMutationFileUpload>()
+    .AddQueryType<Query>()
+    .AddTypeExtension<GraphQlQueryUploadPicture>()
+    .AddTypeExtension<GraphQlQueryUploadVideo>()
+    .AddTypeExtension<GraphQlQueryFileUpload>()
+    .AddType<GraphQlUploadPictureType>()
+    .AddType<GraphQlUploadVideoType>()
+    .AddDataLoader<UploadPictureDataLoader>()
+    .AddDataLoader<UploadVideoDataLoader>()
+    .AddProjections()
+    .AddFiltering()
+    .AddSorting()
+    .AddErrorFilter<GraphQlErrorFilter>()
+    .InitializeOnStartup()
+    .PublishSchemaDefinition(c => c
+        // The name of the schema. This name should be unique
+        .SetName("upload")
+        .PublishToRedis(
+            // The configuration name under which the schema should be published
+            "familielaiss",
+            // The connection multiplexer that should be used for publishing
+            sp => sp.GetRequiredService<ConnectionMultiplexer>()
+        )
+    );
+
 
 //Lokalisierung für ASP.NET Core hinzufügen
 builder.Services.AddLocalization(options => options.ResourcesPath = "Localize");
@@ -139,14 +148,9 @@ if (appSettings is not null)
 }
 
 //Hinzufügen der Consumer zum DI-Container
-builder.Services.AddScoped<PictureInfoChangedConsumer>();
-builder.Services.AddScoped<VideoInfoChangedConsumer>();
-builder.Services.AddScoped<ExifDataChangedConsumer>();
-builder.Services.AddScoped<PictureConvertedConsumer>();
-builder.Services.AddScoped<UploadPictureAssignedConsumer>();
-builder.Services.AddScoped<UploadVideoAssignedConsumer>();
 builder.Services.AddScoped<MediaItemDeletedConsumer>();
-builder.Services.AddScoped<VideoConvertedConsumer>();
+builder.Services.AddScoped<SetUploadPictureExifInfoConsumer>();
+builder.Services.AddScoped<SetUploadPictureDimensionsConsumer>();
 
 //Mass-Transit konfigurieren
 if (appSettings is not null)
@@ -154,35 +158,25 @@ if (appSettings is not null)
     builder.Services.AddMassTransit(x =>
     {
         //Hinzufügen der Consumer
-        x.AddConsumer<PictureInfoChangedConsumer>();
-        x.AddConsumer<VideoInfoChangedConsumer>();
-        x.AddConsumer<ExifDataChangedConsumer>();
-        x.AddConsumer<PictureConvertedConsumer>();
-        x.AddConsumer<UploadPictureAssignedConsumer>();
-        x.AddConsumer<UploadVideoAssignedConsumer>();
         x.AddConsumer<MediaItemDeletedConsumer>();
-        x.AddConsumer<VideoConvertedConsumer>();
+        x.AddConsumer<SetUploadPictureExifInfoConsumer>();
+        x.AddConsumer<SetUploadPictureDimensionsConsumer>();
 
         //RabbitMq hinzufügen
         x.UsingRabbitMq((context, cfg) =>
         {
             //Konfigurieren des Hosts
-            cfg.Host(new Uri(appSettings.RabbitMQConnection));
+            cfg.Host(new Uri(appSettings.RabbitMqConnection));
 
-            cfg.ReceiveEndpoint(appSettings.Endpoint_UploadService, e =>
+            cfg.ReceiveEndpoint(appSettings.EndpointUploadService, e =>
             {
                 e.UseConcurrencyLimit(1);
                 e.PrefetchCount = 16;
                 e.UseMessageRetry(r => r.Incremental(5, TimeSpan.FromSeconds(5), TimeSpan.FromSeconds(20)));
 
-                e.ConfigureConsumer<PictureInfoChangedConsumer>(context);
-                e.ConfigureConsumer<VideoInfoChangedConsumer>(context);
-                e.ConfigureConsumer<ExifDataChangedConsumer>(context);
-                e.ConfigureConsumer<PictureConvertedConsumer>(context);
-                e.ConfigureConsumer<UploadPictureAssignedConsumer>(context);
-                e.ConfigureConsumer<UploadVideoAssignedConsumer>(context);
                 e.ConfigureConsumer<MediaItemDeletedConsumer>(context);
-                e.ConfigureConsumer<VideoConvertedConsumer>(context);
+                e.ConfigureConsumer<SetUploadPictureExifInfoConsumer>(context);
+                e.ConfigureConsumer<SetUploadPictureDimensionsConsumer>(context);
             });
         });
     });
@@ -222,31 +216,34 @@ try
     //Konfigurieren der Exception-Handler-Middleware
     app.ConfigureExceptionHandler();
 
-    //Swagger / OpenAPI hinzufügen
-    if (app.Environment.IsDevelopment())
-    {
-        app.UseSwagger();
-        app.UseSwaggerUI(options =>
-        {
-            var descriptions = app.DescribeApiVersions();
-
-            // Build a swagger endpoint for each discovered API version
-            foreach (var description in descriptions)
-            {
-                var url = $"/swagger/{description.GroupName}/swagger.json";
-                var name = description.GroupName.ToUpperInvariant();
-                options.SwaggerEndpoint(url, name);
-            }
-        });
-    }
-
     //Initialisieren der Datenbank (Migration und Seeden)
     Startup.InitializeDatabase(app);
 
-    //Controller hinzufügen
-    app.MapControllers();
+    //Add routing to pipeline
+    app.UseRouting();
 
-    app.Run();
+    //Initialize endpoints for GraphQL
+    if (builder.Environment.IsDevelopment())
+    {
+        app.MapGraphQL();
+    }
+    else
+    {
+        app.MapGraphQLHttp();
+        app.MapGraphQLWebSocket();
+    }
+
+    //Initialize Endpoints for GraphQL-Voyager
+    if (builder.Environment.IsDevelopment())
+    {
+        app.UseGraphQLVoyager("/graphql-voyager", new VoyagerOptions()
+        {
+            GraphQLEndPoint = "/graphql"
+        });
+    }
+
+    //Start the API
+    app.RunWithGraphQLCommands(args);
 }
 catch (Exception ex)
 {
@@ -254,6 +251,6 @@ catch (Exception ex)
 }
 finally
 {
-    Log.Information("Web-Host stoped");
+    Log.Information("Web-Host stopped");
     Log.CloseAndFlush();
 }

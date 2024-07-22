@@ -7,5 +7,5 @@ namespace VideoConvertExecuteService.Interfaces;
 
 public interface IMetadataExtractor
 {
-    Task<MediaInfoData> ExtractMetadata(ConsumeContext<IConvertVideoCmd> context, string filenameSourceVideo);
+    Task<MediaInfoData> ExtractMetadata(ConsumeContext<IMassConvertVideoCmd> context, string filenameSourceVideo);
 }

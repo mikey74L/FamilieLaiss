@@ -4,11 +4,16 @@
     <TargetFramework>net8.0</TargetFramework>
 	  <LangVersion>latest</LangVersion>
 	  <Nullable>enable</Nullable>
-	  <GenerateDocumentationFile>False</GenerateDocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="ValueObjects\" />
+	<PackageReference Include="HotChocolate.Data" Version="13.9.7" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="ValueObjects\**" />
+    <EmbeddedResource Remove="ValueObjects\**" />
+    <None Remove="ValueObjects\**" />
   </ItemGroup>
 
   <ItemGroup>

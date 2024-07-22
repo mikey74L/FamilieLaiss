@@ -12,8 +12,7 @@ internal class UploadVideoEntityTypeConfiguration : EntityTypeConfigurationBase<
         //Primary Key Column
         CreateModelForIDColumn(modelBuilder, null);
 
-        //Google-Geo-Coding-Adress-Property
-        modelBuilder.OwnsOne(x => x.GoogleGeoCodingAdress).ToTable("GoogleGeoCodingAdressesVideo");
-        modelBuilder.Navigation(x => x.GoogleGeoCodingAdress).IsRequired(false);
+        modelBuilder.OwnsOne(x => x.GoogleGeoCodingAddress).ToTable("GoogleGeoCodingAddressesVideo");
+        modelBuilder.Navigation(x => x.GoogleGeoCodingAddress).IsRequired(false);
     }
 }

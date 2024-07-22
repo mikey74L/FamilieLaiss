@@ -1,5 +1,6 @@
 ﻿using DomainHelper.Exceptions;
 using DomainHelper.Interfaces;
+using FamilieLaissSharedObjects.Enums;
 using FLBackEnd.API.GraphQL.Mutations.MediaItem;
 using MediatR;
 
@@ -11,28 +12,34 @@ namespace FLBackEnd.API.Mediator.Commands.MediaItem;
 public class MtrAddMediaItemCommand : IRequest<Domain.Entities.MediaItem>
 {
     #region Properties
+
     /// <summary>
     /// The input data from GraphQL Mutation
     /// </summary>
     public required AddMediaItemInput InputData { get; init; }
+
     #endregion
 }
 
 /// <summary>
 /// Mediatr Command-Handler for Make new media item entry command
 /// </summary>
-public class MtrAddMediaItemCommandHandler(iUnitOfWork unitOfWork, ILogger<MtrAddMediaItemCommandHandler> logger) : IRequestHandler<MtrAddMediaItemCommand, Domain.Entities.MediaItem>
+public class MtrAddMediaItemCommandHandler(iUnitOfWork unitOfWork, ILogger<MtrAddMediaItemCommandHandler> logger)
+    : IRequestHandler<MtrAddMediaItemCommand, Domain.Entities.MediaItem>
 {
     #region Mediatr-Handler
+
     /// <summary>
     /// Will be called by Mediatr
     /// </summary>
     /// <param name="request">The request data</param>
-    /// <param name="cancellationToken">The cancelation token</param>
+    /// <param name="cancellationToken">The cancellation token</param>
     /// <returns>Task</returns>
-    public async Task<Domain.Entities.MediaItem> Handle(MtrAddMediaItemCommand request, CancellationToken cancellationToken)
+    public async Task<Domain.Entities.MediaItem> Handle(MtrAddMediaItemCommand request,
+        CancellationToken cancellationToken)
     {
-        logger.LogInformation("Mediatr-Handler for make new media item entry command was called for {@Input}", request.InputData);
+        logger.LogInformation("Mediatr-Handler for make new media item entry command was called for {@Input}",
+            request.InputData);
 
         logger.LogDebug("Get repository for media group");
         var repositoryGroup = unitOfWork.GetRepository<Domain.Entities.MediaGroup>();
@@ -46,10 +53,22 @@ public class MtrAddMediaItemCommandHandler(iUnitOfWork unitOfWork, ILogger<MtrAd
                 $"Could not find media group with id = {request.InputData.MediaGroupId}");
         }
 
+        string? uploadPictureName = null;
+        if (request.InputData.MediaType == EnumMediaType.Picture)
+        {
+            logger.LogDebug("Get repository for upload picture");
+            var repositoryUploadPicture = unitOfWork.GetRepository<Domain.Entities.UploadPicture>();
+
+            logger.LogDebug("Find upload picture item in store");
+            var uploadPictureModel = await repositoryUploadPicture.GetOneAsync(request.InputData.UploadItemId);
+
+            uploadPictureName = uploadPictureModel?.Filename;
+        }
+
         logger.LogDebug("Adding new media item domain model to media group");
         var newMediaItem = mediaGroupModel.AddMediaItem(request.InputData.MediaType, request.InputData.NameGerman,
             request.InputData.NameEnglish, request.InputData.DescriptionGerman, request.InputData.DescriptionEnglish,
-            request.InputData.OnlyFamily, request.InputData.UploadItemId);
+            request.InputData.OnlyFamily, request.InputData.UploadItemId, uploadPictureName);
 
         logger.LogDebug("Assign category values to media item");
         foreach (var item in request.InputData.CategoryValueIds)
@@ -62,5 +81,6 @@ public class MtrAddMediaItemCommandHandler(iUnitOfWork unitOfWork, ILogger<MtrAd
 
         return newMediaItem;
     }
+
     #endregion
 }

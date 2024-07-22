@@ -126,7 +126,7 @@ public class ConvertPictureService(
 
     #region IConvertPicture
 
-    public async Task ConvertPicture(long id, string filename, ConsumeContext<IConvertVideoCmd> consumerContext)
+    public async Task ConvertPicture(long id, string filename, ConsumeContext<IMassConvertVideoCmd> consumerContext)
     {
         logger.LogInformation("Set status for convert picture begin");
         await databaseOperations.SetStatusConvertPictureBeginAsync(id);

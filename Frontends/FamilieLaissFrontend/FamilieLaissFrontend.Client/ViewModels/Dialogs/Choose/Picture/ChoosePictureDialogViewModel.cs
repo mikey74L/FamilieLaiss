@@ -11,26 +11,18 @@ using MudBlazor;
 
 namespace FamilieLaissFrontend.Client.ViewModels.Dialogs.Choose.Picture;
 
-public partial class ChoosePictureDialogViewModel : ViewModelBase
+public partial class ChoosePictureDialogViewModel(
+    ISnackbar snackbarService,
+    IMessageBoxService messageBoxService,
+    IUploadPictureDataService uploadPictureDataService)
+    : ViewModelBase(snackbarService, messageBoxService)
 {
-    #region Private Services
-    private IUploadPictureDataService uploadPictureDataService;
-    #endregion
-
     #region Parameters
     public MudDialogInstance MudDialog { get; set; } = default!;
     #endregion
 
     #region Properties
     public ExtendedObservableCollection<IUploadPictureModel> UploadItems { get; } = [];
-    #endregion
-
-    #region C'tor
-    public ChoosePictureDialogViewModel(ISnackbar snackbarService, IMessageBoxService messageBoxService,
-        IUploadPictureDataService uploadPictureDataService) : base(snackbarService, messageBoxService)
-    {
-        this.uploadPictureDataService = uploadPictureDataService;
-    }
     #endregion
 
     #region Lifecycle Methods

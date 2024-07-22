@@ -1,18 +1,19 @@
-FROM mcr.microsoft.com/dotnet/aspnet:8.0.2 AS base
+#See https://aka.ms/customizecontainer to learn how to customize your debug container and how Visual Studio uses this Dockerfile to build your images for faster debugging.
+
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
 USER app
 WORKDIR /app
 EXPOSE 8080
 
-FROM mcr.microsoft.com/dotnet/sdk:8.0.201 AS build
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["NuGet.config", "."]
 COPY ["Gateways/SPAGateway/SPAGateway.csproj", "Gateways/SPAGateway/"]
 COPY ["DDDHelpers/ServiceLayer/ServiceLayerHelper/ServiceLayerHelper.csproj", "DDDHelpers/ServiceLayer/ServiceLayerHelper/"]
 COPY ["DDDHelpers/Domain/DomainHelper/DomainHelper.csproj", "DDDHelpers/Domain/DomainHelper/"]
 COPY ["DDDHelpers/DTO/DTOHelper/DTOHelper.csproj", "DDDHelpers/DTO/DTOHelper/"]
 COPY ["DDDHelpers/Infrastructure/InfrastructureHelper/InfrastructureHelper.csproj", "DDDHelpers/Infrastructure/InfrastructureHelper/"]
-RUN dotnet restore "./Gateways/SPAGateway/./SPAGateway.csproj"
+RUN dotnet restore "./Gateways/SPAGateway/SPAGateway.csproj"
 COPY . .
 WORKDIR "/src/Gateways/SPAGateway"
 RUN dotnet build "./SPAGateway.csproj" -c $BUILD_CONFIGURATION -o /app/build

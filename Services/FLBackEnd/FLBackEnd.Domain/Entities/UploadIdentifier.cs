@@ -6,7 +6,7 @@ namespace FLBackEnd.Domain.Entities;
 
 public class UploadIdentifier : EntityCreation<long>
 {
-    [Required][MaxLength(30)] public string PseudoText { get; set; } = string.Empty;
+    [Required][MaxLength(30)] public string PseudoText { get; init; } = string.Empty;
 
     #region Called from Change-Tracker
 

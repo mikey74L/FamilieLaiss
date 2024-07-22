@@ -1,5 +1,6 @@
 ﻿using FamilieLaissInterfaces;
 using System;
+using System.Globalization;
 
 namespace FamilieLaissServices
 {
@@ -9,23 +10,23 @@ namespace FamilieLaissServices
         {
             if (fileSize < 1024)
             {
-                return fileSize.ToString() + " Bytes";
+                return fileSize.ToString(CultureInfo.InvariantCulture) + " Bytes";
             }
             else
             {
                 if (fileSize < (1024 * 1024))
                 {
-                    return Math.Round(fileSize / 1024, 2).ToString() + " KB";
+                    return Math.Round(fileSize / 1024, 2).ToString(CultureInfo.InvariantCulture) + " KB";
                 }
                 else
                 {
                     if (fileSize < (1024 * 1024 * 1024))
                     {
-                        return Math.Round(fileSize / 1024 / 1024, 2).ToString() + " MB";
+                        return Math.Round(fileSize / 1024 / 1024, 2).ToString(CultureInfo.InvariantCulture) + " MB";
                     }
                     else
                     {
-                        return Math.Round(fileSize / 1024 / 1024 / 1024, 2).ToString() + " GB";
+                        return Math.Round(fileSize / 1024 / 1024 / 1024, 2).ToString(CultureInfo.InvariantCulture) + " GB";
                     }
                 }
             }

@@ -16,12 +16,17 @@ using MudBlazor;
 
 namespace FamilieLaissFrontend.Client.ViewModels.Dialogs.BaseData.Category;
 
-public partial class CategoryEditDialogViewModel : ViewModelBase
+public partial class CategoryEditDialogViewModel(
+    ISnackbar snackbarService,
+    IMessageBoxService messageBoxService,
+    IValidatorFl<ICategoryModel> validator,
+    ICategoryDataService categoryService,
+    IEventAggregator eventAggregator)
+    : ViewModelBase(snackbarService, messageBoxService)
 {
     #region Services
-    public readonly IValidatorFl<ICategoryModel> Validator;
-    private readonly ICategoryDataService categoryService;
-    private readonly IEventAggregator eventAggregator;
+    public readonly IValidatorFl<ICategoryModel> Validator = validator;
+
     #endregion
 
     #region Private Members
@@ -31,22 +36,11 @@ public partial class CategoryEditDialogViewModel : ViewModelBase
     #region Parameters
     public MudDialogInstance MudDialog { get; set; } = default!;
     public bool IsInEditMode { get; set; }
-    public ICategoryModel? Model { get; set; } = default!;
+    public ICategoryModel? Model { get; set; }
     #endregion
 
     #region Public Properties
     public MudForm? Form { get; set; }
-    #endregion
-
-    #region C'tor
-    public CategoryEditDialogViewModel(ISnackbar snackbarService, IMessageBoxService messageBoxService,
-        IValidatorFl<ICategoryModel> validator, ICategoryDataService categoryService,
-        IEventAggregator eventAggregator) : base(snackbarService, messageBoxService)
-    {
-        this.Validator = validator;
-        this.categoryService = categoryService;
-        this.eventAggregator = eventAggregator;
-    }
     #endregion
 
     #region Lifecycle
@@ -71,7 +65,7 @@ public partial class CategoryEditDialogViewModel : ViewModelBase
 
                         return Task.CompletedTask;
                     })
-                    .HandleErrors((result) =>
+                    .HandleErrors((_) =>
                     {
                         ShowErrorToast(CategoryEditDialogViewModelRes.ToastInitializeError);
 

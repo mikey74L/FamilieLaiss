@@ -9,12 +9,12 @@ using MudBlazor;
 
 namespace FamilieLaissFrontend.Client.ViewModels.Controls.Filter;
 
-public partial class FilterGroupControlViewModel : ViewModelBase
+public partial class FilterGroupControlViewModel(
+    ISnackbar snackbarService,
+    IMessageBoxService messageBoxService,
+    IEventAggregator eventAggregator)
+    : ViewModelBase(snackbarService, messageBoxService)
 {
-    #region Services
-    private readonly IEventAggregator eventAggregator;
-    #endregion
-
     #region Parameters
     public IGraphQlFilterGroup FilterGroup = default!;
     #endregion
@@ -25,14 +25,6 @@ public partial class FilterGroupControlViewModel : ViewModelBase
 
     [ObservableProperty]
     private Dictionary<Guid, bool> _valueDictFilterItems = [];
-    #endregion
-
-    #region C'tor
-    public FilterGroupControlViewModel(ISnackbar snackbarService, IMessageBoxService messageBoxService,
-        IEventAggregator eventAggregator) : base(snackbarService, messageBoxService)
-    {
-        this.eventAggregator = eventAggregator;
-    }
     #endregion
 
     #region Commands
@@ -49,14 +41,7 @@ public partial class FilterGroupControlViewModel : ViewModelBase
     {
         ValueDictFilterItems[data.Id] = data.hasValue;
 
-        if (ValueDictFilterItems.Any(x => x.Value))
-        {
-            ShowResetButton = true;
-        }
-        else
-        {
-            ShowResetButton = false;
-        }
+        ShowResetButton = ValueDictFilterItems.Any(x => x.Value);
     }
 
     #endregion

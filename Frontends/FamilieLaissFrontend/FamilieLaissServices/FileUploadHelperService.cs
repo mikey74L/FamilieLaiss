@@ -35,7 +35,7 @@ public class FileUploadHelperService(
 
                 resultModel = myUploadFile;
             })
-            .HandleErrors((result) => Task.CompletedTask);
+            .HandleErrors((_) => Task.CompletedTask);
 
         return resultModel;
     }
@@ -46,15 +46,7 @@ public class FileUploadHelperService(
     {
         var fileStream = fileInfoToUpload.GetFileStream();
 
-        long usedChunkSize;
-        if (chunkSize > fileInfoToUpload.FileSize)
-        {
-            usedChunkSize = fileInfoToUpload.FileSize;
-        }
-        else
-        {
-            usedChunkSize = chunkSize;
-        }
+        var usedChunkSize = chunkSize > fileInfoToUpload.FileSize ? fileInfoToUpload.FileSize : chunkSize;
 
         var buffer = new byte[usedChunkSize];
 
@@ -84,7 +76,7 @@ public class FileUploadHelperService(
 
                             return Task.CompletedTask;
                         })
-                        .HandleErrors((result) =>
+                        .HandleErrors((_) =>
                         {
                             exitLoop = true;
 
@@ -101,7 +93,7 @@ public class FileUploadHelperService(
 
                             return Task.CompletedTask;
                         })
-                        .HandleErrors((result) =>
+                        .HandleErrors((_) =>
                         {
                             exitLoop = true;
 
@@ -128,7 +120,7 @@ public class FileUploadHelperService(
 
                             return Task.CompletedTask;
                         })
-                        .HandleErrors((result) =>
+                        .HandleErrors((_) =>
                         {
                             exitLoop = true;
 
@@ -144,7 +136,7 @@ public class FileUploadHelperService(
 
                             return Task.CompletedTask;
                         })
-                        .HandleErrors((result) =>
+                        .HandleErrors((_) =>
                         {
                             exitLoop = true;
 

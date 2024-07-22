@@ -1,9 +1,7 @@
 ﻿@using FamilieLaissEnums
 @using FamilieLaissFrontend.Client.ViewModels.Controls.PictureControl
 @using FamilieLaissInterfaces.Models.Data
-@using FamilieLaissResources.Resources.Controls.PictureControl
 @using FamilieLaissSharedUI.Components
-@using Microsoft.Extensions.Localization
 
 @inherits FlComponentBase<PictureControlViewModel>
 
@@ -64,27 +62,15 @@
     [Parameter]
     public IUploadPictureModel? UploadItem
     {
-        get
-        {
-            return ViewModel.UploadItem;
-        }
-        set
-        {
-            ViewModel.UploadItem = value;
-        }
+        get => ViewModel.UploadItem;
+        set => ViewModel.UploadItem = value;
     }
 
     [Parameter]
     public IMediaItemModel? MediaItem
     {
-        get
-        {
-            return ViewModel.MediaItem;
-        }
-        set
-        {
-            ViewModel.MediaItem = value;
-        }
+        get => ViewModel.MediaItem;
+        set => ViewModel.MediaItem = value;
     }
 
     [Parameter]
@@ -95,14 +81,8 @@
     [EditorRequired]
     public bool ShowSelectionMode
     {
-        get
-        {
-            return ViewModel.ShowSelectionMode;
-        }
-        set
-        {
-            ViewModel.ShowSelectionMode = value;
-        }
+        get => ViewModel.ShowSelectionMode;
+        set => ViewModel.ShowSelectionMode = value;
     }
 
     [Parameter]
@@ -121,20 +101,12 @@
     {
         get
         {
-            string result = string.Empty;
-
-            switch (ControlType)
+            var result = ControlType switch
             {
-                case EnumPictureControlType.EditDialog:
-                    result = "max-width: 340px; max-height: 255px;";
-                    break;
-                case EnumPictureControlType.Choose:
-                    result = "max-width: 340px; max-height: 460px; max-height: 315px;";
-                    break;
-                default:
-                    result = "min-width: 340px; max-width: 340px; max-height: 460px;";
-                    break;
-            }
+                EnumPictureControlType.EditDialog => "max-width: 340px; max-height: 255px;",
+                EnumPictureControlType.Choose => "max-width: 340px; max-height: 310px;",
+                _ => "min-width: 340px; max-width: 340px; max-height: 460px;"
+            };
 
             return result;
         }
@@ -144,7 +116,7 @@
     {
         get
         {
-            string result = string.Empty;
+            var result = string.Empty;
 
             if (UploadItem is not null && UploadItem.IsSelected)
             {

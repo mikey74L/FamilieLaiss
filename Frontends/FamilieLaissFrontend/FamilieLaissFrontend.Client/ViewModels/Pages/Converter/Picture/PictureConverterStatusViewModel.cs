@@ -10,12 +10,12 @@ using MudBlazor;
 
 namespace FamilieLaissFrontend.Client.ViewModels.Pages.Converter.Picture;
 
-public partial class PictureConverterStatusViewModel : ViewModelBase
+public partial class PictureConverterStatusViewModel(
+    ISnackbar snackbarService,
+    IMessageBoxService messageBoxService,
+    IPictureConvertStatusDataService statusService)
+    : ViewModelBase(snackbarService, messageBoxService)
 {
-    #region Services
-    private readonly IPictureConvertStatusDataService statusService;
-    #endregion
-
     #region Public Properties
     [ObservableProperty]
     private ExtendedObservableCollection<IPictureConvertStatusModel> _listWaiting = [];
@@ -25,14 +25,6 @@ public partial class PictureConverterStatusViewModel : ViewModelBase
     private ExtendedObservableCollection<IPictureConvertStatusModel> _listError = [];
     [ObservableProperty]
     private IPictureConvertStatusModel? _currentConversionItem;
-    #endregion
-
-    #region C'tor
-    public PictureConverterStatusViewModel(ISnackbar snackbarService, IMessageBoxService messageBoxService,
-        IPictureConvertStatusDataService statusService) : base(snackbarService, messageBoxService)
-    {
-        this.statusService = statusService;
-    }
     #endregion
 
     #region Lifecycle

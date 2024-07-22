@@ -9,27 +9,19 @@ using MudBlazor;
 
 namespace FamilieLaissFrontend.Client.ViewModels.Controls.Filter;
 
-public partial class FilterControlViewModel : ViewModelBase
+public partial class FilterControlViewModel(
+    ISnackbar snackbarService,
+    IMessageBoxService messageBoxService,
+    IEventAggregator eventAggregator)
+    : ViewModelBase(snackbarService, messageBoxService)
 {
-    #region Services
-    private readonly IEventAggregator eventAggregator;
-    #endregion
-
     #region Parameters
     public List<IGraphQlFilterCriteria> FilterCriterias { get; set; } = default!;
     #endregion
 
     #region Public Properties
     [ObservableProperty]
-    private bool _isfilterValueSet;
-    #endregion
-
-    #region C'tor
-    public FilterControlViewModel(ISnackbar snackbarService, IMessageBoxService messageBoxService,
-        IEventAggregator eventAggregator) : base(snackbarService, messageBoxService)
-    {
-        this.eventAggregator = eventAggregator;
-    }
+    private bool _isFilterValueSet;
     #endregion
 
     #region Commands
@@ -38,9 +30,9 @@ public partial class FilterControlViewModel : ViewModelBase
     {
         await eventAggregator.PublishAsync(new AggSetFilter());
 
-        IsfilterValueSet = true;
+        IsFilterValueSet = true;
 
-        if (!FilterCriterias.Any(x => !x.IsValid))
+        if (FilterCriterias.All(x => x.IsValid))
         {
             await eventAggregator.PublishAsync(new AggFilterChanged());
         }
@@ -49,9 +41,9 @@ public partial class FilterControlViewModel : ViewModelBase
     [RelayCommand]
     private async Task ResetFilter()
     {
-        if (IsfilterValueSet)
+        if (IsFilterValueSet)
         {
-            IsfilterValueSet = false;
+            IsFilterValueSet = false;
 
             await eventAggregator.PublishAsync(new AggResetFilter());
 

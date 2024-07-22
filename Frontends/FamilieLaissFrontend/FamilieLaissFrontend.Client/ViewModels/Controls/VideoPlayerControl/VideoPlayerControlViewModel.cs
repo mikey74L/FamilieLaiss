@@ -11,18 +11,18 @@ using MudBlazor;
 
 namespace FamilieLaissFrontend.Client.ViewModels.Controls.VideoPlayerControl;
 
-public partial class VideoPlayerControlViewModel : ViewModelBase
+public partial class VideoPlayerControlViewModel(
+    ISnackbar snackbarService,
+    IMessageBoxService messageBoxService,
+    IJSRuntime jsRuntime,
+    IOptions<AppSettings> appSettings,
+    IUserSettingsService userSettingsService)
+    : ViewModelBase(snackbarService, messageBoxService)
 {
-    #region Services
-    private readonly IJSRuntime jsRuntime;
-    private readonly IOptions<AppSettings> appSettings;
-    private readonly IUserSettingsService userSettingsService;
-    #endregion
-
     #region Private Members
-    private IJSObjectReference? module;
-    private IUploadVideoModel? currentVideoToPlay;
-    private IUserSettingsModel? userSettingsModel;
+    private IJSObjectReference? _module;
+    private IUploadVideoModel? _currentVideoToPlay;
+    private IUserSettingsModel? _userSettingsModel;
     #endregion
 
     #region Parameters
@@ -33,17 +33,6 @@ public partial class VideoPlayerControlViewModel : ViewModelBase
     #region Public Properties
     [ObservableProperty]
     private string _idPlayer = string.Empty;
-    #endregion
-
-    #region C'tor
-    public VideoPlayerControlViewModel(ISnackbar snackbarService, IMessageBoxService messageBoxService,
-        IJSRuntime jsRuntime, IOptions<AppSettings> appSettings,
-        IUserSettingsService userSettingsService) : base(snackbarService, messageBoxService)
-    {
-        this.jsRuntime = jsRuntime;
-        this.appSettings = appSettings;
-        this.userSettingsService = userSettingsService;
-    }
     #endregion
 
     #region Lifecycle
@@ -65,18 +54,18 @@ public partial class VideoPlayerControlViewModel : ViewModelBase
         if (firstRender)
         {
             //Laden des Moduls für die JavaScript-Routinen des Video-Players
-            module = await jsRuntime.InvokeAsync<IJSObjectReference>("import", "./scripts/VideoJsOperations.js");
+            _module = await jsRuntime.InvokeAsync<IJSObjectReference>("import", "./scripts/VideoJsOperations.js");
 
-            userSettingsModel = await userSettingsService.GetCurrentUserSettings(AuthenticationState);
+            _userSettingsModel = await userSettingsService.GetCurrentUserSettings(AuthenticationState);
 
             //Initialisieren des Players
-            await module.InvokeVoidAsync("videoJsOperations.initializePlayer",
+            await _module.InvokeVoidAsync("videoJsOperations.initializePlayer",
             IdPlayer,
             "de",
                 GetVideoUrl(),
                 GetVideoType(),
                 GetVttUrl(),
-                userSettingsModel);
+                _userSettingsModel);
         }
     }
     #endregion
@@ -85,70 +74,67 @@ public partial class VideoPlayerControlViewModel : ViewModelBase
     private string GetVideoUrl()
     {
         //Deklaration
-        string ReturnValue = "";
+        string returnValue = "";
 
         //Zusammensetzen der URL
-        if (currentVideoToPlay is not null)
+        if (_currentVideoToPlay is not null)
         {
-            switch (currentVideoToPlay.VideoType)
+            switch (_currentVideoToPlay.VideoType)
             {
                 case EnumVideoType.Progressive:
-                    ReturnValue = appSettings.Value.UrlVideo + $"/{currentVideoToPlay.Id}.mp4";
+                    returnValue = appSettings.Value.UrlVideo + $"/{_currentVideoToPlay.Id}.mp4";
                     break;
                 case EnumVideoType.Hls:
-                    ReturnValue = appSettings.Value.UrlVideo + $"/{currentVideoToPlay.Id}.m3u8";
+                    returnValue = appSettings.Value.UrlVideo + $"/{_currentVideoToPlay.Id}.m3u8";
                     break;
             }
         }
 
         //Funktionsergebnis
-        return ReturnValue;
+        return returnValue;
     }
 
     private string GetVideoType()
     {
         //Deklaration
-        string ReturnValue = "";
+        string returnValue = "";
 
-        //Ermitteln des Videotypes
-        if (currentVideoToPlay is not null)
+        //Ermitteln des Videotyps
+        if (_currentVideoToPlay is not null)
         {
-            switch (currentVideoToPlay.VideoType)
+            switch (_currentVideoToPlay.VideoType)
             {
                 case EnumVideoType.Progressive:
-                    ReturnValue = "video/mp4";
+                    returnValue = "video/mp4";
                     break;
                 case EnumVideoType.Hls:
-                    ReturnValue = "application/x-mpegURL";
+                    returnValue = "application/x-mpegURL";
                     break;
             }
         }
 
         //Funktionsergebnis
-        return ReturnValue;
+        return returnValue;
     }
 
     private string GetVttUrl()
     {
         //Deklaration
-        string ReturnValue = "";
+        string returnValue = "";
 
         //Zusammenstellen der Url
-        if (currentVideoToPlay is not null)
+        if (_currentVideoToPlay is not null)
         {
-            ReturnValue = appSettings.Value.UrlVideoVtt + $"?filenameVTT={currentVideoToPlay.Id}.vtt";
+            returnValue = appSettings.Value.UrlVideoVtt + $"?filenameVTT={_currentVideoToPlay.Id}.vtt";
         }
 
         //Funktionsergebnis
-        return ReturnValue;
+        return returnValue;
     }
 
     private void GetCurrentVideoToPlay()
     {
-        if (VideoItemToPlay != null)
-        {
-            currentVideoToPlay = VideoItemToPlay;
-        }
+        _currentVideoToPlay = VideoItemToPlay;
     }
     #endregion
 

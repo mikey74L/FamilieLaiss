@@ -2,16 +2,19 @@
 using FamilieLaissInterfaces.Models;
 using FamilieLaissInterfaces.Models.Data;
 
-namespace FamilieLaissInterfaces.DataServices
+namespace FamilieLaissInterfaces.DataServices;
+
+public interface IUploadVideoDataService
 {
-    public interface IUploadVideoDataService
-    {
-        Task<IApiResult<IEnumerable<IUploadVideoModel>>> GetUploadVideosForUploadViewAsync(IReadOnlyList<UploadVideoSortInput> sortCriterias, UploadVideoFilterInput? filterCriteria);
+    Task<IApiResult<IEnumerable<IUploadVideoModel>>> GetUploadVideosForUploadViewAsync(
+        IReadOnlyList<UploadVideoSortInput> sortCriterias, UploadVideoFilterInput? filterCriteria);
 
-        Task<IApiResult<int>> GetUploadVideoCount();
+    Task<IApiResult<IEnumerable<IUploadVideoModel>>> GetUploadVideosForChooseViewAsync();
 
-        Task<IApiResult<IUploadVideoModel?>> DeleteUploadVideoAsync(IUploadVideoModel model);
+    Task<IApiResult<int>> GetUploadVideoCount();
 
-        Task<IApiResult<IEnumerable<IUploadVideoModel>>> DeleteAllUploadVideosAsync(IEnumerable<IUploadVideoModel> modelsToDelete);
-    }
+    Task<IApiResult<IUploadVideoModel?>> DeleteUploadVideoAsync(IUploadVideoModel model);
+
+    Task<IApiResult<IEnumerable<IUploadVideoModel>>> DeleteAllUploadVideosAsync(
+        IEnumerable<IUploadVideoModel> modelsToDelete);
 }

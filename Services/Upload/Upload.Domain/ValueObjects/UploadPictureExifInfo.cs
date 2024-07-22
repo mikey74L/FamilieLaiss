@@ -1,4 +1,5 @@
 ﻿using DomainHelper.AbstractClasses;
+using HotChocolate;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -8,6 +9,7 @@ namespace Upload.Domain.ValueObjects;
 /// <summary>
 /// Value-Object for Exif-Information to the upload picture
 /// </summary>
+[GraphQLDescription("Exif information to the upload picture")]
 public class UploadPictureExifInfo : ValueObject
 {
     #region Public Properties
@@ -16,132 +18,157 @@ public class UploadPictureExifInfo : ValueObject
     /// Make for the camera
     /// </summary>
     [MaxLength(300)]
-    public string Make { get; private set; } = string.Empty;
+    [GraphQLDescription("Make for the camera")]
+    public string Make { get; set; } = string.Empty;
 
     /// <summary>
     /// Camera model
     /// </summary>
     [MaxLength(300)]
-    public string Model { get; private set; } = string.Empty;
+    [GraphQLDescription("Camera model")]
+    public string Model { get; set; } = string.Empty;
 
     /// <summary>
     /// Resolution x
     /// </summary>
-    public double? ResolutionX { get; private set; }
+    [GraphQLDescription("Resolution x")]
+    public double? ResolutionX { get; set; }
 
     /// <summary>
     /// Resolution Y
     /// </summary>
-    public double? ResolutionY { get; private set; }
+    [GraphQLDescription("Resolution Y")]
+    public double? ResolutionY { get; set; }
 
     /// <summary>
     /// The resolution unit
     /// </summary>
     [MaxLength(100)]
-    public string ResolutionUnit { get; private set; } = string.Empty;
+    [GraphQLDescription("The resolution unit")]
+    public short? ResolutionUnit { get; set; }
 
     /// <summary>
     /// Orientation for picture
     /// </summary>
-    public Int16? Orientation { get; private set; }
+    [GraphQLDescription("Orientation for picture")]
+    public short? Orientation { get; set; }
 
     /// <summary>
     /// Timestamp when picture was recorded
     /// </summary>
-    public DateTimeOffset? DdlRecorded { get; private set; }
+    [GraphQLDescription("Timestamp when picture was recorded")]
+    public DateTimeOffset? DdlRecorded { get; set; }
 
     /// <summary>
     /// Exposure-Time 
     /// </summary>
     [MaxLength(50)]
-    public string ExposureTime { get; private set; } = string.Empty;
+    [GraphQLDescription("Exposure-Time ")]
+    public double? ExposureTime { get; set; }
 
     /// <summary>
     /// Exposure program
     /// </summary>
-    public Int16? ExposureProgram { get; private set; }
+    [GraphQLDescription("Exposure program")]
+    public short? ExposureProgram { get; set; }
 
     /// <summary>
     /// Exposure mode
     /// </summary>
-    public Int16? ExposureMode { get; private set; }
+    [GraphQLDescription("Exposure mode")]
+    public short? ExposureMode { get; set; }
 
     /// <summary>
     /// F-Number
     /// </summary>
-    public double? FNumber { get; private set; }
+    [GraphQLDescription("F-Number")]
+    public double? FNumber { get; set; }
 
     /// <summary>
     /// ISO sensitivity
     /// </summary>
-    public int? IsoSensitivity { get; private set; }
+    [GraphQLDescription("ISO sensitivity")]
+    public int? IsoSensitivity { get; set; }
 
     /// <summary>
     /// Shutter speed
     /// </summary>
-    public double? ShutterSpeed { get; private set; }
+    [GraphQLDescription("Shutter speed")]
+    public double? ShutterSpeed { get; set; }
 
     /// <summary>
     /// Metering mode
     /// </summary>
-    public Int16? MeteringMode { get; private set; }
+    [GraphQLDescription("Metering mode")]
+    public short? MeteringMode { get; set; }
 
     /// <summary>
     /// Flash mode
     /// </summary>
-    public Int16? FlashMode { get; private set; }
+    [GraphQLDescription("Flash mode")]
+    public short? FlashMode { get; set; }
 
     /// <summary>
     /// Focal length
     /// </summary>
-    public double? FocalLength { get; private set; }
+    [GraphQLDescription("Focal length")]
+    public double? FocalLength { get; set; }
 
     /// <summary>
     /// Sensing mode
     /// </summary>
-    public Int16? SensingMode { get; private set; }
+    [GraphQLDescription("Sensing mode")]
+    public short? SensingMode { get; set; }
 
     /// <summary>
     /// White-Balance mode
     /// </summary>
-    public Int16? WhiteBalanceMode { get; private set; }
+    [GraphQLDescription("White-Balance mode")]
+    public short? WhiteBalanceMode { get; set; }
 
     /// <summary>
     /// Sharpness
     /// </summary>
-    public Int16? Sharpness { get; private set; }
+    [GraphQLDescription("Sharpness")]
+    public short? Sharpness { get; set; }
 
     /// <summary>
     /// Longitude for GPS-Position
     /// </summary>
-    public double? GpsLongitude { get; private set; }
+    [GraphQLDescription("Longitude for GPS-Position")]
+    public double? GpsLongitude { get; set; }
 
     /// <summary>
     /// Latitude for GPS-Position
     /// </summary>
-    public double? GpsLatitude { get; private set; }
+    [GraphQLDescription("Latitude for GPS-Position")]
+    public double? GpsLatitude { get; set; }
 
     /// <summary>
     /// Contrast
     /// </summary>
-    public Int16? Contrast { get; private set; }
+    [GraphQLDescription("Contrast")]
+    public short? Contrast { get; set; }
 
     /// <summary>
     /// Saturation
     /// </summary>
-    public Int16? Saturation { get; private set; }
+    [GraphQLDescription("Saturation")]
+    public short? Saturation { get; set; }
+
     #endregion
 
     #region C'tor
+
     /// <summary>
-    /// C'tor without parameters would be used by EF-Core
+    /// Constructor
     /// </summary>
     private UploadPictureExifInfo()
     {
     }
 
     /// <summary>
-    /// C'tor
+    /// Constructor
     /// </summary>
     /// <param name="make">Make for the camera</param>
     /// <param name="model">Camera model</param>
@@ -151,10 +178,10 @@ public class UploadPictureExifInfo : ValueObject
     /// <param name="orientation">Orientation for picture</param>
     /// <param name="ddlRecorded">Timestamp when picture was recorded</param>
     /// <param name="exposureTime">Exposure-Time</param>
-    /// <param name="exposureProgramm">Exposure program</param>
+    /// <param name="exposureProgram">Exposure program</param>
     /// <param name="exposureMode">Exposure mode</param>
     /// <param name="fNumber">F-Number</param>
-    /// <param name="isoSenstivity">ISO sensitivity</param>
+    /// <param name="isoSensitivity">ISO sensitivity</param>
     /// <param name="shutterSpeed">Shutter speed</param>
     /// <param name="meteringMode">Metering mode</param>
     /// <param name="flashMode">Flash mode</param>
@@ -166,11 +193,12 @@ public class UploadPictureExifInfo : ValueObject
     /// <param name="gpsLatitude">Latitude for GPS-Position</param>
     /// <param name="contrast">Contrast</param>
     /// <param name="saturation">Saturation</param>
-    public UploadPictureExifInfo(string make, string model, double? resolutionX, double? resolutionY, string resolutionUnit,
-        Int16? orientation, DateTimeOffset? ddlRecorded, string exposureTime,
-        Int16? exposureProgramm, Int16? exposureMode, double? fNumber, int? isoSenstivity, double? shutterSpeed,
-        Int16? meteringMode, Int16? flashMode, double? focalLength, Int16? sensingMode, Int16? whiteBalanceMode,
-        Int16? sharpness, double? gpsLongitude, double? gpsLatitude, Int16? contrast, Int16? saturation)
+    public UploadPictureExifInfo(string make, string model, double? resolutionX, double? resolutionY,
+        short? resolutionUnit,
+        short? orientation, DateTimeOffset? ddlRecorded, double? exposureTime,
+        short? exposureProgram, short? exposureMode, double? fNumber, int? isoSensitivity, double? shutterSpeed,
+        short? meteringMode, short? flashMode, double? focalLength, short? sensingMode, short? whiteBalanceMode,
+        short? sharpness, double? gpsLongitude, double? gpsLatitude, short? contrast, short? saturation)
     {
         Make = make;
         Model = model;
@@ -180,10 +208,10 @@ public class UploadPictureExifInfo : ValueObject
         Orientation = orientation;
         DdlRecorded = ddlRecorded;
         ExposureTime = exposureTime;
-        ExposureProgram = exposureProgramm;
+        ExposureProgram = exposureProgram;
         ExposureMode = exposureMode;
         FNumber = fNumber;
-        IsoSensitivity = isoSenstivity;
+        IsoSensitivity = isoSensitivity;
         ShutterSpeed = shutterSpeed;
         MeteringMode = meteringMode;
         FlashMode = flashMode;
@@ -196,9 +224,12 @@ public class UploadPictureExifInfo : ValueObject
         Contrast = contrast;
         Saturation = saturation;
     }
+
     #endregion
 
     #region Protected Overrides
+
+    [GraphQLIgnore]
     protected override IEnumerable<object?> GetAtomicValues()
     {
         yield return Make;
@@ -225,5 +256,6 @@ public class UploadPictureExifInfo : ValueObject
         yield return Contrast;
         yield return Saturation;
     }
+
     #endregion
 }

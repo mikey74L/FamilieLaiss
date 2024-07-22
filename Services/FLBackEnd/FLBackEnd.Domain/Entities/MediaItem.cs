@@ -140,10 +140,11 @@ public class MediaItem : EntityModify<long>
     /// <param name="descriptionGerman">German description for this Media-Item</param>
     /// <param name="descriptionEnglish">English description for this Media-Item</param>
     /// <param name="onlyFamily">Is this Media-Item only visible for family users</param>
-    /// <param name="uploadItemID">Id for the assigned upload item</param>
+    /// <param name="uploadItemId">Id for the assigned upload item</param>
+    /// <param name="nameUploadPicture">The filename from the original upload picture</param>
     internal MediaItem(MediaGroup mediaGroup, EnumMediaType mediaType, string nameGerman, string nameEnglish,
         string? descriptionGerman,
-        string? descriptionEnglish, bool onlyFamily, long uploadItemID)
+        string? descriptionEnglish, bool onlyFamily, long uploadItemId, string? nameUploadPicture)
     {
         if (MediaType == EnumMediaType.Video && string.IsNullOrEmpty(nameGerman))
         {
@@ -164,22 +165,22 @@ public class MediaItem : EntityModify<long>
         OnlyFamily = onlyFamily;
         if (MediaType == EnumMediaType.Picture)
         {
-            UploadPictureId = uploadItemID;
+            UploadPictureId = uploadItemId;
         }
         else
         {
-            UploadVideoId = uploadItemID;
+            UploadVideoId = uploadItemId;
         }
 
-        if (MediaType == EnumMediaType.Picture)
-        {
-            NameGerman = $"PICTURE_{UploadPictureId}";
-            NameEnglish = $"PICTURE_{UploadPictureId}";
-        }
+        if (MediaType != EnumMediaType.Picture) return;
+        NameGerman = nameUploadPicture ?? "";
+        NameEnglish = nameUploadPicture ?? "";
     }
+
     #endregion
 
     #region Private Methods
+
     /// <summary>
     /// Remove a category value to the list of assigned category values
     /// </summary>
@@ -206,14 +207,18 @@ public class MediaItem : EntityModify<long>
         //Item wurde nicht gefunden
         if (!ItemFound)
         {
-            throw new DomainException(DomainExceptionType.NoDataFound, $"Category value with ID = {categoryValueId} not found.");
+            throw new DomainException(DomainExceptionType.NoDataFound,
+                $"Category value with ID = {categoryValueId} not found.");
         }
     }
+
     #endregion
 
     #region Domain Methods
+
     [GraphQLIgnore]
-    public void Update(string nameGerman, string nameEnglish, string? descriptionGerman, string? descriptionEnglish, bool onlyFamily)
+    public void Update(string nameGerman, string nameEnglish, string? descriptionGerman, string? descriptionEnglish,
+        bool onlyFamily)
     {
         if (string.IsNullOrEmpty(nameGerman) && MediaType == EnumMediaType.Video)
         {
@@ -225,13 +230,16 @@ public class MediaItem : EntityModify<long>
             throw new DomainException("A english name is needed");
         }
 
-        if (MediaType != EnumMediaType.Picture) //Nachfolgende nur übernehmen wenn es sich nicht um Fotos handelt da diese keinen Namen und Beschreibung verwenden
+        if (MediaType !=
+            EnumMediaType
+                .Picture) //Nachfolgende nur übernehmen wenn es sich nicht um Fotos handelt da diese keinen Namen und Beschreibung verwenden
         {
             NameGerman = nameGerman;
             NameEnglish = nameEnglish;
             DescriptionGerman = descriptionGerman;
             DescriptionEnglish = descriptionEnglish;
         }
+
         OnlyFamily = onlyFamily;
     }
 
@@ -277,6 +285,7 @@ public class MediaItem : EntityModify<long>
                     Found = true;
                 }
             }
+
             if (Found == false)
             {
                 ItemsToDelete.Add(AssignedValue.CategoryValueId);
@@ -298,6 +307,7 @@ public class MediaItem : EntityModify<long>
                     Found = true;
                 }
             }
+
             if (Found == false)
             {
                 ItemsToAdd.Add(NewValue);
@@ -349,6 +359,7 @@ public class MediaItem : EntityModify<long>
             }
         }
     }
+
     #endregion
 
     #region Called from Change-Tracker

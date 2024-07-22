@@ -8,29 +8,24 @@ using MudBlazor;
 
 namespace FamilieLaissFrontend.Client.ViewModels.Controls.PictureControl;
 
-public partial class PictureControlViewModel : ViewModelBase, IHandle<AggSelectAllPicture>, IHandle<AggDeSelectAllPicture>
+public partial class PictureControlViewModel(
+    ISnackbar snackbarService,
+    IMessageBoxService messageBoxService,
+    IEventAggregator eventAggregator)
+    : ViewModelBase(snackbarService, messageBoxService), IHandle<AggSelectAllPicture>, IHandle<AggDeSelectAllPicture>
 {
-    #region Private Services
-    private readonly IEventAggregator eventAggregator;
-    #endregion
-
     #region Parameters
-    public IUploadPictureModel? UploadItem;
 
-    public IMediaItemModel? MediaItem;
+    public IUploadPictureModel? UploadItem { get; set; }
 
-    public bool ShowSelectionMode;
-    #endregion
+    public IMediaItemModel? MediaItem { get; set; }
 
-    #region C'tor
-    public PictureControlViewModel(ISnackbar snackbarService, IMessageBoxService messageBoxService,
-        IEventAggregator eventAggregator) : base(snackbarService, messageBoxService)
-    {
-        this.eventAggregator = eventAggregator;
-    }
+    public bool ShowSelectionMode { get; set; }
+
     #endregion
 
     #region Lifecycle
+
     public override void OnInitialized()
     {
         base.OnInitialized();
@@ -52,17 +47,21 @@ public partial class PictureControlViewModel : ViewModelBase, IHandle<AggSelectA
             UploadItem.IsSelected = false;
         }
     }
+
     #endregion
 
     #region Commands
+
     [RelayCommand]
     private void ToggleChanged()
     {
         NotifyStateChanged();
     }
+
     #endregion
 
     #region EventAggregator
+
     public Task HandleAsync(AggSelectAllPicture message)
     {
         if (UploadItem is not null)
@@ -86,12 +85,15 @@ public partial class PictureControlViewModel : ViewModelBase, IHandle<AggSelectA
 
         return Task.CompletedTask;
     }
+
     #endregion
 
     #region Abstract overrides
+
     public override void Dispose()
     {
         eventAggregator.Unsubscribe(this);
     }
+
     #endregion
 }

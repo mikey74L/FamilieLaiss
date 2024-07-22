@@ -1,71 +1,78 @@
 ﻿using DomainHelper.AbstractClasses;
+using HotChocolate;
+using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace Catalog.Domain.Aggregates
+namespace Catalog.Domain.Aggregates;
+
+/// <summary>
+/// Entity for media item assigned category value
+/// </summary>
+[GraphQLDescription("Media item assigned category value")]
+public class MediaItemCategoryValue : EntityCreation<long>
 {
+    #region Properties
+
     /// <summary>
-    /// Entity for media item assigned category value
+    /// Identifier for the media item
     /// </summary>
-    public class MediaItemCategoryValue : EntityCreation<long>
+    [GraphQLIgnore]
+    public long MediaItemId { get; private set; }
+
+    /// <summary>
+    /// The media item this category value entry belongs to
+    /// </summary>
+    [GraphQLDescription("The media item this category value entry belongs to")]
+    public MediaItem MediaItem { get; private set; }
+
+    /// <summary>
+    /// Identifier for the media item
+    /// </summary>
+    [GraphQLIgnore]
+    public long CategoryValueId { get; private set; }
+
+    /// <summary>
+    /// The media item this category value entry belongs to
+    /// </summary>
+    [GraphQLDescription("The category value this media item belongs to")]
+    public CategoryValue CategoryValue { get; private set; }
+
+    #endregion
+
+    #region C'tor
+
+    /// <summary>
+    /// Constructor
+    /// </summary>
+    protected MediaItemCategoryValue()
     {
-        #region Properties
-        /// <summary>
-        /// Identifier for the media item
-        /// </summary>
-        public long MediaItemID { get; private set; }
-
-        /// <summary>
-        /// The media item this category value entry belongs to
-        /// </summary>
-        public MediaItem MediaItem { get; private set; }
-
-        /// <summary>
-        /// Identifier for the media item
-        /// </summary>
-        public long CategoryValueID { get; private set; }
-
-        /// <summary>
-        /// The media item this category value entry belongs to
-        /// </summary>
-        public CategoryValue CategoryValue { get; private set; }
-        #endregion
-
-        #region C'tor
-        /// <summary>
-        /// C'tor (called from ef)
-        /// </summary>
-#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-        protected MediaItemCategoryValue()
-#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-        {
-
-        }
-
-        /// <summary>
-        /// C'tor
-        /// </summary>
-        /// <param name="mediaItem">The media item the category value belongs to</param>
-        /// <param name="valueID">The identifier for the category value</param>
-#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-        internal MediaItemCategoryValue(MediaItem mediaItem, long valueID)
-#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-        {
-            //Übernehmen der Werte
-            MediaItem = mediaItem;
-            CategoryValueID = valueID;
-        }
-        #endregion
-
-        #region Delete
-        public override Task EntityAddedAsync()
-        {
-            return Task.CompletedTask;
-        }
-
-        public override Task EntityDeletedAsync()
-        {
-            return Task.CompletedTask;
-        }
-        #endregion
     }
+
+    /// <summary>
+    /// Constructor
+    /// </summary>
+    /// <param name="mediaItem">The media item the category value belongs to</param>
+    /// <param name="valueID">The identifier for the category value</param>
+    internal MediaItemCategoryValue(MediaItem mediaItem, long valueID)
+    {
+        MediaItem = mediaItem;
+        CategoryValueId = valueID;
+    }
+
+    #endregion
+
+    #region Overrides
+
+    public override Task EntityAddedAsync(DbContext dbContext, IDictionary<string, object> dictContextParams)
+    {
+        return Task.CompletedTask;
+    }
+
+    public override Task EntityDeletedAsync(DbContext dbContext, IDictionary<string, object> dictContextParams)
+    {
+        return Task.CompletedTask;
+    }
+
+    #endregion
 }

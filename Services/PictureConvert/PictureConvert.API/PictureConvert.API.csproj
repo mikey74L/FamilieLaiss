@@ -1,0 +1,53 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+	  <TargetFramework>net8.0</TargetFramework>
+	  <Nullable>enable</Nullable>
+	  <ImplicitUsings>enable</ImplicitUsings>
+	  <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+	  <DockerfileContext>..\..\..</DockerfileContext>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="EventHandler\**" />
+    <Compile Remove="GraphQL\Policies\**" />
+    <Compile Remove="Resources\**" />
+    <Content Remove="EventHandler\**" />
+    <Content Remove="GraphQL\Policies\**" />
+    <Content Remove="Resources\**" />
+    <EmbeddedResource Remove="EventHandler\**" />
+    <EmbeddedResource Remove="GraphQL\Policies\**" />
+    <EmbeddedResource Remove="Resources\**" />
+    <None Remove="EventHandler\**" />
+    <None Remove="GraphQL\Policies\**" />
+    <None Remove="Resources\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+	<PackageReference Include="GraphQL.Server.Ui.Voyager" Version="7.7.1" />
+	<PackageReference Include="HotChocolate.AspNetCore" Version="13.9.7" />
+	<PackageReference Include="HotChocolate.AspNetCore.Authorization" Version="13.9.7" />
+	<PackageReference Include="HotChocolate.AspNetCore.CommandLine" Version="13.9.7" />
+	<PackageReference Include="HotChocolate.Data.EntityFramework" Version="13.9.7" />
+	<PackageReference Include="HotChocolate.Stitching.Redis" Version="13.9.7" />
+	<PackageReference Include="MassTransit" Version="8.2.3" />
+	<PackageReference Include="MassTransit.RabbitMQ" Version="8.2.3" />
+	<PackageReference Include="MediatR" Version="12.3.0" />
+	<PackageReference Include="Polly" Version="8.4.1" />
+	<PackageReference Include="Serilog.AspNetCore" Version="8.0.1" />
+	<PackageReference Include="Serilog.Enrichers.Environment" Version="3.0.1" />
+	<PackageReference Include="Serilog.Enrichers.Process" Version="3.0.0" />
+	<PackageReference Include="Serilog.Enrichers.Thread" Version="4.0.0" />
+	<PackageReference Include="Serilog.Sinks.File" Version="6.0.0" />
+	<PackageReference Include="Steeltoe.Discovery.ClientCore" Version="3.2.8" />
+	<PackageReference Include="Steeltoe.Discovery.Eureka" Version="3.2.8" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\DDDHelpers\ServiceLayer\ServiceLayerHelper\ServiceLayerHelper.csproj" />
+    <ProjectReference Include="..\..\..\FamilieLaissCoreHelpers\FamilieLaissCoreHelpers.csproj" />
+    <ProjectReference Include="..\..\..\FamilieLaissMassTransitDefinitions\FamilieLaissMassTransitDefinitions.csproj" />
+    <ProjectReference Include="..\PictureConvert.Infrastructure\PictureConvert.Infrastructure.csproj" />
+  </ItemGroup>
+
+</Project>

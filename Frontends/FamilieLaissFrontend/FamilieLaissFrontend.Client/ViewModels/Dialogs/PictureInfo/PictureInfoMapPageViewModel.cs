@@ -10,11 +10,16 @@ using Radzen.Blazor;
 
 namespace FamilieLaissFrontend.Client.ViewModels.Dialogs.PictureInfo;
 
-public partial class PictureInfoMapPageViewModel : ViewModelBase
+public partial class PictureInfoMapPageViewModel(
+    ISnackbar snackbarService,
+    IMessageBoxService messageBoxService,
+    ISecretDataService secretDataService,
+    IJSRuntime jsRuntime)
+    : ViewModelBase(snackbarService, messageBoxService)
 {
     #region Services
-    public readonly ISecretDataService secretDataService;
-    private readonly IJSRuntime jsRuntime;
+    public readonly ISecretDataService SecretDataService = secretDataService;
+
     #endregion
 
     #region Parameters
@@ -30,15 +35,6 @@ public partial class PictureInfoMapPageViewModel : ViewModelBase
     private IUploadPictureModel _pictureModel = default!;
 
     public RadzenGoogleMap MapControl { get; set; } = default!;
-    #endregion
-
-    #region C'tor
-    public PictureInfoMapPageViewModel(ISnackbar snackbarService, IMessageBoxService messageBoxService,
-        ISecretDataService secretDataService, IJSRuntime jsRuntime) : base(snackbarService, messageBoxService)
-    {
-        this.secretDataService = secretDataService;
-        this.jsRuntime = jsRuntime;
-    }
     #endregion
 
     #region Lifecycle

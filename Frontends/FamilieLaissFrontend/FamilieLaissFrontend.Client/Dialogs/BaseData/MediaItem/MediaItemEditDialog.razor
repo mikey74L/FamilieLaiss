@@ -9,7 +9,7 @@
 
 <MudDialog>
     <DialogContent>
-        <MudContainer Style="max-height: 460px; overflow-y: scroll">
+        <MudContainer Style="max-height: 70vh; overflow-y: scroll">
             @if (ViewModel.IsLoading)
             {
                 <div style="height: 200px;">
@@ -213,52 +213,28 @@
     [CascadingParameter]
     public MudDialogInstance MudDialog
     {
-        get
-        {
-            return ViewModel.MudDialog;
-        }
-        set
-        {
-            ViewModel.MudDialog = value;
-        }
+        get => ViewModel.MudDialog;
+        set => ViewModel.MudDialog = value;
     }
 
     [Parameter]
     public bool IsInEditMode
     {
-        get
-        {
-            return ViewModel.IsInEditMode;
-        }
-        set
-        {
-            ViewModel.IsInEditMode = value;
-        }
+        get => ViewModel.IsInEditMode;
+        set => ViewModel.IsInEditMode = value;
     }
 
     [Parameter]
     public long? MediaGroupId
     {
-        get
-        {
-            return ViewModel.MediaGroupId;
-        }
-        set
-        {
-            ViewModel.MediaGroupId = value;
-        }
+        get => ViewModel.MediaGroupId;
+        set => ViewModel.MediaGroupId = value;
     }
 
     [Parameter]
     public IMediaItemModel? Model
     {
-        get
-        {
-            return ViewModel.Model;
-        }
-        set
-        {
-            ViewModel.Model = value;
-        }
+        get => ViewModel.Model;
+        set => ViewModel.Model = value;
     }
 }

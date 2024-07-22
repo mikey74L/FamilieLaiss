@@ -6,7 +6,8 @@ using MudBlazor;
 
 namespace FamilieLaissFrontend.Client.ViewModels.Dialogs.PictureInfo;
 
-public partial class PictureInfoDialogViewModel : ViewModelBase
+public partial class PictureInfoDialogViewModel(ISnackbar snackbarService, IMessageBoxService messageBoxService)
+    : ViewModelBase(snackbarService, messageBoxService)
 {
     #region Parameters
     public IMediaItemModel? MediaItem { get; set; }
@@ -16,12 +17,6 @@ public partial class PictureInfoDialogViewModel : ViewModelBase
     #region Public Properties
     [ObservableProperty]
     private IUploadPictureModel _pictureModel = default!;
-    #endregion
-
-    #region C'tor
-    public PictureInfoDialogViewModel(ISnackbar snackbarService, IMessageBoxService messageBoxService) : base(snackbarService, messageBoxService)
-    {
-    }
     #endregion
 
     #region Lifecycle

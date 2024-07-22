@@ -106,19 +106,18 @@ public class UrlHelperService(IOptions<AppSettings> appSettings) : IUrlHelperSer
     {
         switch (videoResolutionSize)
         {
-            case EnumVideoResolutionIcon.p360:
+            case EnumVideoResolutionIcon.P360:
                 return "png/360p_Logo.png";
-            case EnumVideoResolutionIcon.p480:
+            case EnumVideoResolutionIcon.P480:
                 return "png/480p_Logo.png";
-            case EnumVideoResolutionIcon.p720:
+            case EnumVideoResolutionIcon.P720:
                 return "png/720p_Logo.png";
-            case EnumVideoResolutionIcon.p1080:
+            case EnumVideoResolutionIcon.P1080:
                 return "png/1080p_Logo.png";
-            case EnumVideoResolutionIcon.p2160:
+            case EnumVideoResolutionIcon.P2160:
                 return "png/4K_Logo.png";
             default:
                 throw new ArgumentException("Unknown video resolution size");
         }
     }
-
 }

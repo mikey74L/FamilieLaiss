@@ -11,14 +11,14 @@ namespace FLBackEnd.API.MassTransit.Consumers.VideoConvert;
 public class VideoConvertErrorConsumer(
     IMediator mediator,
     ILogger<VideoConvertErrorConsumer> logger)
-    : IConsumer<IVideoConvertErrorEvent>
+    : IConsumer<IMassVideoConvertErrorEvent>
 {
     /// <summary>
     /// Would be called from Masstransit
     /// </summary>
     /// <param name="context">The context for this event</param>
     /// <returns>Task</returns>
-    public async Task Consume(ConsumeContext<IVideoConvertErrorEvent> context)
+    public async Task Consume(ConsumeContext<IMassVideoConvertErrorEvent> context)
     {
         logger.LogInformation("Consumer for Video-Convert-Error Event was called with {$message}",
             context.Message);

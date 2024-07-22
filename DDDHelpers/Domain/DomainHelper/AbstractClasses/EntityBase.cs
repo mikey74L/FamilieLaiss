@@ -4,6 +4,7 @@ using HotChocolate;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace DomainHelper.AbstractClasses;
@@ -12,7 +13,7 @@ public abstract class DomainEntity
 {
     #region Private Members
 
-    private List<DomainEventBase> _domainEvents;
+    private readonly List<DomainEventBase> _domainEvents;
 
     #endregion
 
@@ -37,7 +38,7 @@ public abstract class DomainEntity
     protected void AddDomainEvent(DomainEventBase domainEvent)
     {
         //Deklaration
-        bool EventFound = false;
+        var eventFound = false;
 
         //Ermitteln ob es sich um ein Single-Event handelt. Wenn nicht, kann
         //das Event einfach hinzugefügt werden. Wenn ja muss ermittelt werden
@@ -48,16 +49,13 @@ public abstract class DomainEntity
         }
         else
         {
-            foreach (var ExistingEvent in _domainEvents)
+            if (_domainEvents.Any(existingEvent =>
+                    domainEvent.GetType() == existingEvent.GetType() && domainEvent.ID == existingEvent.ID))
             {
-                if (domainEvent.GetType() == ExistingEvent.GetType() && domainEvent.ID == ExistingEvent.ID)
-                {
-                    EventFound = true;
-                    break;
-                }
+                eventFound = true;
             }
 
-            if (!EventFound)
+            if (!eventFound)
             {
                 _domainEvents.Add(domainEvent);
             }
@@ -143,6 +141,7 @@ public abstract class EntityCreation<T> : EntityBase<T>, IEntityCreation
     {
         CreateDate = DateTimeOffset.UtcNow;
     }
+
     #endregion
 
     #region Public Properties

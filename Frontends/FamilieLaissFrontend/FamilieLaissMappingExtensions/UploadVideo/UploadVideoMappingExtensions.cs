@@ -6,7 +6,7 @@ namespace FamilieLaissMappingExtensions.UploadVideo;
 
 public static class UploadVideoMappingExtensions
 {
-    public static IUploadVideoModel? Map(this IFrUploadVideoOnlyId source)
+    public static IUploadVideoModel Map(this IFrUploadVideoOnlyId source)
     {
         var result = new UploadVideoModel()
         {
@@ -22,7 +22,38 @@ public static class UploadVideoMappingExtensions
 
         foreach (var sourceItem in sourceItems)
         {
-            result.Add(sourceItem.Map()!);
+            result.Add(sourceItem.Map());
+        }
+
+        return result;
+    }
+
+    public static IUploadVideoModel Map(this IFrUploadVideoForChooseView sourceItem)
+    {
+        var result = new UploadVideoModel()
+        {
+            Id = sourceItem.Id,
+            Filename = sourceItem.Filename,
+            Height = sourceItem.Height,
+            Width = sourceItem.Width,
+            VideoType = sourceItem.VideoType,
+            DurationHour = sourceItem.DurationHour,
+            DurationMinute = sourceItem.DurationMinute,
+            DurationSecond = sourceItem.DurationSecond,
+            Status = sourceItem.Status,
+            CreateDate = sourceItem.CreateDate,
+        };
+
+        return result;
+    }
+
+    public static IEnumerable<IUploadVideoModel> Map(this IReadOnlyList<IFrUploadVideoForChooseView> sourceItems)
+    {
+        var result = new List<IUploadVideoModel>();
+
+        foreach (var sourceItem in sourceItems)
+        {
+            result.Add(sourceItem.Map());
         }
 
         return result;
@@ -39,7 +70,8 @@ public static class UploadVideoMappingExtensions
         return newItem;
     }
 
-    public static IEnumerable<IUploadVideoModel> Map(this IReadOnlyList<IFrUploadVideoForUploadView> sourceItems, IServiceProvider serviceProvider)
+    public static IEnumerable<IUploadVideoModel> Map(this IReadOnlyList<IFrUploadVideoForUploadView> sourceItems,
+        IServiceProvider serviceProvider)
     {
         var result = new List<IUploadVideoModel>();
 
@@ -54,6 +86,9 @@ public static class UploadVideoMappingExtensions
                 VideoType = sourceItem.VideoType,
                 Status = sourceItem.Status,
                 CreateDate = sourceItem.CreateDate,
+                DurationHour = sourceItem.DurationHour,
+                DurationMinute = sourceItem.DurationMinute,
+                DurationSecond = sourceItem.DurationSecond,
                 //GoogleGeoCodingAddress = sourceItem.GoogleGeoCodingAddress.Map()
             };
 

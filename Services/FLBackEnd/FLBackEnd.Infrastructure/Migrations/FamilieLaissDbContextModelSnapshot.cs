@@ -17,7 +17,7 @@ namespace FLBackEnd.Infrastructure.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.3")
+                .HasAnnotation("ProductVersion", "8.0.5")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -60,7 +60,7 @@ namespace FLBackEnd.Infrastructure.Migrations
                     b.Property<DateTimeOffset?>("ChangeDate")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<DateTimeOffset>("CreateDate")
+                    b.Property<DateTimeOffset?>("CreateDate")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("HeaderEnglish")
@@ -102,7 +102,7 @@ namespace FLBackEnd.Infrastructure.Migrations
                     b.Property<DateTimeOffset?>("ChangeDate")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<DateTimeOffset>("CreateDate")
+                    b.Property<DateTimeOffset?>("CreateDate")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("NameEnglish")
@@ -140,7 +140,7 @@ namespace FLBackEnd.Infrastructure.Migrations
                     b.Property<DateTimeOffset?>("ChangeDate")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<DateTimeOffset>("CreateDate")
+                    b.Property<DateTimeOffset?>("CreateDate")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("NameEnglish")
@@ -175,7 +175,7 @@ namespace FLBackEnd.Infrastructure.Migrations
                     b.Property<DateTimeOffset?>("ChangeDate")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<DateTimeOffset>("CreateDate")
+                    b.Property<DateTimeOffset?>("CreateDate")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("DescriptionEnglish")
@@ -223,7 +223,7 @@ namespace FLBackEnd.Infrastructure.Migrations
                     b.Property<DateTimeOffset?>("ChangeDate")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<DateTimeOffset>("CreateDate")
+                    b.Property<DateTimeOffset?>("CreateDate")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("DescriptionEnglish")
@@ -261,12 +261,10 @@ namespace FLBackEnd.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("MediaGroupId");
-
-                    b.HasIndex("MediaType", "NameEnglish")
+                    b.HasIndex("MediaGroupId", "NameEnglish")
                         .IsUnique();
 
-                    b.HasIndex("MediaType", "NameGerman")
+                    b.HasIndex("MediaGroupId", "NameGerman")
                         .IsUnique();
 
                     b.ToTable("MediaItems");
@@ -283,7 +281,7 @@ namespace FLBackEnd.Infrastructure.Migrations
                     b.Property<long>("CategoryValueId")
                         .HasColumnType("bigint");
 
-                    b.Property<DateTimeOffset>("CreateDate")
+                    b.Property<DateTimeOffset?>("CreateDate")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<long>("MediaItemId")
@@ -351,7 +349,7 @@ namespace FLBackEnd.Infrastructure.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseHiLo(b.Property<long>("Id"), "SequenceUploadIdentifier");
 
-                    b.Property<DateTimeOffset>("CreateDate")
+                    b.Property<DateTimeOffset?>("CreateDate")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("PseudoText")
@@ -369,7 +367,7 @@ namespace FLBackEnd.Infrastructure.Migrations
                     b.Property<long>("Id")
                         .HasColumnType("bigint");
 
-                    b.Property<DateTimeOffset>("CreateDate")
+                    b.Property<DateTimeOffset?>("CreateDate")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Filename")
@@ -402,7 +400,7 @@ namespace FLBackEnd.Infrastructure.Migrations
                     b.Property<long>("Id")
                         .HasColumnType("bigint");
 
-                    b.Property<DateTimeOffset>("CreateDate")
+                    b.Property<DateTimeOffset?>("CreateDate")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<int>("DurationHour")
@@ -461,7 +459,7 @@ namespace FLBackEnd.Infrastructure.Migrations
                     b.Property<DateTimeOffset?>("ChangeDate")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<DateTimeOffset>("CreateDate")
+                    b.Property<DateTimeOffset?>("CreateDate")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<bool>("DefaultKeepUploadWhenDelete")

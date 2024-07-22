@@ -11,12 +11,12 @@ using MudBlazor;
 
 namespace FamilieLaissFrontend.Client.ViewModels.Controls.User;
 
-public partial class UserSettingsControlViewModel : ViewModelBase
+public partial class UserSettingsControlViewModel(
+    ISnackbar snackbarService,
+    IMessageBoxService messageBoxService,
+    IUserSettingsService userSettingsService)
+    : ViewModelBase(snackbarService, messageBoxService)
 {
-    #region Services
-    private readonly IUserSettingsService userSettingsService;
-    #endregion
-
     #region Properties
     public Task<AuthenticationState>? AuthenticationState { get; set; }
     #endregion
@@ -26,14 +26,6 @@ public partial class UserSettingsControlViewModel : ViewModelBase
     private IUserSettingsModel? _model;
 
     public MudForm? Form { get; set; }
-    #endregion
-
-    #region C'tor
-    public UserSettingsControlViewModel(ISnackbar snackbarService, IMessageBoxService messageBoxService,
-        IUserSettingsService userSettingsService) : base(snackbarService, messageBoxService)
-    {
-        this.userSettingsService = userSettingsService;
-    }
     #endregion
 
     #region Lifecycle

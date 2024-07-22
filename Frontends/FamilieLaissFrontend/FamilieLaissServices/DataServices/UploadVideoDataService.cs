@@ -18,7 +18,27 @@ public class UploadVideoDataService(
 {
     #region Query
 
-    public async Task<IApiResult<IEnumerable<IUploadVideoModel>>> GetUploadVideosForUploadViewAsync(IReadOnlyList<UploadVideoSortInput> sortCriterias, UploadVideoFilterInput? filterCriteria)
+    public async Task<IApiResult<IEnumerable<IUploadVideoModel>>> GetUploadVideosForChooseViewAsync()
+    {
+        try
+        {
+            var response = await Client.GetUploadVideosForChooseView.ExecuteAsync();
+
+            if (response.IsSuccessResult() && response.Data is not null)
+            {
+                return CreateApiResult(response.Data.UploadVideos.Map());
+            }
+
+            return CreateApiResultForError<IEnumerable<IUploadVideoModel>>(response.Errors);
+        }
+        catch (Exception ex)
+        {
+            return CreateApiResultForCommunicationError<IEnumerable<IUploadVideoModel>>(ex);
+        }
+    }
+
+    public async Task<IApiResult<IEnumerable<IUploadVideoModel>>> GetUploadVideosForUploadViewAsync(
+        IReadOnlyList<UploadVideoSortInput> sortCriterias, UploadVideoFilterInput? filterCriteria)
     {
         try
         {
@@ -36,6 +56,7 @@ public class UploadVideoDataService(
             return CreateApiResultForCommunicationError<IEnumerable<IUploadVideoModel>>(ex);
         }
     }
+
     #endregion
 
     #region CRUD
@@ -59,7 +80,8 @@ public class UploadVideoDataService(
         }
     }
 
-    public async Task<IApiResult<IEnumerable<IUploadVideoModel>>> DeleteAllUploadVideosAsync(IEnumerable<IUploadVideoModel> modelsToDelete)
+    public async Task<IApiResult<IEnumerable<IUploadVideoModel>>> DeleteAllUploadVideosAsync(
+        IEnumerable<IUploadVideoModel> modelsToDelete)
     {
         try
         {

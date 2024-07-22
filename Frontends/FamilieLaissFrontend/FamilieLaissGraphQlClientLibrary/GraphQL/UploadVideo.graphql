@@ -34,11 +34,33 @@ fragment FrUploadVideoForUploadView on UploadVideo {
 	width
 	status
 	videoType
+    durationHour
+	durationMinute
+	durationSecond
 	googleGeoCodingAddress {
 		...FrGoogleGeoCodingAddress
 	}
 	createDate
 } 
+
+fragment FrUploadVideoForChooseView on UploadVideo {
+	...FrUploadVideoOnlyId
+	filename
+	height
+	width
+	status
+	videoType
+    durationHour
+	durationMinute
+	durationSecond
+	createDate
+} 
+
+query GetUploadVideosForChooseView {
+    uploadVideos (where: {status: {eq: CONVERTED}}, order: {createDate: DESC}) {
+       ...FrUploadVideoForChooseView
+	}
+}
 
 query GetUploadVideosForUploadView ($sortCriteria: [UploadVideoSortInput!], $filterCriteria: UploadVideoFilterInput) {
 	uploadVideos (order: $sortCriteria, where: $filterCriteria) {

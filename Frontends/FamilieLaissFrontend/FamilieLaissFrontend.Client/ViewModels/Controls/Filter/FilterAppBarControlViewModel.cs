@@ -12,12 +12,15 @@ using MudBlazor;
 
 namespace FamilieLaissFrontend.Client.ViewModels.Controls.Filter;
 
-public partial class FilterAppBarControlViewModel<TModel, TSortInput, TFilterInputType> : ViewModelBase, IHandle<AggFilterChanged> where TModel : IBaseModel where TSortInput : class where TFilterInputType : class
+public partial class FilterAppBarControlViewModel<TModel, TSortInput, TFilterInputType>(
+    ISnackbar snackbarService,
+    IMessageBoxService messageBoxService,
+    IEventAggregator eventAggregator)
+    : ViewModelBase(snackbarService, messageBoxService), IHandle<AggFilterChanged>
+    where TModel : IBaseModel
+    where TSortInput : class
+    where TFilterInputType : class
 {
-    #region Services
-    private IEventAggregator eventAggregator;
-    #endregion
-
     #region Parameters
     public IGraphQlSortAndFilterService<TModel, TSortInput, TFilterInputType> SortAndFilterService { get; set; } = default!;
     #endregion
@@ -28,14 +31,6 @@ public partial class FilterAppBarControlViewModel<TModel, TSortInput, TFilterInp
 
     [ObservableProperty]
     private string _currentFilterCriteria = string.Empty;
-    #endregion
-
-    #region C'tor
-    public FilterAppBarControlViewModel(ISnackbar snackbarService, IMessageBoxService messageBoxService,
-        IEventAggregator eventAggregator) : base(snackbarService, messageBoxService)
-    {
-        this.eventAggregator = eventAggregator;
-    }
     #endregion
 
     #region Lifecycle
@@ -60,17 +55,19 @@ public partial class FilterAppBarControlViewModel<TModel, TSortInput, TFilterInp
     {
         var propertyName = filterCriteria.DisplayText;
 
-        if (filterCriteria.MinValue is not null && filterCriteria.MaxValue is null)
-        {
-            return $"{propertyName} >= {filterCriteria.MinValue}";
-        }
         if (filterCriteria.MaxValue is not null && filterCriteria.MinValue is null)
         {
             return $"{propertyName} <= {filterCriteria.MaxValue}";
         }
+
         if (filterCriteria.MinValue is not null && filterCriteria.MaxValue is not null)
         {
             return $"{propertyName} >= {filterCriteria.MinValue} & <= {filterCriteria.MaxValue}";
+        }
+
+        if (filterCriteria.MinValue is not null && filterCriteria.MaxValue is null)
+        {
+            return $"{propertyName} >= {filterCriteria.MinValue}";
         }
 
         return string.Empty;
@@ -116,19 +113,16 @@ public partial class FilterAppBarControlViewModel<TModel, TSortInput, TFilterInp
     {
         var propertyName = filterCriteria.DisplayText;
 
-        if (filterCriteria.MinValue is not null)
+        if (filterCriteria.MinValue is null) return string.Empty;
+        switch (filterCriteria.FilterType)
         {
-            if (filterCriteria.FilterType == GraphQlFilterType.ValueListInt)
-            {
+            case GraphQlFilterType.ValueListInt:
                 return $"{propertyName} = \"{filterCriteria.IntValues?.SingleOrDefault(x => x.Key == (int)filterCriteria.MinValue).Value}\"";
-            }
-            if (filterCriteria.FilterType == GraphQlFilterType.ValueListDouble)
-            {
+            case GraphQlFilterType.ValueListDouble:
                 return $"{propertyName} = \"{filterCriteria.DoubleValues?.SingleOrDefault(x => x.Key == (double)filterCriteria.MinValue).Value}\"";
-            }
+            default:
+                return string.Empty;
         }
-
-        return string.Empty;
     }
 
     private string CreateFilterCriteria(IGraphQlFilterCriteria filterCriteria)

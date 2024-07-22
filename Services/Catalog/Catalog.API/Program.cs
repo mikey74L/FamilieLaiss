@@ -1,28 +1,33 @@
-using Asp.Versioning;
+using System.Globalization;
 using Catalog.API;
-using Catalog.API.BackgroundServices;
-using Catalog.API.Extensions;
+using Catalog.API.GraphQL;
+using Catalog.API.GraphQL.Filter;
+using Catalog.API.GraphQL.Mutations;
+using Catalog.API.GraphQL.Mutations.Category;
+using Catalog.API.GraphQL.Mutations.CategoryValue;
+using Catalog.API.GraphQL.Mutations.MediaGroup;
+using Catalog.API.GraphQL.Mutations.MediaItem;
+using Catalog.API.GraphQL.Queries.Category;
+using Catalog.API.GraphQL.Queries.CategoryValue;
+using Catalog.API.GraphQL.Queries.Media;
+using Catalog.API.GraphQL.Types.Category;
+using Catalog.API.GraphQL.Types.CategoryValue;
+using Catalog.API.GraphQL.Types.Media;
 using Catalog.API.Logging;
-using Catalog.API.MassTransit.Consumers;
 using Catalog.API.Models;
-using Catalog.API.Swagger;
-using Catalog.DTO.Category;
 using Catalog.Infrastructure.DBContext;
+using GraphQL.Server.Ui.Voyager;
 using InfrastructureHelper.EventDispatchHandler;
-using Mapster;
 using MassTransit;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 using Npgsql;
 using Serilog;
 using ServiceLayerHelper;
 using ServiceLayerHelper.Logging;
+using StackExchange.Redis;
 using Steeltoe.Discovery.Client;
 using Steeltoe.Discovery.Eureka;
-using Swashbuckle.AspNetCore.SwaggerGen;
-using System.Globalization;
-using System.Reflection;
 
 Console.Title = "Catalog-Service";
 
@@ -30,15 +35,15 @@ var builder = WebApplication.CreateBuilder(args);
 
 //Logging
 var logger = new LoggerConfiguration()
-  .ReadFrom.Configuration(builder.Configuration)
-  .CreateLogger();
+    .ReadFrom.Configuration(builder.Configuration)
+    .CreateLogger();
 builder.Logging.ClearProviders();
 builder.Host.UseSerilog(logger);
 
 //Den Logger für Serilog erstellen
 Log.Logger = new LoggerConfiguration()
-  .ReadFrom.Configuration(builder.Configuration)
-  .CreateBootstrapLogger();
+    .ReadFrom.Configuration(builder.Configuration)
+    .CreateBootstrapLogger();
 
 //Hinzufügen der Service-Discovery
 builder.AddServiceDiscovery(options => options.UseEureka());
@@ -47,64 +52,67 @@ builder.AddServiceDiscovery(options => options.UseEureka());
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
 //Hinzufügen der Hosted-Services (Background-Services)
-builder.Services.AddHostedService<MessageForAddedMediaItemsBackgroundService>();
 builder.Services.AddHostedService<EventDispatcherBackgroundService>();
 
 //Hinzufügen det globalen Exception-Handler Middleware
 builder.Services.AddSingleton<ILog, LogSerilog>();
 
-//Mapster konfigurieren
-builder.Services.AddMapster();
-builder.Services.AddMapsterTypeConfigurations();
-
-//Alles für API-Versioning hinzufügen
-var apiVersioningBuilder = builder.Services.AddApiVersioning(o =>
-{
-    o.AssumeDefaultVersionWhenUnspecified = true;
-    o.DefaultApiVersion = new ApiVersion(1, 0);
-    o.ReportApiVersions = true;
-});
-apiVersioningBuilder.AddApiExplorer(
-    options =>
-    {
-        options.GroupNameFormat = "'v'VVV";
-        options.SubstituteApiVersionInUrl = true;
-    });
-
-//Alles für WebApi hinzufügen
-builder.Services.AddControllers();
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
-builder.Services.AddSwaggerGen(options =>
-{
-    options.OperationFilter<SwaggerDefaultValues>();
-
-    var fileNameMain = Assembly.GetExecutingAssembly().GetName().Name + ".xml";
-    var fileNameDTO = typeof(CategoryDTO).Assembly.GetName().Name + ".xml";
-    var filePathMain = Path.Combine(AppContext.BaseDirectory, fileNameMain);
-    var filePathDTO = Path.Combine(AppContext.BaseDirectory, fileNameDTO);
-
-    options.IncludeXmlComments(filePathMain);
-    options.IncludeXmlComments(filePathDTO);
-});
-
 //Hinzufügen der Konfiguration (App-Settings) zum IOC-Container
 var appSettingsSection = builder.Configuration.GetSection("AppSettings");
 builder.Services.Configure<AppSettings>(appSettingsSection);
-AppSettings? appSettings = appSettingsSection.Get<AppSettings>();
+var appSettings = appSettingsSection.Get<AppSettings>();
 
 //Die DB-Context Factory hinzufügen inklusive der UnitOfWork
-NpgsqlConnectionStringBuilder postgresConnectionStringBuilder = new();
-postgresConnectionStringBuilder.ApplicationName = "Catalog-Service";
-postgresConnectionStringBuilder.Host = appSettings?.PostgresHost;
-postgresConnectionStringBuilder.Port = appSettings?.PostgresPort ?? 0;
-postgresConnectionStringBuilder.Multiplexing = appSettings?.PostgresMultiplexing ?? false;
-postgresConnectionStringBuilder.Database = appSettings?.PostgresDatabase;
-postgresConnectionStringBuilder.Username = appSettings?.PostgresUser;
-postgresConnectionStringBuilder.Password = appSettings?.PostgresPassword;
+NpgsqlConnectionStringBuilder postgresConnectionStringBuilder = new()
+{
+    ApplicationName = "Catalog-Service",
+    Host = appSettings?.PostgresHost,
+    Port = appSettings?.PostgresPort ?? 0,
+    Multiplexing = appSettings?.PostgresMultiplexing ?? false,
+    Database = appSettings?.PostgresDatabase,
+    Username = appSettings?.PostgresUser,
+    Password = appSettings?.PostgresPassword
+};
 builder.Services.AddPooledDbContextFactory<CatalogServiceDbContext>(
-    o => o.UseNpgsql(postgresConnectionStringBuilder.ToString()))
-.AddUnitOfWork<CatalogServiceDbContext>();
+        o => o.UseNpgsql(postgresConnectionStringBuilder.ToString()))
+    .AddUnitOfWork<CatalogServiceDbContext>();
+
+//Redis Multiplexer hinzufügen wird für GraphQL Schema Stitching verwendet
+builder.Services.AddSingleton(ConnectionMultiplexer.Connect("redis"));
+
+//Adding GraphQL Server
+var graphQlBuilder = builder.Services.AddGraphQLServer()
+    .RegisterDbContext<CatalogServiceDbContext>(DbContextKind.Pooled)
+    .AddMutationType<Mutation>()
+    .AddTypeExtension<GraphQlMutationCategory>()
+    .AddTypeExtension<GraphQlMutationCategoryValue>()
+    .AddTypeExtension<GraphQlMutationMediaGroup>()
+    .AddTypeExtension<GraphQlMutationMediaItem>()
+    .AddQueryType<Query>()
+    .AddTypeExtension<GraphQlQueryCategory>()
+    .AddTypeExtension<GraphQlQueryCategoryValue>()
+    .AddTypeExtension<GraphQlQueryMedia>()
+    .AddType<GraphQlCategoryType>()
+    .AddType<GraphQlCategoryValueType>()
+    .AddType<GraphQlMediaGroupType>()
+    .AddType<GraphQlMediaItemType>()
+    .AddType<GraphQlMediaItemCategoryValueType>()
+    .AddProjections()
+    .AddFiltering()
+    .AddSorting()
+    .AddErrorFilter<GraphQlErrorFilter>()
+    .AddAuthorization()
+    .InitializeOnStartup()
+    .PublishSchemaDefinition(c => c
+        // The name of the schema. This name should be unique
+        .SetName("catalog")
+        .PublishToRedis(
+            // The configuration name under which the schema should be published
+            "familielaiss",
+            // The connection multiplexer that should be used for publishing
+            sp => sp.GetRequiredService<ConnectionMultiplexer>()
+        )
+    );
 
 //Lokalisierung für ASP.NET Core hinzufügen
 builder.Services.AddLocalization(options => options.ResourcesPath = "Localize");
@@ -116,20 +124,20 @@ builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<Pr
 Startup.ConfigureEndpointConventions(appSettings);
 
 //Hinzufügen der Consumer zum DI-Container
-builder.Services.AddScoped<PictureUploadedConsumer>();
-builder.Services.AddScoped<VideoUploadedConsumer>();
-builder.Services.AddScoped<UploadPictureDeletedConsumer>();
-builder.Services.AddScoped<UploadVideoDeletedConsumer>();
+//builder.Services.AddScoped<PictureUploadedConsumer>();
+//builder.Services.AddScoped<VideoUploadedConsumer>();
+//builder.Services.AddScoped<UploadPictureDeletedConsumer>();
+//builder.Services.AddScoped<UploadVideoDeletedConsumer>();
 
 if (appSettings is not null)
 {
     builder.Services.AddMassTransit(x =>
     {
         //Hinzufügen der Consumer
-        x.AddConsumer<PictureUploadedConsumer>();
-        x.AddConsumer<VideoUploadedConsumer>();
-        x.AddConsumer<UploadPictureDeletedConsumer>();
-        x.AddConsumer<UploadVideoDeletedConsumer>();
+        //x.AddConsumer<PictureUploadedConsumer>();
+        //x.AddConsumer<VideoUploadedConsumer>();
+        //x.AddConsumer<UploadPictureDeletedConsumer>();
+        //x.AddConsumer<UploadVideoDeletedConsumer>();
 
         //RabbitMq hinzufügen
         x.UsingRabbitMq((context, cfg) =>
@@ -137,16 +145,16 @@ if (appSettings is not null)
             //Konfigurieren des Hosts
             cfg.Host(new Uri(appSettings.RabbitMQConnection));
 
-            cfg.ReceiveEndpoint(appSettings.Endpoint_CatalogService, e =>
+            cfg.ReceiveEndpoint(appSettings.EndpointCatalogService, e =>
             {
                 e.UseConcurrencyLimit(1);
                 e.PrefetchCount = 16;
                 e.UseMessageRetry(r => r.Incremental(5, TimeSpan.FromSeconds(5), TimeSpan.FromSeconds(20)));
 
-                e.ConfigureConsumer<PictureUploadedConsumer>(context);
-                e.ConfigureConsumer<VideoUploadedConsumer>(context);
-                e.ConfigureConsumer<UploadPictureDeletedConsumer>(context);
-                e.ConfigureConsumer<UploadVideoDeletedConsumer>(context);
+                //e.ConfigureConsumer<PictureUploadedConsumer>(context);
+                //e.ConfigureConsumer<VideoUploadedConsumer>(context);
+                //e.ConfigureConsumer<UploadPictureDeletedConsumer>(context);
+                //e.ConfigureConsumer<UploadVideoDeletedConsumer>(context);
             });
         });
     });
@@ -186,32 +194,34 @@ try
     //Konfigurieren der Exception-Handler-Middleware
     app.ConfigureExceptionHandler();
 
-    //Swagger / OpenAPI hinzufügen
-    if (app.Environment.IsDevelopment())
-    {
-        app.UseSwagger();
-        app.UseSwaggerUI(options =>
-        {
-            var descriptions = app.DescribeApiVersions();
-
-            // Build a swagger endpoint for each discovered API version
-            foreach (var description in descriptions)
-            {
-                var url = $"/swagger/{description.GroupName}/swagger.json";
-                var name = description.GroupName.ToUpperInvariant();
-                options.SwaggerEndpoint(url, name);
-            }
-        });
-    }
-
     //Initialisieren der Datenbank (Migration und Seeden)
     Startup.InitializeDatabase(app);
 
-    //Controller hinzufügen
-    app.MapControllers();
+    //Add routing to pipeline
+    app.UseRouting();
 
-    //Starten der API
-    app.Run();
+    //Initialize endpoints for GraphQL
+    if (builder.Environment.IsDevelopment())
+    {
+        app.MapGraphQL();
+    }
+    else
+    {
+        app.MapGraphQLHttp();
+        app.MapGraphQLWebSocket();
+    }
+
+    //Initialize Endpoints for GraphQL-Voyager
+    if (builder.Environment.IsDevelopment())
+    {
+        app.UseGraphQLVoyager("/graphql-voyager", new VoyagerOptions()
+        {
+            GraphQLEndPoint = "/graphql"
+        });
+    }
+
+    //Start the API
+    app.RunWithGraphQLCommands(args);
 }
 catch (Exception ex)
 {
@@ -219,6 +229,6 @@ catch (Exception ex)
 }
 finally
 {
-    Log.Information("Web-Host stoped");
+    Log.Information("Web-Host stopped");
     Log.CloseAndFlush();
 }

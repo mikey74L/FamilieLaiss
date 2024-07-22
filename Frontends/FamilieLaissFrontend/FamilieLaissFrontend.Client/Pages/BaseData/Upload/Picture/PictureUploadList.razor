@@ -1,13 +1,10 @@
 ﻿@using FamilieLaissFrontend.Client.ViewModels.Pages.BaseData.Upload.Picture
 @using FamilieLaissGraphQlClientLibrary
 @using FamilieLaissInterfaces.Enums
-@using FamilieLaissInterfaces.Models
 @using FamilieLaissInterfaces.Models.Data
 @using FamilieLaissInterfaces.Services
-@using FamilieLaissResources.Resources.Pages.BaseData.Upload.Picture
 @using FamilieLaissSharedUI.Components
 @using FamilieLaissSharedUI.Helper
-@using Microsoft.Extensions.Localization
 @using FamilieLaissEnums
 
 @inherits FlComponentBase<PictureUploadListViewModel>
@@ -24,9 +21,8 @@
                           SortAndFilterService="SortAndFilterService" />
 
 @{
-    var classForContainer = "";
-
-    if (UploadItems.Count == 0 && !ViewModel.HasError && !ViewModel.IsLoading || ViewModel.HasError)
+    string classForContainer;
+    if (UploadItems.Count == 0 && ViewModel is { HasError: false, IsLoading: false } || ViewModel.HasError)
     {
         classForContainer = "mt-5 container-upload-picture";
     }

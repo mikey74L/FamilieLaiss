@@ -1,10 +1,8 @@
-﻿using System;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Ocelot.DependencyInjection;
 using Serilog;
 using ServiceLayerHelper.Logging;
 using SPAGateway.GraphQl;
@@ -13,15 +11,12 @@ using SPAGateway.Models;
 using StackExchange.Redis;
 using Steeltoe.Discovery.Client;
 using Steeltoe.Discovery.Eureka;
+using System;
 
 //Den Titel für das Konsolenfenster setzen
 Console.Title = "Gateway-SPA";
 
 var builder = WebApplication.CreateBuilder(args);
-
-//Hinzufügen der Ocelot-Konfiguration über die JSON-Files
-builder.Configuration.AddOcelot(System.IO.Path.Combine(builder.Environment.ContentRootPath, "Configuration"),
-    builder.Environment);
 
 //Logging
 var logger = new LoggerConfiguration()
@@ -35,14 +30,12 @@ Log.Logger = new LoggerConfiguration()
     .ReadFrom.Configuration(builder.Configuration)
     .CreateBootstrapLogger();
 
+Log.Information("TestLogging");
 //Hinzufügen der Service-Discovery
 builder.AddServiceDiscovery(options => options.UseEureka());
 
 //Hinzufügen det globalen Exception-Handler Middleware
 builder.Services.AddSingleton<ILog, LogSerilog>();
-
-//Mapster hinzufügen
-//builder.Services.AddMapster();
 
 //Hinzufügen der Konfiguration (App-Settings) zum IOC-Container
 var appSettingsSection = builder.Configuration.GetSection("AppSettings");
@@ -56,7 +49,7 @@ if (builder.Environment.IsDevelopment())
     {
         options.AddPolicy("SPAGateway", policy =>
         {
-            policy.WithOrigins(appSettings.CORS_Origin)
+            policy.WithOrigins(appSettings.CorsOrigin)
                 .AllowAnyHeader()
                 .AllowAnyMethod()
                 .AllowCredentials();
@@ -68,20 +61,25 @@ if (builder.Environment.IsDevelopment())
 builder.Services
     .AddHttpClient(WellKnownSchemaNames.Catalog, c => c.BaseAddress = new Uri("http://catalogservice/graphql"))
     .AddRoundRobinLoadBalancer();
+builder.Services
+    .AddHttpClient(WellKnownSchemaNames.Upload, c => c.BaseAddress = new Uri("http://uploadservice/graphql"))
+    .AddRoundRobinLoadBalancer();
+builder.Services
+    .AddHttpClient(WellKnownSchemaNames.PictureConvert,
+        c => c.BaseAddress = new Uri("http://pictureconvertservice/graphql"))
+    .AddRoundRobinLoadBalancer();
+builder.Services
+    .AddHttpClient(WellKnownSchemaNames.VideoConvert,
+        c => c.BaseAddress = new Uri("http://videoconvertservice/graphql"))
+    .AddRoundRobinLoadBalancer();
 
 //Add redis for GraphQL-Schema-Stitching
 builder.Services.AddSingleton(ConnectionMultiplexer.Connect("redis"));
 
 //Add GraphQL-Server
-//Add GraphQL-Server
 builder.Services.AddGraphQLServer()
-    .AddQueryType(d => d.Name("Query"))
-    .AddRemoteSchema(WellKnownSchemaNames.Catalog);
-//.AddRemoteSchemasFromRedis("familielaiss", sp => sp.GetRequiredService<ConnectionMultiplexer>())
-//.AddTypeExtensionsFromFile("./Stitching.graphql");
-
-//Add Ocelot to DI-Container
-//builder.Services.AddOcelot(builder.Configuration).AddEureka();
+    .AddRemoteSchemasFromRedis("familielaiss", sp => sp.GetRequiredService<ConnectionMultiplexer>())
+    .AddTypeExtensionsFromFile("./Stitching.graphql");
 
 //Den Web-Host ausführen
 try
@@ -114,10 +112,7 @@ try
     //Initialisieren der Endpoints für GraphQL
     app.MapGraphQL();
 
-    //Ocelot zur Pipeline hinzufügen
-    //app.UseOcelot().Wait();
-
-    app.Run();
+    app.RunWithGraphQLCommands(args);
 }
 catch (Exception ex)
 {

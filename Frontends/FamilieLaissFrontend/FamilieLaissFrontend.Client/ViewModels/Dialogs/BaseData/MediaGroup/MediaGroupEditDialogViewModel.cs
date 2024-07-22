@@ -15,12 +15,17 @@ using MudBlazor;
 
 namespace FamilieLaissFrontend.Client.ViewModels.Dialogs.BaseData.MediaGroup;
 
-public partial class MediaGroupEditDialogViewModel : ViewModelBase
+public partial class MediaGroupEditDialogViewModel(
+    ISnackbar snackbarService,
+    IMessageBoxService messageBoxService,
+    IValidatorFl<IMediaGroupModel> validator,
+    IMediaGroupDataService mediaGroupService,
+    IEventAggregator eventAggregator)
+    : ViewModelBase(snackbarService, messageBoxService)
 {
     #region Services
-    public readonly IValidatorFl<IMediaGroupModel> Validator;
-    private readonly IMediaGroupDataService mediaGroupService;
-    private readonly IEventAggregator eventAggregator;
+    public readonly IValidatorFl<IMediaGroupModel> Validator = validator;
+
     #endregion
 
     #region Private Fields
@@ -28,7 +33,7 @@ public partial class MediaGroupEditDialogViewModel : ViewModelBase
     #endregion
 
     #region Parameters
-    public MudDialogInstance MudDialog { get; set; }
+    public MudDialogInstance? MudDialog { get; set; }
     public bool IsInEditMode { get; set; }
     public IMediaGroupModel? Model { get; set; }
     #endregion
@@ -36,17 +41,6 @@ public partial class MediaGroupEditDialogViewModel : ViewModelBase
     #region Public Properties
     public MudForm? Form { get; set; }
     public MudDatePicker? PickerEventDate { get; set; }
-    #endregion
-
-    #region C'tor
-    public MediaGroupEditDialogViewModel(ISnackbar snackbarService, IMessageBoxService messageBoxService,
-        IValidatorFl<IMediaGroupModel> validator, IMediaGroupDataService mediaGroupService,
-        IEventAggregator eventAggregator) : base(snackbarService, messageBoxService)
-    {
-        Validator = validator;
-        this.mediaGroupService = mediaGroupService;
-        this.eventAggregator = eventAggregator;
-    }
     #endregion
 
     #region Lifecycle
@@ -71,11 +65,11 @@ public partial class MediaGroupEditDialogViewModel : ViewModelBase
 
                         return Task.CompletedTask;
                     })
-                .HandleErrors((result) =>
+                .HandleErrors((_) =>
                 {
                     ShowErrorToast(MediaGroupEditDialogViewModelRes.ToastInitializeError);
 
-                    MudDialog.Close();
+                    MudDialog?.Close();
 
                     return Task.CompletedTask;
                 });
@@ -203,7 +197,7 @@ public partial class MediaGroupEditDialogViewModel : ViewModelBase
                 }
                 else
                 {
-                    MudDialog.Close();
+                    MudDialog?.Close();
                 }
             }
         }
@@ -235,12 +229,12 @@ public partial class MediaGroupEditDialogViewModel : ViewModelBase
 
             if (dialogResult.HasValue && dialogResult.Value)
             {
-                MudDialog.Cancel();
+                MudDialog?.Cancel();
             }
         }
         else
         {
-            MudDialog.Cancel();
+            MudDialog?.Cancel();
         }
     }
 

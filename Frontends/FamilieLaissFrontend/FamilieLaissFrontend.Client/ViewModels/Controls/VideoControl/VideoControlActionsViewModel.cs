@@ -7,28 +7,38 @@ using MudBlazor;
 
 namespace FamilieLaissFrontend.Client.ViewModels.Controls.VideoControl;
 
-public partial class VideoControlActionsViewModel : ViewModelBase
+public partial class VideoControlActionsViewModel(ISnackbar snackbarService, IMessageBoxService messageBoxService)
+    : ViewModelBase(snackbarService, messageBoxService)
 {
     #region Parameters
+
     public IUploadVideoModel? UploadItem { get; set; }
-    public EventCallback<IUploadVideoModel> DeleteClicked { get; set; }
+    public IMediaItemModel? MediaItem { get; set; }
+    public EventCallback<IUploadVideoModel> DeleteUploadClicked { get; set; }
+    public EventCallback<IMediaItemModel> DeleteMediaClicked { get; set; }
     public EventCallback<IUploadVideoModel> ChooseClicked { get; set; }
     public EventCallback<IUploadVideoModel> EditClicked { get; set; }
-    #endregion
 
-    #region C'tor
-    public VideoControlActionsViewModel(ISnackbar snackbarService, IMessageBoxService messageBoxService) : base(snackbarService, messageBoxService)
-    {
-    }
     #endregion
 
     #region Commands
+
     [RelayCommand]
     public async Task Delete()
     {
-        if (DeleteClicked.HasDelegate)
+        if (MediaItem is not null)
         {
-            await DeleteClicked.InvokeAsync(UploadItem);
+            if (DeleteMediaClicked.HasDelegate)
+            {
+                await DeleteMediaClicked.InvokeAsync(MediaItem);
+            }
+        }
+        else
+        {
+            if (DeleteUploadClicked.HasDelegate)
+            {
+                await DeleteUploadClicked.InvokeAsync(UploadItem);
+            }
         }
     }
 
@@ -49,11 +59,14 @@ public partial class VideoControlActionsViewModel : ViewModelBase
             await EditClicked.InvokeAsync(UploadItem);
         }
     }
+
     #endregion
 
     #region Abstract overrides
+
     public override void Dispose()
     {
     }
+
     #endregion
 }

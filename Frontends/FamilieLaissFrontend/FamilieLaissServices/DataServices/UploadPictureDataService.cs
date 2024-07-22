@@ -59,7 +59,7 @@ public class UploadPictureDataService(IFamilieLaissClient familieLaissClient)
     {
         try
         {
-            UploadPictureExifInfoFilterData? result = new();
+            UploadPictureExifInfoFilterData result = new();
 
             var filterDataRaw = await Client.GetUploadPictureExifInfoFilterData.ExecuteAsync();
 

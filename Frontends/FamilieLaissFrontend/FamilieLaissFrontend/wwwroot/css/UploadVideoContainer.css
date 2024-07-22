@@ -2,6 +2,10 @@
     height: 80vh;
 }
 
+.container-upload-video-choose {
+    height: 70vh;
+}
+
 .container-upload-video-items {
     overflow: auto;
     height: 80vh;
@@ -10,4 +14,12 @@
     grid-template-columns: repeat(auto-fill, 340px);
     justify-content: space-between;
     grid-gap: 10px;
+}
+
+.container-upload-video-items-upload {
+    height: 80vh;
+}
+
+.container-upload-video-items-choose {
+    height: 70vh;
 }

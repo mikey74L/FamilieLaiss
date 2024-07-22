@@ -1,11 +1,12 @@
-﻿using System.Threading.Tasks;
-using FamilieLaissMassTransitDefinitions.Contracts.Commands;
+﻿using FamilieLaissMassTransitDefinitions.Contracts.Commands;
 using MassTransit;
+using System.Threading.Tasks;
 using VideoConvertExecuteService.Models;
 
 namespace VideoConvertExecuteService.Interfaces;
 
 public interface IVideoConverter
 {
-    Task ConvertVideo(ConsumeContext<IConvertVideoCmd> consumeContext, string filenameSourceVideo, MediaInfoData metadata);
+    Task ConvertVideo(ConsumeContext<IMassConvertVideoCmd> consumeContext, string filenameSourceVideo,
+        MediaInfoData metadata);
 }

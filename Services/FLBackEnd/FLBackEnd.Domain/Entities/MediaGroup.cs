@@ -122,6 +122,7 @@ public class MediaGroup : EntityModify<long>
     #endregion
 
     #region Domain Methods
+
     /// <summary>
     /// Update the media group
     /// </summary>
@@ -160,27 +161,27 @@ public class MediaGroup : EntityModify<long>
     /// <param name="descriptionGerman">German description for this Media-Item</param>
     /// <param name="descriptionEnglish">English description for this Media-Item</param>
     /// <param name="onlyFamily">Is this Media-Item only visible for family users</param>
-    /// <param name="uploadItemID">Id for the assigned upload item (picture or video)</param>
+    /// <param name="uploadItemId">Id for the assigned upload item (picture or video)</param>
+    /// <param name="nameUploadPicture">The filename of the original upload picture</param>
     /// <returns>The added media item</returns>
     [GraphQLIgnore]
-    public MediaItem AddMediaItem(EnumMediaType mediaType, string nameGerman, string nameEnglish, string? descriptionGerman,
-        string? descriptionEnglish, bool onlyFamily, long uploadItemID)
+    public MediaItem AddMediaItem(EnumMediaType mediaType, string nameGerman, string nameEnglish,
+        string? descriptionGerman,
+        string? descriptionEnglish, bool onlyFamily, long uploadItemId, string? nameUploadPicture)
     {
         //Eine neue Media-Item-Entity hinzufügen
-        var ValueEntity = new MediaItem(this, mediaType, nameGerman, nameEnglish, descriptionGerman, descriptionEnglish, onlyFamily,
-            uploadItemID);
+        var valueEntity = new MediaItem(this, mediaType, nameGerman, nameEnglish, descriptionGerman, descriptionEnglish,
+            onlyFamily,
+            uploadItemId, nameUploadPicture);
 
         //Wenn die Liste noch null sein sollte erstellen einer leeren Liste
-        if (MediaItems == null)
-        {
-            MediaItems = [];
-        }
+        MediaItems ??= [];
 
         //Hinzufügen der Value-Entity zur Collection
-        MediaItems.Add(ValueEntity);
+        MediaItems.Add(valueEntity);
 
         //Zurückliefern der hinzugefügten Entity
-        return ValueEntity;
+        return valueEntity;
     }
 
     /// <summary>
@@ -197,27 +198,27 @@ public class MediaGroup : EntityModify<long>
         await lazyLoader.LoadAsync(this, navigationName: nameof(MediaItems));
 
         //Entfernen des Items
-        foreach (var Item in MediaItems)
+        foreach (var item in MediaItems)
         {
-            if (Item.Id == mediaItemId)
-            {
-                result = Item;
-                MediaItems.Remove(Item);
+            if (item.Id != mediaItemId) continue;
+            result = item;
+            MediaItems.Remove(item);
 
-                break;
-            }
+            break;
         }
 
         //Item wurde nicht gefunden
         if (result is null)
         {
-            throw new DomainException(DomainExceptionType.NoDataFound, $"Media item with ID = {mediaItemId} not found.");
+            throw new DomainException(DomainExceptionType.NoDataFound,
+                $"Media item with ID = {mediaItemId} not found.");
         }
         else
         {
             return result;
         }
     }
+
     #endregion
 
     #region Called from Change-Tracker

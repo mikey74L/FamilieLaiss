@@ -8,10 +8,10 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="MassTransit" Version="8.2.2" />
-		<PackageReference Include="MassTransit.RabbitMQ" Version="8.2.2" />
-		<PackageReference Include="MediatR" Version="12.2.0" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.5" />
+		<PackageReference Include="MassTransit" Version="8.2.3" />
+		<PackageReference Include="MassTransit.RabbitMQ" Version="8.2.3" />
+		<PackageReference Include="MediatR" Version="12.3.0" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.7" />
 		<PackageReference Include="Microsoft.Extensions.Configuration" Version="8.0.0" />
 		<PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="8.0.0" />
 		<PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="8.0.0" />
@@ -20,17 +20,17 @@
 		<PackageReference Include="Microsoft.Extensions.Logging" Version="8.0.0" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Console" Version="8.0.0" />
 		<PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.4" />
-		<PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
+		<PackageReference Include="Serilog.Sinks.File" Version="6.0.0" />
 		<PackageReference Include="SixLabors.ImageSharp" Version="3.1.4" />
-		<PackageReference Include="Steeltoe.Discovery.ClientCore" Version="3.2.7" />
-		<PackageReference Include="Steeltoe.Discovery.Eureka" Version="3.2.7" />
+		<PackageReference Include="Steeltoe.Discovery.ClientCore" Version="3.2.8" />
+		<PackageReference Include="Steeltoe.Discovery.Eureka" Version="3.2.8" />
 		<PackageReference Include="Serilog.Extensions.Hosting" Version="8.0.0" />
-		<PackageReference Include="Serilog.Settings.Configuration" Version="8.0.0" />
-		<PackageReference Include="Serilog" Version="3.1.1" />
+		<PackageReference Include="Serilog.Settings.Configuration" Version="8.0.2" />
+		<PackageReference Include="Serilog" Version="4.0.0" />
 		<PackageReference Include="Serilog.Enrichers.AssemblyName" Version="2.0.0" />
-		<PackageReference Include="Serilog.Enrichers.Environment" Version="2.3.0" />
-		<PackageReference Include="Serilog.Enrichers.Process" Version="2.0.2" />
-		<PackageReference Include="Serilog.Enrichers.Thread" Version="3.1.0" />
+		<PackageReference Include="Serilog.Enrichers.Environment" Version="3.0.1" />
+		<PackageReference Include="Serilog.Enrichers.Process" Version="3.0.0" />
+		<PackageReference Include="Serilog.Enrichers.Thread" Version="4.0.0" />
 		<PackageReference Include="Tocronx.SimpleAsync" Version="1.7.0" />
 		<PackageReference Include="Xabe.FFmpeg" Version="5.2.6" />
 		<PackageReference Include="Xabe.FFmpeg.Downloader" Version="5.2.6" />
@@ -39,8 +39,8 @@
 	<ItemGroup>
 		<ProjectReference Include="..\..\..\DDDHelpers\ExecuterLayer\ExecuterLayerHelper\ExecuterLayerHelper.csproj" />
 		<ProjectReference Include="..\..\..\FamilieLaissMassTransitDefinitions\FamilieLaissMassTransitDefinitions.csproj" />
-		<ProjectReference Include="..\..\FLBackEnd\FLBackEnd.Domain\FLBackEnd.Domain.csproj" />
-		<ProjectReference Include="..\..\FLBackEnd\FLBackEnd.Infrastructure\FLBackEnd.Infrastructure.csproj" />
+		<ProjectReference Include="..\VideoConvert.Domain\VideoConvert.Domain.csproj" />
+		<ProjectReference Include="..\VideoConvert.Infrastructure\VideoConvert.Infrastructure.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>

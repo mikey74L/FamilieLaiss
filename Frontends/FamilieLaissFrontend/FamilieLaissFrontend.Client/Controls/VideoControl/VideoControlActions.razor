@@ -76,16 +76,17 @@
     public bool ShowSkeleton { get; set; }
 
     [Parameter]
+    public IMediaItemModel? MediaItem
+    {
+        get => ViewModel.MediaItem;
+        set => ViewModel.MediaItem = value;
+    }
+
+    [Parameter]
     public IUploadVideoModel? UploadItem 
     { 
-        get
-        {
-            return ViewModel.UploadItem;
-        }
-        set
-        {
-            ViewModel.UploadItem = value;
-        }
+        get => ViewModel.UploadItem;
+        set => ViewModel.UploadItem = value;
     }
 
     [Parameter]
@@ -93,41 +94,30 @@
     public bool IsDisabled { get; set; }
 
     [Parameter]
-    public EventCallback<IUploadVideoModel> DeleteClicked 
+    public EventCallback<IUploadVideoModel> DeleteUploadClicked 
     { 
-        get
-        {
-            return ViewModel.DeleteClicked;
-        }
-        set
-        {
-            ViewModel.DeleteClicked = value;
-        }
+        get => ViewModel.DeleteUploadClicked;
+        set => ViewModel.DeleteUploadClicked = value;
+    }
+
+    [Parameter]
+    public EventCallback<IMediaItemModel> DeleteMediaClicked 
+    { 
+        get => ViewModel.DeleteMediaClicked;
+        set => ViewModel.DeleteMediaClicked = value;
     }
 
     [Parameter]
     public EventCallback<IUploadVideoModel> ChooseClicked 
     { 
-        get
-        {
-            return ViewModel.ChooseClicked;
-        }
-        set
-        {
-            ViewModel.ChooseClicked = value;
-        }
+        get => ViewModel.ChooseClicked;
+        set => ViewModel.ChooseClicked = value;
     }
 
     [Parameter]
     public EventCallback<IUploadVideoModel> EditClicked 
     { 
-        get
-        {
-            return ViewModel.EditClicked;
-        }
-        set
-        {
-            ViewModel.EditClicked = value;
-        }
+        get => ViewModel.EditClicked;
+        set => ViewModel.EditClicked = value;
     }
 }

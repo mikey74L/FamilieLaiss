@@ -5,9 +5,9 @@
 
 @inherits FlComponentBase<VideoControlViewModel>
 
-<MudCard Class="@ClassAttributeCard" Outlined="true">
+<MudCard Class="@ClassAttributeCard" Style="@StyleAttributeCard" Outlined="true">
     <!-- Card Header-Section -->
-    @if (ControlType != EnumVideoControlType.EditDialog)
+    @if (ControlType != EnumVideoControlType.EditDialog && ControlType != EnumVideoControlType.Choose)
     {
         <VideoControlHeader ShowSelectionMode="ShowSelectionMode" ShowSkeleton="ShowSkeleton" UploadItem="UploadItem" ToggleChanged="() => ViewModel.ToggleChangedCommand.Execute(null)" />
     }
@@ -27,7 +27,14 @@
     @if (ControlType != EnumVideoControlType.EditDialog)
     {
         <MudCardActions>
-            <VideoControlActions ControlType="ControlType" UploadItem="UploadItem" IsDisabled="IsDisabled" ShowSkeleton="ShowSkeleton" ChooseClicked="ChooseClicked" DeleteClicked="DeleteClicked" EditClicked="EditClicked" />
+            <VideoControlActions ControlType="ControlType"
+                                 UploadItem="UploadItem" 
+                                 IsDisabled="IsDisabled"
+                                 ShowSkeleton="ShowSkeleton" 
+                                 ChooseClicked="ChooseClicked" 
+                                 DeleteUploadClicked="DeleteUploadClicked"
+                                 DeleteMediaClicked="DeleteMediaClicked" 
+                                 EditClicked="EditClicked" />
         </MudCardActions>
     }
 </MudCard>
@@ -57,7 +64,10 @@
     public bool ShowSelectionMode { get; set; }
 
     [Parameter]
-    public EventCallback<IUploadVideoModel> DeleteClicked { get; set; }
+    public EventCallback<IUploadVideoModel> DeleteUploadClicked { get; set; }
+
+    [Parameter]
+    public EventCallback<IMediaItemModel> DeleteMediaClicked { get; set; }
 
     [Parameter]
     public EventCallback<IUploadVideoModel> ChooseClicked { get; set; }
@@ -65,16 +75,26 @@
     [Parameter]
     public EventCallback<IUploadVideoModel> EditClicked { get; set; }
 
+    private string StyleAttributeCard
+    {
+        get
+        {
+            var result = ControlType switch
+            {
+                EnumVideoControlType.EditDialog => "max-width: 340px; max-height: 255px;",
+                EnumVideoControlType.Choose => "max-width: 340px; max-height: 410px;",
+                _ => "min-width: 340px; max-width: 340px; max-height: 510px;"
+            };
+
+            return result;
+        }
+    }
+
     private string ClassAttributeCard
     {
         get
         {
             string result = string.Empty;
-
-            if (ControlType == EnumVideoControlType.Upload)
-            {
-                result += "fl-card-video-upload ";
-            }
 
             if (UploadItem is not null && UploadItem.IsSelected)
             {

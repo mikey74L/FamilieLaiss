@@ -7,23 +7,22 @@ namespace Upload.API.Services;
 public class UniqueIdentifierGeneratorService(iUnitOfWork unitOfWork) : IUniqueIdentifierGenerator
 {
     #region IUniqueIdentifierGenerator
-    public async Task<long> GetNextUploadIDAsync()
+
+    public async Task<long> GetNextUploadIdAsync()
     {
-        //Ermitteln des Repo
         var repo = unitOfWork.GetRepository<UploadIdentifier>();
 
-        //Neue Entity erzeugen
-        var newEntity = new UploadIdentifier();
-        newEntity.PseudoText = "Pseudo";
+        var newEntity = new UploadIdentifier
+        {
+            PseudoText = "Pseudo"
+        };
 
-        //Entity hinzufügen
         await repo.AddAsync(newEntity);
 
-        //Speichern der Entity um die ID zu generieren
         await unitOfWork.SaveChangesAsync();
 
-        //Zurückliefern des Wertes
         return newEntity.Id;
     }
+
     #endregion
 }

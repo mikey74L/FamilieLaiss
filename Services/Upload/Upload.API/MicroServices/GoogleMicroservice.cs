@@ -10,35 +10,24 @@ namespace Upload.API.MicroServices;
 /// <summary>
 /// Service for Google-Microservice operations
 /// </summary>
-public class GoogleMicroService : MicroserviceBase, IGoogleMicroService
+/// <remarks>
+/// Primary constructor
+/// </remarks>
+/// <param name="steeltoeDiscoClient">Steeltoe disco client. Injected by DI</param>
+/// <param name="appSettings">App-Settings. Injected by DI</param>
+public class GoogleMicroService(IDiscoveryClient steeltoeDiscoClient, IOptions<AppSettings> appSettings)
+    : MicroserviceBase(steeltoeDiscoClient), IGoogleMicroService
 {
-    #region Private Members
-    private readonly AppSettings appSettings;
-    #endregion
-
-    #region C'tor
-    /// <summary>
-    /// C'tor
-    /// </summary>
-    /// <param name="steeltoeDiscoClient">Steeltoe disco client. Injected by DI</param>
-    /// <param name="appSettings">App-Settings. Injected by DI</param>
-    public GoogleMicroService(IDiscoveryClient steeltoeDiscoClient, IOptions<AppSettings> appSettings) : base(steeltoeDiscoClient)
-    {
-        //Übernehmen der injected objects
-        this.appSettings = appSettings.Value;
-    }
-    #endregion
-
-    #region Interface IIdentityMicroService
     /// <inheritdoc />
-    public async Task<GoogleGeoCodingAdressDTO?> GetGoogleGeoCodingAdressAsync(GoogleGeoCodingRequestDTO request)
+    public async Task<GoogleGeoCodingAdressDTO?> GetGoogleGeoCodingAddressAsync(GoogleGeoCodingRequestDTO request)
     {
-        //Abfrage ausführen
         try
         {
-            var httpClient = await GetHTTPClient(appSettings.GoogleMicroserviceUrl);
+            var httpClient = await GetHttpClient(appSettings.Value.GoogleMicroserviceUrl);
 
-            var result = await httpClient.PostAsJsonAsync($"api/{appSettings.GoogleMicroserviceVersion}/GeoCoding/GetGeoCodingAdress", request);
+            var result =
+                await httpClient.PostAsJsonAsync(
+                    $"api/{appSettings.Value.GoogleMicroserviceVersion}/GeoCoding/GetGeoCodingAddress", request);
 
             if (result.IsSuccessStatusCode)
             {
@@ -54,5 +43,4 @@ public class GoogleMicroService : MicroserviceBase, IGoogleMicroService
             return null;
         }
     }
-    #endregion
 }

@@ -17,16 +17,17 @@ using MudBlazor;
 
 namespace FamilieLaissFrontend.Client.ViewModels.Pages.BaseData.Upload.Picture;
 
-public partial class PictureUploadPageViewModel : ViewModelBase, IHandle<AggFilterChanged>
+public partial class PictureUploadPageViewModel(
+    IUploadPictureDataService uploadPictureDataService,
+    IGraphQlSortAndFilterServiceFactory graphQlSortAndFilterServiceFactory,
+    IEventAggregator eventAggregator,
+    ISnackbar snackbarService,
+    IMessageBoxService messageBoxService)
+    : ViewModelBase(snackbarService, messageBoxService), IHandle<AggFilterChanged>
 {
-    #region Private Services
-    private readonly IUploadPictureDataService uploadPictureDataService;
-    private readonly IGraphQlSortAndFilterServiceFactory graphQlSortAndFilterServiceFactory;
-    private readonly IEventAggregator eventAggregator;
-    #endregion
-
     #region Public Properties
     [ObservableProperty]
+    // ReSharper disable once InconsistentNaming
     public int _uploadFileCount;
 
     [ObservableProperty]
@@ -43,17 +44,6 @@ public partial class PictureUploadPageViewModel : ViewModelBase, IHandle<AggFilt
 
     [ObservableProperty]
     private IGraphQlSortAndFilterService<IUploadPictureModel, UploadPictureSortInput, UploadPictureFilterInput> _sortAndFilterService = default!;
-    #endregion
-
-    #region C'tor
-    public PictureUploadPageViewModel(IUploadPictureDataService uploadPictureDataService,
-        IGraphQlSortAndFilterServiceFactory graphQlSortAndFilterServiceFactory, IEventAggregator eventAggregator,
-        ISnackbar snackbarService, IMessageBoxService messageBoxService) : base(snackbarService, messageBoxService)
-    {
-        this.uploadPictureDataService = uploadPictureDataService;
-        this.graphQlSortAndFilterServiceFactory = graphQlSortAndFilterServiceFactory;
-        this.eventAggregator = eventAggregator;
-    }
     #endregion
 
     #region Lifecycle Overrides
@@ -182,7 +172,7 @@ public partial class PictureUploadPageViewModel : ViewModelBase, IHandle<AggFilt
     {
         if (IsUploading)
         {
-            var result = await Message(PictureUploadPageViewModelRes.MessageTitleUploadInProgress,
+            await Message(PictureUploadPageViewModelRes.MessageTitleUploadInProgress,
                 PictureUploadPageViewModelRes.MessageContentUploadInProgress,
                 PictureUploadPageViewModelRes.MessageButtonUploadInProgress, false);
 
@@ -203,16 +193,12 @@ public partial class PictureUploadPageViewModel : ViewModelBase, IHandle<AggFilt
     #region Abstract overrides
     protected override async void DebouncedLoading()
     {
-        bool changeState = true;
-        if (IsLoading)
-        {
-            changeState = false;
-        }
+        bool changeState = !IsLoading;
 
         IsLoading = true;
 
         await uploadPictureDataService.GetUploadPicturesForUploadViewAsync([SortAndFilterService.SelectedSortCriteria.GraphQlSortInput],
-            SortAndFilterService.GetGraphQlFilterCriteria())
+                SortAndFilterService.GetGraphQlFilterCriteria())
             .HandleStatus(APIResultErrorType.NoError, (result) =>
             {
                 UploadPictureItems.Clear();

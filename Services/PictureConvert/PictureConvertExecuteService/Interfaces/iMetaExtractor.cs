@@ -1,10 +1,10 @@
-﻿using System.Threading.Tasks;
-using FamilieLaissMassTransitDefinitions.Contracts.Commands;
+﻿using FamilieLaissMassTransitDefinitions.Contracts.Commands;
 using MassTransit;
+using System.Threading.Tasks;
 
 namespace PictureConvertExecuteService.Interfaces;
 
 public interface IMetaExtractor
 {
-    Task ExtractMetadataAsync(ConsumeContext<IConvertPictureCmd> consumerContext, string filename);
+    Task ExtractMetadataAsync(ConsumeContext<IMassConvertPictureCmd> consumerContext, string filename);
 }

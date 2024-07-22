@@ -6,31 +6,26 @@ namespace Upload.Domain.DomainEvents.UploadPicture;
 /// <summary>
 /// Event for upload picture created
 /// </summary>
-public class DomainEventUploadPictureCreated : DomainEventSingle
+/// <remarks>
+/// C'tor
+/// </remarks>
+/// <param name="id">Identifier for upload picture</param>
+/// <param name="fileName">The original filename for the picture file that was uploaded</param>
+/// <param name="status">Status for the upload picture</param>
+public class DomainEventUploadPictureCreated(long id, string fileName, EnumUploadStatus status)
+    : DomainEventSingle(id.ToString())
 {
     #region Properties
+
     /// <summary>
     /// The original filename for the picture file that was uploaded
     /// </summary>
-    public string Filename { get; }
+    public string Filename { get; } = fileName;
 
     /// <summary>
     /// Status for the upload picture
     /// </summary>
-    public EnumUploadStatus Status { get; }
-    #endregion
+    public EnumUploadStatus Status { get; } = status;
 
-    #region C'tor
-    /// <summary>
-    /// C'tor
-    /// </summary>
-    /// <param name="id">Identifier for upload picture</param>
-    /// <param name="fileName">The original filename for the picture file that was uploaded</param>
-    /// <param name="status">Status for the upload picture</param>
-    public DomainEventUploadPictureCreated(long id, string fileName, EnumUploadStatus status) : base(id.ToString())
-    {
-        Filename = fileName;
-        Status = status;
-    }
     #endregion
 }

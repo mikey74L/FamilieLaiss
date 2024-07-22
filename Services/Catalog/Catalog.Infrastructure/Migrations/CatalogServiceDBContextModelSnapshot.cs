@@ -17,7 +17,7 @@ namespace Catalog.Infrastructure.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.0")
+                .HasAnnotation("ProductVersion", "8.0.7")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -51,7 +51,7 @@ namespace Catalog.Infrastructure.Migrations
                     b.Property<DateTimeOffset?>("ChangeDate")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<DateTimeOffset>("CreateDate")
+                    b.Property<DateTimeOffset?>("CreateDate")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("NameEnglish")
@@ -83,13 +83,13 @@ namespace Catalog.Infrastructure.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseHiLo(b.Property<long>("Id"), "SequenceCategoryValue");
 
-                    b.Property<long>("CategoryID")
+                    b.Property<long>("CategoryId")
                         .HasColumnType("bigint");
 
                     b.Property<DateTimeOffset?>("ChangeDate")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<DateTimeOffset>("CreateDate")
+                    b.Property<DateTimeOffset?>("CreateDate")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("NameEnglish")
@@ -104,10 +104,10 @@ namespace Catalog.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CategoryID", "NameEnglish")
+                    b.HasIndex("CategoryId", "NameEnglish")
                         .IsUnique();
 
-                    b.HasIndex("CategoryID", "NameGerman")
+                    b.HasIndex("CategoryId", "NameGerman")
                         .IsUnique();
 
                     b.ToTable("CategoryValues");
@@ -124,7 +124,7 @@ namespace Catalog.Infrastructure.Migrations
                     b.Property<DateTimeOffset?>("ChangeDate")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<DateTimeOffset>("CreateDate")
+                    b.Property<DateTimeOffset?>("CreateDate")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("DescriptionEnglish")
@@ -172,7 +172,7 @@ namespace Catalog.Infrastructure.Migrations
                     b.Property<DateTimeOffset?>("ChangeDate")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<DateTimeOffset>("CreateDate")
+                    b.Property<DateTimeOffset?>("CreateDate")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("DescriptionEnglish")
@@ -183,7 +183,7 @@ namespace Catalog.Infrastructure.Migrations
                         .HasMaxLength(2000)
                         .HasColumnType("character varying(2000)");
 
-                    b.Property<long>("MediaGroupID")
+                    b.Property<long>("MediaGroupId")
                         .HasColumnType("bigint");
 
                     b.Property<byte>("MediaType")
@@ -202,15 +202,15 @@ namespace Catalog.Infrastructure.Migrations
                     b.Property<bool>("OnlyFamily")
                         .HasColumnType("boolean");
 
-                    b.Property<long?>("UploadPictureID")
+                    b.Property<long?>("UploadPictureId")
                         .HasColumnType("bigint");
 
-                    b.Property<long?>("UploadVideoID")
+                    b.Property<long?>("UploadVideoId")
                         .HasColumnType("bigint");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("MediaGroupID");
+                    b.HasIndex("MediaGroupId");
 
                     b.HasIndex("MediaType", "NameEnglish")
                         .IsUnique();
@@ -229,20 +229,20 @@ namespace Catalog.Infrastructure.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseHiLo(b.Property<long>("Id"), "SequenceMediaItemCategoryValue");
 
-                    b.Property<long>("CategoryValueID")
+                    b.Property<long>("CategoryValueId")
                         .HasColumnType("bigint");
 
-                    b.Property<DateTimeOffset>("CreateDate")
+                    b.Property<DateTimeOffset?>("CreateDate")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<long>("MediaItemID")
+                    b.Property<long>("MediaItemId")
                         .HasColumnType("bigint");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CategoryValueID");
+                    b.HasIndex("CategoryValueId");
 
-                    b.HasIndex("MediaItemID");
+                    b.HasIndex("MediaItemId");
 
                     b.ToTable("MediaItemCategoryValues");
                 });
@@ -252,19 +252,23 @@ namespace Catalog.Infrastructure.Migrations
                     b.Property<long>("Id")
                         .HasColumnType("bigint");
 
-                    b.Property<DateTimeOffset>("CreateDate")
+                    b.Property<DateTimeOffset?>("CreateDate")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Filename")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)");
 
-                    b.Property<long?>("MediaItemID")
+                    b.Property<bool>("IsAssigned")
+                        .HasColumnType("boolean");
+
+                    b.Property<long?>("MediaItemId")
                         .HasColumnType("bigint");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("MediaItemID")
+                    b.HasIndex("MediaItemId")
                         .IsUnique();
 
                     b.ToTable("UploadPictures");
@@ -277,14 +281,18 @@ namespace Catalog.Infrastructure.Migrations
 
                     b.Property<string>("Filename")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)");
 
-                    b.Property<long?>("MediaItemID")
+                    b.Property<bool>("IsAssigned")
+                        .HasColumnType("boolean");
+
+                    b.Property<long?>("MediaItemId")
                         .HasColumnType("bigint");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("MediaItemID")
+                    b.HasIndex("MediaItemId")
                         .IsUnique();
 
                     b.ToTable("UploadVideos");
@@ -294,7 +302,7 @@ namespace Catalog.Infrastructure.Migrations
                 {
                     b.HasOne("Catalog.Domain.Aggregates.Category", "Category")
                         .WithMany("CategoryValues")
-                        .HasForeignKey("CategoryID")
+                        .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -305,7 +313,7 @@ namespace Catalog.Infrastructure.Migrations
                 {
                     b.HasOne("Catalog.Domain.Aggregates.MediaGroup", "MediaGroup")
                         .WithMany("MediaItems")
-                        .HasForeignKey("MediaGroupID")
+                        .HasForeignKey("MediaGroupId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -316,13 +324,13 @@ namespace Catalog.Infrastructure.Migrations
                 {
                     b.HasOne("Catalog.Domain.Aggregates.CategoryValue", "CategoryValue")
                         .WithMany("MediaItemCategoryValues")
-                        .HasForeignKey("CategoryValueID")
+                        .HasForeignKey("CategoryValueId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Catalog.Domain.Aggregates.MediaItem", "MediaItem")
                         .WithMany("MediaItemCategoryValues")
-                        .HasForeignKey("MediaItemID")
+                        .HasForeignKey("MediaItemId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -335,7 +343,7 @@ namespace Catalog.Infrastructure.Migrations
                 {
                     b.HasOne("Catalog.Domain.Aggregates.MediaItem", "MediaItem")
                         .WithOne("UploadPicture")
-                        .HasForeignKey("Catalog.Domain.Entities.UploadPicture", "MediaItemID");
+                        .HasForeignKey("Catalog.Domain.Entities.UploadPicture", "MediaItemId");
 
                     b.Navigation("MediaItem");
                 });
@@ -344,7 +352,7 @@ namespace Catalog.Infrastructure.Migrations
                 {
                     b.HasOne("Catalog.Domain.Aggregates.MediaItem", "MediaItem")
                         .WithOne("UploadVideo")
-                        .HasForeignKey("Catalog.Domain.Entities.UploadVideo", "MediaItemID");
+                        .HasForeignKey("Catalog.Domain.Entities.UploadVideo", "MediaItemId");
 
                     b.Navigation("MediaItem");
                 });

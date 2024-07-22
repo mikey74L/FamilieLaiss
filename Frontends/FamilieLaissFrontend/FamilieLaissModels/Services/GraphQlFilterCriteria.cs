@@ -24,7 +24,7 @@ public class GraphQlFilterCriteria : IGraphQlFilterCriteria
 
     public required string PropertyName { get; init; }
 
-    public string? PropertyNameFather { get; set; }
+    public string? PropertyNameFather { get; init; }
 
     public object? GraphQlFilterInputMin { get; set; }
 
@@ -36,7 +36,7 @@ public class GraphQlFilterCriteria : IGraphQlFilterCriteria
 
     public bool IsValid { get; set; } = true;
 
-    public bool IsActive { get; set; } = false;
+    public bool IsActive { get; set; }
 
     public string ErrorMessage { get; set; } = string.Empty;
 

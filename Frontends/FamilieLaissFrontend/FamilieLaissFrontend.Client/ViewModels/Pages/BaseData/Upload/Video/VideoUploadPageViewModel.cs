@@ -16,16 +16,17 @@ using MudBlazor;
 
 namespace FamilieLaissFrontend.Client.ViewModels.Pages.BaseData.Upload.Video;
 
-public partial class VideoUploadPageViewModel : ViewModelBase, IHandle<AggFilterChanged>
+public partial class VideoUploadPageViewModel(
+    ISnackbar snackbarService,
+    IMessageBoxService messageBoxService,
+    IUploadVideoDataService uploadVideoDataService,
+    IGraphQlSortAndFilterServiceFactory graphQlSortAndFilterServiceFactory,
+    IEventAggregator eventAggregator)
+    : ViewModelBase(snackbarService, messageBoxService), IHandle<AggFilterChanged>
 {
-    #region Private Services
-    private readonly IUploadVideoDataService uploadVideoDataService;
-    private readonly IGraphQlSortAndFilterServiceFactory graphQlSortAndFilterServiceFactory;
-    private readonly IEventAggregator eventAggregator;
-    #endregion
-
     #region Public Properties
     [ObservableProperty]
+    // ReSharper disable once InconsistentNaming
     public int _uploadFileCount;
 
     [ObservableProperty]
@@ -42,17 +43,6 @@ public partial class VideoUploadPageViewModel : ViewModelBase, IHandle<AggFilter
 
     [ObservableProperty]
     private IGraphQlSortAndFilterService<IUploadVideoModel, UploadVideoSortInput, UploadVideoFilterInput> _sortAndFilterService = default!;
-    #endregion
-
-    #region C'tor
-    public VideoUploadPageViewModel(ISnackbar snackbarService, IMessageBoxService messageBoxService,
-        IUploadVideoDataService uploadVideoDataService,
-        IGraphQlSortAndFilterServiceFactory graphQlSortAndFilterServiceFactory, IEventAggregator eventAggregator) : base(snackbarService, messageBoxService)
-    {
-        this.uploadVideoDataService = uploadVideoDataService;
-        this.graphQlSortAndFilterServiceFactory = graphQlSortAndFilterServiceFactory;
-        this.eventAggregator = eventAggregator;
-    }
     #endregion
 
     #region Lifecycle Overrides
@@ -97,7 +87,6 @@ public partial class VideoUploadPageViewModel : ViewModelBase, IHandle<AggFilter
     private Dictionary<int, string> ProvideNumberList(string propertyName)
     {
         return new Dictionary<int, string>();
-        //return (typeof(ILocalizerService<UploadPictureExifInfoModel>), UploadPictureExifInfoModel.GetNumberValues(propertyName));
     }
     #endregion
 
@@ -146,7 +135,7 @@ public partial class VideoUploadPageViewModel : ViewModelBase, IHandle<AggFilter
     {
         if (IsUploading)
         {
-            var result = await Message(VideoUploadPageViewModelRes.MessageTitleUploadInProgress,
+            await Message(VideoUploadPageViewModelRes.MessageTitleUploadInProgress,
                 VideoUploadPageViewModelRes.MessageContentUploadInProgress,
                 VideoUploadPageViewModelRes.MessageButtonUploadInProgress, false);
 
@@ -167,16 +156,12 @@ public partial class VideoUploadPageViewModel : ViewModelBase, IHandle<AggFilter
     #region Abstract overrides
     protected override async void DebouncedLoading()
     {
-        bool changeState = true;
-        if (IsLoading)
-        {
-            changeState = false;
-        }
+        bool changeState = !IsLoading;
 
         IsLoading = true;
 
         await uploadVideoDataService.GetUploadVideosForUploadViewAsync([SortAndFilterService.SelectedSortCriteria.GraphQlSortInput],
-            SortAndFilterService.GetGraphQlFilterCriteria())
+                SortAndFilterService.GetGraphQlFilterCriteria())
             .HandleStatus(APIResultErrorType.NoError, (result) =>
             {
                 UploadVideoItems.Clear();

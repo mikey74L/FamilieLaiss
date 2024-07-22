@@ -7,6 +7,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+		<_ContentIncludedByDefault Remove="wwwroot\css\MediaContainer.css" />
 		<_ContentIncludedByDefault Remove="wwwroot\UploadPictureContainer.css" />
 	</ItemGroup>
 

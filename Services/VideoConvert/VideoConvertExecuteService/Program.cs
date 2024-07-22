@@ -1,5 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using FamilieLaissMassTransitDefinitions.Contracts.Commands;
 using InfrastructureHelper.EventDispatchHandler;
 using MassTransit;
 using Microsoft.Extensions.Configuration;
@@ -10,6 +9,8 @@ using Serilog;
 using ServiceHelper.Interfaces;
 using Steeltoe.Discovery.Client;
 using Steeltoe.Discovery.Eureka;
+using System;
+using System.Threading.Tasks;
 using VideoConvertExecuteService.Interfaces;
 using VideoConvertExecuteService.MassTransit.Consumer;
 using VideoConvertExecuteService.Models;
@@ -29,6 +30,12 @@ public class Program
 
     private static void ConfigureEndpointConventions(AppSettings appSettings)
     {
+        //Set endpoint mappings for MassTransit
+        if (appSettings is not null)
+        {
+            EndpointConvention.Map<IMassSetVideoInfoDataCmd>(
+                new Uri("queue:" + appSettings.EndpointNameUploadService));
+        }
     }
 
     #endregion

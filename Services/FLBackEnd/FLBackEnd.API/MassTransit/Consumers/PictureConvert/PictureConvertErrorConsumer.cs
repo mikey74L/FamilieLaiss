@@ -11,14 +11,14 @@ namespace FLBackEnd.API.MassTransit.Consumers.PictureConvert;
 public class PictureConvertErrorConsumer(
     IMediator mediator,
     ILogger<PictureConvertErrorConsumer> logger)
-    : IConsumer<IPictureConvertErrorEvent>
+    : IConsumer<IMassPictureConvertErrorEvent>
 {
     /// <summary>
     /// Would be called from Masstransit
     /// </summary>
     /// <param name="context">The context for this event</param>
     /// <returns>Task</returns>
-    public async Task Consume(ConsumeContext<IPictureConvertErrorEvent> context)
+    public async Task Consume(ConsumeContext<IMassPictureConvertErrorEvent> context)
     {
         logger.LogInformation("Consumer for Picture-Convert-Error Event was called with {$message}",
             context.Message);

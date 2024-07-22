@@ -144,6 +144,9 @@
   <data name="ChoosePicture" xml:space="preserve">
     <value>Choose photo</value>
   </data>
+  <data name="ChooseVideo" xml:space="preserve">
+    <value>Choose video</value>
+  </data>
   <data name="ToastLoadingErrorCommunication" xml:space="preserve">
     <value>There was a communication error with the server. Please contact the hotline.</value>
   </data>

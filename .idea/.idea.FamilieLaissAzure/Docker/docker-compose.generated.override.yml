@@ -3,7 +3,7 @@ version: "3.4"
 services:
   flbackend.api:
     build:
-      context: "C:\\DevOps\\FamilieLaissAzure"
+      context: "C:\\DevOps\\Github\\FamilieLaiss"
       dockerfile: "Services/FlBackEnd/FlBackEnd.API/Dockerfile"
       target: "base"
     command: []
@@ -16,12 +16,12 @@ services:
     ports: []
     volumes:
     - "C:\\Users\\mikey\\.nuget\\packages:/home/app/.nuget/packages"
-    - "C:\\DevOps\\FamilieLaissAzure\\Services\\FLBackEnd\\FLBackEnd.API:/app:rw"
-    - "C:\\DevOps\\FamilieLaissAzure:/src:rw"
+    - "C:\\DevOps\\Github\\FamilieLaiss\\Services\\FLBackEnd\\FLBackEnd.API:/app:rw"
+    - "C:\\DevOps\\Github\\FamilieLaiss:/src:rw"
     working_dir: "/app"
   google.api:
     build:
-      context: "C:\\DevOps\\FamilieLaissAzure"
+      context: "C:\\DevOps\\Github\\FamilieLaiss"
       dockerfile: "Services/Google/Google.API/Dockerfile"
       target: "base"
     command: []
@@ -34,12 +34,12 @@ services:
     ports: []
     volumes:
     - "C:\\Users\\mikey\\.nuget\\packages:/home/app/.nuget/packages"
-    - "C:\\DevOps\\FamilieLaissAzure\\Services\\Google\\Google.API:/app:rw"
-    - "C:\\DevOps\\FamilieLaissAzure:/src:rw"
+    - "C:\\DevOps\\Github\\FamilieLaiss\\Services\\Google\\Google.API:/app:rw"
+    - "C:\\DevOps\\Github\\FamilieLaiss:/src:rw"
     working_dir: "/app"
   picture.api:
     build:
-      context: "C:\\DevOps\\FamilieLaissAzure"
+      context: "C:\\DevOps\\Github\\FamilieLaiss"
       dockerfile: "Services/Picture/Picture.API/Dockerfile"
       target: "base"
     command: []
@@ -52,12 +52,12 @@ services:
     ports: []
     volumes:
     - "C:\\Users\\mikey\\.nuget\\packages:/home/app/.nuget/packages"
-    - "C:\\DevOps\\FamilieLaissAzure\\Services\\Picture\\Picture.API:/app:rw"
-    - "C:\\DevOps\\FamilieLaissAzure:/src:rw"
+    - "C:\\DevOps\\Github\\FamilieLaiss\\Services\\Picture\\Picture.API:/app:rw"
+    - "C:\\DevOps\\Github\\FamilieLaiss:/src:rw"
     working_dir: "/app"
   pictureconvertexecute:
     build:
-      context: "C:\\DevOps\\FamilieLaissAzure"
+      context: "C:\\DevOps\\Github\\FamilieLaiss"
       dockerfile: "Services/PictureConvert/PictureConvertExecuteService/Dockerfile"
       target: "base"
     command: []
@@ -71,12 +71,12 @@ services:
     ports: []
     volumes:
     - "C:\\Users\\mikey\\.nuget\\packages:/home/app/.nuget/packages"
-    - "C:\\DevOps\\FamilieLaissAzure\\Services\\PictureConvert\\PictureConvertExecuteService:/app:rw"
-    - "C:\\DevOps\\FamilieLaissAzure:/src:rw"
+    - "C:\\DevOps\\Github\\FamilieLaiss\\Services\\PictureConvert\\PictureConvertExecuteService:/app:rw"
+    - "C:\\DevOps\\Github\\FamilieLaiss:/src:rw"
     working_dir: "/app"
   video.api:
     build:
-      context: "C:\\DevOps\\FamilieLaissAzure"
+      context: "C:\\DevOps\\Github\\FamilieLaiss"
       dockerfile: "Services/Video/Video.API/Dockerfile"
       target: "base"
     command: []
@@ -89,12 +89,12 @@ services:
     ports: []
     volumes:
     - "C:\\Users\\mikey\\.nuget\\packages:/home/app/.nuget/packages"
-    - "C:\\DevOps\\FamilieLaissAzure\\Services\\Video\\Video.API:/app:rw"
-    - "C:\\DevOps\\FamilieLaissAzure:/src:rw"
+    - "C:\\DevOps\\Github\\FamilieLaiss\\Services\\Video\\Video.API:/app:rw"
+    - "C:\\DevOps\\Github\\FamilieLaiss:/src:rw"
     working_dir: "/app"
   videoconvertexecute:
     build:
-      context: "C:\\DevOps\\FamilieLaissAzure"
+      context: "C:\\DevOps\\Github\\FamilieLaiss"
       dockerfile: "Services/VideoConvert/VideoConvertExecuteService/Dockerfile"
       target: "base"
     command: []
@@ -108,6 +108,6 @@ services:
     ports: []
     volumes:
     - "C:\\Users\\mikey\\.nuget\\packages:/home/app/.nuget/packages"
-    - "C:\\DevOps\\FamilieLaissAzure\\Services\\VideoConvert\\VideoConvertExecuteService:/app:rw"
-    - "C:\\DevOps\\FamilieLaissAzure:/src:rw"
+    - "C:\\DevOps\\Github\\FamilieLaiss\\Services\\VideoConvert\\VideoConvertExecuteService:/app:rw"
+    - "C:\\DevOps\\Github\\FamilieLaiss:/src:rw"
     working_dir: "/app"

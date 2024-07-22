@@ -6,5 +6,5 @@ namespace VideoConvertExecuteService.Interfaces;
 
 public interface IJobExecutor
 {
-    Task ExecuteJob(ConsumeContext<IConvertVideoCmd> consumerContext);
+    Task ExecuteJob(ConsumeContext<IMassConvertVideoCmd> consumerContext);
 }

@@ -12,12 +12,12 @@ using Tocronx.SimpleAsync;
 
 namespace FamilieLaissFrontend.Client.ViewModels.Pages.BaseData.Upload.Video;
 
-public partial class VideoUploadListDrawersViewModel : ViewModelBase
+public partial class VideoUploadListDrawersViewModel(
+    ISnackbar snackbarService,
+    IMessageBoxService messageBoxService,
+    IEventAggregator eventAggregator)
+    : ViewModelBase(snackbarService, messageBoxService)
 {
-    #region Services
-    private readonly IEventAggregator eventAggregator;
-    #endregion
-
     #region Parameters
     public EventCallback<bool> IsSortSidebarVisibleChanged { get; set; }
     public EventCallback<bool> IsFilterSidebarVisibleChanged { get; set; }
@@ -50,14 +50,6 @@ public partial class VideoUploadListDrawersViewModel : ViewModelBase
     {
         SortAndFilterService.SelectedSortCriteria = value;
         eventAggregator.PublishAsync(new AggFilterChanged()).FireAndForget();
-    }
-    #endregion
-
-    #region C'tor
-    public VideoUploadListDrawersViewModel(ISnackbar snackbarService, IMessageBoxService messageBoxService,
-        IEventAggregator eventAggregator) : base(snackbarService, messageBoxService)
-    {
-        this.eventAggregator = eventAggregator;
     }
     #endregion
 

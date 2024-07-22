@@ -1,10 +1,10 @@
-﻿using System.Threading.Tasks;
-using FamilieLaissMassTransitDefinitions.Contracts.Commands;
+﻿using FamilieLaissMassTransitDefinitions.Contracts.Commands;
 using MassTransit;
+using System.Threading.Tasks;
 
 namespace PictureConvertExecuteService.Interfaces;
 
 public interface IConvertPicture
 {
-    Task ConvertPictureAsync(ConsumeContext<IConvertPictureCmd> consumerContext, string filename);
+    Task ConvertPictureAsync(ConsumeContext<IMassConvertPictureCmd> consumerContext, string filename);
 }

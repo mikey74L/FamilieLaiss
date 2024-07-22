@@ -1,17 +1,21 @@
-﻿using FamilieLaissMassTransitDefinitions.Contracts.Commands;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using FamilieLaissMassTransitDefinitions.Commands;
+using FamilieLaissMassTransitDefinitions.Contracts.Commands;
 using MassTransit;
 using MetadataExtractor;
 using MetadataExtractor.Formats.Exif;
 using Microsoft.Extensions.Logging;
 using PictureConvertExecuteService.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace PictureConvertExecuteService.Services;
 
-public class MetaExtractorService(ILogger<MetaExtractorService> logger, IDatabaseOperations databaseOperations)
+public class MetaExtractorService(
+    ILogger<MetaExtractorService> logger,
+    IDatabaseOperations databaseOperations,
+    IBus massTransit)
     : IMetaExtractor
 {
     #region Private Classes
@@ -57,8 +61,8 @@ public class MetaExtractorService(ILogger<MetaExtractorService> logger, IDatabas
         short? sensingMode = null;
         short? whiteBalanceMode = null;
         short? sharpness = null;
-        double? gpsLongitude = null;
-        double? gpsLatitude = null;
+        double? gpsLongitude;
+        double? gpsLatitude;
         short? contrast = null;
         short? saturation = null;
 
@@ -224,7 +228,8 @@ public class MetaExtractorService(ILogger<MetaExtractorService> logger, IDatabas
             try
             {
                 focalLength = subIfdDirectory.ContainsTag(ExifDirectoryBase.TagFocalLength)
-                    ? Math.Round(subIfdDirectory.GetDouble(ExifDirectoryBase.TagFocalLength), 0, MidpointRounding.AwayFromZero)
+                    ? Math.Round(subIfdDirectory.GetDouble(ExifDirectoryBase.TagFocalLength), 0,
+                        MidpointRounding.AwayFromZero)
                     : null;
             }
             catch
@@ -290,7 +295,8 @@ public class MetaExtractorService(ILogger<MetaExtractorService> logger, IDatabas
             try
             {
                 exposureTime = subIfdDirectory.ContainsTag(ExifDirectoryBase.TagExposureTime)
-                    ? Math.Round(subIfdDirectory.GetDouble(ExifDirectoryBase.TagExposureTime), 2, MidpointRounding.AwayFromZero)
+                    ? Math.Round(subIfdDirectory.GetDouble(ExifDirectoryBase.TagExposureTime), 2,
+                        MidpointRounding.AwayFromZero)
                     : null;
             }
             catch
@@ -360,17 +366,41 @@ public class MetaExtractorService(ILogger<MetaExtractorService> logger, IDatabas
         }
 
         logger.LogInformation("Write exif Info to database");
-        await databaseOperations.SetExifInfoForPicture(id, make, model, resolutionX, resolutionY, resolutionUnit,
-            orientation, ddlRecorded, exposureTime, exposureProgram, exposureMode, fNumber,
-            isoSensitivity, shutterSpeed, meteringMode, flashMode, focalLength, sensingMode, whiteBalanceMode,
-            sharpness, gpsLongitude, gpsLatitude, contrast, saturation);
+        var newCommand = new MassSetUploadPictureExifInfoCmd()
+        {
+            Contrast = contrast,
+            ExposureMode = exposureMode,
+            ExposureProgram = exposureProgram,
+            FlashMode = flashMode,
+            FNumber = fNumber,
+            FocalLength = focalLength,
+            GpsLatitude = gpsLatitude,
+            GpsLongitude = gpsLongitude,
+            Id = id,
+            IsoSensitivity = isoSensitivity,
+            Make = make,
+            MeteringMode = meteringMode,
+            Model = model,
+            Orientation = orientation,
+            ResolutionUnit = resolutionUnit,
+            ResolutionX = resolutionX,
+            ResolutionY = resolutionY,
+            Saturation = saturation,
+            SensingMode = sensingMode,
+            Sharpness = sharpness,
+            ShutterSpeed = shutterSpeed,
+            WhiteBalanceMode = whiteBalanceMode,
+            DdlRecorded = ddlRecorded,
+            ExposureTime = exposureTime
+        };
+        await massTransit.Send<IMassSetUploadPictureExifInfoCmd>(newCommand);
     }
 
     #endregion
 
     #region Interface iMetaExtractor
 
-    public async Task ExtractMetadataAsync(ConsumeContext<IConvertPictureCmd> consumerContext, string filename)
+    public async Task ExtractMetadataAsync(ConsumeContext<IMassConvertPictureCmd> consumerContext, string filename)
     {
         logger.LogInformation("Set status for read Exif-Info begin");
         await databaseOperations.SetStatusReadExifBeginAsync(consumerContext.Message.ConvertStatusId);

@@ -1,10 +1,10 @@
-﻿using System.Threading.Tasks;
-using FamilieLaissMassTransitDefinitions.Contracts.Commands;
+﻿using FamilieLaissMassTransitDefinitions.Contracts.Commands;
 using FamilieLaissMassTransitDefinitions.Contracts.Events;
 using FamilieLaissMassTransitDefinitions.Events;
 using MassTransit;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using System.Threading.Tasks;
 using VideoConvertExecuteService.Interfaces;
 using VideoConvertExecuteService.Models;
 
@@ -34,7 +34,7 @@ public class JobExecutorService(
 
     #region Interface iJobExecuter
 
-    public async Task ExecuteJob(ConsumeContext<IConvertVideoCmd> consumerContext)
+    public async Task ExecuteJob(ConsumeContext<IMassConvertVideoCmd> consumerContext)
     {
         logger.LogInformation("Get filename for picture file");
         var sourceFilename = GetFullFilename(consumerContext.Message.Id, consumerContext.Message.OriginalName);
@@ -53,12 +53,12 @@ public class JobExecutorService(
         await databaseOperations.SetSuccessAsync(consumerContext.Message.ConvertStatusId);
 
         logger.LogInformation("Send PictureConvertedEvent with bus");
-        var publishEvent = new VideoConvertedEvent()
+        var publishEvent = new MassVideoConvertedEvent()
         {
             ConvertStatusId = consumerContext.Message.ConvertStatusId,
             UploadVideoId = consumerContext.Message.Id
         };
-        await consumerContext.Publish<IVideoConvertedEvent>(publishEvent);
+        await consumerContext.Publish<IMassVideoConvertedEvent>(publishEvent);
 
         logger.LogInformation($"Conversion for file \"{sourceFilename}\" successfully completed");
     }

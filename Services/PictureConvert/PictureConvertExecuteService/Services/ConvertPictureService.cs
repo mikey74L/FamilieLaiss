@@ -133,7 +133,7 @@ public class ConvertPictureService(
 
     #region iConvertPicture
 
-    public async Task ConvertPictureAsync(ConsumeContext<IConvertPictureCmd> consumerContext, string filename)
+    public async Task ConvertPictureAsync(ConsumeContext<IMassConvertPictureCmd> consumerContext, string filename)
     {
         logger.LogInformation("Set status for convert picture begin");
         await databaseOperations.SetStatusConvertBeginAsync(consumerContext.Message.ConvertStatusId);

@@ -29,7 +29,7 @@ public partial class VideoConverterService(
     private string _filenameSource;
     private long _currentConvertingId;
     private DateTime _startDateConversion;
-    private ConsumeContext<IConvertVideoCmd> _consumerContext;
+    private ConsumeContext<IMassConvertVideoCmd> _consumerContext;
 
     #endregion
 
@@ -449,7 +449,7 @@ public partial class VideoConverterService(
 
     #region Interface IVideoConverter
 
-    public async Task ConvertVideo(ConsumeContext<IConvertVideoCmd> consumerContext, string filenameSourceVideo,
+    public async Task ConvertVideo(ConsumeContext<IMassConvertVideoCmd> consumerContext, string filenameSourceVideo,
         MediaInfoData metadata)
     {
         _filenameSource = filenameSourceVideo;

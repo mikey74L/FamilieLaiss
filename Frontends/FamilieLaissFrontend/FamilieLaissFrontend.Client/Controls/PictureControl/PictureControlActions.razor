@@ -78,27 +78,15 @@
     [Parameter]
     public IMediaItemModel? MediaItem
     {
-        get
-        {
-            return ViewModel.MediaItem;
-        }
-        set
-        {
-            ViewModel.MediaItem = value;
-        }
+        get => ViewModel.MediaItem;
+        set => ViewModel.MediaItem = value;
     }
 
     [Parameter]
     public IUploadPictureModel? UploadItem 
     {
-        get
-        {
-            return ViewModel.UploadItem;
-        }
-        set
-        {
-            ViewModel.UploadItem = value;
-        }
+        get => ViewModel.UploadItem;
+        set => ViewModel.UploadItem = value;
     }
 
     [Parameter]
@@ -108,52 +96,28 @@
     [Parameter]
     public EventCallback<IUploadPictureModel> DeleteUploadClicked 
     {
-        get
-        {
-            return ViewModel.DeleteUploadClicked;
-        }
-        set
-        {
-            ViewModel.DeleteUploadClicked = value;
-        }
+        get => ViewModel.DeleteUploadClicked;
+        set => ViewModel.DeleteUploadClicked = value;
     }
 
     [Parameter]
     public EventCallback<IMediaItemModel> DeleteMediaClicked
     {
-        get
-        {
-            return ViewModel.DeleteMediaClicked;
-        }
-        set
-        {
-            ViewModel.DeleteMediaClicked = value;
-        }
+        get => ViewModel.DeleteMediaClicked;
+        set => ViewModel.DeleteMediaClicked = value;
     }
 
     [Parameter]
     public EventCallback<IUploadPictureModel> ChooseClicked 
     { 
-        get
-        {
-            return ViewModel.ChooseClicked;
-        }
-        set
-        {
-            ViewModel.ChooseClicked = value;
-        }
+        get => ViewModel.ChooseClicked;
+        set => ViewModel.ChooseClicked = value;
     }
 
     [Parameter]
     public EventCallback<IMediaItemModel> EditClicked 
     { 
-        get
-        {
-            return ViewModel.EditClicked;
-        }
-        set
-        {
-            ViewModel.EditClicked = value;
-        }
+        get => ViewModel.EditClicked;
+        set => ViewModel.EditClicked = value;
     }
 }

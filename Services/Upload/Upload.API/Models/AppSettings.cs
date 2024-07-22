@@ -6,79 +6,49 @@
 public class AppSettings
 {
     #region RabbitMQ
+
     /// <summary>
     /// RabbitMQ Connection-String - Filename 
     /// </summary>
-    public string RabbitMQConnection_FILE { get; set; } = string.Empty;
+    public string RabbitMqConnectionFile { get; set; } = string.Empty;
 
     /// <summary>
     /// RabbitMQ Connection-String for CloudAMP
     /// </summary>
-    public string RabbitMQConnection
-    {
-        get
-        {
-            return System.IO.File.ReadAllText(RabbitMQConnection_FILE);
-        }
-    }
+    public string RabbitMqConnection => System.IO.File.ReadAllText(RabbitMqConnectionFile);
 
     #region Endpoints
+
     /// <summary>
     /// Endpoint for Upload-Service
     /// </summary>
-    public string Endpoint_UploadService { get; set; } = string.Empty;
+    public string EndpointUploadService { get; set; } = string.Empty;
 
-    /// <summary>
-    /// Endpoint for Message-Service
-    /// </summary>
-    public string Endpoint_MessageService { get; set; } = string.Empty;
-    #endregion
     #endregion
 
-    #region Google Microservice
-    /// <summary>
-    /// The Base-URL where the google micro service can be reached in docker network
-    /// </summary>
-    public string GoogleMicroserviceUrl { get; set; } = string.Empty;
-
-    /// <summary>
-    /// The API-Version for the google micro service
-    /// </summary>
-    public string GoogleMicroserviceVersion { get; set; } = string.Empty;
     #endregion
 
     #region Postgres
+
     /// <summary>
     /// Postgres user - Filename for Secret
     /// </summary>
-    public string PostgresUser_FILE { get; set; } = string.Empty;
+    public string PostgresUserFile { get; set; } = string.Empty;
 
     /// <summary>
     /// Postgres user
     /// </summary>
-    public string PostgresUser
-    {
-        get
-        {
-            return System.IO.File.ReadAllText(PostgresUser_FILE);
-        }
-    }
+    public string PostgresUser => System.IO.File.ReadAllText(PostgresUserFile);
 
     /// <summary>
     /// Postgres password - Filename for Secret
     /// </summary>
-    public string PostgresPassword_FILE { get; set; } = string.Empty;
+    public string PostgresPasswordFile { get; set; } = string.Empty;
 
     /// <summary>
     /// Postgres password
     /// </summary>
-    public string PostgresPassword
-    {
-        get
-        {
-            return System.IO.File.ReadAllText(PostgresPassword_FILE);
-        }
-    }
+    public string PostgresPassword => System.IO.File.ReadAllText(PostgresPasswordFile);
 
     /// <summary>
     /// Postgres - Port
@@ -86,12 +56,12 @@ public class AppSettings
     public int PostgresPort { get; set; }
 
     /// <summary>
-    /// Postgres - Hostname or IP-Adress
+    /// Postgres - Hostname or IP-Address
     /// </summary>
     public string PostgresHost { get; set; } = string.Empty;
 
     /// <summary>
-    /// Postgres - Databasename
+    /// Postgres database name
     /// </summary>
     public string PostgresDatabase { get; set; } = string.Empty;
 
@@ -99,52 +69,22 @@ public class AppSettings
     /// Postgres - Use Multiplexing for faster connections
     /// </summary>
     public bool PostgresMultiplexing { get; set; }
+
     #endregion
 
-    #region General Properties
-    /// <summary>
-    /// Directory for upload pictures
-    /// </summary>
-    public string Directory_Upload_Picture { get; set; } = string.Empty;
+    #region File-Upload
 
-    /// <summary>
-    /// Directory for upload videos
-    /// </summary>
-    public string Directory_Upload_Video { get; set; } = string.Empty;
+    public string TempDirectoryUploadPicture { get; set; } = string.Empty;
+    public string TempDirectoryUploadVideo { get; set; } = string.Empty;
+    public string DirectoryUploadPicture { get; set; } = string.Empty;
+    public string DirectoryUploadVideo { get; set; } = string.Empty;
 
-    /// <summary>
-    /// Directory for upload portraits
-    /// </summary>
-    public string Directory_Upload_Portrait { get; set; } = string.Empty;
+    #endregion
 
-    /// <summary>
-    /// Temporary directory for upload pictures
-    /// </summary>
-    public string Temp_Directory_Upload_Picture { get; set; } = string.Empty;
+    #region Google
 
-    /// <summary>
-    /// Temporary directory for upload portraits
-    /// </summary>
-    public string Temp_Directory_Upload_Portrait { get; set; } = string.Empty;
+    public string GoogleMicroserviceUrl { get; set; } = string.Empty;
+    public string GoogleMicroserviceVersion { get; set; } = string.Empty;
 
-    /// <summary>
-    /// Temporary directory for upload videos
-    /// </summary>
-    public string Temp_Directory_Upload_Video { get; set; } = string.Empty;
-
-    /// <summary>
-    /// Maximum file size in bytes for upload pictures
-    /// </summary>
-    public long Max_File_Size_Picture { get; set; }
-
-    /// <summary>
-    /// Maximum file size in bytes for upload portraits
-    /// </summary>
-    public long Max_File_Size_Portrait { get; set; }
-
-    /// <summary>
-    /// Maximum file size in bytes for upload videos
-    /// </summary>
-    public long Max_File_Size_Video { get; set; }
     #endregion
 }

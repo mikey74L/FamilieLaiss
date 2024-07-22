@@ -150,7 +150,6 @@ builder.Services.AddTransient<IJobOperations, JobOperationsService>();
 builder.Services.AddTransient<JobExecutor>();
 builder.Services.AddHangfireServer(x => x.ServerTimeout = TimeSpan.FromDays(1));
 
-
 //Adding GraphQL Server
 var graphQlBuilder = builder.Services.AddGraphQLServer()
     .RegisterDbContext<FamilieLaissDbContext>(DbContextKind.Pooled)
