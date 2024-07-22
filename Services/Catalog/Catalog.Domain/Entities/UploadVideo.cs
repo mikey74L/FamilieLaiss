@@ -52,6 +52,7 @@ public class UploadVideo : EntityBase<long>
     {
         Id = id;
         Filename = filename;
+        IsAssigned = false;
     }
 
     #endregion

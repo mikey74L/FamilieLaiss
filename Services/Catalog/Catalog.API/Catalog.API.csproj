@@ -43,9 +43,6 @@
 
   <ItemGroup>
     <Folder Include="DomainEvents\" />
-    <Folder Include="MassTransit\Consumers\" />
-    <Folder Include="Mediator\Commands\UploadPicture\" />
-    <Folder Include="Mediator\Commands\UploadVideo\" />
   </ItemGroup>
 
 </Project>

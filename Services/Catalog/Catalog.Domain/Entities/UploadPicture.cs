@@ -55,6 +55,7 @@ public class UploadPicture : EntityCreation<long>
     {
         Id = id;
         Filename = filename;
+        IsAssigned = false;
     }
 
     #endregion

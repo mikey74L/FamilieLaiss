@@ -1,4 +1,3 @@
-using System.Globalization;
 using Catalog.API;
 using Catalog.API.GraphQL;
 using Catalog.API.GraphQL.Filter;
@@ -14,6 +13,8 @@ using Catalog.API.GraphQL.Types.Category;
 using Catalog.API.GraphQL.Types.CategoryValue;
 using Catalog.API.GraphQL.Types.Media;
 using Catalog.API.Logging;
+using Catalog.API.MassTransit.Consumers.UploadPicture;
+using Catalog.API.MassTransit.Consumers.UploadVideo;
 using Catalog.API.Models;
 using Catalog.Infrastructure.DBContext;
 using GraphQL.Server.Ui.Voyager;
@@ -28,6 +29,7 @@ using ServiceLayerHelper.Logging;
 using StackExchange.Redis;
 using Steeltoe.Discovery.Client;
 using Steeltoe.Discovery.Eureka;
+using System.Globalization;
 
 Console.Title = "Catalog-Service";
 
@@ -124,8 +126,8 @@ builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<Pr
 Startup.ConfigureEndpointConventions(appSettings);
 
 //Hinzufügen der Consumer zum DI-Container
-//builder.Services.AddScoped<PictureUploadedConsumer>();
-//builder.Services.AddScoped<VideoUploadedConsumer>();
+builder.Services.AddScoped<UploadPictureCreatedConsumer>();
+builder.Services.AddScoped<UploadVideoCreatedConsumer>();
 //builder.Services.AddScoped<UploadPictureDeletedConsumer>();
 //builder.Services.AddScoped<UploadVideoDeletedConsumer>();
 
@@ -134,8 +136,8 @@ if (appSettings is not null)
     builder.Services.AddMassTransit(x =>
     {
         //Hinzufügen der Consumer
-        //x.AddConsumer<PictureUploadedConsumer>();
-        //x.AddConsumer<VideoUploadedConsumer>();
+        x.AddConsumer<UploadPictureCreatedConsumer>();
+        x.AddConsumer<UploadVideoCreatedConsumer>();
         //x.AddConsumer<UploadPictureDeletedConsumer>();
         //x.AddConsumer<UploadVideoDeletedConsumer>();
 
@@ -143,7 +145,7 @@ if (appSettings is not null)
         x.UsingRabbitMq((context, cfg) =>
         {
             //Konfigurieren des Hosts
-            cfg.Host(new Uri(appSettings.RabbitMQConnection));
+            cfg.Host(new Uri(appSettings.RabbitMqConnection));
 
             cfg.ReceiveEndpoint(appSettings.EndpointCatalogService, e =>
             {
@@ -151,8 +153,8 @@ if (appSettings is not null)
                 e.PrefetchCount = 16;
                 e.UseMessageRetry(r => r.Incremental(5, TimeSpan.FromSeconds(5), TimeSpan.FromSeconds(20)));
 
-                //e.ConfigureConsumer<PictureUploadedConsumer>(context);
-                //e.ConfigureConsumer<VideoUploadedConsumer>(context);
+                e.ConfigureConsumer<UploadPictureCreatedConsumer>(context);
+                e.ConfigureConsumer<UploadVideoCreatedConsumer>(context);
                 //e.ConfigureConsumer<UploadPictureDeletedConsumer>(context);
                 //e.ConfigureConsumer<UploadVideoDeletedConsumer>(context);
             });
