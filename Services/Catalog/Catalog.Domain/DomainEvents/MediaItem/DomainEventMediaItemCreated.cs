@@ -15,6 +15,11 @@ public class DomainEventMediaItemCreated : DomainEventSingle
     /// </summary>
     public EnumMediaType MediaType { get; }
 
+    /// <summary>
+    /// Unique identifier for assigned upload item
+    /// </summary>
+    public long UploadItemId { get; }
+
     #endregion
 
     #region C'tor
@@ -24,9 +29,11 @@ public class DomainEventMediaItemCreated : DomainEventSingle
     /// </summary>
     /// <param name="id">Identifier for media item</param>
     /// <param name="mediaType">Type for media item</param>
-    public DomainEventMediaItemCreated(long id, EnumMediaType mediaType) : base(id.ToString())
+    /// <param name="uploadItemId">Unique identifier for assigned upload item</param>
+    public DomainEventMediaItemCreated(long id, EnumMediaType mediaType, long uploadItemId) : base(id.ToString())
     {
         MediaType = mediaType;
+        UploadItemId = uploadItemId;
     }
 
     #endregion

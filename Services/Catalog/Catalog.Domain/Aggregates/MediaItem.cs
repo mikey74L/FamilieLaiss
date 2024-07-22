@@ -374,10 +374,10 @@ public class MediaItem : EntityModify<long>
     [GraphQLIgnore]
     public override async Task EntityAddedAsync(DbContext dbContext, IDictionary<string, object> dictContextParams)
     {
-        AddDomainEvent(new DomainEventMediaItemCreated(Id, MediaType));
-
         if (MediaType == EnumMediaType.Picture)
         {
+            AddDomainEvent(new DomainEventMediaItemCreated(Id, MediaType, UploadPictureId!.Value));
+
             var uploadPicture = await dbContext.FindAsync<UploadPicture>(UploadPictureId);
 
             if (uploadPicture is not null)
@@ -388,6 +388,8 @@ public class MediaItem : EntityModify<long>
         }
         else
         {
+            AddDomainEvent(new DomainEventMediaItemCreated(Id, MediaType, UploadVideoId!.Value));
+
             var uploadVideo = await dbContext.FindAsync<UploadVideo>(UploadVideoId);
 
             if (uploadVideo is not null)

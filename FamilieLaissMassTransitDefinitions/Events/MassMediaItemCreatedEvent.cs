@@ -7,25 +7,14 @@ public class MassMediaItemCreatedEvent : IMassMediaItemCreatedEvent
 {
     #region Properties
 
-    /// <summary>
-    /// Identifier for media item
-    /// </summary>
-    public long Id { get; private set; }
+    /// <inheritdoc />
+    public required long Id { get; init; }
 
-    /// <summary>
-    /// Type for media item
-    /// </summary>
-    public EnumMediaType MediaType { get; private set; }
+    /// <inheritdoc />
+    public required EnumMediaType MediaType { get; init; }
 
-    #endregion
-
-    #region C'tor
-
-    public MassMediaItemCreatedEvent(long id, EnumMediaType mediaType)
-    {
-        Id = id;
-        MediaType = mediaType;
-    }
+    /// <inheritdoc />
+    public required long UploadItemId { get; init; }
 
     #endregion
 }

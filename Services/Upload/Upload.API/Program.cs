@@ -1,5 +1,4 @@
-﻿using System.Globalization;
-using GraphQL.Server.Ui.Voyager;
+﻿using GraphQL.Server.Ui.Voyager;
 using Hangfire;
 using Hangfire.PostgreSql;
 using InfrastructureHelper.EventDispatchHandler;
@@ -13,6 +12,7 @@ using ServiceLayerHelper.Logging;
 using StackExchange.Redis;
 using Steeltoe.Discovery.Client;
 using Steeltoe.Discovery.Eureka;
+using System.Globalization;
 using Upload.API;
 using Upload.API.GraphQL.DataLoader.UploadPicture;
 using Upload.API.GraphQL.DataLoader.UploadVideo;
@@ -148,6 +148,7 @@ if (appSettings is not null)
 }
 
 //Hinzufügen der Consumer zum DI-Container
+builder.Services.AddScoped<MediaItemCreatedConsumer>();
 builder.Services.AddScoped<MediaItemDeletedConsumer>();
 builder.Services.AddScoped<SetUploadPictureExifInfoConsumer>();
 builder.Services.AddScoped<SetUploadPictureDimensionsConsumer>();
@@ -158,6 +159,7 @@ if (appSettings is not null)
     builder.Services.AddMassTransit(x =>
     {
         //Hinzufügen der Consumer
+        x.AddConsumer<MediaItemCreatedConsumer>();
         x.AddConsumer<MediaItemDeletedConsumer>();
         x.AddConsumer<SetUploadPictureExifInfoConsumer>();
         x.AddConsumer<SetUploadPictureDimensionsConsumer>();
@@ -174,6 +176,7 @@ if (appSettings is not null)
                 e.PrefetchCount = 16;
                 e.UseMessageRetry(r => r.Incremental(5, TimeSpan.FromSeconds(5), TimeSpan.FromSeconds(20)));
 
+                e.ConfigureConsumer<MediaItemCreatedConsumer>(context);
                 e.ConfigureConsumer<MediaItemDeletedConsumer>(context);
                 e.ConfigureConsumer<SetUploadPictureExifInfoConsumer>(context);
                 e.ConfigureConsumer<SetUploadPictureDimensionsConsumer>(context);

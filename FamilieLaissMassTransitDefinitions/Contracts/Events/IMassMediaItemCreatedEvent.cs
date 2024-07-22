@@ -16,4 +16,9 @@ public interface IMassMediaItemCreatedEvent
     /// The type for media item
     /// </summary>
     EnumMediaType MediaType { get; }
+
+    /// <summary>
+    /// The unique identifier for the upload item
+    /// </summary>
+    long UploadItemId { get; }
 }
