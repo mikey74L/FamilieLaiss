@@ -71,8 +71,8 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:80
-      - AppSettings__RabbitMQConnection_FILE=/run/secrets/rabbit_connection_string
-      - AppSettings__GoogleAPIKey_FILE=/run/secrets/google_api_key_secret
+      - AppSettings__RabbitMqConnectionFile=/run/secrets/rabbit_connection_string
+      - AppSettings__GoogleApiKeyFile=/run/secrets/google_api_key_secret
     depends_on:
       - eureka
     ports:

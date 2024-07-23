@@ -1,7 +1,6 @@
-using System.Globalization;
-using System.Reflection;
 using Asp.Versioning;
 using Google.API;
+using Google.API.GraphQl.Queries;
 using Google.API.Interfaces;
 using Google.API.Logging;
 using Google.API.Models;
@@ -13,9 +12,12 @@ using Microsoft.AspNetCore.Localization;
 using Microsoft.Extensions.Options;
 using Serilog;
 using ServiceLayerHelper.Logging;
+using StackExchange.Redis;
 using Steeltoe.Discovery.Client;
 using Steeltoe.Discovery.Eureka;
 using Swashbuckle.AspNetCore.SwaggerGen;
+using System.Globalization;
+using System.Reflection;
 
 // Set the title for the console window
 Console.Title = "Google-Service";
@@ -67,8 +69,8 @@ builder.Services.AddSwaggerGen(options =>
 
     var fileNameMain = Assembly.GetExecutingAssembly().GetName().Name + ".xml";
     var fileNameDTO = typeof(GoogleGeoCodingAdressDTO).Assembly.GetName().Name + ".xml";
-    var filePathMain = Path.Combine(AppContext.BaseDirectory, fileNameMain);
-    var filePathDTO = Path.Combine(AppContext.BaseDirectory, fileNameDTO);
+    var filePathMain = System.IO.Path.Combine(AppContext.BaseDirectory, fileNameMain);
+    var filePathDTO = System.IO.Path.Combine(AppContext.BaseDirectory, fileNameDTO);
 
     options.IncludeXmlComments(filePathMain);
     options.IncludeXmlComments(filePathDTO);
@@ -88,6 +90,26 @@ builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<Pr
 // Register the GoogleGeoCoding service
 builder.Services.AddTransient<IWsGoogleGeoCoding, WsGoogleGeoCodingService>();
 
+//Redis Multiplexer hinzufügen wird für GraphQL Schema Stitching verwendet
+builder.Services.AddSingleton(ConnectionMultiplexer.Connect("redis"));
+
+//Adding GraphQL Server
+var graphQlBuilder = builder.Services.AddGraphQLServer()
+    .AddQueryType<Query>()
+    .AddTypeExtension<GraphQlQueryGoogle>()
+    .AddAuthorization()
+    .InitializeOnStartup()
+    .PublishSchemaDefinition(c => c
+        // The name of the schema. This name should be unique
+        .SetName("google")
+        .PublishToRedis(
+            // The configuration name under which the schema should be published
+            "familielaiss",
+            // The connection multiplexer that should be used for publishing
+            sp => sp.GetRequiredService<ConnectionMultiplexer>()
+        )
+    );
+
 // Set the EndpointConventions for MassTransit
 Startup.ConfigureEndpointConventions(appSettings);
 
@@ -106,7 +128,7 @@ if (appSettings is not null)
         x.UsingRabbitMq((context, cfg) =>
         {
             // Configure the Host
-            cfg.Host(new Uri(appSettings.RabbitMQConnection));
+            cfg.Host(new Uri(appSettings.RabbitMqConnection));
 
             cfg.ReceiveEndpoint(appSettings.EndpointGoogleApiService, e =>
             {
@@ -172,11 +194,25 @@ try
         });
     }
 
+    //Add routing to pipeline
+    app.UseRouting();
+
+    //Initialize endpoints for GraphQL
+    if (builder.Environment.IsDevelopment())
+    {
+        app.MapGraphQL();
+    }
+    else
+    {
+        app.MapGraphQLHttp();
+        app.MapGraphQLWebSocket();
+    }
+
     // Add Controllers
     app.MapControllers();
 
-    // Start the API
-    app.Run();
+    //Start the API
+    app.RunWithGraphQLCommands(args);
 }
 catch (Exception ex)
 {

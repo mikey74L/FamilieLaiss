@@ -7,20 +7,17 @@ public class AppSettings
     /// <summary>
     /// RabbitMQ Connection-String - Filename 
     /// </summary>
-    public string RabbitMQConnection_FILE { get; set; } = string.Empty;
+    public string RabbitMqConnectionFile { get; set; } = string.Empty;
 
     /// <summary>
     /// RabbitMQ Connection-String for CloudAMP
     /// </summary>
-    public string RabbitMQConnection
-    {
-        get { return System.IO.File.ReadAllText(RabbitMQConnection_FILE); }
-    }
+    public string RabbitMqConnection => System.IO.File.ReadAllText(RabbitMqConnectionFile);
 
 
     #region Endpoints
 
-    public string EndpointGoogleApiService { get; set; }
+    public string EndpointGoogleApiService { get; set; } = string.Empty;
 
     #endregion
 
@@ -30,12 +27,9 @@ public class AppSettings
 
     public string BaseUrlGoogleGeoCodingApi { get; set; } = string.Empty;
 
-    public string GoogleAPIKey_FILE { get; set; } = string.Empty;
+    public string GoogleApiKeyFile { get; set; } = string.Empty;
 
-    public string GoogleApiKey
-    {
-        get { return System.IO.File.ReadAllText(GoogleAPIKey_FILE); }
-    }
+    public string GoogleApiKey => System.IO.File.ReadAllText(GoogleApiKeyFile);
 
     #endregion
 }

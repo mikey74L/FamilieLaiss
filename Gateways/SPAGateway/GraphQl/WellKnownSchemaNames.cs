@@ -12,6 +12,8 @@ public class WellKnownSchemaNames
 
     public const string UserSetting = "usersetting";
 
+    public const string Google = "google";
+
     public const string PictureConvert = "pictureconvert";
 
     public const string VideoConvert = "videoconvert";

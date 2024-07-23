@@ -59,6 +59,9 @@ if (builder.Environment.IsDevelopment())
 
 //Add Http-Clients for all GraphQL Micro-Services
 builder.Services
+    .AddHttpClient(WellKnownSchemaNames.Google, c => c.BaseAddress = new Uri("http://googleapiservice/graphql"))
+    .AddRoundRobinLoadBalancer();
+builder.Services
     .AddHttpClient(WellKnownSchemaNames.UserSetting, c => c.BaseAddress = new Uri("http://settingsservice/graphql"))
     .AddRoundRobinLoadBalancer();
 builder.Services

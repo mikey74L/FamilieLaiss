@@ -10,17 +10,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Commands\**" />
-    <Compile Remove="Consumer\**" />
-    <Content Remove="Commands\**" />
-    <Content Remove="Consumer\**" />
-    <EmbeddedResource Remove="Commands\**" />
-    <EmbeddedResource Remove="Consumer\**" />
-    <None Remove="Commands\**" />
-    <None Remove="Consumer\**" />
-  </ItemGroup>
-
-  <ItemGroup>
 	<PackageReference Include="Asp.Versioning.Mvc" Version="8.1.0" />
 	<PackageReference Include="Asp.Versioning.Mvc.ApiExplorer" Version="8.1.0" />
     <PackageReference Include="MassTransit" Version="8.2.3" />
@@ -35,6 +24,11 @@
     <PackageReference Include="Serilog.Enrichers.Process" Version="3.0.0" />
     <PackageReference Include="Serilog.Enrichers.Thread" Version="4.0.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
+	<PackageReference Include="HotChocolate.AspNetCore" Version="13.9.7" />
+	<PackageReference Include="HotChocolate.AspNetCore.Authorization" Version="13.9.7" />
+	<PackageReference Include="HotChocolate.AspNetCore.CommandLine" Version="13.9.7" />
+	<PackageReference Include="HotChocolate.Data.EntityFramework" Version="13.9.7" />
+	<PackageReference Include="HotChocolate.Stitching.Redis" Version="13.9.7" />
   </ItemGroup>
 
   <ItemGroup>
