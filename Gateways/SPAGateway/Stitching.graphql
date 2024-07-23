@@ -1,3 +1,13 @@
+extend type UploadPicture {
+	"Is upload picture assigned to a media item"
+    isAssigned: Boolean @delegate(schema:"catalog", path: "uploadPicture(id: $fields:id).isAssigned")
+}
+
+extend type UploadVideo {
+	"Is upload video assigned to a media item"
+    isAssigned: Boolean @delegate(schema:"catalog", path: "uploadVideo(id: $fields:id).isAssigned")
+}
+
 extend type PictureConvertStatus {
 	"The related upload picture for this status entry"
 	uploadPicture: UploadPicture @delegate(schema: "upload", path: "uploadPicture(id: $fields:uploadPictureId)")
@@ -13,14 +23,4 @@ extend type MediaItem {
 	uploadPicture: UploadPicture @delegate(schema: "upload", path: "uploadPicture(id: $fields:uploadPictureId)")
 	"The related upload video for this media item"
 	uploadVideo: UploadVideo @delegate(schema: "upload", path: "uploadVideo(id: $fields:uploadVideoId)")
-}
-
-extend type UploadPicture {
-	"Is upload picture assigned to a media item"
-    isAssigned: Boolean @delegate(schema:"catalog", path: "uploadPicture(id: $fields:id).isAssigned")
-}
-
-extend type UploadVideo {
-	"Is upload video assigned to a media item"
-    isAssigned: Boolean @delegate(schema:"catalog", path: "uploadVideo(id: $fields:id).isAssigned")
 }

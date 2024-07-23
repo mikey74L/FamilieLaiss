@@ -59,6 +59,9 @@ if (builder.Environment.IsDevelopment())
 
 //Add Http-Clients for all GraphQL Micro-Services
 builder.Services
+    .AddHttpClient(WellKnownSchemaNames.UserSetting, c => c.BaseAddress = new Uri("http://settingsservice/graphql"))
+    .AddRoundRobinLoadBalancer();
+builder.Services
     .AddHttpClient(WellKnownSchemaNames.Catalog, c => c.BaseAddress = new Uri("http://catalogservice/graphql"))
     .AddRoundRobinLoadBalancer();
 builder.Services
@@ -79,6 +82,8 @@ builder.Services.AddSingleton(ConnectionMultiplexer.Connect("redis"));
 //Add GraphQL-Server
 builder.Services.AddGraphQLServer()
     .AddRemoteSchemasFromRedis("familielaiss", sp => sp.GetRequiredService<ConnectionMultiplexer>())
+    .IgnoreField("Query", "uploadPicture", WellKnownSchemaNames.Catalog)
+    .IgnoreField("Query", "uploadVideo", WellKnownSchemaNames.Catalog)
     .AddTypeExtensionsFromFile("./Stitching.graphql");
 
 //Den Web-Host ausführen

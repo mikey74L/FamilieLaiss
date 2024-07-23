@@ -1,6 +1,4 @@
-﻿using FamilieLaissMassTransitDefinitions.Contracts.Commands;
-using FamilieLaissMassTransitDefinitions.Contracts.Events;
-using FamilieLaissMassTransitDefinitions.Events;
+﻿using FamilieLaissMassTransitDefinitions.Contracts.Commands.UploadVideo;
 using MassTransit;
 using Microsoft.Extensions.Logging;
 using System;
@@ -63,12 +61,13 @@ public class ConvertVideoConsumer(
         try
         {
             logger.LogInformation("Send error event");
-            var newEvent = new MassVideoConvertErrorEvent()
-            {
-                ConvertStatusId = context.Message.Message.ConvertStatusId,
-                UploadVideoId = context.Message.Message.Id
-            };
-            await context.Publish<IMassVideoConvertErrorEvent>(newEvent);
+            //TODO: Implement event
+            //var newEvent = new MassVideoConvertErrorEvent()
+            //{
+            //    ConvertStatusId = context.Message.Message.ConvertStatusId,
+            //    UploadVideoId = context.Message.Message.Id
+            //};
+            //await context.Publish<IMassVideoConvertErrorEvent>(newEvent);
         }
         catch (Exception ex)
         {

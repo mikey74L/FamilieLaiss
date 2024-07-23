@@ -1,7 +1,5 @@
-﻿using FamilieLaissMassTransitDefinitions.Commands;
-using FamilieLaissMassTransitDefinitions.Contracts.Commands;
-using FamilieLaissMassTransitDefinitions.Contracts.Events;
-using FamilieLaissMassTransitDefinitions.Events;
+﻿using FamilieLaissMassTransitDefinitions.Commands.UploadVideo;
+using FamilieLaissMassTransitDefinitions.Contracts.Commands.UploadVideo;
 using FamilieLaissSharedObjects.Enums;
 using MassTransit;
 using Microsoft.Extensions.Logging;
@@ -121,14 +119,6 @@ public class MetadataExtractorService(
             logger.LogInformation("Set status to read media info - begin");
             await databaseOperations.SetStatusReadMediaInfoBeginAsync(context.Message.ConvertStatusId);
 
-            currentStep = 2;
-            var @eventProgress = new VideoConvertProgressEvent()
-            {
-                ConvertStatusId = context.Message.ConvertStatusId,
-                UploadVideoId = context.Message.Id
-            };
-            await context.Publish<IVideoConvertProgressEvent>(@eventProgress);
-
             currentStep = 3;
             logger.LogInformation("Read media info from file");
             var scanType = MediaInfoGetScanType(filenameSourceVideo);
@@ -238,9 +228,6 @@ public class MetadataExtractorService(
             currentStep = 5;
             logger.LogInformation("Set status to read media info - end");
             await databaseOperations.SetStatusReadMediaInfoEndAsync(context.Message.ConvertStatusId);
-
-            currentStep = 6;
-            await context.Publish<IVideoConvertProgressEvent>(@eventProgress);
 
             return returnValue;
         }

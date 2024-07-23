@@ -31,9 +31,9 @@ services:
       - PostgresDataVideoConvert:/var/lib/postgresql/data
     ports:
       - 5433:5432
-  db_fl_backend:
+  db_settings:
     volumes:
-      - PostgresDataFlBackend:/var/lib/postgresql/data
+      - PostgresDataSettings:/var/lib/postgresql/data
     ports:
       - 5434:5432
   gateway.spa:
@@ -45,6 +45,7 @@ services:
       - upload.api
       - pictureconvert.api
       - videoconvert.api
+      - settings.api
       - redis
       - eureka
     ports:
@@ -95,7 +96,7 @@ services:
     volumes:
       - C:\FamilieLaissContent:/var/lib/familielaiss/Content
       - C:\FamilieLaissLogging\Upload:/var/lib/familielaiss/logs
-  flbackend.api:
+  settings.api:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:80
@@ -104,17 +105,13 @@ services:
       - AppSettings__PostgresPasswordFile=/run/secrets/postgres_password_secret
     depends_on:
       - eureka
-      - db_fl_backend
-      - pictureconvertexecute
-      - google.api 
-      - videoconvertexecute
-      # - picture.api
-      # - video.api
+      - redis
+      - db_settings
     ports:
-      - 9100:80
+      - 9004:80
     volumes:
       - C:\FamilieLaissContent:/var/lib/familielaiss/Content
-      - C:\FamilieLaissLogging\Backend:/var/lib/familielaiss/logs
+      - C:\FamilieLaissLogging\Settings:/var/lib/familielaiss/logs
   pictureconvert.api:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
@@ -127,7 +124,7 @@ services:
       - redis
       - db_pictureconvert
     ports:
-      - 9004:80
+      - 9005:80
     volumes:
       - C:\FamilieLaissContent:/var/lib/familielaiss/Content
       - C:\FamilieLaissLogging\PictureConvert:/var/lib/familielaiss/logs
@@ -145,7 +142,7 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:80
     ports:
-      - 9005:80
+      - 9006:80
     depends_on:
       - eureka
     volumes:
@@ -163,7 +160,7 @@ services:
       - redis
       - db_videoconvert
     ports:
-      - 9006:80
+      - 9007:80
     volumes:
       - C:\FamilieLaissContent:/var/lib/familielaiss/Content
       - C:\FamilieLaissLogging\VideoConvert:/var/lib/familielaiss/logs
@@ -183,17 +180,17 @@ services:
     depends_on:
       - eureka
     ports:
-      - 9007:80
+      - 9008:80
     volumes:
       - C:\FamilieLaissContent:/var/lib/familielaiss/Content
       - C:\FamilieLaissLogging\Video:/var/lib/familielaiss/logs
 volumes:
   Database:
+  PostgresDataSettings:
   PostgresDataCatalog:
   PostgresDataUpload:
   PostgresDataPictureConvert:
   PostgresDataVideoConvert:
-  PostgresDataFlBackend:
 secrets:
   db_user_secret:
     file: C:\SecretsForFamilieLaiss\DBUsername.txt

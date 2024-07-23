@@ -1,9 +1,11 @@
-FROM mcr.microsoft.com/dotnet/aspnet:8.0.2 AS base
+#See https://aka.ms/customizecontainer to learn how to customize your debug container and how Visual Studio uses this Dockerfile to build your images for faster debugging.
+
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
 USER app
 WORKDIR /app
 EXPOSE 8080
 
-FROM mcr.microsoft.com/dotnet/sdk:8.0.201 AS build
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY ["NuGet.config", "."]
@@ -17,7 +19,7 @@ COPY ["FamilieLaissMassTransitDefinitions/FamilieLaissMassTransitDefinitions.csp
 COPY ["FamilieLaissSharedObjects/FamilieLaissSharedObjects.csproj", "FamilieLaissSharedObjects/"]
 COPY ["Services/Settings/Settings.Domain/Settings.Domain.csproj", "Services/Settings/Settings.Domain/"]
 COPY ["Services/Settings/Settings.Infrastructure/Settings.Infrastructure.csproj", "Services/Settings/Settings.Infrastructure/"]
-RUN dotnet restore "./Services/Settings/Settings.API/./Settings.API.csproj"
+RUN dotnet restore "./Services/Settings/Settings.API/Settings.API.csproj"
 COPY . .
 WORKDIR "/src/Services/Settings/Settings.API"
 RUN dotnet build "./Settings.API.csproj" -c $BUILD_CONFIGURATION -o /app/build

@@ -1,5 +1,5 @@
 ﻿using DomainHelper.Interfaces;
-using FamilieLaissMassTransitDefinitions.Contracts.Events;
+using FamilieLaissMassTransitDefinitions.Contracts.Events.UploadVideo;
 using MediatR;
 
 namespace Catalog.API.Mediator.Commands.UploadVideo;

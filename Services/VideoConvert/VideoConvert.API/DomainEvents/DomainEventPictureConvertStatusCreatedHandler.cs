@@ -1,5 +1,5 @@
-﻿using FamilieLaissMassTransitDefinitions.Commands;
-using FamilieLaissMassTransitDefinitions.Contracts.Commands;
+﻿using FamilieLaissMassTransitDefinitions.Commands.UploadVideo;
+using FamilieLaissMassTransitDefinitions.Contracts.Commands.UploadVideo;
 using MassTransit;
 using MediatR;
 using VideoConvert.Domain.DomainEvents;

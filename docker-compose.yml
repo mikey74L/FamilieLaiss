@@ -57,13 +57,13 @@ services:
     secrets:
       - postgres_user_secret
       - postgres_password_secret
-  db_fl_backend:
+  db_settings:
     image: postgres:16.1-alpine
-    container_name: postgres_fl_backend
+    container_name: postgres_settings
     environment:
       - POSTGRES_USER_FILE=/run/secrets/postgres_user_secret
       - POSTGRES_PASSWORD_FILE=/run/secrets/postgres_password_secret
-      - POSTGRES_DB=flbackend
+      - POSTGRES_DB=settings
     secrets:
       - postgres_user_secret
       - postgres_password_secret
@@ -93,12 +93,12 @@ services:
       - rabbit_connection_string
       - postgres_user_secret
       - postgres_password_secret
-  flbackend.api:
-    image: ${DOCKER_REGISTRY-}flbackend
-    container_name: flbackendservice
+  settings.api:
+    image: ${DOCKER_REGISTRY-}settingsapi
+    container_name: settingsservice
     build:
       context: .
-      dockerfile: Services/FlBackEnd/FlBackEnd.API/Dockerfile
+      dockerfile: Services/Settings/Settings.API/Dockerfile
     secrets:
       - rabbit_connection_string
       - postgres_user_secret

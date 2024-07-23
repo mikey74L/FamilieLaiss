@@ -1,6 +1,6 @@
 ﻿using System.IO;
 using System.Threading.Tasks;
-using FamilieLaissMassTransitDefinitions.Contracts.Commands;
+using FamilieLaissMassTransitDefinitions.Contracts.Commands.UploadPicture;
 using MassTransit;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;

@@ -1,5 +1,8 @@
-﻿using FamilieLaissMassTransitDefinitions.Contracts.Events;
+﻿using FamilieLaissMassTransitDefinitions.Contracts.Events.MediaItem;
+using FamilieLaissSharedObjects.Enums;
 using MassTransit;
+using Upload.API.GraphQL.Mutations.UploadPicture;
+using Upload.API.GraphQL.Mutations.UploadVideo;
 using Upload.API.Mediator.Commands.UploadPicture;
 using Upload.API.Mediator.Commands.UploadVideo;
 using IMediator = MediatR.IMediator;
@@ -23,14 +26,17 @@ public class MediaItemDeletedConsumer(IMediator mediator, ILogger<MediaItemDelet
     {
         logger.LogInformation("Consumer for MediaItemDeleted Event was called with {$message}", context.Message);
 
-        if (context.Message.IsPicture)
+        if (context.Message.MediaType == EnumMediaType.Picture)
         {
             if (context.Message.DeleteUploadItem)
             {
                 logger.LogDebug("Calling Mediatr command to delete upload picture");
-                //TODO
-                //var Command = new MtrDeleteUploadPictureCmd(context.Message.UploadItemID);
-                //await _Mediator.Send(Command);
+                var newInputData = new DeleteUploadPictureInput()
+                {
+                    Id = context.Message.UploadItemId,
+                };
+                var Command = new MtrDeleteUploadPictureCmd() { InputData = newInputData };
+                await mediator.Send(Command);
             }
             else
             {
@@ -44,9 +50,12 @@ public class MediaItemDeletedConsumer(IMediator mediator, ILogger<MediaItemDelet
             if (context.Message.DeleteUploadItem)
             {
                 logger.LogDebug("Calling Mediatr command to delete upload video");
-                //TODO
-                //var Command = new MtrDeleteUploadVideoCmd(context.Message.UploadItemID);
-                //await _Mediator.Send(Command);
+                var newInputData = new DeleteUploadVideoInput()
+                {
+                    Id = context.Message.UploadItemId,
+                };
+                var Command = new MtrDeleteUploadVideoCmd() { InputData = newInputData };
+                await mediator.Send(Command);
             }
             else
             {

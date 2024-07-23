@@ -116,6 +116,8 @@ var graphQlBuilder = builder.Services.AddGraphQLServer()
     .PublishSchemaDefinition(c => c
         // The name of the schema. This name should be unique
         .SetName("catalog")
+        .RenameType("UploadPicture", "MediaUploadPicture")
+        .RenameType("UploadVideo", "MediaUploadVideo")
         .PublishToRedis(
             // The configuration name under which the schema should be published
             "familielaiss",
@@ -136,8 +138,8 @@ Startup.ConfigureEndpointConventions(appSettings);
 //Hinzufügen der Consumer zum DI-Container
 builder.Services.AddScoped<UploadPictureCreatedConsumer>();
 builder.Services.AddScoped<UploadVideoCreatedConsumer>();
-//builder.Services.AddScoped<UploadPictureDeletedConsumer>();
-//builder.Services.AddScoped<UploadVideoDeletedConsumer>();
+builder.Services.AddScoped<UploadPictureDeletedConsumer>();
+builder.Services.AddScoped<UploadVideoDeletedConsumer>();
 
 if (appSettings is not null)
 {
@@ -146,8 +148,8 @@ if (appSettings is not null)
         //Hinzufügen der Consumer
         x.AddConsumer<UploadPictureCreatedConsumer>();
         x.AddConsumer<UploadVideoCreatedConsumer>();
-        //x.AddConsumer<UploadPictureDeletedConsumer>();
-        //x.AddConsumer<UploadVideoDeletedConsumer>();
+        x.AddConsumer<UploadPictureDeletedConsumer>();
+        x.AddConsumer<UploadVideoDeletedConsumer>();
 
         //RabbitMq hinzufügen
         x.UsingRabbitMq((context, cfg) =>
@@ -163,8 +165,8 @@ if (appSettings is not null)
 
                 e.ConfigureConsumer<UploadPictureCreatedConsumer>(context);
                 e.ConfigureConsumer<UploadVideoCreatedConsumer>(context);
-                //e.ConfigureConsumer<UploadPictureDeletedConsumer>(context);
-                //e.ConfigureConsumer<UploadVideoDeletedConsumer>(context);
+                e.ConfigureConsumer<UploadPictureDeletedConsumer>(context);
+                e.ConfigureConsumer<UploadVideoDeletedConsumer>(context);
             });
         });
     });

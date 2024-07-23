@@ -1,4 +1,4 @@
-﻿using FamilieLaissMassTransitDefinitions.Contracts.Commands;
+﻿using FamilieLaissMassTransitDefinitions.Contracts.Commands.UploadVideo;
 using MassTransit;
 using MediatR;
 using Upload.API.Mediator.Commands.UploadVideo;

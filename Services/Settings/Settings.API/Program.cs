@@ -8,7 +8,6 @@ using Serilog;
 using ServiceLayerHelper;
 using ServiceLayerHelper.Logging;
 using Settings.API;
-using Settings.API.Consumers;
 using Settings.API.GraphQL.Mutations;
 using Settings.API.GraphQL.Mutations.UserSettings;
 using Settings.API.GraphQL.Queries;
@@ -57,29 +56,30 @@ builder.Services.Configure<AppSettings>(appSettingsSection);
 AppSettings? appSettings = appSettingsSection.Get<AppSettings>();
 
 //Die DB-Context Factory hinzufügen inklusive der UnitOfWork
-NpgsqlConnectionStringBuilder postgresConnectionStringBuilder = new();
-postgresConnectionStringBuilder.ApplicationName = "Settings-Service";
-postgresConnectionStringBuilder.Host = appSettings?.PostgresHost;
-postgresConnectionStringBuilder.Port = appSettings?.PostgresPort ?? 0;
-postgresConnectionStringBuilder.Multiplexing = appSettings?.PostgresMultiplexing ?? false;
-postgresConnectionStringBuilder.Database = appSettings?.PostgresDatabase;
-postgresConnectionStringBuilder.Username = appSettings?.PostgresUser;
-postgresConnectionStringBuilder.Password = appSettings?.PostgresPassword;
-builder.Services.AddPooledDbContextFactory<SettingsServiceDBContext>(
-    o => o.UseNpgsql(postgresConnectionStringBuilder.ToString()))
-.AddUnitOfWork<SettingsServiceDBContext>();
+NpgsqlConnectionStringBuilder postgresConnectionStringBuilder = new()
+{
+    ApplicationName = "Settings-Service",
+    Host = appSettings?.PostgresHost,
+    Port = appSettings?.PostgresPort ?? 0,
+    Multiplexing = appSettings?.PostgresMultiplexing ?? false,
+    Database = appSettings?.PostgresDatabase,
+    Username = appSettings?.PostgresUser,
+    Password = appSettings?.PostgresPassword
+};
+builder.Services.AddPooledDbContextFactory<SettingsServiceDbContext>(
+        o => o.UseNpgsql(postgresConnectionStringBuilder.ToString()))
+    .AddUnitOfWork<SettingsServiceDbContext>();
 
 //Redis Multiplexer hinzufügen wird für GraphQL Schema Stitching verwendet
 builder.Services.AddSingleton(ConnectionMultiplexer.Connect("redis"));
 
 //Den GraphQL-Server hinzufügen
 var GraphQLBuilder = builder.Services.AddGraphQLServer()
-    .RegisterDbContext<SettingsServiceDBContext>(DbContextKind.Pooled)
-    .AddDiagnosticEventListener<QueryLogger>()
+    .RegisterDbContext<SettingsServiceDbContext>(DbContextKind.Pooled)
     .AddMutationType<Mutation>()
-    .AddTypeExtension<MutationsUserSettings>()
+    .AddTypeExtension<GraphQlMutationUserSetting>()
     .AddQueryType<Query>()
-    .AddTypeExtension<QueryUserSettings>()
+    .AddTypeExtension<GraphQlQueryUserSetting>()
     .AddType<UserSettingsType>()
     .AddFiltering()
     .AddSorting()
@@ -87,7 +87,6 @@ var GraphQLBuilder = builder.Services.AddGraphQLServer()
     .PublishSchemaDefinition(c => c
         // The name of the schema. This name should be unique
         .SetName("usersetting")
-        .IgnoreRootTypes()
         .PublishToRedis(
             // The configuration name under which the schema should be published
             "familielaiss",
@@ -110,7 +109,7 @@ builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<Pr
 Startup.ConfigureEndpointConventions(appSettings);
 
 //Hinzufügen der Consumer zum DI-Container
-builder.Services.AddScoped<UserAccountCreatedConsumer>();
+//builder.Services.AddScoped<UserAccountCreatedConsumer>();
 
 //Mass-Transit konfigurieren
 if (appSettings is not null)
@@ -118,21 +117,21 @@ if (appSettings is not null)
     builder.Services.AddMassTransit(x =>
     {
         //Hinzufügen der Consumer
-        x.AddConsumer<UserAccountCreatedConsumer>();
+        //x.AddConsumer<UserAccountCreatedConsumer>();
 
         //RabbitMq hinzufügen
         x.UsingRabbitMq((context, cfg) =>
         {
             //Konfigurieren des Hosts
-            cfg.Host(new Uri(appSettings.RabbitMQConnection));
+            cfg.Host(new Uri(appSettings.RabbitMqConnection));
 
-            cfg.ReceiveEndpoint(appSettings.Endpoint_SettingsService, e =>
+            cfg.ReceiveEndpoint(appSettings.EndpointSettingsService, e =>
             {
                 e.UseConcurrencyLimit(1);
                 e.PrefetchCount = 16;
                 e.UseMessageRetry(r => r.Incremental(5, TimeSpan.FromSeconds(5), TimeSpan.FromSeconds(20)));
 
-                e.ConfigureConsumer<UserAccountCreatedConsumer>(context);
+                //e.ConfigureConsumer<UserAccountCreatedConsumer>(context);
             });
         });
     });

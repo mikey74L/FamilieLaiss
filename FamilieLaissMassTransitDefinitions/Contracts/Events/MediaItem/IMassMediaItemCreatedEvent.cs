@@ -1,0 +1,24 @@
+﻿using FamilieLaissSharedObjects.Enums;
+
+namespace FamilieLaissMassTransitDefinitions.Contracts.Events.MediaItem;
+
+/// <summary>
+/// Media item created event (Event-Class for MassTransit)
+/// </summary>
+public interface IMassMediaItemCreatedEvent
+{
+    /// <summary>
+    /// Identifier for media item
+    /// </summary>
+    long Id { get; }
+
+    /// <summary>
+    /// The type for media item
+    /// </summary>
+    EnumMediaType MediaType { get; }
+
+    /// <summary>
+    /// The unique identifier for the upload item
+    /// </summary>
+    long UploadItemId { get; }
+}

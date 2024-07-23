@@ -1,5 +1,5 @@
 ﻿using DomainHelper.Interfaces;
-using FamilieLaissMassTransitDefinitions.Contracts.Events;
+using FamilieLaissMassTransitDefinitions.Contracts.Events.UploadPicture;
 using Google.DTO;
 using MediatR;
 using Upload.API.Interfaces;

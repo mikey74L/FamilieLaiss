@@ -1,4 +1,4 @@
-﻿using FamilieLaissMassTransitDefinitions.Contracts.Commands;
+﻿using FamilieLaissMassTransitDefinitions.Contracts.Commands.UploadVideo;
 using MassTransit;
 using System.Threading.Tasks;
 using VideoConvertExecuteService.Models;

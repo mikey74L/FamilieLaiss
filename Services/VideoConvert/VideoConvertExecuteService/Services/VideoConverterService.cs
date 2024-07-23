@@ -1,14 +1,12 @@
-﻿using System;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-using FamilieLaissMassTransitDefinitions.Contracts.Commands;
-using FamilieLaissMassTransitDefinitions.Contracts.Events;
-using FamilieLaissMassTransitDefinitions.Events;
+﻿using FamilieLaissMassTransitDefinitions.Contracts.Commands.UploadVideo;
 using MassTransit;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using ServiceHelper.Exceptions;
+using System;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
 using Tocronx.SimpleAsync;
 using VideoConvertExecuteService.Interfaces;
 using VideoConvertExecuteService.Models;
@@ -435,13 +433,6 @@ public partial class VideoConverterService(
             databaseOperations
                 .UpdateProgressAsync(_currentConvertingId, percentValue, spanDuration,
                     TimeSpan.FromSeconds(secondsRest)).FireAndForget();
-
-            var @event = new VideoConvertProgressEvent()
-            {
-                ConvertStatusId = _consumerContext.Message.ConvertStatusId,
-                UploadVideoId = _consumerContext.Message.Id
-            };
-            _consumerContext.Publish<IVideoConvertProgressEvent>(@event).FireAndForget();
         }
     }
 

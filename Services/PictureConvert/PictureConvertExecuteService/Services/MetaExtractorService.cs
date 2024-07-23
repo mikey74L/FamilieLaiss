@@ -1,14 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using FamilieLaissMassTransitDefinitions.Commands;
-using FamilieLaissMassTransitDefinitions.Contracts.Commands;
+﻿using FamilieLaissMassTransitDefinitions.Commands.UploadPicture;
+using FamilieLaissMassTransitDefinitions.Contracts.Commands.UploadPicture;
 using MassTransit;
 using MetadataExtractor;
 using MetadataExtractor.Formats.Exif;
 using Microsoft.Extensions.Logging;
 using PictureConvertExecuteService.Interfaces;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace PictureConvertExecuteService.Services;
 

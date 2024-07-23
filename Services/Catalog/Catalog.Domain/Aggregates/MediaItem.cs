@@ -88,25 +88,25 @@ public class MediaItem : EntityModify<long>
     /// <summary>
     /// ID for the assigned upload picture item 
     /// </summary>
-    [GraphQLIgnore]
+    [GraphQLDescription("Id of the assigned upload picture if the item is of type picture")]
     public long? UploadPictureId { get; private set; }
 
     /// <summary>
     /// The upload picture for this media item
     /// </summary>
-    [GraphQLDescription("The assigned picture if the item is of type picture")]
+    [GraphQLIgnore]
     public UploadPicture? UploadPicture { get; private set; }
 
     /// <summary>
     /// ID for the assigned upload video item 
     /// </summary>
-    [GraphQLIgnore]
+    [GraphQLDescription("Id of the assigned upload video if the item is of type video")]
     public long? UploadVideoId { get; private set; }
 
     /// <summary>
     /// The upload video for this media item
     /// </summary>
-    [GraphQLDescription("The assigned video if the item is of type video")]
+    [GraphQLIgnore]
     public UploadVideo? UploadVideo { get; private set; }
 
     /// <summary>
@@ -403,46 +403,47 @@ public class MediaItem : EntityModify<long>
     [GraphQLIgnore]
     public override async Task EntityDeletedAsync(DbContext dbContext, IDictionary<string, object> dictContextParams)
     {
-        if (MediaType == EnumMediaType.Picture)
+        if (dictContextParams["KeepUploadItem"] is bool keepUploadItem)
         {
-            AddDomainEvent(new DomainEventMediaItemDeleted(Id, MediaType, UploadPictureId!.Value));
-
-            await lazyLoader.LoadAsync(this, navigationName: nameof(UploadPicture));
-
-            if (UploadPicture is not null)
+            if (MediaType == EnumMediaType.Picture)
             {
-                if (dictContextParams["KeepUploadItem"] is bool keepUploadItem && keepUploadItem)
-                {
-                    UploadPicture.SetPictureStateToUnAssigned();
-                    dbContext.Update(UploadPicture);
-                }
-                else
-                {
-                    dbContext.Remove(UploadPicture);
+                await lazyLoader.LoadAsync(this, navigationName: nameof(UploadPicture));
 
-                    await UploadPicture.EntityDeletedAsync(dbContext, dictContextParams);
+                if (UploadPicture is not null)
+                {
+                    if (keepUploadItem)
+                    {
+                        UploadPicture.SetPictureStateToUnAssigned();
+                        dbContext.Update(UploadPicture);
+                    }
                 }
+
+                AddDomainEvent(new DomainEventMediaItemDeleted(Id)
+                {
+                    MediaType = MediaType,
+                    UploadItemId = UploadPictureId!.Value,
+                    DeleteUploadItem = !keepUploadItem
+                });
             }
-        }
-        else
-        {
-            AddDomainEvent(new DomainEventMediaItemDeleted(Id, MediaType, UploadVideoId!.Value));
-
-            await lazyLoader.LoadAsync(this, navigationName: nameof(UploadVideo));
-
-            if (UploadVideo is not null)
+            else
             {
-                if (dictContextParams["KeepUploadItem"] is bool keepUploadItem && keepUploadItem)
-                {
-                    UploadVideo.SetVideoStateToUnAssigned();
-                    dbContext.Update(UploadVideo);
-                }
-                else
-                {
-                    dbContext.Remove(UploadVideo);
+                await lazyLoader.LoadAsync(this, navigationName: nameof(UploadVideo));
 
-                    await UploadVideo.EntityDeletedAsync(dbContext, dictContextParams);
+                if (UploadVideo is not null)
+                {
+                    if (keepUploadItem)
+                    {
+                        UploadVideo.SetVideoStateToUnAssigned();
+                        dbContext.Update(UploadVideo);
+                    }
                 }
+
+                AddDomainEvent(new DomainEventMediaItemDeleted(Id)
+                {
+                    MediaType = MediaType,
+                    UploadItemId = UploadVideoId!.Value,
+                    DeleteUploadItem = !keepUploadItem
+                });
             }
         }
     }

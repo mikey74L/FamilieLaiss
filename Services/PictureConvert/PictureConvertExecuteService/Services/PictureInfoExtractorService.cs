@@ -1,5 +1,5 @@
-﻿using FamilieLaissMassTransitDefinitions.Commands;
-using FamilieLaissMassTransitDefinitions.Contracts.Commands;
+﻿using FamilieLaissMassTransitDefinitions.Commands.UploadPicture;
+using FamilieLaissMassTransitDefinitions.Contracts.Commands.UploadPicture;
 using MassTransit;
 using Microsoft.Extensions.Logging;
 using PictureConvertExecuteService.Interfaces;

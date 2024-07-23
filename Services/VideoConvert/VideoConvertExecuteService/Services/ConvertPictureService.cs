@@ -1,13 +1,11 @@
-﻿using System.IO;
-using System.Threading.Tasks;
-using FamilieLaissMassTransitDefinitions.Contracts.Commands;
-using FamilieLaissMassTransitDefinitions.Contracts.Events;
-using FamilieLaissMassTransitDefinitions.Events;
+﻿using FamilieLaissMassTransitDefinitions.Contracts.Commands.UploadVideo;
 using MassTransit;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Processing;
+using System.IO;
+using System.Threading.Tasks;
 using VideoConvertExecuteService.Interfaces;
 using VideoConvertExecuteService.Models;
 
@@ -131,14 +129,6 @@ public class ConvertPictureService(
         logger.LogInformation("Set status for convert picture begin");
         await databaseOperations.SetStatusConvertPictureBeginAsync(id);
 
-        logger.LogInformation("Send event over mass transit");
-        var @event = new VideoConvertProgressEvent()
-        {
-            ConvertStatusId = consumerContext.Message.ConvertStatusId,
-            UploadVideoId = consumerContext.Message.Id
-        };
-        await consumerContext.Publish<IVideoConvertProgressEvent>(@event);
-
         var filenamePreviewPicture = Path.GetFileNameWithoutExtension(filename) + ".jpg";
 
         logger.LogInformation("Converting picture to format 298 x 170");
@@ -146,9 +136,6 @@ public class ConvertPictureService(
 
         logger.LogInformation("Set status for convert picture end");
         await databaseOperations.SetStatusConvertPictureEndAsync(id);
-
-        logger.LogInformation("Send event over mass transit");
-        await consumerContext.Publish<IVideoConvertProgressEvent>(@event);
     }
 
     #endregion

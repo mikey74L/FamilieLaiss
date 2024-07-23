@@ -1,5 +1,5 @@
 ﻿using DomainHelper.Interfaces;
-using FamilieLaissMassTransitDefinitions.Contracts.Events;
+using FamilieLaissMassTransitDefinitions.Contracts.Events.UploadPicture;
 using MediatR;
 
 namespace Catalog.API.Mediator.Commands.UploadPicture;

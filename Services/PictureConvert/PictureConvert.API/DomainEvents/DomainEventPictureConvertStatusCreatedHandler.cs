@@ -1,5 +1,5 @@
-﻿using FamilieLaissMassTransitDefinitions.Commands;
-using FamilieLaissMassTransitDefinitions.Contracts.Commands;
+﻿using FamilieLaissMassTransitDefinitions.Commands.UploadPicture;
+using FamilieLaissMassTransitDefinitions.Contracts.Commands.UploadPicture;
 using MassTransit;
 using MediatR;
 using PictureConvert.Domain.DomainEvents;

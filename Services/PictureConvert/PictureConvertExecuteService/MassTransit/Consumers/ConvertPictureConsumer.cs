@@ -1,6 +1,4 @@
-﻿using FamilieLaissMassTransitDefinitions.Contracts.Commands;
-using FamilieLaissMassTransitDefinitions.Contracts.Events;
-using FamilieLaissMassTransitDefinitions.Events;
+﻿using FamilieLaissMassTransitDefinitions.Contracts.Commands.UploadPicture;
 using MassTransit;
 using Microsoft.Extensions.Logging;
 using PictureConvertExecuteService.Interfaces;
@@ -65,12 +63,13 @@ public class ConvertPictureConsumer(
         try
         {
             logger.LogInformation("Send error event");
-            var newEvent = new MassPictureConvertErrorEvent()
-            {
-                ConvertStatusId = context.Message.Message.ConvertStatusId,
-                UploadPictureId = context.Message.Message.Id
-            };
-            await context.Publish<IMassPictureConvertErrorEvent>(newEvent);
+            //TODO: Implement event
+            //var newEvent = new MassPictureConvertErrorEvent()
+            //{
+            //    ConvertStatusId = context.Message.Message.ConvertStatusId,
+            //    UploadPictureId = context.Message.Message.Id
+            //};
+            //await context.Publish<IMassPictureConvertErrorEvent>(newEvent);
         }
         catch (Exception ex)
         {

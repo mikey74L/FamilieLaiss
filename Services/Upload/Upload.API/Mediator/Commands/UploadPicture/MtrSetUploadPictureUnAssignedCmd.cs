@@ -1,6 +1,6 @@
 ﻿using DomainHelper.Exceptions;
 using DomainHelper.Interfaces;
-using FamilieLaissMassTransitDefinitions.Contracts.Events;
+using FamilieLaissMassTransitDefinitions.Contracts.Events.MediaItem;
 using MediatR;
 
 namespace Upload.API.Mediator.Commands.UploadPicture;

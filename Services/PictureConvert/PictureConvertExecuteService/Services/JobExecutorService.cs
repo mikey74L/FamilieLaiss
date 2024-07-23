@@ -1,6 +1,6 @@
-﻿using FamilieLaissMassTransitDefinitions.Contracts.Commands;
-using FamilieLaissMassTransitDefinitions.Contracts.Events;
-using FamilieLaissMassTransitDefinitions.Events;
+﻿using FamilieLaissMassTransitDefinitions.Contracts.Commands.UploadPicture;
+using FamilieLaissMassTransitDefinitions.Contracts.Events.UploadPicture;
+using FamilieLaissMassTransitDefinitions.Events.UploadPicture;
 using MassTransit;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -43,25 +43,11 @@ public class JobExecutorService(
         logger.LogInformation("Extracting Picture-Info");
         await pictureInfoExtractor.ExtractInfoAsync(consumerContext, filename);
 
-        logger.LogInformation("Send PictureConvertProgressEvent with bus");
-        var @event = new MassPictureConvertProgressEvent()
-        {
-            ConvertStatusId = consumerContext.Message.ConvertStatusId,
-            UploadPictureId = consumerContext.Message.Id
-        };
-        await consumerContext.Publish<IMassPictureConvertProgressEvent>(@event);
-
         logger.LogInformation("Extracting Exif-Info");
         await metaExtractor.ExtractMetadataAsync(consumerContext, filename);
 
-        logger.LogInformation("Send PictureConvertProgressEvent with bus");
-        await consumerContext.Publish<IMassPictureConvertProgressEvent>(@event);
-
         logger.LogInformation("Converting Picture");
         await convertPicture.ConvertPictureAsync(consumerContext, filename);
-
-        logger.LogInformation("Send PictureConvertProgressEvent with bus");
-        await consumerContext.Publish<IMassPictureConvertProgressEvent>(@event);
 
         logger.LogInformation("Set status to successfully converted");
         await databaseOperations.SetSuccessAsync(consumerContext.Message.ConvertStatusId);

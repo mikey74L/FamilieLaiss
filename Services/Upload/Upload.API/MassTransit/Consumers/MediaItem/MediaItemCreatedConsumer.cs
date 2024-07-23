@@ -1,4 +1,4 @@
-﻿using FamilieLaissMassTransitDefinitions.Contracts.Events;
+﻿using FamilieLaissMassTransitDefinitions.Contracts.Events.MediaItem;
 using FamilieLaissSharedObjects.Enums;
 using MassTransit;
 using MediatR;

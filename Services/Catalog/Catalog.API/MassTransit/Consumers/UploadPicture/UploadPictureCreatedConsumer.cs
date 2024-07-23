@@ -1,5 +1,5 @@
 ﻿using Catalog.API.Mediator.Commands.UploadPicture;
-using FamilieLaissMassTransitDefinitions.Contracts.Events;
+using FamilieLaissMassTransitDefinitions.Contracts.Events.UploadPicture;
 using MassTransit;
 using IMediator = MediatR.IMediator;
 

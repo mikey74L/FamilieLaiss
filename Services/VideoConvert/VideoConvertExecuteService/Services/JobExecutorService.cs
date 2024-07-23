@@ -1,6 +1,6 @@
-﻿using FamilieLaissMassTransitDefinitions.Contracts.Commands;
-using FamilieLaissMassTransitDefinitions.Contracts.Events;
-using FamilieLaissMassTransitDefinitions.Events;
+﻿using FamilieLaissMassTransitDefinitions.Contracts.Commands.UploadVideo;
+using FamilieLaissMassTransitDefinitions.Contracts.Events.UploadVideo;
+using FamilieLaissMassTransitDefinitions.Events.UploadVideo;
 using MassTransit;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;

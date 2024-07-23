@@ -1,4 +1,4 @@
-﻿using FamilieLaissMassTransitDefinitions.Contracts.Commands;
+﻿using FamilieLaissMassTransitDefinitions.Contracts.Commands.UploadPicture;
 using InfrastructureHelper.EventDispatchHandler;
 using MassTransit;
 using Microsoft.Extensions.Configuration;

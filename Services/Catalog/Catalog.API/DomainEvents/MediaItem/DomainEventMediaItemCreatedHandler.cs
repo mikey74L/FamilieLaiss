@@ -1,6 +1,6 @@
 ﻿using Catalog.Domain.DomainEvents.MediaItem;
-using FamilieLaissMassTransitDefinitions.Contracts.Events;
-using FamilieLaissMassTransitDefinitions.Events;
+using FamilieLaissMassTransitDefinitions.Contracts.Events.MediaItem;
+using FamilieLaissMassTransitDefinitions.Events.MediaItem;
 using MassTransit;
 using MediatR;
 
@@ -23,6 +23,6 @@ public class DomainEventMediaItemCreatedHandler(
             UploadItemId = notification.UploadItemId,
         };
 
-        await massTransit.Publish<IMassPictureUploadedEvent>(newEvent, cancellationToken);
+        await massTransit.Publish<IMassMediaItemCreatedEvent>(newEvent, cancellationToken);
     }
 }
