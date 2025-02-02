@@ -1,6 +1,7 @@
 ﻿using Catalog.Domain.Aggregates;
 using Catalog.Domain.Entities;
 using Catalog.Infrastructure.DBContext.Configurations;
+using InfrastructureHelper.Context;
 using Microsoft.EntityFrameworkCore;
 
 namespace Catalog.Infrastructure.DBContext;
@@ -12,7 +13,7 @@ namespace Catalog.Infrastructure.DBContext;
 /// C'tor
 /// </remarks>
 /// <param name="options">The options for this context.</param>
-public class CatalogServiceDbContext(DbContextOptions<CatalogServiceDbContext> options) : DbContext(options)
+public class CatalogServiceDbContext(DbContextOptions<CatalogServiceDbContext> options) : BaseContextFamilieLaiss<CatalogServiceDbContext>(options)
 {
     #region Protected override
 
@@ -20,7 +21,7 @@ public class CatalogServiceDbContext(DbContextOptions<CatalogServiceDbContext> o
     /// Would be called when the model is creating to define special behaviour
     /// </summary>
     /// <param name="modelBuilder">The builder being used to construct the model for this context</param>
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    protected override void OnModelCreatingInternal(ModelBuilder modelBuilder)
     {
         //Aufrufen des Model-Builders für ConvertStatus
         modelBuilder.ApplyConfiguration(new CategoryEntityTypeConfiguration());

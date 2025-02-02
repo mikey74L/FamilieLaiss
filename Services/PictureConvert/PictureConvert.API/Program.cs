@@ -5,11 +5,13 @@ using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
 using PictureConvert.API;
+using PictureConvert.API.GraphQL.DataLoaders.PictureConvertStatus;
 using PictureConvert.API.GraphQL.Queries;
 using PictureConvert.API.GraphQL.Queries.PictureConvertStatus;
 using PictureConvert.API.GraphQL.Subscription;
 using PictureConvert.API.GraphQL.Subscription.PictureConvert;
 using PictureConvert.API.GraphQL.Types.PictureConvertStatus;
+using PictureConvert.API.GraphQL.Types.UploadPicture;
 using PictureConvert.API.Logging;
 using PictureConvert.API.MassTransit.Consumers;
 using PictureConvert.API.Models;
@@ -17,7 +19,6 @@ using PictureConvert.Infrastructure.DBContext;
 using Serilog;
 using ServiceLayerHelper;
 using ServiceLayerHelper.Logging;
-using StackExchange.Redis;
 using Steeltoe.Discovery.Client;
 using Steeltoe.Discovery.Eureka;
 using System.Globalization;
@@ -71,36 +72,21 @@ builder.Services.AddPooledDbContextFactory<PictureConvertServiceDbContext>(
         o => o.UseNpgsql(postgresConnectionStringBuilder.ToString()))
     .AddUnitOfWork<PictureConvertServiceDbContext>();
 
-//Redis Multiplexer hinzufügen wird für GraphQL Schema Stitching verwendet
-builder.Services.AddSingleton(ConnectionMultiplexer.Connect("redis"));
-
 //Den GraphQL-Server hinzufügen
 var graphQlBuilder = builder.Services.AddGraphQLServer()
-    .RegisterDbContext<PictureConvertServiceDbContext>(DbContextKind.Pooled)
+    .RegisterDbContextFactory<PictureConvertServiceDbContext>()
     .AddQueryType<Query>()
     .AddTypeExtension<GraphQlQueryPictureConvertStatus>()
     .AddType<GraphQlPictureConvertStatusType>()
+    .AddType<GraphQlUploadPictureType>()
     .AddSubscriptionType<Subscription>()
     .AddTypeExtension<PictureConvertSubscription>()
+    .AddDataLoader<PictureConvertStatusDataLoader>()
     .AddProjections()
     .AddFiltering()
     .AddSorting()
     .AddInMemorySubscriptions()
-    .InitializeOnStartup() //Schema beim Startup initialisieren und nicht beim ersten Request wegen Publish mit Redis
-    .PublishSchemaDefinition(c => c
-        // The name of the schema. This name should be unique
-        .SetName("pictureconvert")
-        .PublishToRedis(
-            // The configuration name under which the schema should be published
-            "familielaiss",
-            // The connection multiplexer that should be used for publishing
-            sp => sp.GetRequiredService<ConnectionMultiplexer>()
-        )
-    );
-if (!builder.Environment.IsDevelopment())
-{
-    graphQlBuilder.AddAuthorization();
-}
+    .InitializeOnStartup();
 
 //Lokalisierung für ASP.NET Core hinzufügen
 builder.Services.AddLocalization(options => options.ResourcesPath = "Localize");
@@ -144,7 +130,6 @@ if (appSettings is not null)
     });
 }
 
-
 //Den Web-Host ausführen
 try
 {
@@ -183,7 +168,10 @@ try
     app.UseRouting();
 
     //Initialisieren der Datenbank (Migration und Seeden)
-    Startup.InitializeDatabase(app);
+    if (appSettings?.PostgresUser != "withoutdocker")
+    {
+        Startup.InitializeDatabase(app);
+    }
 
     //Authentifizierung verwenden
     if (!builder.Environment.IsDevelopment())
@@ -215,7 +203,7 @@ try
         });
     }
 
-    app.Run();
+    app.RunWithGraphQLCommands(args);
 }
 catch (Exception ex)
 {

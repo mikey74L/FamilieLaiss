@@ -250,10 +250,10 @@ public class VideoConvertStatus : EntityBase<long>
     /// <summary>
     /// The related upload video for this status
     /// </summary>
-    [GraphQLIgnore]
+    [GraphQLDescription("The upload video that is converted")]
     public UploadVideo UploadVideo { get; private set; } = default!;
 
-    [GraphQLDescription("Id of the upload video that is converted")]
+    [GraphQLIgnore]
     public long UploadVideoId { get; private set; }
 
     #endregion

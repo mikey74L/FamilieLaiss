@@ -17,7 +17,7 @@ namespace Catalog.Infrastructure.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.7")
+                .HasAnnotation("ProductVersion", "9.0.1")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -278,6 +278,9 @@ namespace Catalog.Infrastructure.Migrations
                 {
                     b.Property<long>("Id")
                         .HasColumnType("bigint");
+
+                    b.Property<DateTimeOffset?>("CreateDate")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Filename")
                         .IsRequired()

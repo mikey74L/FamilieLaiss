@@ -18,7 +18,7 @@ public partial class ChoosePictureDialogViewModel(
     : ViewModelBase(snackbarService, messageBoxService)
 {
     #region Parameters
-    public MudDialogInstance MudDialog { get; set; } = default!;
+    public IMudDialogInstance? MudDialog { get; set; } 
     #endregion
 
     #region Properties
@@ -84,13 +84,13 @@ public partial class ChoosePictureDialogViewModel(
     [RelayCommand]
     private void ChoosePicture(IUploadPictureModel uploadPictureModel)
     {
-        MudDialog.Close(DialogResult.Ok(uploadPictureModel));
+        MudDialog?.Close(DialogResult.Ok(uploadPictureModel));
     }
 
     [RelayCommand]
     private void Cancel()
     {
-        MudDialog.Cancel();
+        MudDialog?.Cancel();
     }
     #endregion
 

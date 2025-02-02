@@ -1,0 +1,433 @@
+﻿schema {
+  query: Query
+  subscription: Subscription
+}
+
+type Query {
+  "Returns a list of video convert status items"
+  videoConvertStatusItems(where: VideoConvertStatusFilterInput @cost(weight: "10") order: [VideoConvertStatusSortInput!] @cost(weight: "10")): [VideoConvertStatus!]! @cost(weight: "10")
+  "Returns a video convert status item"
+  videoConvertStatus(id: Long!): VideoConvertStatus! @lookup @cost(weight: "10")
+}
+
+type Subscription {
+  "Subscription for new video convert status items in waiting state"
+  onVideoConvertStatusWaiting: VideoConvertStatus!
+  "Subscription for new video convert status items in error state"
+  onVideoConvertStatusError: VideoConvertStatus!
+  "Subscription for new video convert status items in success state"
+  onVideoConvertStatusSuccess: VideoConvertStatus!
+  "Subscription for convert status item for currently converted picture"
+  onVideoConvertStatusCurrent: VideoConvertStatus!
+}
+
+type UploadVideo {
+  "The identifier for this upload video"
+  id: Long!
+  "The converting status for this upload video"
+  convertStatus: VideoConvertStatus
+}
+
+"Video convert status"
+type VideoConvertStatus {
+  "The identifier for this video convert status item"
+  id: Long!
+  "The type of video for the converted video"
+  videoType: EnumVideoType!
+  "The current state for the conversion"
+  status: EnumVideoConvertStatus!
+  "Hour part for the convert time"
+  convertHour: Int
+  "Minute part for the convert time"
+  convertMinute: Int
+  "Second part for the convert time"
+  convertSecond: Int
+  "The remaining time for current conversion in hours"
+  convertRestHour: Int
+  "The remaining time for current conversion in minutes"
+  convertRestMinute: Int
+  "The remaining time for current conversion in seconds"
+  convertRestSecond: Int
+  "Error message when conversion is in state \"Finished with errors\""
+  errorMessage: String!
+  "The progress for current conversion"
+  progress: Int
+  "Timestamp when converting the video to MP4 begins"
+  startDateMp4: DateTime
+  "Timestamp when converting the video to MP4 ends"
+  finishDateMp4: DateTime
+  "Timestamp when converting the video to HLS 640 x 360 begins"
+  startDateMp4360: DateTime
+  "Timestamp when converting the video to HLS 640 x 360 ends"
+  finishDateMp4360: DateTime
+  "Timestamp when converting the video to HLS 852 x 480 begins"
+  startDateMp4480: DateTime
+  "Timestamp when converting the video to HLS 852 x 480 ends"
+  finishDateMp4480: DateTime
+  "Timestamp when converting the video to HLS 1280 x 720 begins"
+  startDateMp4720: DateTime
+  "Timestamp when converting the video to HLS 1280 x 720 ends"
+  finishDateMp4720: DateTime
+  "Timestamp when converting the video to DASH 1920 x 1080 begins"
+  startDateMp41080: DateTime
+  "Timestamp when converting the video to DASH 1920 x 1080 ends"
+  finishDateMp41080: DateTime
+  "Timestamp when converting the video to DASH 3840 x 2160 begins"
+  startDateMp42160: DateTime
+  "Timestamp when converting the video to DASH 3840 x 2160 ends"
+  finishDateMp42160: DateTime
+  "Timestamp when creating HLS content begins"
+  startDateHls: DateTime
+  "Timestamp when creating HLS content ends"
+  finishDateHls: DateTime
+  "Timestamp when creating thumbnail begins"
+  startDateThumbnail: DateTime
+  "Timestamp when creating thumbnail ends"
+  finishDateThumbnail: DateTime
+  "Timestamp when reading media info begins"
+  startDateMediaInfo: DateTime
+  "Timestamp when reading media info ends"
+  finishDateMediaInfo: DateTime
+  "Timestamp when creating VTT content begins"
+  startDateVtt: DateTime
+  "Timestamp when creating VTT content ends"
+  finishDateVtt: DateTime
+  "Timestamp when copy of converted files begins"
+  startDateCopyConverted: DateTime
+  "Timestamp when copy of converted files ends"
+  finishDateCopyConverted: DateTime
+  "Timestamp when delete temporary files begins"
+  startDateDeleteTemp: DateTime
+  "Timestamp when delete temporary files ends"
+  finishDateDeleteTemp: DateTime
+  "Timestamp when delete original file begins"
+  startDateDeleteOriginal: DateTime
+  "Timestamp when delete original file ends"
+  finishDateDeleteOriginal: DateTime
+  "Timestamp when conversion of preview image begins"
+  startDateConvertPicture: DateTime
+  "Timestamp when conversion of preview image ends"
+  finishDateConvertPicture: DateTime
+  "The upload video that is converted"
+  uploadVideo: UploadVideo!
+}
+
+input DateTimeOperationFilterInput {
+  eq: DateTime @cost(weight: "10")
+  neq: DateTime @cost(weight: "10")
+  in: [DateTime] @cost(weight: "10")
+  nin: [DateTime] @cost(weight: "10")
+  gt: DateTime @cost(weight: "10")
+  ngt: DateTime @cost(weight: "10")
+  gte: DateTime @cost(weight: "10")
+  ngte: DateTime @cost(weight: "10")
+  lt: DateTime @cost(weight: "10")
+  nlt: DateTime @cost(weight: "10")
+  lte: DateTime @cost(weight: "10")
+  nlte: DateTime @cost(weight: "10")
+}
+
+input EnumVideoConvertStatusOperationFilterInput {
+  eq: EnumVideoConvertStatus @cost(weight: "10")
+  neq: EnumVideoConvertStatus @cost(weight: "10")
+  in: [EnumVideoConvertStatus!] @cost(weight: "10")
+  nin: [EnumVideoConvertStatus!] @cost(weight: "10")
+}
+
+input EnumVideoTypeOperationFilterInput {
+  eq: EnumVideoType @cost(weight: "10")
+  neq: EnumVideoType @cost(weight: "10")
+  in: [EnumVideoType!] @cost(weight: "10")
+  nin: [EnumVideoType!] @cost(weight: "10")
+}
+
+input IntOperationFilterInput {
+  eq: Int @cost(weight: "10")
+  neq: Int @cost(weight: "10")
+  in: [Int] @cost(weight: "10")
+  nin: [Int] @cost(weight: "10")
+  gt: Int @cost(weight: "10")
+  ngt: Int @cost(weight: "10")
+  gte: Int @cost(weight: "10")
+  ngte: Int @cost(weight: "10")
+  lt: Int @cost(weight: "10")
+  nlt: Int @cost(weight: "10")
+  lte: Int @cost(weight: "10")
+  nlte: Int @cost(weight: "10")
+}
+
+input LongOperationFilterInput {
+  eq: Long @cost(weight: "10")
+  neq: Long @cost(weight: "10")
+  in: [Long] @cost(weight: "10")
+  nin: [Long] @cost(weight: "10")
+  gt: Long @cost(weight: "10")
+  ngt: Long @cost(weight: "10")
+  gte: Long @cost(weight: "10")
+  ngte: Long @cost(weight: "10")
+  lt: Long @cost(weight: "10")
+  nlt: Long @cost(weight: "10")
+  lte: Long @cost(weight: "10")
+  nlte: Long @cost(weight: "10")
+}
+
+input StringOperationFilterInput {
+  and: [StringOperationFilterInput!]
+  or: [StringOperationFilterInput!]
+  eq: String @cost(weight: "10")
+  neq: String @cost(weight: "10")
+  contains: String @cost(weight: "20")
+  ncontains: String @cost(weight: "20")
+  in: [String] @cost(weight: "10")
+  nin: [String] @cost(weight: "10")
+  startsWith: String @cost(weight: "20")
+  nstartsWith: String @cost(weight: "20")
+  endsWith: String @cost(weight: "20")
+  nendsWith: String @cost(weight: "20")
+}
+
+input UploadVideoFilterInput {
+  and: [UploadVideoFilterInput!]
+  or: [UploadVideoFilterInput!]
+  "The converting status for this upload video"
+  convertStatus: VideoConvertStatusFilterInput
+  id: LongOperationFilterInput
+}
+
+input UploadVideoSortInput {
+  "The converting status for this upload video"
+  convertStatus: VideoConvertStatusSortInput @cost(weight: "10")
+  id: SortEnumType @cost(weight: "10")
+}
+
+"Video convert status"
+input VideoConvertStatusFilterInput {
+  and: [VideoConvertStatusFilterInput!]
+  or: [VideoConvertStatusFilterInput!]
+  "The type of video for the converted video"
+  videoType: EnumVideoTypeOperationFilterInput
+  "The current state for the conversion"
+  status: EnumVideoConvertStatusOperationFilterInput
+  "Hour part for the convert time"
+  convertHour: IntOperationFilterInput
+  "Minute part for the convert time"
+  convertMinute: IntOperationFilterInput
+  "Second part for the convert time"
+  convertSecond: IntOperationFilterInput
+  "The remaining time for current conversion in hours"
+  convertRestHour: IntOperationFilterInput
+  "The remaining time for current conversion in minutes"
+  convertRestMinute: IntOperationFilterInput
+  "The remaining time for current conversion in seconds"
+  convertRestSecond: IntOperationFilterInput
+  "Error message when conversion is in state \"Finished with errors\""
+  errorMessage: StringOperationFilterInput
+  "The progress for current conversion"
+  progress: IntOperationFilterInput
+  "Timestamp when converting the video to MP4 begins"
+  startDateMp4: DateTimeOperationFilterInput
+  "Timestamp when converting the video to MP4 ends"
+  finishDateMp4: DateTimeOperationFilterInput
+  "Timestamp when converting the video to HLS 640 x 360 begins"
+  startDateMp4360: DateTimeOperationFilterInput
+  "Timestamp when converting the video to HLS 640 x 360 ends"
+  finishDateMp4360: DateTimeOperationFilterInput
+  "Timestamp when converting the video to HLS 852 x 480 begins"
+  startDateMp4480: DateTimeOperationFilterInput
+  "Timestamp when converting the video to HLS 852 x 480 ends"
+  finishDateMp4480: DateTimeOperationFilterInput
+  "Timestamp when converting the video to HLS 1280 x 720 begins"
+  startDateMp4720: DateTimeOperationFilterInput
+  "Timestamp when converting the video to HLS 1280 x 720 ends"
+  finishDateMp4720: DateTimeOperationFilterInput
+  "Timestamp when converting the video to DASH 1920 x 1080 begins"
+  startDateMp41080: DateTimeOperationFilterInput
+  "Timestamp when converting the video to DASH 1920 x 1080 ends"
+  finishDateMp41080: DateTimeOperationFilterInput
+  "Timestamp when converting the video to DASH 3840 x 2160 begins"
+  startDateMp42160: DateTimeOperationFilterInput
+  "Timestamp when converting the video to DASH 3840 x 2160 ends"
+  finishDateMp42160: DateTimeOperationFilterInput
+  "Timestamp when creating HLS content begins"
+  startDateHls: DateTimeOperationFilterInput
+  "Timestamp when creating HLS content ends"
+  finishDateHls: DateTimeOperationFilterInput
+  "Timestamp when creating thumbnail begins"
+  startDateThumbnail: DateTimeOperationFilterInput
+  "Timestamp when creating thumbnail ends"
+  finishDateThumbnail: DateTimeOperationFilterInput
+  "Timestamp when reading media info begins"
+  startDateMediaInfo: DateTimeOperationFilterInput
+  "Timestamp when reading media info ends"
+  finishDateMediaInfo: DateTimeOperationFilterInput
+  "Timestamp when creating VTT content begins"
+  startDateVtt: DateTimeOperationFilterInput
+  "Timestamp when creating VTT content ends"
+  finishDateVtt: DateTimeOperationFilterInput
+  "Timestamp when copy of converted files begins"
+  startDateCopyConverted: DateTimeOperationFilterInput
+  "Timestamp when copy of converted files ends"
+  finishDateCopyConverted: DateTimeOperationFilterInput
+  "Timestamp when delete temporary files begins"
+  startDateDeleteTemp: DateTimeOperationFilterInput
+  "Timestamp when delete temporary files ends"
+  finishDateDeleteTemp: DateTimeOperationFilterInput
+  "Timestamp when delete original file begins"
+  startDateDeleteOriginal: DateTimeOperationFilterInput
+  "Timestamp when delete original file ends"
+  finishDateDeleteOriginal: DateTimeOperationFilterInput
+  "Timestamp when conversion of preview image begins"
+  startDateConvertPicture: DateTimeOperationFilterInput
+  "Timestamp when conversion of preview image ends"
+  finishDateConvertPicture: DateTimeOperationFilterInput
+  "The upload video that is converted"
+  uploadVideo: UploadVideoFilterInput
+  id: LongOperationFilterInput
+}
+
+"Video convert status"
+input VideoConvertStatusSortInput {
+  "The type of video for the converted video"
+  videoType: SortEnumType @cost(weight: "10")
+  "The current state for the conversion"
+  status: SortEnumType @cost(weight: "10")
+  "Hour part for the convert time"
+  convertHour: SortEnumType @cost(weight: "10")
+  "Minute part for the convert time"
+  convertMinute: SortEnumType @cost(weight: "10")
+  "Second part for the convert time"
+  convertSecond: SortEnumType @cost(weight: "10")
+  "The remaining time for current conversion in hours"
+  convertRestHour: SortEnumType @cost(weight: "10")
+  "The remaining time for current conversion in minutes"
+  convertRestMinute: SortEnumType @cost(weight: "10")
+  "The remaining time for current conversion in seconds"
+  convertRestSecond: SortEnumType @cost(weight: "10")
+  "Error message when conversion is in state \"Finished with errors\""
+  errorMessage: SortEnumType @cost(weight: "10")
+  "The progress for current conversion"
+  progress: SortEnumType @cost(weight: "10")
+  "Timestamp when converting the video to MP4 begins"
+  startDateMp4: SortEnumType @cost(weight: "10")
+  "Timestamp when converting the video to MP4 ends"
+  finishDateMp4: SortEnumType @cost(weight: "10")
+  "Timestamp when converting the video to HLS 640 x 360 begins"
+  startDateMp4360: SortEnumType @cost(weight: "10")
+  "Timestamp when converting the video to HLS 640 x 360 ends"
+  finishDateMp4360: SortEnumType @cost(weight: "10")
+  "Timestamp when converting the video to HLS 852 x 480 begins"
+  startDateMp4480: SortEnumType @cost(weight: "10")
+  "Timestamp when converting the video to HLS 852 x 480 ends"
+  finishDateMp4480: SortEnumType @cost(weight: "10")
+  "Timestamp when converting the video to HLS 1280 x 720 begins"
+  startDateMp4720: SortEnumType @cost(weight: "10")
+  "Timestamp when converting the video to HLS 1280 x 720 ends"
+  finishDateMp4720: SortEnumType @cost(weight: "10")
+  "Timestamp when converting the video to DASH 1920 x 1080 begins"
+  startDateMp41080: SortEnumType @cost(weight: "10")
+  "Timestamp when converting the video to DASH 1920 x 1080 ends"
+  finishDateMp41080: SortEnumType @cost(weight: "10")
+  "Timestamp when converting the video to DASH 3840 x 2160 begins"
+  startDateMp42160: SortEnumType @cost(weight: "10")
+  "Timestamp when converting the video to DASH 3840 x 2160 ends"
+  finishDateMp42160: SortEnumType @cost(weight: "10")
+  "Timestamp when creating HLS content begins"
+  startDateHls: SortEnumType @cost(weight: "10")
+  "Timestamp when creating HLS content ends"
+  finishDateHls: SortEnumType @cost(weight: "10")
+  "Timestamp when creating thumbnail begins"
+  startDateThumbnail: SortEnumType @cost(weight: "10")
+  "Timestamp when creating thumbnail ends"
+  finishDateThumbnail: SortEnumType @cost(weight: "10")
+  "Timestamp when reading media info begins"
+  startDateMediaInfo: SortEnumType @cost(weight: "10")
+  "Timestamp when reading media info ends"
+  finishDateMediaInfo: SortEnumType @cost(weight: "10")
+  "Timestamp when creating VTT content begins"
+  startDateVtt: SortEnumType @cost(weight: "10")
+  "Timestamp when creating VTT content ends"
+  finishDateVtt: SortEnumType @cost(weight: "10")
+  "Timestamp when copy of converted files begins"
+  startDateCopyConverted: SortEnumType @cost(weight: "10")
+  "Timestamp when copy of converted files ends"
+  finishDateCopyConverted: SortEnumType @cost(weight: "10")
+  "Timestamp when delete temporary files begins"
+  startDateDeleteTemp: SortEnumType @cost(weight: "10")
+  "Timestamp when delete temporary files ends"
+  finishDateDeleteTemp: SortEnumType @cost(weight: "10")
+  "Timestamp when delete original file begins"
+  startDateDeleteOriginal: SortEnumType @cost(weight: "10")
+  "Timestamp when delete original file ends"
+  finishDateDeleteOriginal: SortEnumType @cost(weight: "10")
+  "Timestamp when conversion of preview image begins"
+  startDateConvertPicture: SortEnumType @cost(weight: "10")
+  "Timestamp when conversion of preview image ends"
+  finishDateConvertPicture: SortEnumType @cost(weight: "10")
+  "The upload video that is converted"
+  uploadVideo: UploadVideoSortInput @cost(weight: "10")
+  id: SortEnumType @cost(weight: "10")
+}
+
+enum EnumVideoConvertStatus {
+  WAITING_FOR_CONVERSION
+  READ_MEDIA_INFO_BEGIN
+  READ_MEDIA_INFO_END
+  CONVERT_MP4_VIDEO_BEGIN
+  CONVERT_MP4_VIDEO_END
+  CONVERT640X360_BEGIN
+  CONVERT640X360_END
+  CONVERT852X480_BEGIN
+  CONVERT852X480_END
+  CONVERT1280X720_BEGIN
+  CONVERT1280X720_END
+  CONVERT1920X1080_BEGIN
+  CONVERT1920X1080_END
+  CONVERT3840X2160_BEGIN
+  CONVERT3840X2160_END
+  CREATE_PREVIEW_IMAGE_BEGIN
+  CREATE_PREVIEW_IMAGE_END
+  CREATE_HLS_BEGIN
+  CREATE_HLS_END
+  CREATE_VTT_BEGIN
+  CREATE_VTT_END
+  COPY_CONVERTED_BEGIN
+  COPY_CONVERTED_END
+  DELETE_ORIGINAL_BEGIN
+  DELETE_ORIGINAL_END
+  DELETE_CONVERTED_BEGIN
+  DELETE_CONVERTED_END
+  CONVERT_PICTURE_BEGIN
+  CONVERT_PICTURE_END
+  SUCESSFULLY_CONVERTED
+  CONVERTED_WITH_ERRORS
+  TRANSIENT_ERROR
+}
+
+"The video type for the converted upload video"
+enum EnumVideoType {
+  "Not set"
+  NOT_SET
+  "Progressive video format"
+  PROGRESSIVE
+  "HTTP Live Streaming format"
+  HLS
+}
+
+enum SortEnumType {
+  ASC
+  DESC
+}
+
+"The purpose of the `cost` directive is to define a `weight` for GraphQL types, fields, and arguments. Static analysis can use these weights when calculating the overall cost of a query or response."
+directive @cost("The `weight` argument defines what value to add to the overall cost for every appearance, or possible appearance, of a type, field, argument, etc." weight: String!) on SCALAR | OBJECT | FIELD_DEFINITION | ARGUMENT_DEFINITION | ENUM | INPUT_FIELD_DEFINITION
+
+directive @lookup on FIELD_DEFINITION
+
+"The `@specifiedBy` directive is used within the type system definition language to provide a URL for specifying the behavior of custom scalar definitions."
+directive @specifiedBy("The specifiedBy URL points to a human-readable specification. This field will only read a result for scalar types." url: String!) on SCALAR
+
+"The `DateTime` scalar represents an ISO-8601 compliant date time type."
+scalar DateTime @specifiedBy(url: "https:\/\/www.graphql-scalars.com\/date-time")
+
+"The `Long` scalar type represents non-fractional signed whole 64-bit numeric values. Long can represent values between -(2^63) and 2^63 - 1."
+scalar Long

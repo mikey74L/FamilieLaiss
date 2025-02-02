@@ -200,7 +200,7 @@ public class UserSetting : EntityModify<string>
 
     #region C'tor
     /// <summary>
-    /// C'tor without parameters would be used by EF-Core
+    /// C'tor without parameters would be used by GraphQL and EfCore
     /// </summary>
     private UserSetting()
     {

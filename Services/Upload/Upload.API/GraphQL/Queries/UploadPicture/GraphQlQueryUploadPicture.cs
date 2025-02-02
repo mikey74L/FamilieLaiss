@@ -1,5 +1,6 @@
 ﻿using FamilieLaissSharedObjects.Enums;
-using Upload.API.GraphQL.DataLoader.UploadPicture;
+using HotChocolate.Fusion.SourceSchema.Types;
+using Upload.API.GraphQL.DataLoaders.UploadPicture;
 using Upload.API.Models;
 using Upload.Infrastructure.DBContext;
 
@@ -19,6 +20,7 @@ public class GraphQlQueryUploadPicture
 
     [GraphQLDescription("Returns a upload picture")]
     [UseProjection]
+    [Lookup]
     public async Task<Domain.Entities.UploadPicture> GetUploadPicture(long id, UploadPictureDataLoader dataLoader)
         => await dataLoader.LoadAsync(id);
 
@@ -95,6 +97,6 @@ public class GraphQlQueryUploadPicture
     [GraphQLDescription("Returns the current count for converted and unassigned upload pictures")]
     public int GetUploadPictureCount(UploadServiceDbContext context)
     {
-        return context.UploadPictures.Count(x => x.Status == EnumUploadStatus.Converted);
+        return context.UploadPictures.Count(x => x.State == EnumUploadState.Converted);
     }
 }

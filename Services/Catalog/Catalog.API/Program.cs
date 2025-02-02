@@ -1,7 +1,10 @@
 using Catalog.API;
 using Catalog.API.GraphQL;
-using Catalog.API.GraphQL.DataLoader.UploadPicture;
-using Catalog.API.GraphQL.DataLoader.UploadVideo;
+using Catalog.API.GraphQL.DataLoaders.Category;
+using Catalog.API.GraphQL.DataLoaders.CategoryValue;
+using Catalog.API.GraphQL.DataLoaders.Media;
+using Catalog.API.GraphQL.DataLoaders.UploadPicture;
+using Catalog.API.GraphQL.DataLoaders.UploadVideo;
 using Catalog.API.GraphQL.Filter;
 using Catalog.API.GraphQL.Mutations;
 using Catalog.API.GraphQL.Mutations.Category;
@@ -16,6 +19,8 @@ using Catalog.API.GraphQL.Queries.UploadVideo;
 using Catalog.API.GraphQL.Types.Category;
 using Catalog.API.GraphQL.Types.CategoryValue;
 using Catalog.API.GraphQL.Types.Media;
+using Catalog.API.GraphQL.Types.UploadPicture;
+using Catalog.API.GraphQL.Types.UploadVideo;
 using Catalog.API.Logging;
 using Catalog.API.MassTransit.Consumers.UploadPicture;
 using Catalog.API.MassTransit.Consumers.UploadVideo;
@@ -30,7 +35,6 @@ using Npgsql;
 using Serilog;
 using ServiceLayerHelper;
 using ServiceLayerHelper.Logging;
-using StackExchange.Redis;
 using Steeltoe.Discovery.Client;
 using Steeltoe.Discovery.Eureka;
 using System.Globalization;
@@ -46,29 +50,29 @@ var logger = new LoggerConfiguration()
 builder.Logging.ClearProviders();
 builder.Host.UseSerilog(logger);
 
-//Den Logger für Serilog erstellen
+//Den Logger fï¿½r Serilog erstellen
 Log.Logger = new LoggerConfiguration()
     .ReadFrom.Configuration(builder.Configuration)
     .CreateBootstrapLogger();
 
-//Hinzufügen der Service-Discovery
+//Hinzufï¿½gen der Service-Discovery
 builder.AddServiceDiscovery(options => options.UseEureka());
 
-//Hinzufügen eines HTTPContextAccessor 
+//Hinzufï¿½gen eines HTTPContextAccessor 
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
-//Hinzufügen der Hosted-Services (Background-Services)
+//Hinzufï¿½gen der Hosted-Services (Background-Services)
 builder.Services.AddHostedService<EventDispatcherBackgroundService>();
 
-//Hinzufügen det globalen Exception-Handler Middleware
+//Hinzufï¿½gen det globalen Exception-Handler Middleware
 builder.Services.AddSingleton<ILog, LogSerilog>();
 
-//Hinzufügen der Konfiguration (App-Settings) zum IOC-Container
+//Hinzufï¿½gen der Konfiguration (App-Settings) zum IOC-Container
 var appSettingsSection = builder.Configuration.GetSection("AppSettings");
 builder.Services.Configure<AppSettings>(appSettingsSection);
 var appSettings = appSettingsSection.Get<AppSettings>();
 
-//Die DB-Context Factory hinzufügen inklusive der UnitOfWork
+//Die DB-Context Factory hinzufï¿½gen inklusive der UnitOfWork
 NpgsqlConnectionStringBuilder postgresConnectionStringBuilder = new()
 {
     ApplicationName = "Catalog-Service",
@@ -83,12 +87,9 @@ builder.Services.AddPooledDbContextFactory<CatalogServiceDbContext>(
         o => o.UseNpgsql(postgresConnectionStringBuilder.ToString()))
     .AddUnitOfWork<CatalogServiceDbContext>();
 
-//Redis Multiplexer hinzufügen wird für GraphQL Schema Stitching verwendet
-builder.Services.AddSingleton(ConnectionMultiplexer.Connect("redis"));
-
 //Adding GraphQL Server
 var graphQlBuilder = builder.Services.AddGraphQLServer()
-    .RegisterDbContext<CatalogServiceDbContext>(DbContextKind.Pooled)
+    .RegisterDbContextFactory<CatalogServiceDbContext>()
     .AddMutationType<Mutation>()
     .AddTypeExtension<GraphQlMutationCategory>()
     .AddTypeExtension<GraphQlMutationCategoryValue>()
@@ -105,6 +106,12 @@ var graphQlBuilder = builder.Services.AddGraphQLServer()
     .AddType<GraphQlMediaGroupType>()
     .AddType<GraphQlMediaItemType>()
     .AddType<GraphQlMediaItemCategoryValueType>()
+    .AddType<GraphQlUploadPictureType>()
+    .AddType<GraphQlUploadVideoType>()
+    .AddDataLoader<CategoryDataLoader>()
+    .AddDataLoader<CategoryValueDataLoader>()
+    .AddDataLoader<MediaGroupDataLoader>()
+    .AddDataLoader<MediaItemDataLoader>()
     .AddDataLoader<UploadPictureDataLoader>()
     .AddDataLoader<UploadVideoDataLoader>()
     .AddProjections()
@@ -112,30 +119,18 @@ var graphQlBuilder = builder.Services.AddGraphQLServer()
     .AddSorting()
     .AddErrorFilter<GraphQlErrorFilter>()
     .AddAuthorization()
-    .InitializeOnStartup()
-    .PublishSchemaDefinition(c => c
-        // The name of the schema. This name should be unique
-        .SetName("catalog")
-        .RenameType("UploadPicture", "MediaUploadPicture")
-        .RenameType("UploadVideo", "MediaUploadVideo")
-        .PublishToRedis(
-            // The configuration name under which the schema should be published
-            "familielaiss",
-            // The connection multiplexer that should be used for publishing
-            sp => sp.GetRequiredService<ConnectionMultiplexer>()
-        )
-    );
+    .InitializeOnStartup();
 
-//Lokalisierung für ASP.NET Core hinzufügen
+//Lokalisierung fï¿½r ASP.NET Core hinzufï¿½gen
 builder.Services.AddLocalization(options => options.ResourcesPath = "Localize");
 
 //Registrieren von MediatR mit der aktuellen Assembly
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<Program>());
 
-//Festlegen der EndpointConventions für MassTransit
+//Festlegen der EndpointConventions fï¿½r MassTransit
 Startup.ConfigureEndpointConventions(appSettings);
 
-//Hinzufügen der Consumer zum DI-Container
+//Hinzufï¿½gen der Consumer zum DI-Container
 builder.Services.AddScoped<UploadPictureCreatedConsumer>();
 builder.Services.AddScoped<UploadVideoCreatedConsumer>();
 builder.Services.AddScoped<UploadPictureDeletedConsumer>();
@@ -145,16 +140,13 @@ if (appSettings is not null)
 {
     builder.Services.AddMassTransit(x =>
     {
-        //Hinzufügen der Consumer
         x.AddConsumer<UploadPictureCreatedConsumer>();
         x.AddConsumer<UploadVideoCreatedConsumer>();
         x.AddConsumer<UploadPictureDeletedConsumer>();
         x.AddConsumer<UploadVideoDeletedConsumer>();
 
-        //RabbitMq hinzufügen
         x.UsingRabbitMq((context, cfg) =>
         {
-            //Konfigurieren des Hosts
             cfg.Host(new Uri(appSettings.RabbitMqConnection));
 
             cfg.ReceiveEndpoint(appSettings.EndpointCatalogService, e =>
@@ -172,24 +164,24 @@ if (appSettings is not null)
     });
 }
 
-//Den Web-Host ausführen
+//Den Web-Host ausfï¿½hren
 try
 {
     Log.Information("Starting Web-Host...");
 
     var app = builder.Build();
 
-    //Die von der Website unterstützen Sprachen hinzufügen
+    //Die von der Website unterstï¿½tzen Sprachen hinzufï¿½gen
     var supportedCultures = new[]
     {
         new CultureInfo("de"),
         new CultureInfo("en")
     };
 
-    //Hinzufügen des Request-Loggings von Serilog
+    //Hinzufï¿½gen des Request-Loggings von Serilog
     app.UseSerilogRequestLogging();
 
-    //Lokalisierung anhand von Requests zur Pipeline hinzufügen
+    //Lokalisierung anhand von Requests zur Pipeline hinzufï¿½gen
     app.UseRequestLocalization(new RequestLocalizationOptions
     {
         DefaultRequestCulture = new RequestCulture("en-US"),
@@ -207,7 +199,10 @@ try
     app.ConfigureExceptionHandler();
 
     //Initialisieren der Datenbank (Migration und Seeden)
-    Startup.InitializeDatabase(app);
+    if (appSettings?.PostgresUser != "withoutdocker")
+    {
+        Startup.InitializeDatabase(app);
+    }
 
     //Add routing to pipeline
     app.UseRouting();

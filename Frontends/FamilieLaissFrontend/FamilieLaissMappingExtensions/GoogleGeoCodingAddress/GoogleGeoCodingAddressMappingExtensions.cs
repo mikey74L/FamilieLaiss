@@ -8,22 +8,20 @@ public static class GoogleGeoCodingAddressMappingExtensions
 {
     public static IGoogleGeoCodingAddressModel? Map(this IFrGoogleGeoCodingAddress? source)
     {
-        if (source is not null)
+        if (source is null) return null;
+        
+        var result = new GoogleGeoCodingAddressModel()
         {
-            var result = new GoogleGeoCodingAddressModel()
-            {
-                Latitude = source.Latitude,
-                Longitude = source.Longitude,
-                StreetName = source.StreetName,
-                Hnr = source.Hnr,
-                Zip = source.Zip,
-                City = source.City,
-                Country = source.Country
-            };
+            Latitude = source.Latitude,
+            Longitude = source.Longitude,
+            StreetName = source.StreetName,
+            Hnr = source.Hnr,
+            Zip = source.Zip,
+            City = source.City,
+            Country = source.Country
+        };
 
-            return result;
-        }
+        return result;
 
-        return null;
     }
 }

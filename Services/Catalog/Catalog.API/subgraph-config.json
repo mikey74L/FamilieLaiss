@@ -1,0 +1,6 @@
+{
+  "subgraph": "Catalog",
+  "http": {
+    "baseAddress": "http://catalogservice/graphql"
+  }
+}

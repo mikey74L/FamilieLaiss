@@ -1,4 +1,5 @@
 ﻿using DomainHelper.AbstractClasses;
+using HotChocolate;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 
@@ -10,25 +11,25 @@ namespace PictureConvert.Domain.Entities;
 public class UploadPicture : EntityBase<long>
 {
     #region Properties
-
     /// <summary>
     /// The original filename of the upload picture with file extension
     /// </summary>
     [Required]
     [MaxLength(255)]
+    [GraphQLIgnore]
     public string Filename { get; private set; } = string.Empty;
 
     /// <summary>
     /// The converting status for this upload picture
     /// </summary>
+    [GraphQLDescription("The converting status for this upload picture")]
     public PictureConvertStatus? Status { get; private set; }
-
     #endregion
 
     #region C'tor
 
     /// <summary>
-    /// C'tor without parameters would be used by EF-Core
+    /// Default constructor for GraphQL
     /// </summary>
     private UploadPicture()
     {

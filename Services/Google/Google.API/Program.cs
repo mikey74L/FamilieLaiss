@@ -5,19 +5,13 @@ using Google.API.Interfaces;
 using Google.API.Logging;
 using Google.API.Models;
 using Google.API.Services;
-using Google.API.Swagger;
-using Google.DTO;
 using MassTransit;
 using Microsoft.AspNetCore.Localization;
-using Microsoft.Extensions.Options;
 using Serilog;
 using ServiceLayerHelper.Logging;
-using StackExchange.Redis;
 using Steeltoe.Discovery.Client;
 using Steeltoe.Discovery.Eureka;
-using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Globalization;
-using System.Reflection;
 
 // Set the title for the console window
 Console.Title = "Google-Service";
@@ -62,19 +56,6 @@ apiVersioningBuilder.AddApiExplorer(
 // Add everything for WebApi
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
-builder.Services.AddSwaggerGen(options =>
-{
-    options.OperationFilter<SwaggerDefaultValues>();
-
-    var fileNameMain = Assembly.GetExecutingAssembly().GetName().Name + ".xml";
-    var fileNameDTO = typeof(GoogleGeoCodingAdressDTO).Assembly.GetName().Name + ".xml";
-    var filePathMain = System.IO.Path.Combine(AppContext.BaseDirectory, fileNameMain);
-    var filePathDTO = System.IO.Path.Combine(AppContext.BaseDirectory, fileNameDTO);
-
-    options.IncludeXmlComments(filePathMain);
-    options.IncludeXmlComments(filePathDTO);
-});
 
 // Add the configuration (App-Settings) to the IOC container
 var appSettingsSection = builder.Configuration.GetSection("AppSettings");
@@ -90,25 +71,12 @@ builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<Pr
 // Register the GoogleGeoCoding service
 builder.Services.AddTransient<IWsGoogleGeoCoding, WsGoogleGeoCodingService>();
 
-//Redis Multiplexer hinzufügen wird für GraphQL Schema Stitching verwendet
-builder.Services.AddSingleton(ConnectionMultiplexer.Connect("redis"));
-
 //Adding GraphQL Server
 var graphQlBuilder = builder.Services.AddGraphQLServer()
     .AddQueryType<Query>()
     .AddTypeExtension<GraphQlQueryGoogle>()
     .AddAuthorization()
-    .InitializeOnStartup()
-    .PublishSchemaDefinition(c => c
-        // The name of the schema. This name should be unique
-        .SetName("google")
-        .PublishToRedis(
-            // The configuration name under which the schema should be published
-            "familielaiss",
-            // The connection multiplexer that should be used for publishing
-            sp => sp.GetRequiredService<ConnectionMultiplexer>()
-        )
-    );
+    .InitializeOnStartup();
 
 // Set the EndpointConventions for MassTransit
 Startup.ConfigureEndpointConventions(appSettings);
@@ -175,24 +143,6 @@ try
 
     // Configure the Exception Handler Middleware
     app.ConfigureExceptionHandler();
-
-    // Add Swagger / OpenAPI
-    if (app.Environment.IsDevelopment())
-    {
-        app.UseSwagger();
-        app.UseSwaggerUI(options =>
-        {
-            var descriptions = app.DescribeApiVersions();
-
-            // Build a swagger endpoint for each discovered API version
-            foreach (var description in descriptions)
-            {
-                var url = $"/swagger/{description.GroupName}/swagger.json";
-                var name = description.GroupName.ToUpperInvariant();
-                options.SwaggerEndpoint(url, name);
-            }
-        });
-    }
 
     //Add routing to pipeline
     app.UseRouting();

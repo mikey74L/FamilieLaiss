@@ -8,6 +8,7 @@ using Serilog;
 using ServiceLayerHelper;
 using ServiceLayerHelper.Logging;
 using Settings.API;
+using Settings.API.GraphQL.DataLoaders;
 using Settings.API.GraphQL.Mutations;
 using Settings.API.GraphQL.Mutations.UserSettings;
 using Settings.API.GraphQL.Queries;
@@ -15,7 +16,6 @@ using Settings.API.GraphQL.Types;
 using Settings.API.Logging;
 using Settings.API.Models;
 using Settings.Infrastructure.DBContext;
-using StackExchange.Redis;
 using Steeltoe.Discovery.Client;
 using Steeltoe.Discovery.Eureka;
 using System.Globalization;
@@ -70,34 +70,18 @@ builder.Services.AddPooledDbContextFactory<SettingsServiceDbContext>(
         o => o.UseNpgsql(postgresConnectionStringBuilder.ToString()))
     .AddUnitOfWork<SettingsServiceDbContext>();
 
-//Redis Multiplexer hinzufügen wird für GraphQL Schema Stitching verwendet
-builder.Services.AddSingleton(ConnectionMultiplexer.Connect("redis"));
-
 //Den GraphQL-Server hinzufügen
 var GraphQLBuilder = builder.Services.AddGraphQLServer()
-    .RegisterDbContext<SettingsServiceDbContext>(DbContextKind.Pooled)
+    .RegisterDbContextFactory<SettingsServiceDbContext>()
     .AddMutationType<Mutation>()
     .AddTypeExtension<GraphQlMutationUserSetting>()
     .AddQueryType<Query>()
     .AddTypeExtension<GraphQlQueryUserSetting>()
     .AddType<UserSettingsType>()
+    .AddDataLoader<UserSettingsDataLoader>()
     .AddFiltering()
     .AddSorting()
-    .InitializeOnStartup() //Schema beim Startup initialisieren und nicht beim ersten Request wegen Publish mit Redis
-    .PublishSchemaDefinition(c => c
-        // The name of the schema. This name should be unique
-        .SetName("usersetting")
-        .PublishToRedis(
-            // The configuration name under which the schema should be published
-            "familielaiss",
-            // The connection multiplexer that should be used for publishing
-            sp => sp.GetRequiredService<ConnectionMultiplexer>()
-        )
-    );
-if (!builder.Environment.IsDevelopment())
-{
-    GraphQLBuilder.AddAuthorization();
-}
+    .InitializeOnStartup();
 
 //Lokalisierung für ASP.NET Core hinzufügen
 builder.Services.AddLocalization(options => options.ResourcesPath = "Localize");
@@ -175,8 +159,11 @@ try
     app.UseRouting();
 
     //Initialisieren der Datenbank (Migration und Seeden)
-    Startup.InitializeDatabase(app);
-    Startup.SeedDatabase(app);
+    if (appSettings?.PostgresUser != "withoutdocker")
+    {
+        Startup.InitializeDatabase(app);
+        Startup.SeedDatabase(app);
+    }
 
     //Authentifizierung verwenden
     if (!builder.Environment.IsDevelopment())
@@ -208,7 +195,7 @@ try
         });
     }
 
-    app.Run();
+    app.RunWithGraphQLCommands(args);
 }
 catch (Exception ex)
 {

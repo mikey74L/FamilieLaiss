@@ -1,5 +1,7 @@
-﻿using Catalog.Infrastructure.DBContext;
+﻿using Catalog.API.GraphQL.DataLoaders.Category;
+using Catalog.Infrastructure.DBContext;
 using FamilieLaissSharedObjects.Enums;
+using HotChocolate.Fusion.SourceSchema.Types;
 using Microsoft.EntityFrameworkCore;
 
 namespace Catalog.API.GraphQL.Queries.Category;
@@ -16,6 +18,11 @@ public class GraphQlQueryCategory
     {
         return context.Category;
     }
+
+    [GraphQLDescription("Returns a category")]
+    [Lookup]
+    public async Task<Domain.Aggregates.Category> GetCategory(long id, CategoryDataLoader dataLoader)
+    => await dataLoader.LoadAsync(id);
 
     //[Authorize("Category.Validate")]
     [GraphQLDescription("Validate german category name ")]

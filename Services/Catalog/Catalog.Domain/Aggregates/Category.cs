@@ -20,7 +20,7 @@ public class Category : EntityModify<long>
 {
     #region Private Properties
 
-    private readonly ILazyLoader _lazyLoader;
+    private readonly ILazyLoader? _lazyLoader;
 
     #endregion
 
@@ -76,7 +76,7 @@ public class Category : EntityModify<long>
     // ReSharper disable once UnusedMember.Local
     private Category(ILazyLoader lazyLoader)
     {
-        _lazyLoader = lazyLoader;
+        this._lazyLoader = lazyLoader;
     }
 
     /// <summary>
@@ -158,18 +158,19 @@ public class Category : EntityModify<long>
     [GraphQLIgnore]
     public async Task RemoveCategoryValue(long categoryValueId)
     {
-        bool itemFound = false;
+        var itemFound = false;
 
-        await _lazyLoader.LoadAsync(this, navigationName: nameof(CategoryValues));
+        if (_lazyLoader is not null)
+        {
+            await _lazyLoader.LoadAsync(this, navigationName: nameof(CategoryValues));
+        }
 
         foreach (var item in CategoryValues)
         {
-            if (item.Id == categoryValueId)
-            {
-                itemFound = true;
-                CategoryValues.Remove(item);
-                break;
-            }
+            if (item.Id != categoryValueId) continue;
+            itemFound = true;
+            CategoryValues.Remove(item);
+            break;
         }
 
         if (!itemFound)
@@ -203,13 +204,15 @@ public class Category : EntityModify<long>
     {
         AddDomainEvent(new DomainEventCategoryDeleted(Id));
 
-        await _lazyLoader.LoadAsync(this, navigationName: nameof(CategoryValues));
+        if (_lazyLoader is not null)
+        {
+            await _lazyLoader.LoadAsync(this, navigationName: nameof(CategoryValues));
+        }
 
         foreach (var item in CategoryValues)
         {
             await item.EntityDeletedAsync(dbContext, dictContextParams);
         }
     }
-
     #endregion
 }

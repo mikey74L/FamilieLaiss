@@ -55,13 +55,7 @@
     [EditorRequired]
     public IGraphQlSortAndFilterService<TModel, TSortInput, TFilterInputType> SortAndFilterService 
     { 
-        get
-        {
-            return ViewModel.SortAndFilterService;
-        }
-        set
-        {
-            ViewModel.SortAndFilterService = value;
-        }
+        get => ViewModel.SortAndFilterService;
+        set => ViewModel.SortAndFilterService = value;
     } 
 }

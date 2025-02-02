@@ -69,10 +69,10 @@ public class PictureConvertStatus : EntityBase<long>
     /// <summary>
     /// The related upload picture for this status
     /// </summary>
-    [GraphQLIgnore]
+    [GraphQLDescription("Id of the upload picture that is converted")]
     public UploadPicture UploadPicture { get; private set; }
 
-    [GraphQLDescription("Id of the upload picture that is converted")]
+    [GraphQLIgnore]
     public long UploadPictureId { get; private set; }
 
     #endregion
@@ -84,6 +84,12 @@ public class PictureConvertStatus : EntityBase<long>
     #endregion
 
     #region C'tor
+    /// <summary>
+    /// Default constructor for GraphQL
+    /// </summary>
+    private PictureConvertStatus()
+    {
+    }
 
     /// <summary>
     /// C'tor without parameters would be used by EF-Core

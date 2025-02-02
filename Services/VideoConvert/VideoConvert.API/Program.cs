@@ -4,10 +4,10 @@ using MassTransit;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
+using PictureConvert.API.GraphQL.DataLoader.VideoConvertStatus;
 using Serilog;
 using ServiceLayerHelper;
 using ServiceLayerHelper.Logging;
-using StackExchange.Redis;
 using Steeltoe.Discovery.Client;
 using Steeltoe.Discovery.Eureka;
 using System.Globalization;
@@ -16,7 +16,8 @@ using VideoConvert.API.GraphQL.Queries;
 using VideoConvert.API.GraphQL.Queries.VideoConvertStatus;
 using VideoConvert.API.GraphQL.Subscription;
 using VideoConvert.API.GraphQL.Subscription.VideoConvert;
-using VideoConvert.API.GraphQL.Types;
+using VideoConvert.API.GraphQL.Types.UploadVideo;
+using VideoConvert.API.GraphQL.Types.VideoConvertStatus;
 using VideoConvert.API.Logging;
 using VideoConvert.API.MassTransit.Consumers;
 using VideoConvert.API.Models;
@@ -71,40 +72,25 @@ builder.Services.AddPooledDbContextFactory<VideoConvertServiceDbContext>(
         o => o.UseNpgsql(postgresConnectionStringBuilder.ToString()))
     .AddUnitOfWork<VideoConvertServiceDbContext>();
 
-//Redis Multiplexer hinzufügen wird für GraphQL Schema Stitching verwendet
-builder.Services.AddSingleton(ConnectionMultiplexer.Connect("redis"));
-
 //Lokalisierung für ASP.NET Core hinzufügen
 builder.Services.AddLocalization(options => options.ResourcesPath = "Localize");
 
 //Den GraphQL-Server hinzufügen
 var graphQlBuilder = builder.Services.AddGraphQLServer()
-    .RegisterDbContext<VideoConvertServiceDbContext>(DbContextKind.Pooled)
-    .AddDiagnosticEventListener<QueryLogger>()
-    .AddQueryType<Query>()
-    .AddTypeExtension<GraphQlQueryVideoConvertStatus>()
-    .AddType<GraphQlVideoConvertStatusType>()
-    .AddSubscriptionType<Subscription>()
-    .AddTypeExtension<VideoConvertSubscription>()
-    .AddProjections()
-    .AddFiltering()
-    .AddSorting()
-    .AddInMemorySubscriptions()
-    .InitializeOnStartup() //Schema beim Startup initialisieren und nicht beim ersten Request wegen Publish mit Redis
-    .PublishSchemaDefinition(c => c
-        // The name of the schema. This name should be unique
-        .SetName("videoconvert")
-        .PublishToRedis(
-            // The configuration name under which the schema should be published
-            "familielaiss",
-            // The connection multiplexer that should be used for publishing
-            sp => sp.GetRequiredService<ConnectionMultiplexer>()
-        )
-    );
-if (!builder.Environment.IsDevelopment())
-{
-    graphQlBuilder.AddAuthorization();
-}
+                                     .RegisterDbContextFactory<VideoConvertServiceDbContext>()
+                                     .AddDiagnosticEventListener<QueryLogger>()
+                                     .AddQueryType<Query>()
+                                     .AddTypeExtension<GraphQlQueryVideoConvertStatus>()
+                                     .AddType<GraphQlVideoConvertStatusType>()
+                                     .AddType<GraphQlUploadVideoType>()
+                                     .AddSubscriptionType<Subscription>()
+                                     .AddTypeExtension<VideoConvertSubscription>()
+                                     .AddDataLoader<VideoConvertStatusDataLoader>()
+                                     .AddProjections()
+                                     .AddFiltering()
+                                     .AddSorting()
+                                     .AddInMemorySubscriptions()
+                                     .InitializeOnStartup();
 
 //Registrieren von MediatR mit der aktuellen Assembly
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<Program>());
@@ -181,7 +167,11 @@ try
     app.UseRouting();
 
     //Initialisieren der Datenbank (Migration und Seeden)
-    Startup.InitializeDatabase(app);
+    if (appSettings?.PostgresUser != "withoutdocker")
+    {
+        Startup.InitializeDatabase(app);
+    }
+
 
     //Authentifizierung verwenden
     if (!builder.Environment.IsDevelopment())
@@ -213,7 +203,7 @@ try
         });
     }
 
-    app.Run();
+    app.RunWithGraphQLCommands(args);
 }
 catch (Exception ex)
 {

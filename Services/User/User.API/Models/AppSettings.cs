@@ -1,4 +1,6 @@
-﻿namespace User.API.Models
+﻿using System.IO;
+
+namespace User.API.Models
 {
     /// <summary>
     /// App-Settings - Class
@@ -9,32 +11,45 @@
         /// <summary>
         /// RabbitMQ Connection-String - Filename 
         /// </summary>
-        public string RabbitMQConnection_FILE { get; set; }
+        public string RabbitMqConnectionFile { get; set; } = string.Empty;
 
         /// <summary>
         /// RabbitMQ Connection-String for CloudAMP
         /// </summary>
-        public string RabbitMQConnection
+        public string RabbitMqConnection
         {
             get
             {
-                return System.IO.File.ReadAllText(RabbitMQConnection_FILE);
+                try
+                {
+                    return File.ReadAllText(RabbitMqConnectionFile);
+                }
+                catch
+                {
+                    return "withoutdocker";
+                }
             }
         }
 
         #region Endpoints
         /// <summary>
-        /// Endpoint for Catalog-Service
+        /// Endpoint for User-Service
         /// </summary>
-        public string Endpoint_UserService { get; set; }
+        public string EndpointUserService { get; set; }
+
+        /// <summary>
+        /// Endpoint for Settings-Service
+        /// </summary>
+        public string EndpointSettingsService { get; set; }
         #endregion
         #endregion
 
         #region Postgres
+
         /// <summary>
         /// Postgres user - Filename for Secret
         /// </summary>
-        public string PostgresUser_FILE { get; set; } = string.Empty;
+        public string PostgresUserFile { get; set; } = string.Empty;
 
         /// <summary>
         /// Postgres user
@@ -43,14 +58,21 @@
         {
             get
             {
-                return System.IO.File.ReadAllText(PostgresUser_FILE);
+                try
+                {
+                    return File.ReadAllText(PostgresUserFile);
+                }
+                catch
+                {
+                    return "withoutdocker";
+                }
             }
         }
 
         /// <summary>
         /// Postgres password - Filename for Secret
         /// </summary>
-        public string PostgresPassword_FILE { get; set; } = string.Empty;
+        public string PostgresPasswordFile { get; set; } = string.Empty;
 
         /// <summary>
         /// Postgres password
@@ -59,7 +81,14 @@
         {
             get
             {
-                return System.IO.File.ReadAllText(PostgresPassword_FILE);
+                try
+                {
+                    return File.ReadAllText(PostgresPasswordFile);
+                }
+                catch
+                {
+                    return "withoutdocker";
+                }
             }
         }
 
@@ -69,12 +98,12 @@
         public int PostgresPort { get; set; }
 
         /// <summary>
-        /// Postgres - Hostname or IP-Adress
+        /// Postgres - Hostname or IP-Address
         /// </summary>
         public string PostgresHost { get; set; } = string.Empty;
 
         /// <summary>
-        /// Postgres - Databasename
+        /// Postgres database name
         /// </summary>
         public string PostgresDatabase { get; set; } = string.Empty;
 
@@ -82,6 +111,7 @@
         /// Postgres - Use Multiplexing for faster connections
         /// </summary>
         public bool PostgresMultiplexing { get; set; }
+
         #endregion
     }
 }

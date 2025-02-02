@@ -157,7 +157,7 @@ public partial class MediaItemListViewModel : ViewModelBase, IHandle<AggMediaIte
         {
             bool keepUploadItem;
             var userSettings = await _userSettingsService.GetCurrentUserSettings(AuthenticationState);
-            if (userSettings?.QuestionKeepUploadWhenDelete is not null && userSettings.QuestionKeepUploadWhenDelete.Value)
+            if (userSettings?.QuestionKeepUploadWhenDelete is not null && userSettings.QuestionKeepUploadWhenDelete)
             {
                 var title = model.MediaType == EnumMediaType.Picture ?
                     MediaItemListViewModelRes.QuestionKeepUploadPhotoTitle :
@@ -176,7 +176,7 @@ public partial class MediaItemListViewModel : ViewModelBase, IHandle<AggMediaIte
             }
             else
             {
-                keepUploadItem = userSettings?.DefaultKeepUploadWhenDelete is not null && userSettings.DefaultKeepUploadWhenDelete.Value;
+                keepUploadItem = userSettings?.DefaultKeepUploadWhenDelete is not null && userSettings.DefaultKeepUploadWhenDelete;
             }
 
             IsSaving = true;

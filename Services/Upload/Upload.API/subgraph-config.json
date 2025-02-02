@@ -1,0 +1,6 @@
+{
+  "subgraph": "Upload",
+  "http": {
+    "baseAddress": "http://uploadservice/graphql"
+  }
+}

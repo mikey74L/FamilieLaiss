@@ -11,7 +11,7 @@ public partial class PictureControlHeaderViewModel(ISnackbar snackbarService, IM
     : ViewModelBase(snackbarService, messageBoxService)
 {
     #region Parameters
-    public IUploadPictureModel? UploadItem { get; set; }
+    public required IUploadPictureModel UploadItem { get; set; }
     public EventCallback ToggleChanged { get; set; }
     #endregion
 
@@ -22,7 +22,7 @@ public partial class PictureControlHeaderViewModel(ISnackbar snackbarService, IM
         {
             string result = "fl-card-picture-toggle-button ";
 
-            if (UploadItem?.IsSelected ?? false)
+            if (UploadItem.IsSelected)
             {
                 result += "fl-card-picture-toggle-button-selected ";
             }
@@ -36,14 +36,11 @@ public partial class PictureControlHeaderViewModel(ISnackbar snackbarService, IM
     [RelayCommand]
     public async Task ChangeToggle()
     {
-        if (UploadItem is not null)
-        {
-            UploadItem.IsSelected = !UploadItem.IsSelected;
+        UploadItem.IsSelected = !UploadItem.IsSelected;
 
-            if (ToggleChanged.HasDelegate)
-            {
-                await ToggleChanged.InvokeAsync();
-            }
+        if (ToggleChanged.HasDelegate)
+        {
+            await ToggleChanged.InvokeAsync();
         }
     }
     #endregion

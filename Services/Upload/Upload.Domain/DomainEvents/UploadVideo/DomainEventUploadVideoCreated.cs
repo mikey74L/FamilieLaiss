@@ -12,7 +12,7 @@ namespace Upload.Domain.DomainEvents.UploadVideo;
 /// <param name="id">Identifier for upload video</param>
 /// <param name="filename">Original filename of the uploaded video</param>
 /// <param name="status">Status for the upload video</param>
-public class DomainEventUploadVideoCreated(long id, string filename, EnumUploadStatus status)
+public class DomainEventUploadVideoCreated(long id, string filename, EnumUploadState status)
     : DomainEventSingle(id.ToString())
 {
     #region Properties
@@ -25,7 +25,7 @@ public class DomainEventUploadVideoCreated(long id, string filename, EnumUploadS
     /// <summary>
     /// Status for the upload video
     /// </summary>
-    public EnumUploadStatus Status { get; } = status;
+    public EnumUploadState Status { get; } = status;
 
     #endregion
 }

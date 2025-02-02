@@ -6,7 +6,7 @@
 
 @inherits FlComponentBase<MediaItemListViewModel>
 
-@page "/basedata-media-items"
+@page "/base-data-media-items"
 
 <div style="height: calc(100vh - var(--mud-appbar-height) - var(--fl-content-border-size) - var(--fl-additional-substract-content-page-height))">
     <MudStack Style="height: 100%">
@@ -95,13 +95,7 @@
     [CascadingParameter]
     public Task<AuthenticationState> AuthenticationState
     {
-        get
-        {
-            return ViewModel.AuthenticationState;
-        }
-        set
-        {
-            ViewModel.AuthenticationState = value;
-        }
+        get => ViewModel.AuthenticationState;
+        set => ViewModel.AuthenticationState = value;
     }
 }

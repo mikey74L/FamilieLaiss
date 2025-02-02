@@ -1,4 +1,6 @@
-﻿using Settings.API.GraphQL.Queries;
+﻿using HotChocolate.Fusion.SourceSchema.Types;
+using Settings.API.GraphQL.DataLoaders;
+using Settings.API.GraphQL.Queries;
 using Settings.Domain.Entities;
 using Settings.Infrastructure.DBContext;
 
@@ -13,4 +15,9 @@ public class GraphQlQueryUserSetting
     {
         return context.UserSettings;
     }
+
+    [GraphQLDescription("Returns a category")]
+    [Lookup]
+    public async Task<UserSetting> GetUserSetting(string id, UserSettingsDataLoader dataLoader)
+    => await dataLoader.LoadAsync(id);
 }

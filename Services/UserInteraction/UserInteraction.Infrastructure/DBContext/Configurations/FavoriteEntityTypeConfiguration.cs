@@ -1,16 +1,14 @@
 ﻿using InfrastructureHelper.DatabaseContext;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using UserInteraction.Domain.Aggregates;
 
-namespace UserInteraction.Infrastructure.DBContext.Configurations
+namespace UserInteraction.Infrastructure.DBContext.Configurations;
+
+public class FavoriteEntityTypeConfiguration : EntityTypeConfigurationBase<Favorite>
 {
-    public class FavoriteEntityTypeConfiguration : EntityTypeConfigurationBase<Favorite>
+    protected override void ConfigureEntity(EntityTypeBuilder<Favorite> modelBuilder)
     {
-        protected override void ConfigureEntity(EntityTypeBuilder<Favorite> modelBuilder)
-        {
-            //Primary Key Column
-            CreateModelForIDColumn(modelBuilder, "Sequence" + nameof(Favorite));
-        }
+        //Primary Key Column
+        CreateModelForIDColumn(modelBuilder, "Sequence" + nameof(Favorite));
     }
 }

@@ -12,7 +12,7 @@ namespace Upload.Domain.DomainEvents.UploadPicture;
 /// <param name="id">Identifier for upload picture</param>
 /// <param name="fileName">The original filename for the picture file that was uploaded</param>
 /// <param name="status">Status for the upload picture</param>
-public class DomainEventUploadPictureCreated(long id, string fileName, EnumUploadStatus status)
+public class DomainEventUploadPictureCreated(long id, string fileName, EnumUploadState status)
     : DomainEventSingle(id.ToString())
 {
     #region Properties
@@ -25,7 +25,7 @@ public class DomainEventUploadPictureCreated(long id, string fileName, EnumUploa
     /// <summary>
     /// Status for the upload picture
     /// </summary>
-    public EnumUploadStatus Status { get; } = status;
+    public EnumUploadState Status { get; } = status;
 
     #endregion
 }

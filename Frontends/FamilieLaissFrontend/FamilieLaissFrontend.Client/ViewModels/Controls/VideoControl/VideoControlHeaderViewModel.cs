@@ -11,7 +11,7 @@ public partial class VideoControlHeaderViewModel(ISnackbar snackbarService, IMes
     : ViewModelBase(snackbarService, messageBoxService)
 {
     #region Parameters
-    public IUploadVideoModel? UploadItem { get; set; }
+    public required IUploadVideoModel UploadItem { get; set; }
     public EventCallback ToggleChanged { get; set; }
     #endregion
 
@@ -19,14 +19,11 @@ public partial class VideoControlHeaderViewModel(ISnackbar snackbarService, IMes
     [RelayCommand]
     public async Task ToggledChanged()
     {
-        if (UploadItem is not null)
-        {
-            UploadItem.IsSelected = !UploadItem.IsSelected;
+        UploadItem.IsSelected = !UploadItem.IsSelected;
 
-            if (ToggleChanged.HasDelegate)
-            {
-                await ToggleChanged.InvokeAsync();
-            }
+        if (ToggleChanged.HasDelegate)
+        {
+            await ToggleChanged.InvokeAsync();
         }
     }
     #endregion

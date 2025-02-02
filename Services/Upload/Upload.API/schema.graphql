@@ -1,0 +1,676 @@
+﻿schema {
+  query: Query
+  mutation: Mutation
+}
+
+"The result for a new added picture upload chunk"
+type AddPictureUploadChunkPayload {
+  "Has the chunk been successfully written to the server"
+  status: Boolean!
+}
+
+"The result for a new added video upload chunk"
+type AddVideoUploadChunkPayload {
+  "Has the chunk been successfully written to the server"
+  status: Boolean!
+}
+
+"The result for all deleted upload pictures"
+type DeleteAllUploadPicturePayload {
+  "The list of deleted upload pictures"
+  uploadPictures: [UploadPicture!]!
+}
+
+"InputData type for deleting all upload videos"
+type DeleteAllUploadVideoPayload {
+  "The list of deleted upload videos"
+  uploadVideos: [UploadVideo!]!
+}
+
+"The result for a deleted upload picture"
+type DeleteUploadPicturePayload {
+  "The deleted upload picture"
+  uploadPicture: UploadPicture!
+}
+
+"The result for a deleted upload video"
+type DeleteUploadVideoPayload {
+  "The deleted upload video"
+  uploadVideo: UploadVideo!
+}
+
+"The result for a finished picture upload"
+type FinishPictureUploadPayload {
+  "Has the finish operation successfully completed"
+  status: Boolean!
+}
+
+"The result for a finished video upload"
+type FinishVideoUploadPayload {
+  "Has the finish operation successfully completed"
+  status: Boolean!
+}
+
+"Geo coding address"
+type GoogleGeoCodingAddress {
+  "The longitude for the gps position"
+  longitude: Float!
+  "The latitude for the gps position"
+  latitude: Float!
+  "The street name for the geo coding address"
+  streetName: String!
+  "The house number for the geo coding address"
+  hnr: String!
+  "The zip code for the geo coding address"
+  zip: String!
+  "The city name for the geo coding address"
+  city: String!
+  "The country name for the geo coding address"
+  country: String!
+}
+
+type Mutation {
+  "Delete picture vom upload area"
+  deleteUploadPicture(input: DeleteUploadPictureInput!): DeleteUploadPicturePayload! @cost(weight: "10")
+  "Delete all pictures vom upload area that are not assigned"
+  deleteAllUploadPictures(input: DeleteAllUploadPictureInput!): DeleteAllUploadPicturePayload! @cost(weight: "10")
+  "Delete video vom upload area"
+  deleteUploadVideo(input: DeleteUploadVideoInput!): DeleteUploadVideoPayload! @cost(weight: "10")
+  "Delete all videos vom upload area that are not assigned"
+  deleteAllUploadVideos(input: DeleteAllUploadVideoInput!): DeleteAllUploadVideoPayload! @cost(weight: "10")
+  "Add a new picture upload chunk"
+  addPictureUploadChunk(input: AddPictureUploadChunkInput!): AddPictureUploadChunkPayload! @cost(weight: "10")
+  "Finish picture upload"
+  pictureUploadFinish(input: FinishPictureUploadInput!): FinishPictureUploadPayload! @cost(weight: "10")
+  "Add a new video upload chunk"
+  addVideoUploadChunk(input: AddVideoUploadChunkInput!): AddVideoUploadChunkPayload! @cost(weight: "10")
+  "Finish video upload"
+  videoUploadFinish(input: FinishVideoUploadInput!): FinishVideoUploadPayload! @cost(weight: "10")
+}
+
+type Query {
+  "Returns a list of upload picture"
+  uploadPictures(where: UploadPictureFilterInput @cost(weight: "10") order: [UploadPictureSortInput!] @cost(weight: "10")): [UploadPicture!]! @cost(weight: "10")
+  "Returns a upload picture"
+  uploadPicture(id: Long!): UploadPicture! @lookup @cost(weight: "10")
+  "Returns the filter data for upload picture exif infos"
+  uploadPictureExifInfoFilterData: UploadPictureExifInfoFilterData! @cost(weight: "10")
+  "Returns the current count for converted and unassigned upload pictures"
+  uploadPictureCount: Int! @cost(weight: "10")
+  "Returns a list of upload videos"
+  uploadVideos(where: UploadVideoFilterInput @cost(weight: "10") order: [UploadVideoSortInput!] @cost(weight: "10")): [UploadVideo!]! @cost(weight: "10")
+  "Returns a upload video"
+  uploadVideo(id: Long!): UploadVideo! @lookup @cost(weight: "10")
+  "Returns the current count for converted and unassigned upload videos"
+  uploadVideoCount: Int! @cost(weight: "10")
+  "Get next free upload id"
+  nextUploadId: Long! @cost(weight: "10")
+}
+
+"Upload picture"
+type UploadPicture {
+  "The identifier for this upload picture"
+  id: Long!
+  "When was this upload picture created"
+  createDate: DateTime!
+  "The original filename for the picture file that was uploaded"
+  filename: String!
+  "The height of the picture"
+  height: Int!
+  "The width of the picture"
+  width: Int!
+  "The state for the upload picture"
+  state: EnumUploadState!
+  "The Exif-Info for the upload picture"
+  uploadPictureExifInfo: UploadPictureExifInfo
+  "Google geo coding address for this upload picture"
+  googleGeoCodingAddress: GoogleGeoCodingAddress
+}
+
+"Exif information to the upload picture"
+type UploadPictureExifInfo {
+  "Make for the camera"
+  make: String!
+  "Camera model"
+  model: String!
+  "Resolution x"
+  resolutionX: Float
+  "Resolution Y"
+  resolutionY: Float
+  "The resolution unit"
+  resolutionUnit: Short
+  "Orientation for picture"
+  orientation: Short
+  "Timestamp when picture was recorded"
+  ddlRecorded: DateTime
+  "Exposure-Time"
+  exposureTime: Float
+  "Exposure program"
+  exposureProgram: Short
+  "Exposure mode"
+  exposureMode: Short
+  "F-Number"
+  fNumber: Float
+  "ISO sensitivity"
+  isoSensitivity: Int
+  "Shutter speed"
+  shutterSpeed: Float
+  "Metering mode"
+  meteringMode: Short
+  "Flash mode"
+  flashMode: Short
+  "Focal length"
+  focalLength: Float
+  "Sensing mode"
+  sensingMode: Short
+  "White-Balance mode"
+  whiteBalanceMode: Short
+  "Sharpness"
+  sharpness: Short
+  "Longitude for GPS-Position"
+  gpsLongitude: Float
+  "Latitude for GPS-Position"
+  gpsLatitude: Float
+  "Contrast"
+  contrast: Short
+  "Saturation"
+  saturation: Short
+}
+
+"The filter data info for upload picture exif info"
+type UploadPictureExifInfoFilterData {
+  "The distinct list of distinct makes"
+  make: [String!]!
+  "The distinct list of distinct models"
+  model: [String!]!
+  "The distinct list of fnumbers"
+  fNumbers: [Float!]!
+  "The distinct list of ISO sensitivities"
+  isoSensitivities: [Int!]!
+  "The distinct list of exposure times"
+  exposureTimes: [Float!]!
+  "The distinct list of shutter speeds"
+  shutterSpeeds: [Float!]!
+  "The distinct list of focal lengths"
+  focalLengths: [Float!]!
+}
+
+"Upload video"
+type UploadVideo {
+  "The identifier for this upload video"
+  id: Long!
+  "When was this upload video created"
+  createDate: DateTime!
+  "The original filename for the video file that was uploaded"
+  filename: String!
+  "The state for the upload video"
+  state: EnumUploadState!
+  "The video type for the upload video"
+  videoType: EnumVideoType!
+  "The height of the video"
+  height: Int!
+  "The width of the video"
+  width: Int!
+  "The hour part for the duration of the video"
+  durationHour: Int!
+  "The minute part for the duration of the video"
+  durationMinute: Int!
+  "The second part for the duration of the video"
+  durationSecond: Int!
+  "The longitude for the gps position"
+  gpsLongitude: Float
+  "The latitude for the gps position"
+  gpsLatitude: Float
+  "The google geo coding address for this video"
+  googleGeoCodingAddress: GoogleGeoCodingAddress
+}
+
+"Input type for adding picture upload chunks"
+input AddPictureUploadChunkInput {
+  "The target filename for the file to upload"
+  targetFilename: String!
+  "The chunk number for the chunk to upload"
+  chunkNumber: Long!
+  "The size of the chunk in bytes"
+  chunkSize: Int!
+  "The chunk data as base64 encoded string"
+  chunkData: String!
+}
+
+"Input type for adding video upload chunks"
+input AddVideoUploadChunkInput {
+  "The target filename for the file to upload"
+  targetFilename: String!
+  "The chunk number for the chunk to upload"
+  chunkNumber: Long!
+  "The size of the chunk in bytes"
+  chunkSize: Int!
+  "The chunk data as base64 encoded string"
+  chunkData: String!
+}
+
+input DateTimeOperationFilterInput {
+  eq: DateTime @cost(weight: "10")
+  neq: DateTime @cost(weight: "10")
+  in: [DateTime] @cost(weight: "10")
+  nin: [DateTime] @cost(weight: "10")
+  gt: DateTime @cost(weight: "10")
+  ngt: DateTime @cost(weight: "10")
+  gte: DateTime @cost(weight: "10")
+  ngte: DateTime @cost(weight: "10")
+  lt: DateTime @cost(weight: "10")
+  nlt: DateTime @cost(weight: "10")
+  lte: DateTime @cost(weight: "10")
+  nlte: DateTime @cost(weight: "10")
+}
+
+"InputData type for deleting all upload pictures"
+input DeleteAllUploadPictureInput {
+  "The Id list for the upload pictures to delete"
+  uploadPictureIds: [Long!]!
+}
+
+"The result for all deleted upload videos"
+input DeleteAllUploadVideoInput {
+  "The Id list for the upload videos to delete"
+  uploadVideoIds: [Long!]!
+}
+
+"InputData type for deleting upload picture"
+input DeleteUploadPictureInput {
+  "The Id for the upload picture"
+  id: Long!
+}
+
+"InputData type for deleting upload video"
+input DeleteUploadVideoInput {
+  "The Id for the upload video"
+  id: Long!
+}
+
+input EnumUploadStateOperationFilterInput {
+  eq: EnumUploadState @cost(weight: "10")
+  neq: EnumUploadState @cost(weight: "10")
+  in: [EnumUploadState!] @cost(weight: "10")
+  nin: [EnumUploadState!] @cost(weight: "10")
+}
+
+input EnumVideoTypeOperationFilterInput {
+  eq: EnumVideoType @cost(weight: "10")
+  neq: EnumVideoType @cost(weight: "10")
+  in: [EnumVideoType!] @cost(weight: "10")
+  nin: [EnumVideoType!] @cost(weight: "10")
+}
+
+"Input type for finish picture upload"
+input FinishPictureUploadInput {
+  "The target filename for the file to upload"
+  targetFilename: String!
+  "The original filename for the file to upload"
+  originalFilename: String!
+  "The last chunk number"
+  lastChunkNumber: Long!
+}
+
+"Input type for finish video upload"
+input FinishVideoUploadInput {
+  "The target filename for the file to upload"
+  targetFilename: String!
+  "The original filename for the file to upload"
+  originalFilename: String!
+  "The last chunk number"
+  lastChunkNumber: Long!
+}
+
+input FloatOperationFilterInput {
+  eq: Float @cost(weight: "10")
+  neq: Float @cost(weight: "10")
+  in: [Float] @cost(weight: "10")
+  nin: [Float] @cost(weight: "10")
+  gt: Float @cost(weight: "10")
+  ngt: Float @cost(weight: "10")
+  gte: Float @cost(weight: "10")
+  ngte: Float @cost(weight: "10")
+  lt: Float @cost(weight: "10")
+  nlt: Float @cost(weight: "10")
+  lte: Float @cost(weight: "10")
+  nlte: Float @cost(weight: "10")
+}
+
+"Geo coding address"
+input GoogleGeoCodingAddressFilterInput {
+  and: [GoogleGeoCodingAddressFilterInput!]
+  or: [GoogleGeoCodingAddressFilterInput!]
+  "The longitude for the gps position"
+  longitude: FloatOperationFilterInput
+  "The latitude for the gps position"
+  latitude: FloatOperationFilterInput
+  "The street name for the geo coding address"
+  streetName: StringOperationFilterInput
+  "The house number for the geo coding address"
+  hnr: StringOperationFilterInput
+  "The zip code for the geo coding address"
+  zip: StringOperationFilterInput
+  "The city name for the geo coding address"
+  city: StringOperationFilterInput
+  "The country name for the geo coding address"
+  country: StringOperationFilterInput
+}
+
+"Geo coding address"
+input GoogleGeoCodingAddressSortInput {
+  "The longitude for the gps position"
+  longitude: SortEnumType @cost(weight: "10")
+  "The latitude for the gps position"
+  latitude: SortEnumType @cost(weight: "10")
+  "The street name for the geo coding address"
+  streetName: SortEnumType @cost(weight: "10")
+  "The house number for the geo coding address"
+  hnr: SortEnumType @cost(weight: "10")
+  "The zip code for the geo coding address"
+  zip: SortEnumType @cost(weight: "10")
+  "The city name for the geo coding address"
+  city: SortEnumType @cost(weight: "10")
+  "The country name for the geo coding address"
+  country: SortEnumType @cost(weight: "10")
+}
+
+input IntOperationFilterInput {
+  eq: Int @cost(weight: "10")
+  neq: Int @cost(weight: "10")
+  in: [Int] @cost(weight: "10")
+  nin: [Int] @cost(weight: "10")
+  gt: Int @cost(weight: "10")
+  ngt: Int @cost(weight: "10")
+  gte: Int @cost(weight: "10")
+  ngte: Int @cost(weight: "10")
+  lt: Int @cost(weight: "10")
+  nlt: Int @cost(weight: "10")
+  lte: Int @cost(weight: "10")
+  nlte: Int @cost(weight: "10")
+}
+
+input LongOperationFilterInput {
+  eq: Long @cost(weight: "10")
+  neq: Long @cost(weight: "10")
+  in: [Long] @cost(weight: "10")
+  nin: [Long] @cost(weight: "10")
+  gt: Long @cost(weight: "10")
+  ngt: Long @cost(weight: "10")
+  gte: Long @cost(weight: "10")
+  ngte: Long @cost(weight: "10")
+  lt: Long @cost(weight: "10")
+  nlt: Long @cost(weight: "10")
+  lte: Long @cost(weight: "10")
+  nlte: Long @cost(weight: "10")
+}
+
+input ShortOperationFilterInput {
+  eq: Short @cost(weight: "10")
+  neq: Short @cost(weight: "10")
+  in: [Short] @cost(weight: "10")
+  nin: [Short] @cost(weight: "10")
+  gt: Short @cost(weight: "10")
+  ngt: Short @cost(weight: "10")
+  gte: Short @cost(weight: "10")
+  ngte: Short @cost(weight: "10")
+  lt: Short @cost(weight: "10")
+  nlt: Short @cost(weight: "10")
+  lte: Short @cost(weight: "10")
+  nlte: Short @cost(weight: "10")
+}
+
+input StringOperationFilterInput {
+  and: [StringOperationFilterInput!]
+  or: [StringOperationFilterInput!]
+  eq: String @cost(weight: "10")
+  neq: String @cost(weight: "10")
+  contains: String @cost(weight: "20")
+  ncontains: String @cost(weight: "20")
+  in: [String] @cost(weight: "10")
+  nin: [String] @cost(weight: "10")
+  startsWith: String @cost(weight: "20")
+  nstartsWith: String @cost(weight: "20")
+  endsWith: String @cost(weight: "20")
+  nendsWith: String @cost(weight: "20")
+}
+
+"Exif information to the upload picture"
+input UploadPictureExifInfoFilterInput {
+  and: [UploadPictureExifInfoFilterInput!]
+  or: [UploadPictureExifInfoFilterInput!]
+  "Make for the camera"
+  make: StringOperationFilterInput
+  "Camera model"
+  model: StringOperationFilterInput
+  "Resolution x"
+  resolutionX: FloatOperationFilterInput
+  "Resolution Y"
+  resolutionY: FloatOperationFilterInput
+  "The resolution unit"
+  resolutionUnit: ShortOperationFilterInput
+  "Orientation for picture"
+  orientation: ShortOperationFilterInput
+  "Timestamp when picture was recorded"
+  ddlRecorded: DateTimeOperationFilterInput
+  "Exposure-Time"
+  exposureTime: FloatOperationFilterInput
+  "Exposure program"
+  exposureProgram: ShortOperationFilterInput
+  "Exposure mode"
+  exposureMode: ShortOperationFilterInput
+  "F-Number"
+  fNumber: FloatOperationFilterInput
+  "ISO sensitivity"
+  isoSensitivity: IntOperationFilterInput
+  "Shutter speed"
+  shutterSpeed: FloatOperationFilterInput
+  "Metering mode"
+  meteringMode: ShortOperationFilterInput
+  "Flash mode"
+  flashMode: ShortOperationFilterInput
+  "Focal length"
+  focalLength: FloatOperationFilterInput
+  "Sensing mode"
+  sensingMode: ShortOperationFilterInput
+  "White-Balance mode"
+  whiteBalanceMode: ShortOperationFilterInput
+  "Sharpness"
+  sharpness: ShortOperationFilterInput
+  "Longitude for GPS-Position"
+  gpsLongitude: FloatOperationFilterInput
+  "Latitude for GPS-Position"
+  gpsLatitude: FloatOperationFilterInput
+  "Contrast"
+  contrast: ShortOperationFilterInput
+  "Saturation"
+  saturation: ShortOperationFilterInput
+}
+
+"Exif information to the upload picture"
+input UploadPictureExifInfoSortInput {
+  "Make for the camera"
+  make: SortEnumType @cost(weight: "10")
+  "Camera model"
+  model: SortEnumType @cost(weight: "10")
+  "Resolution x"
+  resolutionX: SortEnumType @cost(weight: "10")
+  "Resolution Y"
+  resolutionY: SortEnumType @cost(weight: "10")
+  "The resolution unit"
+  resolutionUnit: SortEnumType @cost(weight: "10")
+  "Orientation for picture"
+  orientation: SortEnumType @cost(weight: "10")
+  "Timestamp when picture was recorded"
+  ddlRecorded: SortEnumType @cost(weight: "10")
+  "Exposure-Time"
+  exposureTime: SortEnumType @cost(weight: "10")
+  "Exposure program"
+  exposureProgram: SortEnumType @cost(weight: "10")
+  "Exposure mode"
+  exposureMode: SortEnumType @cost(weight: "10")
+  "F-Number"
+  fNumber: SortEnumType @cost(weight: "10")
+  "ISO sensitivity"
+  isoSensitivity: SortEnumType @cost(weight: "10")
+  "Shutter speed"
+  shutterSpeed: SortEnumType @cost(weight: "10")
+  "Metering mode"
+  meteringMode: SortEnumType @cost(weight: "10")
+  "Flash mode"
+  flashMode: SortEnumType @cost(weight: "10")
+  "Focal length"
+  focalLength: SortEnumType @cost(weight: "10")
+  "Sensing mode"
+  sensingMode: SortEnumType @cost(weight: "10")
+  "White-Balance mode"
+  whiteBalanceMode: SortEnumType @cost(weight: "10")
+  "Sharpness"
+  sharpness: SortEnumType @cost(weight: "10")
+  "Longitude for GPS-Position"
+  gpsLongitude: SortEnumType @cost(weight: "10")
+  "Latitude for GPS-Position"
+  gpsLatitude: SortEnumType @cost(weight: "10")
+  "Contrast"
+  contrast: SortEnumType @cost(weight: "10")
+  "Saturation"
+  saturation: SortEnumType @cost(weight: "10")
+}
+
+"Upload picture"
+input UploadPictureFilterInput {
+  and: [UploadPictureFilterInput!]
+  or: [UploadPictureFilterInput!]
+  "The original filename for the picture file that was uploaded"
+  filename: StringOperationFilterInput
+  "The height of the picture"
+  height: IntOperationFilterInput
+  "The width of the picture"
+  width: IntOperationFilterInput
+  "The state for the upload picture"
+  state: EnumUploadStateOperationFilterInput
+  "The Exif-Info for the upload picture"
+  uploadPictureExifInfo: UploadPictureExifInfoFilterInput
+  "Google geo coding address for this upload picture"
+  googleGeoCodingAddress: GoogleGeoCodingAddressFilterInput
+  createDate: DateTimeOperationFilterInput
+  id: LongOperationFilterInput
+}
+
+"Upload picture"
+input UploadPictureSortInput {
+  "The original filename for the picture file that was uploaded"
+  filename: SortEnumType @cost(weight: "10")
+  "The height of the picture"
+  height: SortEnumType @cost(weight: "10")
+  "The width of the picture"
+  width: SortEnumType @cost(weight: "10")
+  "The state for the upload picture"
+  state: SortEnumType @cost(weight: "10")
+  "The Exif-Info for the upload picture"
+  uploadPictureExifInfo: UploadPictureExifInfoSortInput @cost(weight: "10")
+  "Google geo coding address for this upload picture"
+  googleGeoCodingAddress: GoogleGeoCodingAddressSortInput @cost(weight: "10")
+  createDate: SortEnumType @cost(weight: "10")
+  id: SortEnumType @cost(weight: "10")
+}
+
+"Upload video"
+input UploadVideoFilterInput {
+  and: [UploadVideoFilterInput!]
+  or: [UploadVideoFilterInput!]
+  "The original filename for the video file that was uploaded"
+  filename: StringOperationFilterInput
+  "The state for the upload video"
+  state: EnumUploadStateOperationFilterInput
+  "The video type for the upload video"
+  videoType: EnumVideoTypeOperationFilterInput
+  "The height of the video"
+  height: IntOperationFilterInput
+  "The width of the video"
+  width: IntOperationFilterInput
+  "The hour part for the duration of the video"
+  durationHour: IntOperationFilterInput
+  "The minute part for the duration of the video"
+  durationMinute: IntOperationFilterInput
+  "The second part for the duration of the video"
+  durationSecond: IntOperationFilterInput
+  "The longitude for the gps position"
+  gpsLongitude: FloatOperationFilterInput
+  "The latitude for the gps position"
+  gpsLatitude: FloatOperationFilterInput
+  "The google geo coding address for this video"
+  googleGeoCodingAddress: GoogleGeoCodingAddressFilterInput
+  createDate: DateTimeOperationFilterInput
+  id: LongOperationFilterInput
+}
+
+"Upload video"
+input UploadVideoSortInput {
+  "The original filename for the video file that was uploaded"
+  filename: SortEnumType @cost(weight: "10")
+  "The state for the upload video"
+  state: SortEnumType @cost(weight: "10")
+  "The video type for the upload video"
+  videoType: SortEnumType @cost(weight: "10")
+  "The height of the video"
+  height: SortEnumType @cost(weight: "10")
+  "The width of the video"
+  width: SortEnumType @cost(weight: "10")
+  "The hour part for the duration of the video"
+  durationHour: SortEnumType @cost(weight: "10")
+  "The minute part for the duration of the video"
+  durationMinute: SortEnumType @cost(weight: "10")
+  "The second part for the duration of the video"
+  durationSecond: SortEnumType @cost(weight: "10")
+  "The longitude for the gps position"
+  gpsLongitude: SortEnumType @cost(weight: "10")
+  "The latitude for the gps position"
+  gpsLatitude: SortEnumType @cost(weight: "10")
+  "The google geo coding address for this video"
+  googleGeoCodingAddress: GoogleGeoCodingAddressSortInput @cost(weight: "10")
+  createDate: SortEnumType @cost(weight: "10")
+  id: SortEnumType @cost(weight: "10")
+}
+
+"State for upload item"
+enum EnumUploadState {
+  "File is only uploaded and not converted"
+  UPLOADED
+  "File is converted by a converter service"
+  CONVERTED
+  "The file is uploaded, converted and assigned to a media item"
+  ASSIGNED
+}
+
+"The video type for the converted upload video"
+enum EnumVideoType {
+  "Not set"
+  NOT_SET
+  "Progressive video format"
+  PROGRESSIVE
+  "HTTP Live Streaming format"
+  HLS
+}
+
+enum SortEnumType {
+  ASC
+  DESC
+}
+
+"The purpose of the `cost` directive is to define a `weight` for GraphQL types, fields, and arguments. Static analysis can use these weights when calculating the overall cost of a query or response."
+directive @cost("The `weight` argument defines what value to add to the overall cost for every appearance, or possible appearance, of a type, field, argument, etc." weight: String!) on SCALAR | OBJECT | FIELD_DEFINITION | ARGUMENT_DEFINITION | ENUM | INPUT_FIELD_DEFINITION
+
+directive @lookup on FIELD_DEFINITION
+
+"The `@specifiedBy` directive is used within the type system definition language to provide a URL for specifying the behavior of custom scalar definitions."
+directive @specifiedBy("The specifiedBy URL points to a human-readable specification. This field will only read a result for scalar types." url: String!) on SCALAR
+
+"The `DateTime` scalar represents an ISO-8601 compliant date time type."
+scalar DateTime @specifiedBy(url: "https:\/\/www.graphql-scalars.com\/date-time")
+
+"The `Long` scalar type represents non-fractional signed whole 64-bit numeric values. Long can represent values between -(2^63) and 2^63 - 1."
+scalar Long
+
+"The `Short` scalar type represents non-fractional signed whole 16-bit numeric values. Short can represent values between -(2^15) and 2^15 - 1."
+scalar Short

@@ -41,11 +41,8 @@ public partial class VideoControlMediaViewModel(
             { "UploadVideoItem", UploadItem }
         };
 
-        var dialogOptions = GetDialogOptions();
-        dialogOptions.CloseButton = true;
-        dialogOptions.CloseOnEscapeKey = true;
-        dialogOptions.Position = DialogPosition.Center;
-        dialogOptions.MaxWidth = MaxWidth.ExtraExtraLarge;
+        var dialogOptions = GetDialogOptions(true, true, DialogPosition.Center, 
+            MaxWidth.ExtraExtraLarge);
 
         await dialogService.ShowAsync<VideoPlayerDialog>("", dialogParams, dialogOptions);
     }

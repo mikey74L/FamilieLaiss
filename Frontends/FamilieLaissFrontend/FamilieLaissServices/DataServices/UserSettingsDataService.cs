@@ -25,10 +25,6 @@ public class UserSettingsDataService(IFamilieLaissClient familieLaissClient) : B
                 {
                     return CreateApiResult(response.Data.UserSettings.First().Map());
                 }
-                else
-                {
-                    return await CreateUserSettingsForUser(id);
-                }
             }
 
             return CreateApiResultForError<IUserSettingsModel>(response.Errors);
@@ -41,61 +37,23 @@ public class UserSettingsDataService(IFamilieLaissClient familieLaissClient) : B
     #endregion
 
     #region CRUD
-    private async Task<IApiResult<IUserSettingsModel>> CreateUserSettingsForUser(string id)
-    {
-        if (string.IsNullOrWhiteSpace(id))
-        {
-            return CreateApiResultForBadRequest<IUserSettingsModel>();
-        }
-
-        try
-        {
-            var response =
-                await Client.AddUserSetting.ExecuteAsync(id);
-
-            if (response.IsSuccessResult() && response.Data is not null)
-            {
-                return CreateApiResult(response.Data.AddUserSetting.UserSetting.Map());
-            }
-
-            return CreateApiResultForError<IUserSettingsModel>(response.Errors);
-        }
-        catch (Exception ex)
-        {
-            return CreateApiResultForCommunicationError<IUserSettingsModel>(ex);
-        }
-    }
-
     public async Task<IApiResult> UpdateUserSettingsForUser(IUserSettingsModel? model)
     {
         if (model is null || string.IsNullOrWhiteSpace(model.Id))
         {
             return CreateSimpleApiResultForBadRequest();
         }
-        if (model.AllowZoomingWithMouseWheel is null || model.AllowZoomingWithMouseWheel is null ||
-            model.DefaultKeepUploadWhenDelete is null || model.GalleryCloseDimmer is null || model.GalleryCloseEsc is null ||
-            model.GalleryMouseWheelChangeSlide is null || model.GalleryShowFullScreen is null || model.GalleryShowThumbnails is null ||
-            model.GalleryTransitionDuration is null || model.GalleryTransitionType is null || model.QuestionKeepUploadWhenDelete is null ||
-            model.ShowButtonForward is null || model.ShowButtonRewind is null || model.ShowMirrorButton is null ||
-            model.ShowPlayRateMenu is null || model.ShowQualityMenu is null || model.ShowTooltipForCurrentPlaytime is null ||
-            model.ShowTooltipForPlaytimeOnMouseCursor is null || model.ShowZoomInfo is null || model.ShowZoomMenu is null ||
-            model.VideoAutoPlay is null || model.VideoAutoPlayOtherVideos is null || model.VideoLoop is null ||
-            model.VideoTimeToPlayNextVideo is null || model.VideoVolume is null ||
-            model.VideoTimeSeekForwardRewind is null || string.IsNullOrWhiteSpace(model.GalleryTransitionType))
-        {
-            return CreateSimpleApiResultForBadRequest();
-        }
 
         try
         {
-            var response = await Client.UpdateUserSetting.ExecuteAsync(model.Id, model.AllowZoomingWithMouseWheel.Value,
-                model.DefaultKeepUploadWhenDelete.Value, model.GalleryCloseDimmer.Value, model.GalleryCloseEsc.Value,
-                model.GalleryMouseWheelChangeSlide.Value, model.GalleryShowFullScreen.Value, model.GalleryShowThumbnails.Value,
-                model.GalleryTransitionDuration.Value, model.GalleryTransitionType, model.QuestionKeepUploadWhenDelete.Value,
-                model.ShowButtonForward.Value, model.ShowButtonRewind.Value, model.ShowMirrorButton.Value, model.ShowPlayRateMenu.Value,
-                model.ShowQualityMenu.Value, model.ShowTooltipForCurrentPlaytime.Value, model.ShowTooltipForPlaytimeOnMouseCursor.Value,
-                model.ShowZoomInfo.Value, model.ShowZoomMenu.Value, model.VideoAutoPlay.Value, model.VideoAutoPlayOtherVideos.Value,
-                model.VideoLoop.Value, model.VideoTimeToPlayNextVideo.Value, model.VideoVolume.Value, model.VideoTimeSeekForwardRewind.Value);
+            var response = await Client.UpdateUserSetting.ExecuteAsync(model.Id, model.AllowZoomingWithMouseWheel,
+                model.DefaultKeepUploadWhenDelete, model.GalleryCloseDimmer, model.GalleryCloseEsc,
+                model.GalleryMouseWheelChangeSlide, model.GalleryShowFullScreen, model.GalleryShowThumbnails,
+                model.GalleryTransitionDuration, model.GalleryTransitionType, model.QuestionKeepUploadWhenDelete,
+                model.ShowButtonForward, model.ShowButtonRewind, model.ShowMirrorButton, model.ShowPlayRateMenu,
+                model.ShowQualityMenu, model.ShowTooltipForCurrentPlaytime, model.ShowTooltipForPlaytimeOnMouseCursor,
+                model.ShowZoomInfo, model.ShowZoomMenu, model.VideoAutoPlay, model.VideoAutoPlayOtherVideos,
+                model.VideoLoop, model.VideoTimeToPlayNextVideo, model.VideoVolume, model.VideoTimeSeekForwardRewind);
 
             if (response.IsSuccessResult() && response.Data is not null)
             {

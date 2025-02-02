@@ -1,7 +1,6 @@
+using GraphQL.Server.Ui.Voyager;
 using InfrastructureHelper.EventDispatchHandler;
-using MassTransit;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
@@ -17,124 +16,149 @@ using Steeltoe.Discovery.Client;
 using Steeltoe.Discovery.Eureka;
 using System;
 using System.Globalization;
+using MassTransit;
 using UserInteraction.API;
+using UserInteraction.API.GraphQl.DataLoaders.Comment;
+using UserInteraction.API.GraphQl.DataLoaders.Favorite;
+using UserInteraction.API.GraphQl.DataLoaders.MediaItem;
+using UserInteraction.API.GraphQl.DataLoaders.Rating;
+using UserInteraction.API.GraphQl.DataLoaders.UserAccount;
+using UserInteraction.API.GraphQl.DataLoaders.UserInteraction;
+using UserInteraction.API.GraphQl.Filter;
+using UserInteraction.API.GraphQl.Queries;
+using UserInteraction.API.GraphQl.Queries.Comment;
+using UserInteraction.API.GraphQl.Queries.Favorite;
+using UserInteraction.API.GraphQl.Queries.MediaItem;
+using UserInteraction.API.GraphQl.Queries.Rating;
+using UserInteraction.API.GraphQl.Queries.UserAccount;
+using UserInteraction.API.GraphQl.Queries.UserInteraction;
+using UserInteraction.API.GraphQl.Types.Comment;
+using UserInteraction.API.GraphQl.Types.Favorite;
+using UserInteraction.API.GraphQl.Types.MediaItem;
+using UserInteraction.API.GraphQl.Types.Rating;
+using UserInteraction.API.GraphQl.Types.UserAccount;
+using UserInteraction.API.GraphQl.Types.UserInteractionInfo;
 using UserInteraction.API.Logging;
 using UserInteraction.API.Models;
 using UserInteraction.Infrastructure.DBContext;
-using UserInteractions.API.Consumers;
 
-//Den Titel für das Konsolenfenster setzen
 Console.Title = "UserInteraction-Service";
 
 var builder = WebApplication.CreateBuilder(args);
 
-//Logging
 var logger = new LoggerConfiguration()
   .ReadFrom.Configuration(builder.Configuration)
   .CreateLogger();
 builder.Logging.ClearProviders();
 builder.Host.UseSerilog(logger);
 
-//Den Logger für Serilog erstellen
 Log.Logger = new LoggerConfiguration()
   .ReadFrom.Configuration(builder.Configuration)
   .CreateBootstrapLogger();
 
-//Hinzufügen der Service-Discovery
 builder.AddServiceDiscovery(options => options.UseEureka());
 
-//Hinzufügen eines HTTPContextAccessor 
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
-//Hinzufügen der Hosted-Services (Background-Services)
 builder.Services.AddHostedService<EventDispatcherBackgroundService>();
 
-//Hinzufügen det globalen Exception-Handler Middleware
 builder.Services.AddSingleton<ILog, LogSerilog>();
 
-//Hinzufügen der Konfiguration (App-Settings) zum IOC-Container
 var appSettingsSection = builder.Configuration.GetSection("AppSettings");
 builder.Services.Configure<AppSettings>(appSettingsSection);
 AppSettings? appSettings = appSettingsSection.Get<AppSettings>();
 
-//Die DB-Context Factory hinzufügen inklusive der UnitOfWork
-NpgsqlConnectionStringBuilder postgresConnectionStringBuilder = new();
-postgresConnectionStringBuilder.ApplicationName = "UserInteraction-Service";
-postgresConnectionStringBuilder.Host = appSettings?.PostgresHost;
-postgresConnectionStringBuilder.Port = appSettings?.PostgresPort ?? 0;
-postgresConnectionStringBuilder.Multiplexing = appSettings?.PostgresMultiplexing ?? false;
-postgresConnectionStringBuilder.Database = appSettings?.PostgresDatabase;
-postgresConnectionStringBuilder.Username = appSettings?.PostgresUser;
-postgresConnectionStringBuilder.Password = appSettings?.PostgresPassword;
+NpgsqlConnectionStringBuilder postgresConnectionStringBuilder = new()
+{
+    ApplicationName = "UserInteraction-Service",
+    Host = appSettings?.PostgresHost,
+    Port = appSettings?.PostgresPort ?? 0,
+    Multiplexing = appSettings?.PostgresMultiplexing ?? false,
+    Database = appSettings?.PostgresDatabase,
+    Username = appSettings?.PostgresUser,
+    Password = appSettings?.PostgresPassword
+};
 builder.Services.AddPooledDbContextFactory<UserInteractionServiceDBContext>(
     o => o.UseNpgsql(postgresConnectionStringBuilder.ToString()))
 .AddUnitOfWork<UserInteractionServiceDBContext>();
 
-//Lokalisierung für ASP.NET Core hinzufügen
+builder.Services.AddGraphQLServer()
+    .RegisterDbContextFactory<UserInteractionServiceDBContext>()
+//    .AddMutationType<Mutation>()
+//    .AddTypeExtension<GraphQlMutationCategory>()
+//    .AddTypeExtension<GraphQlMutationCategoryValue>()
+//    .AddTypeExtension<GraphQlMutationMediaGroup>()
+//    .AddTypeExtension<GraphQlMutationMediaItem>()
+    .AddQueryType<Query>()
+    .AddTypeExtension<GraphQlQueryComment>()
+    .AddTypeExtension<GraphQlQueryFavorite>()
+    .AddTypeExtension<GraphQlQueryRating>()
+    .AddTypeExtension<GraphQlQueryUserInteraction>()
+    .AddTypeExtension<GraphQlQueryUserAccount>()
+    .AddTypeExtension<GraphQlQueryMediaItem>()
+    .AddType<GraphQlRatingType>()
+    .AddType<GraphQlCommentType>()
+    .AddType<GraphQlFavoriteType>()
+    .AddType<GraphQlMediaItemType>()
+    .AddType<GraphQlUserAccountType>()
+    .AddType<GraphQlUserInteractionInfoType>()
+    .AddDataLoader<CommentDataLoader>()
+    .AddDataLoader<FavoriteDataLoader>()
+    .AddDataLoader<RatingDataLoader>()
+    .AddDataLoader<UserAccountDataLoader>()
+    .AddDataLoader<UserInteractionDataLoader>()
+    .AddDataLoader<MediaItemDataLoader>()
+    .AddProjections()
+    .AddFiltering()
+    .AddSorting()
+    .AddErrorFilter<GraphQlErrorFilter>()
+//    .AddAuthorization()
+    .InitializeOnStartup();
+
 builder.Services.AddLocalization(options => options.ResourcesPath = "Localize");
 
-//Registrieren von MediatR mit der aktuellen Assembly
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<Program>());
 
-//Festlegen der EndpointConventions für MassTransit
 Startup.ConfigureEndpointConventions(appSettings);
 
-//Hinzufügen der Consumer zum DI-Container
-builder.Services.AddScoped<MediaItemCreatedConsumer>();
-builder.Services.AddScoped<MediaItemDeletedConsumer>();
-builder.Services.AddScoped<UserAccountCreatedConsumer>();
-builder.Services.AddScoped<UserAccountDeletedConsumer>();
+//builder.Services.AddScoped<MediaItemCreatedConsumer>();
 
-//Mass-Transit konfigurieren
 if (appSettings is not null)
 {
     builder.Services.AddMassTransit(x =>
     {
-        //Hinzufügen der Consumer
-        x.AddConsumer<MediaItemCreatedConsumer>();
-        x.AddConsumer<MediaItemDeletedConsumer>();
-        x.AddConsumer<UserAccountCreatedConsumer>();
-        x.AddConsumer<UserAccountDeletedConsumer>();
+        //x.AddConsumer<MediaItemCreatedConsumer>();
 
-        //RabbitMq hinzufügen
         x.UsingRabbitMq((context, cfg) =>
         {
-            //Konfigurieren des Hosts
-            cfg.Host(new Uri(appSettings.RabbitMQConnection));
+            cfg.Host(new Uri(appSettings.RabbitMqConnection));
 
-            cfg.ReceiveEndpoint(appSettings.Endpoint_UserInteractionService, e =>
+            cfg.ReceiveEndpoint(appSettings.EndpointUserInteractionService, e =>
             {
                 e.UseConcurrencyLimit(1);
                 e.PrefetchCount = 16;
                 e.UseMessageRetry(r => r.Incremental(5, TimeSpan.FromSeconds(5), TimeSpan.FromSeconds(20)));
 
-                e.ConfigureConsumer<MediaItemCreatedConsumer>(context);
-                e.ConfigureConsumer<MediaItemDeletedConsumer>(context);
-                e.ConfigureConsumer<UserAccountCreatedConsumer>(context);
-                e.ConfigureConsumer<UserAccountDeletedConsumer>(context);
+                //e.ConfigureConsumer<MediaItemCreatedConsumer>(context);
             });
         });
     });
 }
 
-//Den Web-Host ausführen
 try
 {
     Log.Information("Starting Web-Host...");
 
     var app = builder.Build();
 
-    //Die von der Website unterstützen Sprachen hinzufügen
     var supportedCultures = new[]
     {
         new CultureInfo("de"),
         new CultureInfo("en")
     };
 
-    //Hinzufügen des Request-Loggings von Serilog
     app.UseSerilogRequestLogging();
 
-    //Lokalisierung anhand von Requests zur Pipeline hinzufügen
     app.UseRequestLocalization(new RequestLocalizationOptions
     {
         DefaultRequestCulture = new RequestCulture("en-US"),
@@ -142,29 +166,39 @@ try
         SupportedUICultures = supportedCultures
     });
 
-    //Wenn im Entwicklungsmodus dann wird eine detaillierte Exception-Page angezeigt
     if (builder.Environment.IsDevelopment())
     {
         app.UseDeveloperExceptionPage();
     }
 
-    //Konfigurieren der Exception-Handler-Middleware
     app.ConfigureExceptionHandler();
 
-    //Routing hinzufügen
-    app.UseRouting();
-
-    //Initialisieren der Datenbank (Migration und Seeden)
-    Startup.InitializeDatabase(app);
-
-    //Authentifizierung verwenden
-    if (!builder.Environment.IsDevelopment())
+    if (appSettings?.PostgresUser != "withoutdocker")
     {
-        app.UseAuthentication();
-        app.UseAuthorization();
+        Startup.InitializeDatabase(app);
     }
 
-    app.Run();
+    app.UseRouting();
+
+    if (builder.Environment.IsDevelopment())
+    {
+        app.MapGraphQL();
+    }
+    else
+    {
+        app.MapGraphQLHttp();
+        app.MapGraphQLWebSocket();
+    }
+
+    if (builder.Environment.IsDevelopment())
+    {
+        app.UseGraphQLVoyager("/graphql-voyager", new VoyagerOptions()
+        {
+            GraphQLEndPoint = "/graphql"
+        });
+    }
+
+    app.RunWithGraphQLCommands(args);
 }
 catch (Exception ex)
 {
@@ -172,6 +206,6 @@ catch (Exception ex)
 }
 finally
 {
-    Log.Information("Web-Host stoped");
+    Log.Information("Web-Host stopped");
     Log.CloseAndFlush();
 }

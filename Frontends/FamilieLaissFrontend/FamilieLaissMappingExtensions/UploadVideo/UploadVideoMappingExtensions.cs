@@ -18,14 +18,7 @@ public static class UploadVideoMappingExtensions
 
     public static IEnumerable<IUploadVideoModel> Map(this IReadOnlyList<IFrUploadVideoOnlyId> sourceItems)
     {
-        var result = new List<IUploadVideoModel>();
-
-        foreach (var sourceItem in sourceItems)
-        {
-            result.Add(sourceItem.Map());
-        }
-
-        return result;
+        return sourceItems.Select(sourceItem => sourceItem.Map()).ToList();
     }
 
     public static IUploadVideoModel Map(this IFrUploadVideoForChooseView sourceItem)
@@ -49,14 +42,7 @@ public static class UploadVideoMappingExtensions
 
     public static IEnumerable<IUploadVideoModel> Map(this IReadOnlyList<IFrUploadVideoForChooseView> sourceItems)
     {
-        var result = new List<IUploadVideoModel>();
-
-        foreach (var sourceItem in sourceItems)
-        {
-            result.Add(sourceItem.Map());
-        }
-
-        return result;
+        return sourceItems.Select(sourceItem => sourceItem.Map()).ToList();
     }
 
     public static IUploadVideoModel Map(this IFrUploadVideoIdWithFilename sourceItem)
@@ -73,11 +59,7 @@ public static class UploadVideoMappingExtensions
     public static IEnumerable<IUploadVideoModel> Map(this IReadOnlyList<IFrUploadVideoForUploadView> sourceItems,
         IServiceProvider serviceProvider)
     {
-        var result = new List<IUploadVideoModel>();
-
-        foreach (var sourceItem in sourceItems)
-        {
-            var newItem = new UploadVideoModel()
+        return sourceItems.Select(sourceItem => new UploadVideoModel()
             {
                 Id = sourceItem.Id,
                 Filename = sourceItem.Filename,
@@ -90,12 +72,9 @@ public static class UploadVideoMappingExtensions
                 DurationMinute = sourceItem.DurationMinute,
                 DurationSecond = sourceItem.DurationSecond,
                 //GoogleGeoCodingAddress = sourceItem.GoogleGeoCodingAddress.Map()
-            };
-
-            result.Add(newItem);
-        }
-
-        return result;
+            })
+            .Cast<IUploadVideoModel>()
+            .ToList();
     }
 
     public static IUploadVideoModel Map(this IFrUploadVideoForConvert sourceItem)

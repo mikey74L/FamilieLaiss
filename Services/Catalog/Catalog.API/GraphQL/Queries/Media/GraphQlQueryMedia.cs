@@ -1,5 +1,7 @@
-﻿using Catalog.Domain.Aggregates;
+﻿using Catalog.API.GraphQL.DataLoaders.Media;
+using Catalog.Domain.Aggregates;
 using Catalog.Infrastructure.DBContext;
+using HotChocolate.Fusion.SourceSchema.Types;
 using Microsoft.EntityFrameworkCore;
 
 namespace Catalog.API.GraphQL.Queries.Media;
@@ -17,6 +19,11 @@ public class GraphQlQueryMedia
         return context.MediaGroups;
     }
 
+    [GraphQLDescription("Returns a media group")]
+    [Lookup]
+    public async Task<Domain.Aggregates.MediaGroup> GetMediaGroup(long id, MediaGroupDataLoader dataLoader)
+        => await dataLoader.LoadAsync(id);
+
     //[Authorize("MediaItem.Read")]
     [GraphQLDescription("Returns a list of media items")]
     [UseProjection]
@@ -26,6 +33,11 @@ public class GraphQlQueryMedia
     {
         return context.MediaItems;
     }
+
+    [GraphQLDescription("Returns a media item")]
+    [Lookup]
+    public async Task<Domain.Aggregates.MediaItem> GetMediaItem(long id, MediaItemDataLoader dataLoader)
+        => await dataLoader.LoadAsync(id);
 
     //[Authorize("MediaGroup.Validate")]
     [GraphQLDescription("Validate german media group name ")]

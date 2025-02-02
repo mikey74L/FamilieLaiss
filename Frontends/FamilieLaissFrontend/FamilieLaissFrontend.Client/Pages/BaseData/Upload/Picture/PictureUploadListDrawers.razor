@@ -39,64 +39,34 @@
     [Parameter]
     public bool IsSortSidebarVisible
     {
-      get
-      {
-        return ViewModel.IsSortSidebarVisible;
-      }
-      set
-      {
-            ViewModel.IsSortSidebarVisible = value;
-        }
+      get => ViewModel.IsSortSidebarVisible;
+      set => ViewModel.IsSortSidebarVisible = value;
     }
     [Parameter]
     public bool IsFilterSidebarVisible
     {
-        get
-        {
-            return ViewModel.IsFilterSidebarVisible;
-        }
-        set
-        {
-            ViewModel.IsFilterSidebarVisible = value;
-        }
+        get => ViewModel.IsFilterSidebarVisible;
+        set => ViewModel.IsFilterSidebarVisible = value;
     }
 
     [Parameter]
     public EventCallback<bool> IsSortSidebarVisibleChanged 
     { 
-        get
-        {
-            return ViewModel.IsSortSidebarVisibleChanged;
-        }
-        set
-        {
-            ViewModel.IsSortSidebarVisibleChanged = value;
-        }
+        get => ViewModel.IsSortSidebarVisibleChanged;
+        set => ViewModel.IsSortSidebarVisibleChanged = value;
     }
 
     [Parameter]
     public EventCallback<bool> IsFilterSidebarVisibleChanged 
     { 
-        get
-        {
-            return ViewModel.IsFilterSidebarVisibleChanged;
-        }
-        set
-        {
-            ViewModel.IsFilterSidebarVisibleChanged = value;
-        }
+        get => ViewModel.IsFilterSidebarVisibleChanged;
+        set => ViewModel.IsFilterSidebarVisibleChanged = value;
     }
 
     [Parameter]
     public IGraphQlSortAndFilterService<IUploadPictureModel, UploadPictureSortInput, UploadPictureFilterInput> SortAndFilterService 
     { 
-        get
-        {
-            return ViewModel.SortAndFilterService;
-        }
-        set
-        {
-            ViewModel.SortAndFilterService = value;
-        }
+        get => ViewModel.SortAndFilterService;
+        set => ViewModel.SortAndFilterService = value;
     }
 }

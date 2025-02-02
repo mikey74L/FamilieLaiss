@@ -1,0 +1,9 @@
+Im Fusion m�ssen die einzelnen Subgraphen eingebunden werden
+
+   fusion compose -p gateway.fgp -s ../../Services/Catalog/Catalog.API
+   fusion compose -p gateway.fgp -s ../../Services/Upload/Upload.API
+   fusion compose -p gateway.fgp -s ../../Services/PictureConvert/PictureConvert.API
+   fusion compose -p gateway.fgp -s ../../Services/VideoConvert/VideoConvert.API
+   fusion compose -p gateway.fgp -s ../../Services/User/User.API
+   fusion compose -p gateway.fgp -s ../../Services/UserInteraction/UserInteraction.API
+   fusion compose -p gateway.fgp -s ../../Services/Settings/Settings.API

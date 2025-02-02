@@ -9,14 +9,7 @@ public static class CategoryMappingExtensions
 {
     public static IEnumerable<ICategoryModel> Map(this IReadOnlyList<IFrCategoryFull> sourceItems)
     {
-        var result = new List<ICategoryModel>();
-
-        foreach (var sourceItem in sourceItems)
-        {
-            result.Add(sourceItem.Map());
-        }
-
-        return result;
+        return sourceItems.Select(sourceItem => sourceItem.Map()).ToList();
     }
 
     public static ICategoryModel Map(this IFrCategoryFull sourceItem)
@@ -36,14 +29,7 @@ public static class CategoryMappingExtensions
 
     public static IEnumerable<ICategoryModel> Map(this IReadOnlyList<IFrGetCategoryValuesForCategory> sourceItems)
     {
-        var result = new List<ICategoryModel>();
-
-        foreach (var sourceItem in sourceItems)
-        {
-            result.Add(sourceItem.Map());
-        }
-
-        return result;
+        return sourceItems.Select(sourceItem => sourceItem.Map()).ToList();
     }
 
     public static ICategoryModel Map(this IFrGetCategoryValuesForCategory sourceItem)

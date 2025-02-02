@@ -1,0 +1,199 @@
+﻿schema {
+  query: Query
+  subscription: Subscription
+}
+
+"Picture convert status"
+type PictureConvertStatus {
+  "The identifier for this picture convert status item"
+  id: Long!
+  "The current state for the conversion"
+  status: EnumPictureConvertStatus!
+  "Error message when conversion is in state \"Finished with errors\""
+  errorMessage: String!
+  "Timestamp for \"Read Picture Info from file - Begin\""
+  startDateInfo: DateTime
+  "Timestamp for \"Read Picture Info from file - End\""
+  finishDateInfo: DateTime
+  "Timestamp for \"Read Exif-Information from file - Begin\""
+  startDateExif: DateTime
+  "Timestamp for \"Read Exif-Information from file - End\""
+  finishDateExif: DateTime
+  "Timestamp for \"Convert picture - Begin\""
+  startDateConvert: DateTime
+  "Timestamp for \"Convert picture - End\""
+  finishDateConvert: DateTime
+  "Id of the upload picture that is converted"
+  uploadPicture: UploadPicture!
+}
+
+type Query {
+  "Returns a list of picture convert status items"
+  pictureConvertStatusItems(where: PictureConvertStatusFilterInput @cost(weight: "10") order: [PictureConvertStatusSortInput!] @cost(weight: "10")): [PictureConvertStatus!]! @cost(weight: "10")
+  "Returns a picture convert status item"
+  pictureConvertStatus(id: Long!): PictureConvertStatus! @lookup @cost(weight: "10")
+}
+
+type Subscription {
+  "Subscription for new picture convert status items in waiting state"
+  onPictureConvertStatusWaiting: PictureConvertStatus!
+  "Subscription for new picture convert status items in error state"
+  onPictureConvertStatusError: PictureConvertStatus!
+  "Subscription for new picture convert status items in success state"
+  onPictureConvertStatusSuccess: PictureConvertStatus!
+  "Subscription for convert status item for currently converted picture"
+  onPictureConvertStatusCurrent: PictureConvertStatus!
+}
+
+type UploadPicture {
+  "The identifier for this upload picture"
+  id: Long!
+  "The converting status for this upload picture"
+  status: PictureConvertStatus
+}
+
+input DateTimeOperationFilterInput {
+  eq: DateTime @cost(weight: "10")
+  neq: DateTime @cost(weight: "10")
+  in: [DateTime] @cost(weight: "10")
+  nin: [DateTime] @cost(weight: "10")
+  gt: DateTime @cost(weight: "10")
+  ngt: DateTime @cost(weight: "10")
+  gte: DateTime @cost(weight: "10")
+  ngte: DateTime @cost(weight: "10")
+  lt: DateTime @cost(weight: "10")
+  nlt: DateTime @cost(weight: "10")
+  lte: DateTime @cost(weight: "10")
+  nlte: DateTime @cost(weight: "10")
+}
+
+input EnumPictureConvertStatusOperationFilterInput {
+  eq: EnumPictureConvertStatus @cost(weight: "10")
+  neq: EnumPictureConvertStatus @cost(weight: "10")
+  in: [EnumPictureConvertStatus!] @cost(weight: "10")
+  nin: [EnumPictureConvertStatus!] @cost(weight: "10")
+}
+
+input LongOperationFilterInput {
+  eq: Long @cost(weight: "10")
+  neq: Long @cost(weight: "10")
+  in: [Long] @cost(weight: "10")
+  nin: [Long] @cost(weight: "10")
+  gt: Long @cost(weight: "10")
+  ngt: Long @cost(weight: "10")
+  gte: Long @cost(weight: "10")
+  ngte: Long @cost(weight: "10")
+  lt: Long @cost(weight: "10")
+  nlt: Long @cost(weight: "10")
+  lte: Long @cost(weight: "10")
+  nlte: Long @cost(weight: "10")
+}
+
+"Picture convert status"
+input PictureConvertStatusFilterInput {
+  and: [PictureConvertStatusFilterInput!]
+  or: [PictureConvertStatusFilterInput!]
+  "The current state for the conversion"
+  status: EnumPictureConvertStatusOperationFilterInput
+  "Error message when conversion is in state \"Finished with errors\""
+  errorMessage: StringOperationFilterInput
+  "Timestamp for \"Read Picture Info from file - Begin\""
+  startDateInfo: DateTimeOperationFilterInput
+  "Timestamp for \"Read Picture Info from file - End\""
+  finishDateInfo: DateTimeOperationFilterInput
+  "Timestamp for \"Read Exif-Information from file - Begin\""
+  startDateExif: DateTimeOperationFilterInput
+  "Timestamp for \"Read Exif-Information from file - End\""
+  finishDateExif: DateTimeOperationFilterInput
+  "Timestamp for \"Convert picture - Begin\""
+  startDateConvert: DateTimeOperationFilterInput
+  "Timestamp for \"Convert picture - End\""
+  finishDateConvert: DateTimeOperationFilterInput
+  "Id of the upload picture that is converted"
+  uploadPicture: UploadPictureFilterInput
+  id: LongOperationFilterInput
+}
+
+"Picture convert status"
+input PictureConvertStatusSortInput {
+  "The current state for the conversion"
+  status: SortEnumType @cost(weight: "10")
+  "Error message when conversion is in state \"Finished with errors\""
+  errorMessage: SortEnumType @cost(weight: "10")
+  "Timestamp for \"Read Picture Info from file - Begin\""
+  startDateInfo: SortEnumType @cost(weight: "10")
+  "Timestamp for \"Read Picture Info from file - End\""
+  finishDateInfo: SortEnumType @cost(weight: "10")
+  "Timestamp for \"Read Exif-Information from file - Begin\""
+  startDateExif: SortEnumType @cost(weight: "10")
+  "Timestamp for \"Read Exif-Information from file - End\""
+  finishDateExif: SortEnumType @cost(weight: "10")
+  "Timestamp for \"Convert picture - Begin\""
+  startDateConvert: SortEnumType @cost(weight: "10")
+  "Timestamp for \"Convert picture - End\""
+  finishDateConvert: SortEnumType @cost(weight: "10")
+  "Id of the upload picture that is converted"
+  uploadPicture: UploadPictureSortInput @cost(weight: "10")
+  id: SortEnumType @cost(weight: "10")
+}
+
+input StringOperationFilterInput {
+  and: [StringOperationFilterInput!]
+  or: [StringOperationFilterInput!]
+  eq: String @cost(weight: "10")
+  neq: String @cost(weight: "10")
+  contains: String @cost(weight: "20")
+  ncontains: String @cost(weight: "20")
+  in: [String] @cost(weight: "10")
+  nin: [String] @cost(weight: "10")
+  startsWith: String @cost(weight: "20")
+  nstartsWith: String @cost(weight: "20")
+  endsWith: String @cost(weight: "20")
+  nendsWith: String @cost(weight: "20")
+}
+
+input UploadPictureFilterInput {
+  and: [UploadPictureFilterInput!]
+  or: [UploadPictureFilterInput!]
+  "The converting status for this upload picture"
+  status: PictureConvertStatusFilterInput
+  id: LongOperationFilterInput
+}
+
+input UploadPictureSortInput {
+  "The converting status for this upload picture"
+  status: PictureConvertStatusSortInput @cost(weight: "10")
+  id: SortEnumType @cost(weight: "10")
+}
+
+enum EnumPictureConvertStatus {
+  WAITING_FOR_CONVERSION
+  READ_INFO_BEGIN
+  READ_INFO_END
+  READ_EXIF_BEGIN
+  READ_EXIF_END
+  CONVERT_BEGIN
+  CONVERT_END
+  SUCESSFULLY_CONVERTED
+  CONVERTED_WITH_ERRORS
+  TRANSIENT_ERROR
+}
+
+enum SortEnumType {
+  ASC
+  DESC
+}
+
+"The purpose of the `cost` directive is to define a `weight` for GraphQL types, fields, and arguments. Static analysis can use these weights when calculating the overall cost of a query or response."
+directive @cost("The `weight` argument defines what value to add to the overall cost for every appearance, or possible appearance, of a type, field, argument, etc." weight: String!) on SCALAR | OBJECT | FIELD_DEFINITION | ARGUMENT_DEFINITION | ENUM | INPUT_FIELD_DEFINITION
+
+directive @lookup on FIELD_DEFINITION
+
+"The `@specifiedBy` directive is used within the type system definition language to provide a URL for specifying the behavior of custom scalar definitions."
+directive @specifiedBy("The specifiedBy URL points to a human-readable specification. This field will only read a result for scalar types." url: String!) on SCALAR
+
+"The `DateTime` scalar represents an ISO-8601 compliant date time type."
+scalar DateTime @specifiedBy(url: "https:\/\/www.graphql-scalars.com\/date-time")
+
+"The `Long` scalar type represents non-fractional signed whole 64-bit numeric values. Long can represent values between -(2^63) and 2^63 - 1."
+scalar Long

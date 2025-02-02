@@ -1,4 +1,5 @@
 ﻿using DomainHelper.AbstractClasses;
+using HotChocolate;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 
@@ -16,22 +17,26 @@ public class UploadVideo : EntityBase<long>
     /// </summary>
     [Required]
     [MaxLength(255)]
+    [GraphQLIgnore]
     public string Filename { get; private set; } = string.Empty;
 
     /// <summary>
     /// Height of the original video
     /// </summary>
+    [GraphQLIgnore]
     public int Height { get; private set; }
 
     /// <summary>
     /// Width of the original video
     /// </summary>
+    [GraphQLIgnore]
     public int Width { get; private set; }
 
     /// <summary>
     /// The converting status for this upload video
     /// </summary>
-    public VideoConvertStatus ConvertStatus { get; private set; }
+    [GraphQLDescription("The converting status for this upload video")]
+    public VideoConvertStatus? ConvertStatus { get; private set; }
 
     #endregion
 

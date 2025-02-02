@@ -1,4 +1,5 @@
 using GraphQL.Server.Ui.Voyager;
+using InfrastructureHelper.EventDispatchHandler;
 using MassTransit;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -13,12 +14,14 @@ using Npgsql;
 using Serilog;
 using ServiceLayerHelper;
 using ServiceLayerHelper.Logging;
-using StackExchange.Redis;
 using Steeltoe.Discovery.Client;
 using Steeltoe.Discovery.Eureka;
 using System;
 using System.Globalization;
 using User.API;
+using User.API.GraphQL.DataLoaders.Country;
+using User.API.GraphQL.DataLoaders.UserAccount;
+using User.API.GraphQL.Filter;
 using User.API.GraphQL.Mutations;
 using User.API.GraphQL.Mutations.UserMutations;
 using User.API.GraphQL.Queries;
@@ -54,7 +57,7 @@ builder.AddServiceDiscovery(options => options.UseEureka());
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
 //Hinzufügen der Hosted-Services (Background-Services)
-//builder.Services.AddHostedService<MessageForAddedMediaItemsBackgroundService>();
+builder.Services.AddHostedService<EventDispatcherBackgroundService>();
 
 //Hinzufügen det globalen Exception-Handler Middleware
 builder.Services.AddSingleton<ILog, LogSerilog>();
@@ -62,52 +65,40 @@ builder.Services.AddSingleton<ILog, LogSerilog>();
 //Hinzufügen der Konfiguration (App-Settings) zum IOC-Container
 var appSettingsSection = builder.Configuration.GetSection("AppSettings");
 builder.Services.Configure<AppSettings>(appSettingsSection);
-AppSettings? appSettings = appSettingsSection.Get<AppSettings>();
+var appSettings = appSettingsSection.Get<AppSettings>();
 
 //Die DB-Context Factory hinzufügen inklusive der UnitOfWork
-NpgsqlConnectionStringBuilder postgresConnectionStringBuilder = new();
-postgresConnectionStringBuilder.ApplicationName = "User-Service";
-postgresConnectionStringBuilder.Host = appSettings?.PostgresHost;
-postgresConnectionStringBuilder.Port = appSettings?.PostgresPort ?? 0;
-postgresConnectionStringBuilder.Multiplexing = appSettings?.PostgresMultiplexing ?? false;
-postgresConnectionStringBuilder.Database = appSettings?.PostgresDatabase;
-postgresConnectionStringBuilder.Username = appSettings?.PostgresUser;
-postgresConnectionStringBuilder.Password = appSettings?.PostgresPassword;
-builder.Services.AddPooledDbContextFactory<UserServiceDBContext>(
-    o => o.UseNpgsql(postgresConnectionStringBuilder.ToString()))
-.AddUnitOfWork<UserServiceDBContext>();
-
-//Redis Multiplexer hinzufügen wird für GraphQL Schema Stitching verwendet
-builder.Services.AddSingleton(ConnectionMultiplexer.Connect("redis"));
+NpgsqlConnectionStringBuilder postgresConnectionStringBuilder = new()
+{
+    ApplicationName = "User-Service",
+    Host = appSettings?.PostgresHost,
+    Port = appSettings?.PostgresPort ?? 0,
+    Multiplexing = appSettings?.PostgresMultiplexing ?? false,
+    Database = appSettings?.PostgresDatabase,
+    Username = appSettings?.PostgresUser,
+    Password = appSettings?.PostgresPassword
+};
+builder.Services.AddPooledDbContextFactory<UserServiceDbContext>(
+        o => o.UseNpgsql(postgresConnectionStringBuilder.ToString()))
+    .AddUnitOfWork<UserServiceDbContext>();
 
 //Den GraphQL-Server hinzufügen
 var GraphQLBuilder = builder.Services.AddGraphQLServer()
-    .AddDiagnosticEventListener<QueryLogger>()
+    .RegisterDbContextFactory<UserServiceDbContext>()
     .AddMutationType<Mutation>()
     .AddTypeExtension<MutationsUser>()
     .AddQueryType<Query>()
-    .AddTypeExtension<QueryUser>()
-    .AddTypeExtension<QueryCountry>()
+    .AddTypeExtension<GraphQlQueryUser>()
+    .AddTypeExtension<GraphQlQueryCountry>()
     .AddType<CountryType>()
     .AddType<UserType>()
+    .AddDataLoader<CountryDataLoader>()
+    .AddDataLoader<UserAccountDataLoader>()
+    .AddProjections()
     .AddFiltering()
     .AddSorting()
-    .InitializeOnStartup() //Schema beim Startup initialisieren und nicht beim ersten Request wegen Publish mit Redis
-    .PublishSchemaDefinition(c => c
-        // The name of the schema. This name should be unique
-        .SetName("user")
-        .IgnoreRootTypes()
-        .PublishToRedis(
-            // The configuration name under which the schema should be published
-            "familielaiss",
-            // The connection multiplexer that should be used for publishing
-            sp => sp.GetRequiredService<ConnectionMultiplexer>()
-        )
-    );
-if (!builder.Environment.IsDevelopment())
-{
-    GraphQLBuilder.AddAuthorization();
-}
+    .AddErrorFilter<GraphQlErrorFilter>()
+    .InitializeOnStartup();
 
 //Lokalisierung für ASP.NET Core hinzufügen
 builder.Services.AddLocalization(options => options.ResourcesPath = "Localize");
@@ -133,9 +124,9 @@ if (appSettings is not null)
         x.UsingRabbitMq((context, cfg) =>
         {
             //Konfigurieren des Hosts
-            cfg.Host(new Uri(appSettings.RabbitMQConnection));
+            cfg.Host(new Uri(appSettings.RabbitMqConnection));
 
-            cfg.ReceiveEndpoint(appSettings.Endpoint_UserService, e =>
+            cfg.ReceiveEndpoint(appSettings.EndpointUserService, e =>
             {
                 e.UseConcurrencyLimit(1);
                 e.PrefetchCount = 16;
@@ -185,8 +176,11 @@ try
     app.UseRouting();
 
     //Initialisieren der Datenbank (Migration und Seeden)
-    Startup.InitializeDatabase(app);
-    Startup.SeedDatabase(app);
+    if (appSettings?.PostgresUser != "withoutdocker")
+    {
+        Startup.InitializeDatabase(app);
+        Startup.SeedDatabase(app);
+    }
 
     //Authentifizierung verwenden
     if (!builder.Environment.IsDevelopment())
@@ -215,7 +209,7 @@ try
         });
     }
 
-    app.Run();
+    app.RunWithGraphQLCommands(args);
 }
 catch (Exception ex)
 {

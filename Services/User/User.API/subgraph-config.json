@@ -1,0 +1,6 @@
+{
+  "subgraph": "User",
+  "http": {
+    "baseAddress": "http://userservice/graphql"
+  }
+}

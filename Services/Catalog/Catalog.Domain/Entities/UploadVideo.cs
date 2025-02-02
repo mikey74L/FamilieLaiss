@@ -1,6 +1,7 @@
 ﻿using Catalog.Domain.Aggregates;
 using Catalog.Domain.DomainEvents.UploadVideo;
 using DomainHelper.AbstractClasses;
+using HotChocolate;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -11,25 +12,34 @@ namespace Catalog.Domain.Entities;
 /// <summary>
 /// Entity for representing the upload video
 /// </summary>
-public class UploadVideo : EntityBase<long>
+public class UploadVideo : EntityCreation<long>
 {
     #region Properties
-
     /// <summary>
     /// The original filename of the upload video with file extension
     /// </summary>
     [Required]
     [MaxLength(255)]
-    public string Filename { get; private set; }
+    [GraphQLIgnore]
+    public string Filename { get; private set; } = string.Empty;
 
     /// <summary>
     /// Is the upload video assigned to a media item
     /// </summary>
     [Required]
+    [GraphQLDescription("Is the upload video assigned to a media item")]
     public bool IsAssigned { get; private set; }
 
+    /// <summary>
+    /// The id of the media item the upload video is assigned to
+    /// </summary>
+    [GraphQLIgnore]
     public long? MediaItemId { get; private set; }
 
+    /// <summary>
+    /// The media item the upload videom is assigned to
+    /// </summary>
+    [GraphQLDescription("The media item the upload video is assigned to")]
     public MediaItem? MediaItem { get; private set; }
 
     #endregion
@@ -37,7 +47,7 @@ public class UploadVideo : EntityBase<long>
     #region C'tor
 
     /// <summary>
-    /// C'tor without parameters would be used by EF-Core
+    /// Default constructor for GraphQL
     /// </summary>
     private UploadVideo()
     {

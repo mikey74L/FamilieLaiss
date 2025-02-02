@@ -37,7 +37,7 @@ public partial class MediaItemEditDialogViewModel(
 
     #region Parameters
 
-    public MudDialogInstance MudDialog { get; set; } = default!;
+    public IMudDialogInstance? MudDialog { get; set; }
     public bool IsInEditMode { get; set; }
     public IMediaItemModel? Model { get; set; }
     public long? MediaGroupId { get; set; }
@@ -103,13 +103,13 @@ public partial class MediaItemEditDialogViewModel(
 
                                     if (Model.MediaItemCategoryValues is not null)
                                     {
-                                        var catValues = new List<ICategoryValueModel>();
+                                        //var catValues = new List<ICategoryValueModel>();
                                         foreach (var mediaItemCategoryValue in Model.MediaItemCategoryValues)
                                         {
                                             if (mediaItemCategoryValue.CategoryValue?.Id is not null)
                                             {
-                                                catValues.Add(CategoryValues.First(x =>
-                                                    x.Id == mediaItemCategoryValue.CategoryValue.Id));
+                                                //catValues.Add(CategoryValues.First(x =>
+                                                  //  x.Id == mediaItemCategoryValue.CategoryValue.Id));
                                             }
                                         }
                                     }
@@ -319,7 +319,7 @@ public partial class MediaItemEditDialogViewModel(
                 }
                 else
                 {
-                    MudDialog.Close();
+                    MudDialog?.Close();
                 }
             }
         }
@@ -352,27 +352,26 @@ public partial class MediaItemEditDialogViewModel(
 
             if (dialogResult.HasValue && dialogResult.Value)
             {
-                MudDialog.Cancel();
+                MudDialog?.Cancel();
             }
         }
         else
         {
-            MudDialog.Cancel();
+            MudDialog?.Cancel();
         }
     }
 
     [RelayCommand]
     private async Task ShowChoosePictureDialogAsync()
     {
-        var dialogOptions = GetDialogOptions();
-        dialogOptions.MaxWidth = MaxWidth.ExtraExtraLarge;
+        var dialogOptions = GetDialogOptions( maxWidth: MaxWidth.ExtraExtraLarge);
 
         var dialog =
             await dialogService.ShowAsync<ChoosePictureDialog>(MediaItemEditDialogViewModelRes.ChoosePicture,
                 dialogOptions);
         var result = await dialog.Result;
 
-        if (!result.Canceled)
+        if (result is not null && !result.Canceled)
         {
             await categoryService.GetPhotoCategoriesWithValuesAsync()
                 .HandleStatus(APIResultErrorType.NoError, (resultCategories) =>
@@ -394,13 +393,14 @@ public partial class MediaItemEditDialogViewModel(
                         }
                     }
 
-                    SelectedPicture = (IUploadPictureModel)result.Data;
-                    CurrentMediaType = EnumMediaType.Picture;
-                    if (Model is not null)
+                    if (result.Data is IUploadVideoModel uploadVideoModel)
                     {
-                        Model.MediaType = CurrentMediaType;
-                        Model.UploadPicture = SelectedPicture;
+                        SelectedVideo = uploadVideoModel;
                     }
+                    CurrentMediaType = EnumMediaType.Picture;
+                    if (Model is null) return Task.CompletedTask;
+                    Model.MediaType = CurrentMediaType;
+                    Model.UploadPicture = SelectedPicture;
 
                     return Task.CompletedTask;
                 })
@@ -428,14 +428,13 @@ public partial class MediaItemEditDialogViewModel(
     [RelayCommand]
     private async Task ShowChooseVideoDialogAsync()
     {
-        var dialogOptions = GetDialogOptions();
-        dialogOptions.MaxWidth = MaxWidth.ExtraExtraLarge;
+        var dialogOptions = GetDialogOptions( maxWidth: MaxWidth.ExtraExtraLarge);
 
         var dialog =
             await dialogService.ShowAsync<ChooseVideoDialog>(MediaItemEditDialogViewModelRes.ChooseVideo,
                 dialogOptions);
         var result = await dialog.Result;
-        if (!result.Canceled)
+        if (result is not null && !result.Canceled)
         {
             await categoryService.GetVideoCategoriesWithValuesAsync()
                 .HandleStatus(APIResultErrorType.NoError, (resultCategories) =>
@@ -455,7 +454,10 @@ public partial class MediaItemEditDialogViewModel(
                         }
                     }
 
-                    SelectedVideo = (IUploadVideoModel)result.Data;
+                    if (result.Data is IUploadVideoModel uploadVideoModel)
+                    {
+                        SelectedVideo = uploadVideoModel;
+                    }
                     CurrentMediaType = EnumMediaType.Video;
                     if (Model is null) return Task.CompletedTask;
                     Model.MediaType = CurrentMediaType;

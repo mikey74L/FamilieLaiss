@@ -33,7 +33,7 @@ public partial class MediaGroupEditDialogViewModel(
     #endregion
 
     #region Parameters
-    public MudDialogInstance? MudDialog { get; set; }
+    public IMudDialogInstance? MudDialog { get; set; }
     public bool IsInEditMode { get; set; }
     public IMediaGroupModel? Model { get; set; }
     #endregion

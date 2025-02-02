@@ -6,7 +6,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\DDDHelpers\Infrastructure\InfrastructureHelper\InfrastructureHelper.csproj" />
-    <ProjectReference Include="..\Mail.Domain\Mail.Domain.csproj" />
   </ItemGroup>
 
   <ItemGroup>

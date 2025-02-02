@@ -62,14 +62,6 @@ query GetUserSettingForUser ($id: String!) {
     }
 }
 
-mutation AddUserSetting ($id: String!) {
-  addUserSetting (input: {id: $id}) {
-    userSetting {
-      ...FrUserSettingFull
-    }
-  }
-}
-
 mutation UpdateUserSetting ($id: String!,
                              $allowZoomingWithMouseWheel: Boolean!, 
                              $defaultKeepUploadWhenDelete: Boolean!,

@@ -31,8 +31,8 @@ public class UploadVideo : EntityCreation<long>
     /// Status for the upload video
     /// </summary>
     [Required]
-    [GraphQLDescription("The status for the upload video")]
-    public EnumUploadStatus Status { get; private set; }
+    [GraphQLDescription("The state for the upload video")]
+    public EnumUploadState State { get; private set; }
 
     /// <summary>
     /// Is video a streaming video (MPEG-DASH)
@@ -93,7 +93,7 @@ public class UploadVideo : EntityCreation<long>
     #region C'tor
 
     /// <summary>
-    /// Constructor 
+    /// Constructor would be used by GraphQl
     /// </summary>
     private UploadVideo()
     {
@@ -108,7 +108,7 @@ public class UploadVideo : EntityCreation<long>
     {
         Id = id;
         Filename = filename;
-        Status = EnumUploadStatus.Uploaded;
+        State = EnumUploadState.Uploaded;
     }
 
     #endregion
@@ -187,7 +187,7 @@ public class UploadVideo : EntityCreation<long>
             throw new DomainException("There must be a video type info before the status can be set to converted.");
         }
 
-        Status = EnumUploadStatus.Converted;
+        State = EnumUploadState.Converted;
     }
 
     /// <summary>
@@ -196,12 +196,12 @@ public class UploadVideo : EntityCreation<long>
     [GraphQLIgnore]
     public void SetVideoStateToAssigned()
     {
-        if (Status != EnumUploadStatus.Converted)
+        if (State != EnumUploadState.Converted)
         {
             throw new DomainException("Could only set the status to assigned from status converted");
         }
 
-        Status = EnumUploadStatus.Assigned;
+        State = EnumUploadState.Assigned;
     }
 
     /// <summary>
@@ -210,12 +210,12 @@ public class UploadVideo : EntityCreation<long>
     [GraphQLIgnore]
     public void SetVideoStateToUnAssigned()
     {
-        if (Status != EnumUploadStatus.Assigned)
+        if (State != EnumUploadState.Assigned)
         {
             throw new DomainException("Could only set the status to unassigned from status assigned");
         }
 
-        Status = EnumUploadStatus.Converted;
+        State = EnumUploadState.Converted;
     }
 
     /// <summary>
@@ -250,7 +250,7 @@ public class UploadVideo : EntityCreation<long>
     [GraphQLIgnore]
     public override Task EntityAddedAsync(DbContext dbContext, IDictionary<string, object> dictContextParams)
     {
-        AddDomainEvent(new DomainEventUploadVideoCreated(Id, Filename, Status));
+        AddDomainEvent(new DomainEventUploadVideoCreated(Id, Filename, State));
 
         return Task.CompletedTask;
     }

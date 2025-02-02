@@ -22,13 +22,6 @@ public static class CategoryValueMappingExtensions
 
     public static IEnumerable<ICategoryValueModel> Map(this IReadOnlyList<IFrCategoryValueFull> sourceItems)
     {
-        var result = new List<ICategoryValueModel>();
-
-        foreach (var sourceItem in sourceItems)
-        {
-            result.Add(sourceItem.Map());
-        }
-
-        return result;
+        return sourceItems.Select(sourceItem => sourceItem.Map()).ToList();
     }
 }

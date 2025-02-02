@@ -1,6 +1,5 @@
 ﻿@using FamilieLaissFrontend.Client.ViewModels.Controls.Filter
 @using FamilieLaissInterfaces.Models
-@using FamilieLaissInterfaces.Services
 @using FamilieLaissResources.Resources.Controls.Filter
 @using FamilieLaissSharedUI.Components
 
@@ -26,19 +25,13 @@
 {
     [Parameter]
     [EditorRequired]
-    public List<IGraphQlFilterGroup> FilterGroups { get; set; } = default!;
+    public required List<IGraphQlFilterGroup> FilterGroups { get; set; } 
 
     [Parameter]
     [EditorRequired]
     public List<IGraphQlFilterCriteria> FilterCriterias 
     { 
-        get
-        {
-            return ViewModel.FilterCriterias;
-        }
-        set
-        {
-            ViewModel.FilterCriterias = value;
-        }
+        get => ViewModel.FilterCriterias;
+        set => ViewModel.FilterCriterias = value;
     } 
 }

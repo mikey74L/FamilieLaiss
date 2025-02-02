@@ -1,10 +1,13 @@
-﻿using FamilieLaissSharedUI.Extensions;
+﻿using System.ComponentModel;
+using FamilieLaissSharedUI.Extensions;
 using FamilieLaissSharedUI.Interfaces;
 using Microsoft.AspNetCore.Components;
 
 namespace FamilieLaissSharedUI.Components;
 
-public class FlComponentBase<TViewModel> : ComponentBase, IDisposable, IView<TViewModel> where TViewModel : IViewModelBase
+public class FlComponentBase<TViewModel>(TViewModel viewModel, NavigationManager navigationManager)
+    : ComponentBase, IDisposable, IView<TViewModel>
+    where TViewModel : IViewModelBase
 {
     #region Properties
 
@@ -19,75 +22,82 @@ public class FlComponentBase<TViewModel> : ComponentBase, IDisposable, IView<TVi
 
     protected bool IsWebAssembly => OperatingSystem.IsBrowser();
 
+    private readonly TViewModel _viewModel = viewModel;
     #endregion
 
-    #region Inject
-    [Inject]
-    protected TViewModel ViewModel { get; set; } = default!;
+    #region Private Methods
 
-    [Inject]
-    private NavigationManager NavigationManager { get; set; } = default!;
+    private void PropertyChangedHandler(object? sender, PropertyChangedEventArgs e)
+    {
+        InvokeAsync(StateHasChanged);
+    }
     #endregion
-
+    
     #region Overrides for Lifecycle
     protected override void OnInitialized()
     {
         base.OnInitialized();
 
-        ViewModel.PropertyChanged += (_, _) => InvokeAsync(StateHasChanged);
+        _viewModel.PropertyChanged += PropertyChangedHandler;
 
-        foreach (var item in ViewModel.QueryStringParameters)
+        foreach (var item in _viewModel.QueryStringParameters)
         {
-            if (NavigationManager.TryGetQueryString(item.Value, item.Key, out var value))
+            if (navigationManager.TryGetQueryString(item.Value, item.Key, out var value))
             {
-                ViewModel.SetParameter(item.Key, value);
+                _viewModel.SetParameter(item.Key, value);
             }
         }
 
-        ViewModel.OnInitialized();
+        _viewModel.OnInitialized();
     }
 
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
 
-        await ViewModel.OnInitializedAsync();
+        await _viewModel.OnInitializedAsync();
     }
 
     protected override void OnParametersSet()
     {
         base.OnParametersSet();
 
-        ViewModel.OnParametersSet();
+        _viewModel.OnParametersSet();
     }
 
     protected override async Task OnParametersSetAsync()
     {
         await base.OnParametersSetAsync();
 
-        await ViewModel.OnParametersSetAsync();
+        await _viewModel.OnParametersSetAsync();
     }
 
     protected override void OnAfterRender(bool firstRender)
     {
         base.OnAfterRender(firstRender);
 
-        ViewModel.OnAfterRender(firstRender);
+        _viewModel.OnAfterRender(firstRender);
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         await base.OnAfterRenderAsync(firstRender);
 
-        await ViewModel.OnAfterRenderAsync(firstRender);
+        await _viewModel.OnAfterRenderAsync(firstRender);
     }
     #endregion
 
+    #region Public Properties
+    public TViewModel ViewModel => _viewModel;
+    
+    public NavigationManager NavigationManager => navigationManager;
+    #endregion
+    
     #region IDisposable
     public void Dispose()
     {
-        ViewModel.PropertyChanged -= (_, _) => InvokeAsync(StateHasChanged);
-        ViewModel.Dispose();
+        _viewModel.PropertyChanged -= PropertyChangedHandler;
+        _viewModel.Dispose();
     }
     #endregion
 }

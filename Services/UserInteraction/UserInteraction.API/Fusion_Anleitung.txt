@@ -1,0 +1,24 @@
+-- 1. Das CLI-Tool für Fusion muss installiert sein
+
+    dotnet tool install -g HotChocolate.Fusion.CommandLine
+
+
+-- 2. Das Konfigurations-File für den Sub-Graph muss erstellt werden
+    
+    siehe aktulles subgraph-config.json <-- Muss diesen Namen haben
+
+
+-- 3. Es muss ein Schema-Export für den Subgraph durchgeführt werden
+   
+    Dafür muss die Anwendung auf jeden Fall mit RunWithGraphQLCommands in der Program.cs gestartet werden
+
+    dotnet run -- schema export --output schema.graphql
+
+
+-- 4. Danach muss der Subgraph für Fusion paketiert werden (.fsp-Datei erstellen)
+    
+    fusion subgraph pack
+
+
+-- 5. Danach muss der Fusion-Server aktualisiert werden
+    Siehe hierfür die Befehle unter dem Gateway

@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using InfrastructureHelper.Context;
+using Microsoft.EntityFrameworkCore;
 using Settings.Domain.Entities;
 using Settings.Infrastructure.DBContext.Configurations;
 
@@ -7,26 +8,20 @@ namespace Settings.Infrastructure.DBContext;
 /// <summary>
 /// Entity-Framework-Core database context for user settings service
 /// </summary>
-public class SettingsServiceDbContext : DbContext
+/// <remarks>
+/// C'tor
+/// </remarks>
+/// <param name="options">The options for this context.</param>
+public class SettingsServiceDbContext(DbContextOptions<SettingsServiceDbContext> options) :
+    BaseContextFamilieLaiss<SettingsServiceDbContext>(options)
 {
-    #region C'tor
-    /// <summary>
-    /// C'tor
-    /// </summary>
-    /// <param name="options">The options for this context.</param>
-    public SettingsServiceDbContext(DbContextOptions<SettingsServiceDbContext> options) : base(options)
-    {
-    }
-    #endregion
-
     #region Protected override
     /// <summary>
     /// Would be called when the model is creating to define special behaviour
     /// </summary>
     /// <param name="modelBuilder">The builder being used to construct the model for this context</param>
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    protected override void OnModelCreatingInternal(ModelBuilder modelBuilder)
     {
-        //Aufrufen des Model-Builders für ConvertStatus
         modelBuilder.ApplyConfiguration(new UserSettingsEntityTypeConfiguration());
     }
     #endregion

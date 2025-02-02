@@ -9,13 +9,12 @@ using Npgsql;
 using Serilog;
 using ServiceLayerHelper;
 using ServiceLayerHelper.Logging;
-using StackExchange.Redis;
 using Steeltoe.Discovery.Client;
 using Steeltoe.Discovery.Eureka;
 using System.Globalization;
 using Upload.API;
-using Upload.API.GraphQL.DataLoader.UploadPicture;
-using Upload.API.GraphQL.DataLoader.UploadVideo;
+using Upload.API.GraphQL.DataLoaders.UploadPicture;
+using Upload.API.GraphQL.DataLoaders.UploadVideo;
 using Upload.API.GraphQL.Filter;
 using Upload.API.GraphQL.Mutations;
 using Upload.API.GraphQL.Mutations.FileUpload;
@@ -99,12 +98,9 @@ builder.Services.AddTransient<IJobOperations, JobOperationsService>();
 builder.Services.AddTransient<JobExecutor>();
 builder.Services.AddHangfireServer(x => x.ServerTimeout = TimeSpan.FromDays(1));
 
-//Redis Multiplexer hinzufügen wird für GraphQL Schema Stitching verwendet
-builder.Services.AddSingleton(ConnectionMultiplexer.Connect("redis"));
-
 //Adding GraphQL Server
 var graphQlBuilder = builder.Services.AddGraphQLServer()
-    .RegisterDbContext<UploadServiceDbContext>(DbContextKind.Pooled)
+    .RegisterDbContextFactory<UploadServiceDbContext>()
     //.AddDiagnosticEventListener<QueryLogger>()
     .AddMutationType<Mutation>()
     .AddTypeExtension<GraphQlMutationUploadPicture>()
@@ -122,17 +118,7 @@ var graphQlBuilder = builder.Services.AddGraphQLServer()
     .AddFiltering()
     .AddSorting()
     .AddErrorFilter<GraphQlErrorFilter>()
-    .InitializeOnStartup()
-    .PublishSchemaDefinition(c => c
-        // The name of the schema. This name should be unique
-        .SetName("upload")
-        .PublishToRedis(
-            // The configuration name under which the schema should be published
-            "familielaiss",
-            // The connection multiplexer that should be used for publishing
-            sp => sp.GetRequiredService<ConnectionMultiplexer>()
-        )
-    );
+    .InitializeOnStartup();
 
 
 //Lokalisierung für ASP.NET Core hinzufügen
@@ -220,7 +206,10 @@ try
     app.ConfigureExceptionHandler();
 
     //Initialisieren der Datenbank (Migration und Seeden)
-    Startup.InitializeDatabase(app);
+    if (appSettings?.PostgresUser != "withoutdocker")
+    {
+        Startup.InitializeDatabase(app);
+    }
 
     //Add routing to pipeline
     app.UseRouting();

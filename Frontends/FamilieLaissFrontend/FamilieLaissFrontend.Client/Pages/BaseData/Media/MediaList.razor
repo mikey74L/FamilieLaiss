@@ -1,18 +1,15 @@
 ﻿@using FamilieLaissFrontend.Client.ViewModels.Pages.BaseData.Media
-@using FamilieLaissInterfaces.Models.Data
-@using FamilieLaissInterfaces.Services
 @using FamilieLaissResources.Resources.Pages.BaseData.Media
 @using FamilieLaissSharedUI.Components
 
 @inherits FlComponentBase<MediaListViewModel>
 
-@page "/basedata-media"
+@page "/base-data-media";
 
 <PageTitle>@MediaListRes.PageTitle</PageTitle>
 
 <MudDataGrid @ref="ViewModel.DataGrid"
              Items="@ViewModel.Items"
-             Sortable="true"
              QuickFilter="@ViewModel.QuickFilter"
              Hover="true"
              Striped="true"
@@ -98,13 +95,7 @@
     [CascadingParameter]
     public Task<AuthenticationState> AuthenticationState 
     { 
-        get
-        {
-            return ViewModel.AuthenticationState;
-        }
-        set
-        {
-            ViewModel.AuthenticationState = value;
-        }
+        get => ViewModel.AuthenticationState;
+        set => ViewModel.AuthenticationState = value;
     } 
 }

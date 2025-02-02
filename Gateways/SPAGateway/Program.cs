@@ -5,10 +5,8 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Serilog;
 using ServiceLayerHelper.Logging;
-using SPAGateway.GraphQl;
 using SPAGateway.Logging;
 using SPAGateway.Models;
-using StackExchange.Redis;
 using Steeltoe.Discovery.Client;
 using Steeltoe.Discovery.Eureka;
 using System;
@@ -30,11 +28,10 @@ Log.Logger = new LoggerConfiguration()
     .ReadFrom.Configuration(builder.Configuration)
     .CreateBootstrapLogger();
 
-Log.Information("TestLogging");
 //Hinzufügen der Service-Discovery
 builder.AddServiceDiscovery(options => options.UseEureka());
 
-//Hinzufügen det globalen Exception-Handler Middleware
+//Hinzufügen der globalen Exception-Handler Middleware
 builder.Services.AddSingleton<ILog, LogSerilog>();
 
 //Hinzufügen der Konfiguration (App-Settings) zum IOC-Container
@@ -58,36 +55,32 @@ if (builder.Environment.IsDevelopment())
 }
 
 //Add Http-Clients for all GraphQL Micro-Services
-builder.Services
-    .AddHttpClient(WellKnownSchemaNames.Google, c => c.BaseAddress = new Uri("http://googleapiservice/graphql"))
-    .AddRoundRobinLoadBalancer();
-builder.Services
-    .AddHttpClient(WellKnownSchemaNames.UserSetting, c => c.BaseAddress = new Uri("http://settingsservice/graphql"))
-    .AddRoundRobinLoadBalancer();
-builder.Services
-    .AddHttpClient(WellKnownSchemaNames.Catalog, c => c.BaseAddress = new Uri("http://catalogservice/graphql"))
-    .AddRoundRobinLoadBalancer();
-builder.Services
-    .AddHttpClient(WellKnownSchemaNames.Upload, c => c.BaseAddress = new Uri("http://uploadservice/graphql"))
-    .AddRoundRobinLoadBalancer();
-builder.Services
-    .AddHttpClient(WellKnownSchemaNames.PictureConvert,
-        c => c.BaseAddress = new Uri("http://pictureconvertservice/graphql"))
-    .AddRoundRobinLoadBalancer();
-builder.Services
-    .AddHttpClient(WellKnownSchemaNames.VideoConvert,
-        c => c.BaseAddress = new Uri("http://videoconvertservice/graphql"))
-    .AddRoundRobinLoadBalancer();
-
-//Add redis for GraphQL-Schema-Stitching
-builder.Services.AddSingleton(ConnectionMultiplexer.Connect("redis"));
+//builder.Services
+//    .AddHttpClient(WellKnownSchemaNames.Google, c => c.BaseAddress = new Uri("http://googleapiservice/graphql"))
+//    .AddRoundRobinLoadBalancer();
+//builder.Services
+//    .AddHttpClient(WellKnownSchemaNames.UserSetting, c => c.BaseAddress = new Uri("http://settingsservice/graphql"))
+//    .AddRoundRobinLoadBalancer();
+//builder.Services
+//    .AddHttpClient(WellKnownSchemaNames.Catalog, c => c.BaseAddress = new Uri("http://catalogservice/graphql"))
+//    .AddRoundRobinLoadBalancer();
+//builder.Services
+//    .AddHttpClient(WellKnownSchemaNames.Upload, c => c.BaseAddress = new Uri("http://uploadservice/graphql"))
+//    .AddRoundRobinLoadBalancer();
+//builder.Services
+//    .AddHttpClient(WellKnownSchemaNames.PictureConvert,
+//        c => c.BaseAddress = new Uri("http://pictureconvertservice/graphql"))
+//    .AddRoundRobinLoadBalancer();
+//builder.Services
+//    .AddHttpClient(WellKnownSchemaNames.VideoConvert,
+//        c => c.BaseAddress = new Uri("http://videoconvertservice/graphql"))
+//    .AddRoundRobinLoadBalancer();
 
 //Add GraphQL-Server
-builder.Services.AddGraphQLServer()
-    .AddRemoteSchemasFromRedis("familielaiss", sp => sp.GetRequiredService<ConnectionMultiplexer>())
-    .IgnoreField("Query", "uploadPicture", WellKnownSchemaNames.Catalog)
-    .IgnoreField("Query", "uploadVideo", WellKnownSchemaNames.Catalog)
-    .AddTypeExtensionsFromFile("./Stitching.graphql");
+builder.Services.AddFusionGatewayServer()
+    .ConfigureFromFile("gateway.fgp")
+    // Note: AllowQueryPlan is enabled for demonstration purposes. Disable in production environments.
+    .ModifyFusionOptions(x => x.AllowQueryPlan = true);
 
 //Den Web-Host ausführen
 try
@@ -120,7 +113,8 @@ try
     //Initialisieren der Endpoints für GraphQL
     app.MapGraphQL();
 
-    app.RunWithGraphQLCommands(args);
+    //Starten der Anwendung
+    app.Run();
 }
 catch (Exception ex)
 {

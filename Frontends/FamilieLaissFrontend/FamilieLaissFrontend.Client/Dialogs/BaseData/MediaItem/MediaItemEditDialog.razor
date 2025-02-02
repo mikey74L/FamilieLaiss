@@ -47,7 +47,7 @@
                             </MudStack>
                         }
 
-                        @if (ViewModel.CurrentMediaType == EnumMediaType.Picture && ViewModel.SelectedPicture is not null)
+                        @if (ViewModel is { CurrentMediaType: EnumMediaType.Picture, SelectedPicture: not null })
                         {
                             <PictureControl ControlType="EnumPictureControlType.EditDialog"
                                             IsDisabled="false"
@@ -56,7 +56,7 @@
                                             ShowSkeleton="false" />
                         }
 
-                        @if (ViewModel.CurrentMediaType == EnumMediaType.Video && ViewModel.SelectedVideo is not null)
+                        @if (ViewModel is { CurrentMediaType: EnumMediaType.Video, SelectedVideo: not null })
                         {
                             <VideoControl ControlType="EnumVideoControlType.EditDialog"
                                           UploadItem="ViewModel.SelectedVideo"
@@ -101,15 +101,7 @@
 
                         @if (ViewModel.CurrentMediaType is not null)
                         {
-                            string labelForDropdown = "";
-                            if (ViewModel.CurrentMediaType == EnumMediaType.Picture)
-                            {
-                                labelForDropdown = MediaItemEditDialogRes.LabelForDropdownPhoto;
-                            }
-                            else
-                            {
-                                labelForDropdown = MediaItemEditDialogRes.LabelForDropdownVideo;
-                            }
+                            var labelForDropdown = ViewModel.CurrentMediaType == EnumMediaType.Picture ? MediaItemEditDialogRes.LabelForDropdownPhoto : MediaItemEditDialogRes.LabelForDropdownVideo;
                             string placeholderForDropdown = MediaItemEditDialogRes.PlaceholderForDropdown;
                             string searchPlaceHolderForDropdown = MediaItemEditDialogRes.PlaceholderForDropdownFilter;
 
@@ -136,9 +128,10 @@
                                               Row="true"
                                               Justify="Justify.SpaceBetween"
                                               AlignItems="MudBlazor.AlignItems.Center">
-                                        <MudText>@context.Value.LocalizedName</MudText>
-                                        <MudChip Color="Color.Info"
-                                                 Variant="MudBlazor.Variant.Outlined">@context.Value.Category!.LocalizedName</MudChip>
+                                        <MudText>@context.Value!.LocalizedName</MudText>
+                                        <MudChip T="string"
+                                                 Color="Color.Info"
+                                                 Variant="MudBlazor.Variant.Outlined">@context.Value!.Category!.LocalizedName</MudChip>
                                     </MudStack>
                                 </ItemTemplate>
                             </MudSelectExtended>
@@ -211,7 +204,7 @@
 @code
 {
     [CascadingParameter]
-    public MudDialogInstance MudDialog
+    public IMudDialogInstance MudDialog
     {
         get => ViewModel.MudDialog;
         set => ViewModel.MudDialog = value;

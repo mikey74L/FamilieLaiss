@@ -1,10 +1,10 @@
-﻿using System;
+﻿using HotChocolate.Execution;
+using HotChocolate.Execution.Instrumentation;
+using Microsoft.Extensions.Logging;
+using System;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
-using HotChocolate.Execution;
-using HotChocolate.Execution.Instrumentation;
-using Microsoft.Extensions.Logging;
 
 namespace ServiceLayerHelper.Logging;
 
@@ -58,8 +58,8 @@ public class QueryLogger(ILogger<QueryLogger> logger) : ExecutionDiagnosticEvent
                                 return existingString + " ".PadRight(lengthToPadTo - existingString.Length);
                             }
 
-                            stringBuilder.AppendFormat(
-                                $"  {PadRightHelper(variableValue.Name, 20)} :  {PadRightHelper(variableValue.Value.ToString(), 20)}: {variableValue.Type}");
+                            //stringBuilder.AppendFormat(
+                            //    $"  {PadRightHelper(variableValue.Name, 20)} :  {PadRightHelper(variableValue.Value.ToString(), 20)}: {variableValue.Type}");
                             stringBuilder.AppendFormat($"{Environment.NewLine}");
                         }
                     }

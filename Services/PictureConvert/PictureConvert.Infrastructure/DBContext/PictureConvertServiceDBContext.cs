@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using InfrastructureHelper.Context;
+using Microsoft.EntityFrameworkCore;
 using PictureConvert.Domain.Entities;
 using PictureConvert.Infrastructure.DBContext.Configurations;
 
@@ -12,7 +13,7 @@ namespace PictureConvert.Infrastructure.DBContext;
 /// </remarks>
 /// <param name="options">The options for this context.</param>
 public class PictureConvertServiceDbContext(DbContextOptions<PictureConvertServiceDbContext> options)
-    : DbContext(options)
+    : BaseContextFamilieLaiss<PictureConvertServiceDbContext>(options)
 {
     #region Protected override
 
@@ -20,12 +21,9 @@ public class PictureConvertServiceDbContext(DbContextOptions<PictureConvertServi
     /// Would be called when the model is creating to define special behaviour
     /// </summary>
     /// <param name="modelBuilder">The builder being used to construct the model for this context</param>
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    protected override void OnModelCreatingInternal(ModelBuilder modelBuilder)
     {
-        //Aufrufen des Model-Builders für PictureConvertStatus
         modelBuilder.ApplyConfiguration(new ConvertStatusEntityTypeConfiguration());
-
-        //Aufrufen des Model-Builders für Upload-Picture
         modelBuilder.ApplyConfiguration(new UploadPictureEntityTypeConfiguration());
     }
 

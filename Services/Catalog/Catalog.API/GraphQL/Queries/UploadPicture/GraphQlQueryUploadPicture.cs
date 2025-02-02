@@ -1,4 +1,5 @@
-﻿using Catalog.API.GraphQL.DataLoader.UploadPicture;
+﻿using Catalog.API.GraphQL.DataLoaders.UploadPicture;
+using HotChocolate.Fusion.SourceSchema.Types;
 
 namespace Catalog.API.GraphQL.Queries.UploadPicture;
 
@@ -6,6 +7,7 @@ namespace Catalog.API.GraphQL.Queries.UploadPicture;
 public class GraphQlQueryUploadPicture
 {
     [GraphQLDescription("Returns a upload picture")]
+    [Lookup]
     public async Task<Domain.Entities.UploadPicture> GetUploadPicture(long id, UploadPictureDataLoader dataLoader)
         => await dataLoader.LoadAsync(id);
 }

@@ -1,113 +1,484 @@
 # This is a generated file. Not intended for manual editing.
-version: "3.4"
 services:
-  flbackend.api:
+  catalog.api:
     build:
       context: "C:\\DevOps\\Github\\FamilieLaiss"
-      dockerfile: "Services/FlBackEnd/FlBackEnd.API/Dockerfile"
+      dockerfile: "Services/Catalog/Catalog.API/Dockerfile"
       target: "base"
+      args:
+        BUILD_CONFIGURATION: "Debug"
     command: []
     entrypoint:
-    - "dotnet"
-    - "/app/bin/Debug/net8.0/FLBackEnd.API.dll"
+    - "/opt/JetBrains/RiderDebuggerTools/linux-x64/JetBrains.Debugger.Worker"
+    - "--runtimeconfig"
+    - "/opt/JetBrains/RiderDebuggerTools/JetBrains.Debugger.Worker.runtimeconfig.json"
+    - "--mode=server"
+    - "--frontend-port=57000"
+    - "--backend-port=57200"
+    - "--roslyn-worker-port=57400"
+    - "--timeout=60"
     environment:
       DOTNET_USE_POLLING_FILE_WATCHER: "true"
-    image: "flbackend:dev"
-    ports: []
+      RIDER_DEBUGGER_LOG_DIR: "/var/opt/JetBrains/RiderDebuggerTools"
+      RESHARPER_LOG_CONF: "/etc/opt/JetBrains/RiderDebuggerTools/backend-log.xml"
+    image: "catalogapi:dev"
+    ports:
+    - "127.0.0.1:57038:57000"
+    - "127.0.0.1:57238:57200"
+    - "127.0.0.1:57438:57400"
     volumes:
-    - "C:\\Users\\mikey\\.nuget\\packages:/home/app/.nuget/packages"
-    - "C:\\DevOps\\Github\\FamilieLaiss\\Services\\FLBackEnd\\FLBackEnd.API:/app:rw"
+    - "C:\\DevOps\\Github\\FamilieLaiss\\Services\\Catalog\\Catalog.API:/app:rw"
     - "C:\\DevOps\\Github\\FamilieLaiss:/src:rw"
+    - "C:\\Users\\mikey\\.nuget\\packages:/home/app/.nuget/packages"
+    - "C:\\Users\\mikey\\AppData\\Local\\JetBrains\\RiderRemoteDebugger\\2024.3.4\\\
+      Linux64:/opt/JetBrains/RiderDebuggerTools"
+    - "C:\\Users\\mikey\\AppData\\Local\\JetBrains\\JetBrains Rider 2024.3.4\\bin\\\
+      backend-log.xml:/etc/opt/JetBrains/RiderDebuggerTools/backend-log.xml"
+    - "C:\\Users\\mikey\\AppData\\Local\\JetBrains\\Rider2024.3\\log\\DebuggerWorker\\\
+      JetBrains.Debugger.Worker.2025_1_31_21_22_00:/var/opt/JetBrains/RiderDebuggerTools:rw"
+    working_dir: "/app"
+  gateway.spa:
+    build:
+      context: "C:\\DevOps\\Github\\FamilieLaiss"
+      dockerfile: "Gateways/SPAGateway/Dockerfile"
+      target: "base"
+      args:
+        BUILD_CONFIGURATION: "Debug"
+    command: []
+    entrypoint:
+    - "/opt/JetBrains/RiderDebuggerTools/linux-x64/JetBrains.Debugger.Worker"
+    - "--runtimeconfig"
+    - "/opt/JetBrains/RiderDebuggerTools/JetBrains.Debugger.Worker.runtimeconfig.json"
+    - "--mode=server"
+    - "--frontend-port=57000"
+    - "--backend-port=57200"
+    - "--roslyn-worker-port=57400"
+    - "--timeout=60"
+    environment:
+      DOTNET_USE_POLLING_FILE_WATCHER: "true"
+      RIDER_DEBUGGER_LOG_DIR: "/var/opt/JetBrains/RiderDebuggerTools"
+      RESHARPER_LOG_CONF: "/etc/opt/JetBrains/RiderDebuggerTools/backend-log.xml"
+    image: "gatewayspa:dev"
+    ports:
+    - "127.0.0.1:57039:57000"
+    - "127.0.0.1:57239:57200"
+    - "127.0.0.1:57439:57400"
+    volumes:
+    - "C:\\DevOps\\Github\\FamilieLaiss\\Gateways\\SPAGateway:/app:rw"
+    - "C:\\DevOps\\Github\\FamilieLaiss:/src:rw"
+    - "C:\\Users\\mikey\\.nuget\\packages:/home/app/.nuget/packages"
+    - "C:\\Users\\mikey\\AppData\\Local\\JetBrains\\RiderRemoteDebugger\\2024.3.4\\\
+      Linux64:/opt/JetBrains/RiderDebuggerTools"
+    - "C:\\Users\\mikey\\AppData\\Local\\JetBrains\\JetBrains Rider 2024.3.4\\bin\\\
+      backend-log.xml:/etc/opt/JetBrains/RiderDebuggerTools/backend-log.xml"
+    - "C:\\Users\\mikey\\AppData\\Local\\JetBrains\\Rider2024.3\\log\\DebuggerWorker\\\
+      JetBrains.Debugger.Worker.2025_1_31_21_22_00:/var/opt/JetBrains/RiderDebuggerTools:rw"
     working_dir: "/app"
   google.api:
     build:
       context: "C:\\DevOps\\Github\\FamilieLaiss"
       dockerfile: "Services/Google/Google.API/Dockerfile"
       target: "base"
+      args:
+        BUILD_CONFIGURATION: "Debug"
     command: []
     entrypoint:
-    - "dotnet"
-    - "/app/bin/Debug/net8.0/Google.API.dll"
+    - "/opt/JetBrains/RiderDebuggerTools/linux-x64/JetBrains.Debugger.Worker"
+    - "--runtimeconfig"
+    - "/opt/JetBrains/RiderDebuggerTools/JetBrains.Debugger.Worker.runtimeconfig.json"
+    - "--mode=server"
+    - "--frontend-port=57000"
+    - "--backend-port=57200"
+    - "--roslyn-worker-port=57400"
+    - "--timeout=60"
     environment:
       DOTNET_USE_POLLING_FILE_WATCHER: "true"
+      RIDER_DEBUGGER_LOG_DIR: "/var/opt/JetBrains/RiderDebuggerTools"
+      RESHARPER_LOG_CONF: "/etc/opt/JetBrains/RiderDebuggerTools/backend-log.xml"
     image: "googleapi:dev"
-    ports: []
+    ports:
+    - "127.0.0.1:57040:57000"
+    - "127.0.0.1:57240:57200"
+    - "127.0.0.1:57440:57400"
     volumes:
-    - "C:\\Users\\mikey\\.nuget\\packages:/home/app/.nuget/packages"
     - "C:\\DevOps\\Github\\FamilieLaiss\\Services\\Google\\Google.API:/app:rw"
     - "C:\\DevOps\\Github\\FamilieLaiss:/src:rw"
+    - "C:\\Users\\mikey\\.nuget\\packages:/home/app/.nuget/packages"
+    - "C:\\Users\\mikey\\AppData\\Local\\JetBrains\\RiderRemoteDebugger\\2024.3.4\\\
+      Linux64:/opt/JetBrains/RiderDebuggerTools"
+    - "C:\\Users\\mikey\\AppData\\Local\\JetBrains\\JetBrains Rider 2024.3.4\\bin\\\
+      backend-log.xml:/etc/opt/JetBrains/RiderDebuggerTools/backend-log.xml"
+    - "C:\\Users\\mikey\\AppData\\Local\\JetBrains\\Rider2024.3\\log\\DebuggerWorker\\\
+      JetBrains.Debugger.Worker.2025_1_31_21_22_00:/var/opt/JetBrains/RiderDebuggerTools:rw"
     working_dir: "/app"
   picture.api:
     build:
       context: "C:\\DevOps\\Github\\FamilieLaiss"
       dockerfile: "Services/Picture/Picture.API/Dockerfile"
       target: "base"
+      args:
+        BUILD_CONFIGURATION: "Debug"
     command: []
     entrypoint:
-    - "dotnet"
-    - "/app/bin/Debug/net8.0/Picture.API.dll"
+    - "/opt/JetBrains/RiderDebuggerTools/linux-x64/JetBrains.Debugger.Worker"
+    - "--runtimeconfig"
+    - "/opt/JetBrains/RiderDebuggerTools/JetBrains.Debugger.Worker.runtimeconfig.json"
+    - "--mode=server"
+    - "--frontend-port=57000"
+    - "--backend-port=57200"
+    - "--roslyn-worker-port=57400"
+    - "--timeout=60"
     environment:
       DOTNET_USE_POLLING_FILE_WATCHER: "true"
+      RIDER_DEBUGGER_LOG_DIR: "/var/opt/JetBrains/RiderDebuggerTools"
+      RESHARPER_LOG_CONF: "/etc/opt/JetBrains/RiderDebuggerTools/backend-log.xml"
     image: "pictureapi:dev"
-    ports: []
+    ports:
+    - "127.0.0.1:57041:57000"
+    - "127.0.0.1:57241:57200"
+    - "127.0.0.1:57441:57400"
     volumes:
-    - "C:\\Users\\mikey\\.nuget\\packages:/home/app/.nuget/packages"
     - "C:\\DevOps\\Github\\FamilieLaiss\\Services\\Picture\\Picture.API:/app:rw"
     - "C:\\DevOps\\Github\\FamilieLaiss:/src:rw"
+    - "C:\\Users\\mikey\\.nuget\\packages:/home/app/.nuget/packages"
+    - "C:\\Users\\mikey\\AppData\\Local\\JetBrains\\RiderRemoteDebugger\\2024.3.4\\\
+      Linux64:/opt/JetBrains/RiderDebuggerTools"
+    - "C:\\Users\\mikey\\AppData\\Local\\JetBrains\\JetBrains Rider 2024.3.4\\bin\\\
+      backend-log.xml:/etc/opt/JetBrains/RiderDebuggerTools/backend-log.xml"
+    - "C:\\Users\\mikey\\AppData\\Local\\JetBrains\\Rider2024.3\\log\\DebuggerWorker\\\
+      JetBrains.Debugger.Worker.2025_1_31_21_22_00:/var/opt/JetBrains/RiderDebuggerTools:rw"
+    working_dir: "/app"
+  pictureconvert.api:
+    build:
+      context: "C:\\DevOps\\Github\\FamilieLaiss"
+      dockerfile: "Services/PictureConvert/PictureConvert.API/Dockerfile"
+      target: "base"
+      args:
+        BUILD_CONFIGURATION: "Debug"
+    command: []
+    entrypoint:
+    - "/opt/JetBrains/RiderDebuggerTools/linux-x64/JetBrains.Debugger.Worker"
+    - "--runtimeconfig"
+    - "/opt/JetBrains/RiderDebuggerTools/JetBrains.Debugger.Worker.runtimeconfig.json"
+    - "--mode=server"
+    - "--frontend-port=57000"
+    - "--backend-port=57200"
+    - "--roslyn-worker-port=57400"
+    - "--timeout=60"
+    environment:
+      DOTNET_USE_POLLING_FILE_WATCHER: "true"
+      RIDER_DEBUGGER_LOG_DIR: "/var/opt/JetBrains/RiderDebuggerTools"
+      RESHARPER_LOG_CONF: "/etc/opt/JetBrains/RiderDebuggerTools/backend-log.xml"
+    image: "pictureconvertapi:dev"
+    ports:
+    - "127.0.0.1:57042:57000"
+    - "127.0.0.1:57242:57200"
+    - "127.0.0.1:57442:57400"
+    volumes:
+    - "C:\\DevOps\\Github\\FamilieLaiss\\Services\\PictureConvert\\PictureConvert.API:/app:rw"
+    - "C:\\DevOps\\Github\\FamilieLaiss:/src:rw"
+    - "C:\\Users\\mikey\\.nuget\\packages:/home/app/.nuget/packages"
+    - "C:\\Users\\mikey\\AppData\\Local\\JetBrains\\RiderRemoteDebugger\\2024.3.4\\\
+      Linux64:/opt/JetBrains/RiderDebuggerTools"
+    - "C:\\Users\\mikey\\AppData\\Local\\JetBrains\\JetBrains Rider 2024.3.4\\bin\\\
+      backend-log.xml:/etc/opt/JetBrains/RiderDebuggerTools/backend-log.xml"
+    - "C:\\Users\\mikey\\AppData\\Local\\JetBrains\\Rider2024.3\\log\\DebuggerWorker\\\
+      JetBrains.Debugger.Worker.2025_1_31_21_22_00:/var/opt/JetBrains/RiderDebuggerTools:rw"
     working_dir: "/app"
   pictureconvertexecute:
     build:
       context: "C:\\DevOps\\Github\\FamilieLaiss"
       dockerfile: "Services/PictureConvert/PictureConvertExecuteService/Dockerfile"
       target: "base"
+      args:
+        BUILD_CONFIGURATION: "Debug"
     command: []
     entrypoint:
-    - "dotnet"
-    - "/app/bin/Debug/net8.0/PictureConvertExecuteService.dll"
+    - "/opt/JetBrains/RiderDebuggerTools/linux-x64/JetBrains.Debugger.Worker"
+    - "--runtimeconfig"
+    - "/opt/JetBrains/RiderDebuggerTools/JetBrains.Debugger.Worker.runtimeconfig.json"
+    - "--mode=server"
+    - "--frontend-port=57000"
+    - "--backend-port=57200"
+    - "--roslyn-worker-port=57400"
+    - "--timeout=60"
     environment:
       DOTNET_ENVIRONMENT: "Development"
-      DOTNET_USE_POLLING_FILE_WATCHER: "true"
+      RIDER_DEBUGGER_LOG_DIR: "/var/opt/JetBrains/RiderDebuggerTools"
+      RESHARPER_LOG_CONF: "/etc/opt/JetBrains/RiderDebuggerTools/backend-log.xml"
     image: "pictureconvertexecute:dev"
-    ports: []
+    ports:
+    - "127.0.0.1:57043:57000"
+    - "127.0.0.1:57243:57200"
+    - "127.0.0.1:57443:57400"
     volumes:
-    - "C:\\Users\\mikey\\.nuget\\packages:/home/app/.nuget/packages"
     - "C:\\DevOps\\Github\\FamilieLaiss\\Services\\PictureConvert\\PictureConvertExecuteService:/app:rw"
     - "C:\\DevOps\\Github\\FamilieLaiss:/src:rw"
+    - "C:\\Users\\mikey\\.nuget\\packages:/home/app/.nuget/packages"
+    - "C:\\Users\\mikey\\AppData\\Local\\JetBrains\\RiderRemoteDebugger\\2024.3.4\\\
+      Linux64:/opt/JetBrains/RiderDebuggerTools"
+    - "C:\\Users\\mikey\\AppData\\Local\\JetBrains\\JetBrains Rider 2024.3.4\\bin\\\
+      backend-log.xml:/etc/opt/JetBrains/RiderDebuggerTools/backend-log.xml"
+    - "C:\\Users\\mikey\\AppData\\Local\\JetBrains\\Rider2024.3\\log\\DebuggerWorker\\\
+      JetBrains.Debugger.Worker.2025_1_31_21_22_00:/var/opt/JetBrains/RiderDebuggerTools:rw"
+    working_dir: "/app"
+  settings.api:
+    build:
+      context: "C:\\DevOps\\Github\\FamilieLaiss"
+      dockerfile: "Services/Settings/Settings.API/Dockerfile"
+      target: "base"
+      args:
+        BUILD_CONFIGURATION: "Debug"
+    command: []
+    entrypoint:
+    - "/opt/JetBrains/RiderDebuggerTools/linux-x64/JetBrains.Debugger.Worker"
+    - "--runtimeconfig"
+    - "/opt/JetBrains/RiderDebuggerTools/JetBrains.Debugger.Worker.runtimeconfig.json"
+    - "--mode=server"
+    - "--frontend-port=57000"
+    - "--backend-port=57200"
+    - "--roslyn-worker-port=57400"
+    - "--timeout=60"
+    environment:
+      DOTNET_USE_POLLING_FILE_WATCHER: "true"
+      RIDER_DEBUGGER_LOG_DIR: "/var/opt/JetBrains/RiderDebuggerTools"
+      RESHARPER_LOG_CONF: "/etc/opt/JetBrains/RiderDebuggerTools/backend-log.xml"
+    image: "settingsapi:dev"
+    ports:
+    - "127.0.0.1:57044:57000"
+    - "127.0.0.1:57244:57200"
+    - "127.0.0.1:57444:57400"
+    volumes:
+    - "C:\\DevOps\\Github\\FamilieLaiss\\Services\\Settings\\Settings.API:/app:rw"
+    - "C:\\DevOps\\Github\\FamilieLaiss:/src:rw"
+    - "C:\\Users\\mikey\\.nuget\\packages:/home/app/.nuget/packages"
+    - "C:\\Users\\mikey\\AppData\\Local\\JetBrains\\RiderRemoteDebugger\\2024.3.4\\\
+      Linux64:/opt/JetBrains/RiderDebuggerTools"
+    - "C:\\Users\\mikey\\AppData\\Local\\JetBrains\\JetBrains Rider 2024.3.4\\bin\\\
+      backend-log.xml:/etc/opt/JetBrains/RiderDebuggerTools/backend-log.xml"
+    - "C:\\Users\\mikey\\AppData\\Local\\JetBrains\\Rider2024.3\\log\\DebuggerWorker\\\
+      JetBrains.Debugger.Worker.2025_1_31_21_22_00:/var/opt/JetBrains/RiderDebuggerTools:rw"
+    working_dir: "/app"
+  upload.api:
+    build:
+      context: "C:\\DevOps\\Github\\FamilieLaiss"
+      dockerfile: "Services/Upload/Upload.API/Dockerfile"
+      target: "base"
+      args:
+        BUILD_CONFIGURATION: "Debug"
+    command: []
+    entrypoint:
+    - "/opt/JetBrains/RiderDebuggerTools/linux-x64/JetBrains.Debugger.Worker"
+    - "--runtimeconfig"
+    - "/opt/JetBrains/RiderDebuggerTools/JetBrains.Debugger.Worker.runtimeconfig.json"
+    - "--mode=server"
+    - "--frontend-port=57000"
+    - "--backend-port=57200"
+    - "--roslyn-worker-port=57400"
+    - "--timeout=60"
+    environment:
+      DOTNET_USE_POLLING_FILE_WATCHER: "true"
+      RIDER_DEBUGGER_LOG_DIR: "/var/opt/JetBrains/RiderDebuggerTools"
+      RESHARPER_LOG_CONF: "/etc/opt/JetBrains/RiderDebuggerTools/backend-log.xml"
+    image: "uploadapi:dev"
+    ports:
+    - "127.0.0.1:57045:57000"
+    - "127.0.0.1:57245:57200"
+    - "127.0.0.1:57445:57400"
+    volumes:
+    - "C:\\DevOps\\Github\\FamilieLaiss\\Services\\Upload\\Upload.API:/app:rw"
+    - "C:\\DevOps\\Github\\FamilieLaiss:/src:rw"
+    - "C:\\Users\\mikey\\.nuget\\packages:/home/app/.nuget/packages"
+    - "C:\\Users\\mikey\\AppData\\Local\\JetBrains\\RiderRemoteDebugger\\2024.3.4\\\
+      Linux64:/opt/JetBrains/RiderDebuggerTools"
+    - "C:\\Users\\mikey\\AppData\\Local\\JetBrains\\JetBrains Rider 2024.3.4\\bin\\\
+      backend-log.xml:/etc/opt/JetBrains/RiderDebuggerTools/backend-log.xml"
+    - "C:\\Users\\mikey\\AppData\\Local\\JetBrains\\Rider2024.3\\log\\DebuggerWorker\\\
+      JetBrains.Debugger.Worker.2025_1_31_21_22_00:/var/opt/JetBrains/RiderDebuggerTools:rw"
+    working_dir: "/app"
+  user.api:
+    build:
+      context: "C:\\DevOps\\Github\\FamilieLaiss"
+      dockerfile: "Services/User/User.API/Dockerfile"
+      target: "base"
+      args:
+        BUILD_CONFIGURATION: "Debug"
+    command: []
+    entrypoint:
+    - "/opt/JetBrains/RiderDebuggerTools/linux-x64/JetBrains.Debugger.Worker"
+    - "--runtimeconfig"
+    - "/opt/JetBrains/RiderDebuggerTools/JetBrains.Debugger.Worker.runtimeconfig.json"
+    - "--mode=server"
+    - "--frontend-port=57000"
+    - "--backend-port=57200"
+    - "--roslyn-worker-port=57400"
+    - "--timeout=60"
+    environment:
+      DOTNET_USE_POLLING_FILE_WATCHER: "true"
+      RIDER_DEBUGGER_LOG_DIR: "/var/opt/JetBrains/RiderDebuggerTools"
+      RESHARPER_LOG_CONF: "/etc/opt/JetBrains/RiderDebuggerTools/backend-log.xml"
+    image: "userapi:dev"
+    ports:
+    - "127.0.0.1:57046:57000"
+    - "127.0.0.1:57246:57200"
+    - "127.0.0.1:57446:57400"
+    volumes:
+    - "C:\\DevOps\\Github\\FamilieLaiss\\Services\\User\\User.API:/app:rw"
+    - "C:\\DevOps\\Github\\FamilieLaiss:/src:rw"
+    - "C:\\Users\\mikey\\.nuget\\packages:/home/app/.nuget/packages"
+    - "C:\\Users\\mikey\\AppData\\Local\\JetBrains\\RiderRemoteDebugger\\2024.3.4\\\
+      Linux64:/opt/JetBrains/RiderDebuggerTools"
+    - "C:\\Users\\mikey\\AppData\\Local\\JetBrains\\JetBrains Rider 2024.3.4\\bin\\\
+      backend-log.xml:/etc/opt/JetBrains/RiderDebuggerTools/backend-log.xml"
+    - "C:\\Users\\mikey\\AppData\\Local\\JetBrains\\Rider2024.3\\log\\DebuggerWorker\\\
+      JetBrains.Debugger.Worker.2025_1_31_21_22_00:/var/opt/JetBrains/RiderDebuggerTools:rw"
+    working_dir: "/app"
+  userinteraction.api:
+    build:
+      context: "C:\\DevOps\\Github\\FamilieLaiss"
+      dockerfile: "Services/UserInteraction/UserInteraction.API/Dockerfile"
+      target: "base"
+      args:
+        BUILD_CONFIGURATION: "Debug"
+    command: []
+    entrypoint:
+    - "/opt/JetBrains/RiderDebuggerTools/linux-x64/JetBrains.Debugger.Worker"
+    - "--runtimeconfig"
+    - "/opt/JetBrains/RiderDebuggerTools/JetBrains.Debugger.Worker.runtimeconfig.json"
+    - "--mode=server"
+    - "--frontend-port=57000"
+    - "--backend-port=57200"
+    - "--roslyn-worker-port=57400"
+    - "--timeout=60"
+    environment:
+      DOTNET_USE_POLLING_FILE_WATCHER: "true"
+      RIDER_DEBUGGER_LOG_DIR: "/var/opt/JetBrains/RiderDebuggerTools"
+      RESHARPER_LOG_CONF: "/etc/opt/JetBrains/RiderDebuggerTools/backend-log.xml"
+    image: "userinteractionapi:dev"
+    ports:
+    - "127.0.0.1:57047:57000"
+    - "127.0.0.1:57247:57200"
+    - "127.0.0.1:57447:57400"
+    volumes:
+    - "C:\\DevOps\\Github\\FamilieLaiss\\Services\\UserInteraction\\UserInteraction.API:/app:rw"
+    - "C:\\DevOps\\Github\\FamilieLaiss:/src:rw"
+    - "C:\\Users\\mikey\\.nuget\\packages:/home/app/.nuget/packages"
+    - "C:\\Users\\mikey\\AppData\\Local\\JetBrains\\RiderRemoteDebugger\\2024.3.4\\\
+      Linux64:/opt/JetBrains/RiderDebuggerTools"
+    - "C:\\Users\\mikey\\AppData\\Local\\JetBrains\\JetBrains Rider 2024.3.4\\bin\\\
+      backend-log.xml:/etc/opt/JetBrains/RiderDebuggerTools/backend-log.xml"
+    - "C:\\Users\\mikey\\AppData\\Local\\JetBrains\\Rider2024.3\\log\\DebuggerWorker\\\
+      JetBrains.Debugger.Worker.2025_1_31_21_22_00:/var/opt/JetBrains/RiderDebuggerTools:rw"
     working_dir: "/app"
   video.api:
     build:
       context: "C:\\DevOps\\Github\\FamilieLaiss"
       dockerfile: "Services/Video/Video.API/Dockerfile"
       target: "base"
+      args:
+        BUILD_CONFIGURATION: "Debug"
     command: []
     entrypoint:
-    - "dotnet"
-    - "/app/bin/Debug/net8.0/Video.API.dll"
+    - "/opt/JetBrains/RiderDebuggerTools/linux-x64/JetBrains.Debugger.Worker"
+    - "--runtimeconfig"
+    - "/opt/JetBrains/RiderDebuggerTools/JetBrains.Debugger.Worker.runtimeconfig.json"
+    - "--mode=server"
+    - "--frontend-port=57000"
+    - "--backend-port=57200"
+    - "--roslyn-worker-port=57400"
+    - "--timeout=60"
     environment:
       DOTNET_USE_POLLING_FILE_WATCHER: "true"
+      RIDER_DEBUGGER_LOG_DIR: "/var/opt/JetBrains/RiderDebuggerTools"
+      RESHARPER_LOG_CONF: "/etc/opt/JetBrains/RiderDebuggerTools/backend-log.xml"
     image: "videoapi:dev"
-    ports: []
+    ports:
+    - "127.0.0.1:57048:57000"
+    - "127.0.0.1:57248:57200"
+    - "127.0.0.1:57448:57400"
     volumes:
-    - "C:\\Users\\mikey\\.nuget\\packages:/home/app/.nuget/packages"
     - "C:\\DevOps\\Github\\FamilieLaiss\\Services\\Video\\Video.API:/app:rw"
     - "C:\\DevOps\\Github\\FamilieLaiss:/src:rw"
+    - "C:\\Users\\mikey\\.nuget\\packages:/home/app/.nuget/packages"
+    - "C:\\Users\\mikey\\AppData\\Local\\JetBrains\\RiderRemoteDebugger\\2024.3.4\\\
+      Linux64:/opt/JetBrains/RiderDebuggerTools"
+    - "C:\\Users\\mikey\\AppData\\Local\\JetBrains\\JetBrains Rider 2024.3.4\\bin\\\
+      backend-log.xml:/etc/opt/JetBrains/RiderDebuggerTools/backend-log.xml"
+    - "C:\\Users\\mikey\\AppData\\Local\\JetBrains\\Rider2024.3\\log\\DebuggerWorker\\\
+      JetBrains.Debugger.Worker.2025_1_31_21_22_00:/var/opt/JetBrains/RiderDebuggerTools:rw"
+    working_dir: "/app"
+  videoconvert.api:
+    build:
+      context: "C:\\DevOps\\Github\\FamilieLaiss"
+      dockerfile: "Services/VideoConvert/VideoConvert.API/Dockerfile"
+      target: "base"
+      args:
+        BUILD_CONFIGURATION: "Debug"
+    command: []
+    entrypoint:
+    - "/opt/JetBrains/RiderDebuggerTools/linux-x64/JetBrains.Debugger.Worker"
+    - "--runtimeconfig"
+    - "/opt/JetBrains/RiderDebuggerTools/JetBrains.Debugger.Worker.runtimeconfig.json"
+    - "--mode=server"
+    - "--frontend-port=57000"
+    - "--backend-port=57200"
+    - "--roslyn-worker-port=57400"
+    - "--timeout=60"
+    environment:
+      DOTNET_USE_POLLING_FILE_WATCHER: "true"
+      RIDER_DEBUGGER_LOG_DIR: "/var/opt/JetBrains/RiderDebuggerTools"
+      RESHARPER_LOG_CONF: "/etc/opt/JetBrains/RiderDebuggerTools/backend-log.xml"
+    image: "videoconvertapi:dev"
+    ports:
+    - "127.0.0.1:57049:57000"
+    - "127.0.0.1:57249:57200"
+    - "127.0.0.1:57449:57400"
+    volumes:
+    - "C:\\DevOps\\Github\\FamilieLaiss\\Services\\VideoConvert\\VideoConvert.API:/app:rw"
+    - "C:\\DevOps\\Github\\FamilieLaiss:/src:rw"
+    - "C:\\Users\\mikey\\.nuget\\packages:/home/app/.nuget/packages"
+    - "C:\\Users\\mikey\\AppData\\Local\\JetBrains\\RiderRemoteDebugger\\2024.3.4\\\
+      Linux64:/opt/JetBrains/RiderDebuggerTools"
+    - "C:\\Users\\mikey\\AppData\\Local\\JetBrains\\JetBrains Rider 2024.3.4\\bin\\\
+      backend-log.xml:/etc/opt/JetBrains/RiderDebuggerTools/backend-log.xml"
+    - "C:\\Users\\mikey\\AppData\\Local\\JetBrains\\Rider2024.3\\log\\DebuggerWorker\\\
+      JetBrains.Debugger.Worker.2025_1_31_21_22_00:/var/opt/JetBrains/RiderDebuggerTools:rw"
     working_dir: "/app"
   videoconvertexecute:
     build:
       context: "C:\\DevOps\\Github\\FamilieLaiss"
       dockerfile: "Services/VideoConvert/VideoConvertExecuteService/Dockerfile"
       target: "base"
+      args:
+        BUILD_CONFIGURATION: "Debug"
     command: []
     entrypoint:
-    - "dotnet"
-    - "/app/bin/Debug/net8.0/VideoConvertExecuteService.dll"
+    - "/opt/JetBrains/RiderDebuggerTools/linux-x64/JetBrains.Debugger.Worker"
+    - "--runtimeconfig"
+    - "/opt/JetBrains/RiderDebuggerTools/JetBrains.Debugger.Worker.runtimeconfig.json"
+    - "--mode=server"
+    - "--frontend-port=57000"
+    - "--backend-port=57200"
+    - "--roslyn-worker-port=57400"
+    - "--timeout=60"
     environment:
       DOTNET_ENVIRONMENT: "Development"
       DOTNET_USE_POLLING_FILE_WATCHER: "true"
+      RIDER_DEBUGGER_LOG_DIR: "/var/opt/JetBrains/RiderDebuggerTools"
+      RESHARPER_LOG_CONF: "/etc/opt/JetBrains/RiderDebuggerTools/backend-log.xml"
     image: "videoconvertexecute:dev"
-    ports: []
+    ports:
+    - "127.0.0.1:57050:57000"
+    - "127.0.0.1:57250:57200"
+    - "127.0.0.1:57450:57400"
     volumes:
-    - "C:\\Users\\mikey\\.nuget\\packages:/home/app/.nuget/packages"
     - "C:\\DevOps\\Github\\FamilieLaiss\\Services\\VideoConvert\\VideoConvertExecuteService:/app:rw"
     - "C:\\DevOps\\Github\\FamilieLaiss:/src:rw"
+    - "C:\\Users\\mikey\\.nuget\\packages:/root/.nuget/packages"
+    - "C:\\Users\\mikey\\AppData\\Local\\JetBrains\\RiderRemoteDebugger\\2024.3.4\\\
+      Linux64:/opt/JetBrains/RiderDebuggerTools"
+    - "C:\\Users\\mikey\\AppData\\Local\\JetBrains\\JetBrains Rider 2024.3.4\\bin\\\
+      backend-log.xml:/etc/opt/JetBrains/RiderDebuggerTools/backend-log.xml"
+    - "C:\\Users\\mikey\\AppData\\Local\\JetBrains\\Rider2024.3\\log\\DebuggerWorker\\\
+      JetBrains.Debugger.Worker.2025_1_31_21_22_00:/var/opt/JetBrains/RiderDebuggerTools:rw"
     working_dir: "/app"

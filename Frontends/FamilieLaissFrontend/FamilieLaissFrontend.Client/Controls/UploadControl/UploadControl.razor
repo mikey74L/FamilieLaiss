@@ -1,6 +1,5 @@
 ﻿@using FamilieLaissFrontend.Client.ViewModels.Controls.UploadControl
 @using FamilieLaissEnums
-@using FamilieLaissResources.Resources.Controls
 @using FamilieLaissResources.Resources.Controls.UploadControl
 @using FamilieLaissSharedUI.Components
 
@@ -95,143 +94,77 @@
     [Parameter] 
     public bool UploadMultipleFiles 
     { 
-        get
-        {
-            return ViewModel.UploadMultipleFiles;
-        }
-        set
-        {
-            ViewModel.UploadMultipleFiles = value;
-        }
+        get => ViewModel.UploadMultipleFiles;
+        set => ViewModel.UploadMultipleFiles = value;
     }
 
     [Parameter] 
     public int UploadFileMaxSelectCount 
     { 
-        get
-        {
-            return ViewModel.UploadFileMaxSelectCount;
-        }
-        set
-        {
-            ViewModel.UploadFileMaxSelectCount = value;
-        }
+        get => ViewModel.UploadFileMaxSelectCount;
+        set => ViewModel.UploadFileMaxSelectCount = value;
     }
 
     [Parameter] 
     public EnumUploadType UploadType 
     { 
-        get
-        {
-            return ViewModel.UploadType;
-        }
-        set
-        {
-            ViewModel.UploadType = value;
-        }
+        get => ViewModel.UploadType;
+        set => ViewModel.UploadType = value;
     }
 
     [Parameter] 
     public int ChunkSize 
     { 
-        get
-        {
-            return ViewModel.ChunkSize;
-        }
-        set
-        {
-            ViewModel.ChunkSize = value;
-        }
+        get => ViewModel.ChunkSize;
+        set => ViewModel.ChunkSize = value;
     }
 
     [Parameter] 
     public EventCallback UploadStarted 
     { 
-        get
-        {
-            return ViewModel.UploadStarted;
-        }
-        set
-        {
-            ViewModel.UploadStarted = value;
-        }
+        get => ViewModel.UploadStarted;
+        set => ViewModel.UploadStarted = value;
     }
 
     [Parameter] 
     public EventCallback UploadFinished 
     { 
-        get
-        {
-            return ViewModel.UploadFinished;
-        }
-        set
-        {
-            ViewModel.UploadFinished = value;
-        }
+        get => ViewModel.UploadFinished;
+        set => ViewModel.UploadFinished = value;
     }
 
     [Parameter] 
     public EventCallback UploadFinishedWithFailure 
     { 
-        get
-        {
-            return ViewModel.UploadFinishedWithFailure;
-        }
-        set
-        {
-            ViewModel.UploadFinishedWithFailure = value;
-        }
+        get => ViewModel.UploadFinishedWithFailure;
+        set => ViewModel.UploadFinishedWithFailure = value;
     }
 
     [Parameter] 
     public EventCallback UploadFinishedWithSuccess 
     { 
-        get
-        {
-            return ViewModel.UploadFinishedWithSuccess;
-        }
-        set
-        {
-            ViewModel.UploadFinishedWithSuccess = value;
-        }
+        get => ViewModel.UploadFinishedWithSuccess;
+        set => ViewModel.UploadFinishedWithSuccess = value;
     }
 
     [Parameter] 
     public EventCallback<string> FileUploadedWithError 
     { 
-        get
-        {
-            return ViewModel.FileUploadedWithError;
-        }
-        set
-        {
-            ViewModel.FileUploadedWithError = value;
-        }
+        get => ViewModel.FileUploadedWithError;
+        set => ViewModel.FileUploadedWithError = value;
     }
 
     [Parameter] 
     public EventCallback<string> FileUploadedWithSuccess 
     { 
-        get
-        {
-            return ViewModel.FileUploadedWithSuccess;
-        }
-        set
-        {
-            ViewModel.FileUploadedWithSuccess = value;
-        }
+        get => ViewModel.FileUploadedWithSuccess;
+        set => ViewModel.FileUploadedWithSuccess = value;
     }
 
     [Parameter] 
     public EventCallback<int> UploadCountChanged 
     { 
-        get
-        {
-            return ViewModel.UploadCountChanged;
-        }
-        set
-        {
-            ViewModel.UploadCountChanged = value;
-        }
+        get => ViewModel.UploadCountChanged;
+        set => ViewModel.UploadCountChanged = value;
     }
 }

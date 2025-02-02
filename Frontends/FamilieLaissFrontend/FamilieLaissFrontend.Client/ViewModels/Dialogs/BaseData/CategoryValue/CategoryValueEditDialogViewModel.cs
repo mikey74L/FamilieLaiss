@@ -33,10 +33,10 @@ public partial class CategoryValueEditDialogViewModel(
     #endregion
 
     #region Parameters
-    public MudDialogInstance MudDialog { get; set; } = default!;
+    public IMudDialogInstance MudDialog { get; set; } = null!;
     public bool IsInEditMode { get; set; }
     public ICategoryValueModel? Model { get; set; }
-    public ICategoryModel ModelCategory { get; set; } = default!;
+    public ICategoryModel ModelCategory { get; set; } = null!;
     #endregion
 
     #region Public Properties

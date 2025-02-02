@@ -17,7 +17,7 @@ namespace Upload.Infrastructure.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.7")
+                .HasAnnotation("ProductVersion", "9.0.1")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -62,7 +62,7 @@ namespace Upload.Infrastructure.Migrations
                     b.Property<int>("Height")
                         .HasColumnType("integer");
 
-                    b.Property<byte>("Status")
+                    b.Property<byte>("State")
                         .HasColumnType("smallint");
 
                     b.Property<int>("Width")
@@ -104,7 +104,7 @@ namespace Upload.Infrastructure.Migrations
                     b.Property<int>("Height")
                         .HasColumnType("integer");
 
-                    b.Property<byte>("Status")
+                    b.Property<byte>("State")
                         .HasColumnType("smallint");
 
                     b.Property<byte>("VideoType")

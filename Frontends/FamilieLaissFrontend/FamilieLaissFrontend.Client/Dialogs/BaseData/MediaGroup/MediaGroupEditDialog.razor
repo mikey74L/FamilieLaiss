@@ -106,41 +106,23 @@
 @code
 {
     [CascadingParameter]
-    public MudDialogInstance? MudDialog 
+    public IMudDialogInstance? MudDialog 
     { 
-        get
-        {
-            return ViewModel.MudDialog;
-        }
-        set
-        {
-            ViewModel.MudDialog = value;
-        }
+        get => ViewModel.MudDialog;
+        set => ViewModel.MudDialog = value;
     } 
 
     [Parameter]
     public bool IsInEditMode 
     { 
-        get
-        {
-            return ViewModel.IsInEditMode;
-        }
-        set
-        {
-            ViewModel.IsInEditMode = value;
-        }
+        get => ViewModel.IsInEditMode;
+        set => ViewModel.IsInEditMode = value;
     }
 
     [Parameter]
     public IMediaGroupModel? Model 
     { 
-        get
-        {
-            return ViewModel.Model;
-        }
-        set
-        {
-            ViewModel.Model = value;
-        }
+        get => ViewModel.Model;
+        set => ViewModel.Model = value;
     }
 }

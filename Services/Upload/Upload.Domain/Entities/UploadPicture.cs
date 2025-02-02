@@ -51,8 +51,8 @@ public class UploadPicture : EntityCreation<long>
     /// Status for the upload picture
     /// </summary>
     [Required]
-    [GraphQLDescription("The status for the upload picture")]
-    public EnumUploadStatus Status { get; private set; }
+    [GraphQLDescription("The state for the upload picture")]
+    public EnumUploadState State { get; private set; }
 
     /// <summary>
     /// The Exif-Info for this Upload-Picture
@@ -71,7 +71,7 @@ public class UploadPicture : EntityCreation<long>
     #region C'tor
 
     /// <summary>
-    /// C'tor without parameters would be used by EF-Core
+    /// C'tor without parameters would be used by GraphQL
     /// </summary>
     protected UploadPicture()
     {
@@ -95,7 +95,7 @@ public class UploadPicture : EntityCreation<long>
     {
         Id = id;
         Filename = filename;
-        Status = EnumUploadStatus.Uploaded;
+        State = EnumUploadState.Uploaded;
     }
 
     #endregion
@@ -212,7 +212,7 @@ public class UploadPicture : EntityCreation<long>
             throw new DomainException("There must be a width before the status can be set to converted.");
         }
 
-        Status = EnumUploadStatus.Converted;
+        State = EnumUploadState.Converted;
     }
 
     /// <summary>
@@ -221,12 +221,12 @@ public class UploadPicture : EntityCreation<long>
     [GraphQLIgnore]
     public void SetPictureStateToAssigned()
     {
-        if (Status != EnumUploadStatus.Converted)
+        if (State != EnumUploadState.Converted)
         {
             throw new DomainException("Could only set the status to assigned from status converted");
         }
 
-        Status = EnumUploadStatus.Assigned;
+        State = EnumUploadState.Assigned;
     }
 
     /// <summary>
@@ -235,12 +235,12 @@ public class UploadPicture : EntityCreation<long>
     [GraphQLIgnore]
     public void SetPictureStateToUnAssigned()
     {
-        if (Status != EnumUploadStatus.Assigned)
+        if (State != EnumUploadState.Assigned)
         {
             throw new DomainException("Could only set the status to unassigned from status assigned");
         }
 
-        Status = EnumUploadStatus.Converted;
+        State = EnumUploadState.Converted;
     }
 
     #endregion
@@ -250,7 +250,7 @@ public class UploadPicture : EntityCreation<long>
     [GraphQLIgnore]
     public override Task EntityAddedAsync(DbContext dbContext, IDictionary<string, object> dictContextParams)
     {
-        AddDomainEvent(new DomainEventUploadPictureCreated(Id, Filename, Status));
+        AddDomainEvent(new DomainEventUploadPictureCreated(Id, Filename, State));
 
         return Task.CompletedTask;
     }

@@ -19,14 +19,7 @@ public static class UploadPictureMappingExtensions
 
     public static IEnumerable<IUploadPictureModel> Map(this IReadOnlyList<IFrUploadPictureOnlyId> sourceItems)
     {
-        var result = new List<IUploadPictureModel>();
-
-        foreach (var sourceItem in sourceItems)
-        {
-            result.Add(sourceItem.Map()!);
-        }
-
-        return result;
+        return sourceItems.Select(sourceItem => sourceItem.Map()!).ToList();
     }
 
     public static IUploadPictureModel Map(this IFrUploadPictureIdWithFilename sourceItem)
@@ -55,14 +48,7 @@ public static class UploadPictureMappingExtensions
 
     public static IEnumerable<IUploadPictureModel> Map(this IReadOnlyList<IFrUploadPictureForChooseView> sourceItems)
     {
-        var result = new List<IUploadPictureModel>();
-
-        foreach (var sourceItem in sourceItems)
-        {
-            result.Add(sourceItem.Map());
-        }
-
-        return result;
+        return sourceItems.Select(sourceItem => sourceItem.Map()).ToList();
     }
 
     public static IUploadPictureModel Map(this IFrUploadPictureForUploadView sourceItem)
@@ -84,14 +70,7 @@ public static class UploadPictureMappingExtensions
 
     public static IEnumerable<IUploadPictureModel> Map(this IReadOnlyList<IFrUploadPictureForUploadView> sourceItems)
     {
-        var result = new List<IUploadPictureModel>();
-
-        foreach (var sourceItem in sourceItems)
-        {
-            result.Add(sourceItem.Map());
-        }
-
-        return result;
+        return sourceItems.Select(sourceItem => sourceItem.Map()).ToList();
     }
 
     public static IUploadPictureModel? Map(this IFrUploadPictureForMediaItem sourceItem)
@@ -113,38 +92,36 @@ public static class UploadPictureMappingExtensions
 
     public static IUploadPictureExifInfoModel? Map(this IFrUploadPictureExifInfo? source)
     {
-        if (source is not null)
+        if (source is null) return null;
+        
+        var result = new UploadPictureExifInfoModel()
         {
-            var result = new UploadPictureExifInfoModel()
-            {
-                Contrast = source.Contrast,
-                DdlRecorded = source.DdlRecorded,
-                ExposureMode = source.ExposureMode,
-                ExposureProgram = source.ExposureProgram,
-                ExposureTime = source.ExposureTime,
-                FlashMode = source.FlashMode,
-                FNumber = source.FNumber,
-                FocalLength = source.FocalLength,
-                GpsLatitude = source.GpsLatitude,
-                GpsLongitude = source.GpsLongitude,
-                IsoSensitivity = source.IsoSensitivity,
-                WhiteBalanceMode = source.WhiteBalanceMode,
-                ShutterSpeed = source.ShutterSpeed,
-                Make = source.Make,
-                MeteringMode = source.MeteringMode,
-                Model = source.Model,
-                Orientation = source.Orientation,
-                ResolutionUnit = source.ResolutionUnit,
-                ResolutionX = source.ResolutionX,
-                ResolutionY = source.ResolutionY,
-                Saturation = source.Saturation,
-                SensingMode = source.SensingMode,
-                Sharpness = source.Sharpness,
-            };
+            Contrast = source.Contrast,
+            DdlRecorded = source.DdlRecorded,
+            ExposureMode = source.ExposureMode,
+            ExposureProgram = source.ExposureProgram,
+            ExposureTime = source.ExposureTime,
+            FlashMode = source.FlashMode,
+            FNumber = source.FNumber,
+            FocalLength = source.FocalLength,
+            GpsLatitude = source.GpsLatitude,
+            GpsLongitude = source.GpsLongitude,
+            IsoSensitivity = source.IsoSensitivity,
+            WhiteBalanceMode = source.WhiteBalanceMode,
+            ShutterSpeed = source.ShutterSpeed,
+            Make = source.Make,
+            MeteringMode = source.MeteringMode,
+            Model = source.Model,
+            Orientation = source.Orientation,
+            ResolutionUnit = source.ResolutionUnit,
+            ResolutionX = source.ResolutionX,
+            ResolutionY = source.ResolutionY,
+            Saturation = source.Saturation,
+            SensingMode = source.SensingMode,
+            Sharpness = source.Sharpness,
+        };
 
-            return result;
-        }
+        return result;
 
-        return null;
     }
 }

@@ -17,7 +17,7 @@ namespace VideoConvert.Infrastructure.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.7")
+                .HasAnnotation("ProductVersion", "9.0.1")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -194,8 +194,7 @@ namespace VideoConvert.Infrastructure.Migrations
 
             modelBuilder.Entity("VideoConvert.Domain.Entities.UploadVideo", b =>
                 {
-                    b.Navigation("ConvertStatus")
-                        .IsRequired();
+                    b.Navigation("ConvertStatus");
                 });
 #pragma warning restore 612, 618
         }

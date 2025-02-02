@@ -3,7 +3,6 @@
 @using FamilieLaissInterfaces.Models.Data
 @using FamilieLaissResources.Resources.Dialogs.PictureInfo
 @using FamilieLaissSharedUI.Components
-@using Microsoft.Extensions.Localization
 
 @inherits FlComponentBase<PictureInfoDialogViewModel>
 
@@ -30,7 +29,7 @@
     </DialogContent>
     <DialogActions>
         <MudTooltip Arrow="true" Placement="Placement.Top" Text="@PictureInfoDialogRes.TooltipClose">
-            <MudButton Color="Color.Primary" StartIcon="@Icons.Material.Filled.Close" OnClick="() => {MudDialog.Close();}">@PictureInfoDialogRes.ButtonClose</MudButton>
+            <MudButton Color="Color.Primary" StartIcon="@Icons.Material.Filled.Close" OnClick="() => {MudDialog?.Close();}">@PictureInfoDialogRes.ButtonClose</MudButton>
         </MudTooltip>
     </DialogActions>
 </MudDialog>
@@ -38,7 +37,7 @@
 @code
 {
     [CascadingParameter]
-    public MudDialogInstance MudDialog { get; set; } = default!;
+    public IMudDialogInstance? MudDialog { get; set; } 
 
     [Parameter]
     [EditorRequired]
@@ -47,26 +46,14 @@
     [Parameter]
     public IUploadPictureModel? UploadItem 
     { 
-        get
-        {
-            return ViewModel.UploadItem;
-        }
-        set
-        {
-            ViewModel.UploadItem = value;
-        }
+        get => ViewModel.UploadItem;
+        set => ViewModel.UploadItem = value;
     }
 
     [Parameter]
     public IMediaItemModel? MediaItem 
     { 
-        get
-        {
-            return ViewModel.MediaItem;
-        }
-        set
-        {
-            ViewModel.MediaItem = value;
-        }
+        get => ViewModel.MediaItem;
+        set => ViewModel.MediaItem = value;
     }
 }

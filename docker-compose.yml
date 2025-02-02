@@ -1,5 +1,3 @@
-version: '3.4'
-
 services:
   messagebus:
     image: rabbitmq:3.8.28-management
@@ -11,14 +9,11 @@ services:
     secrets:
       - rabbit_user_secret
       - rabbit_password_secret
-  redis:
-    image: redis
-    container_name: redis
   eureka:
     image: steeltoeoss/eureka-server
     container_name: eureka
   db_catalog:
-    image: postgres:16.1-alpine
+    image: postgres:17.2-alpine3.20
     container_name: postgres_catalog
     environment:
       - POSTGRES_USER_FILE=/run/secrets/postgres_user_secret
@@ -28,7 +23,7 @@ services:
       - postgres_user_secret
       - postgres_password_secret
   db_upload:
-    image: postgres:16.1-alpine
+    image: postgres:17.2-alpine3.20
     container_name: postgres_upload
     environment:
       - POSTGRES_USER_FILE=/run/secrets/postgres_user_secret
@@ -38,7 +33,7 @@ services:
       - postgres_user_secret
       - postgres_password_secret
   db_pictureconvert:
-    image: postgres:16.1-alpine
+    image: postgres:17.2-alpine3.20
     container_name: postgres_pictureconvert
     environment:
       - POSTGRES_USER_FILE=/run/secrets/postgres_user_secret
@@ -48,7 +43,7 @@ services:
       - postgres_user_secret
       - postgres_password_secret
   db_videoconvert:
-    image: postgres:16.1-alpine
+    image: postgres:17.2-alpine3.20
     container_name: postgres_videoconvert
     environment:
       - POSTGRES_USER_FILE=/run/secrets/postgres_user_secret
@@ -58,12 +53,32 @@ services:
       - postgres_user_secret
       - postgres_password_secret
   db_settings:
-    image: postgres:16.1-alpine
+    image: postgres:17.2-alpine3.20
     container_name: postgres_settings
     environment:
       - POSTGRES_USER_FILE=/run/secrets/postgres_user_secret
       - POSTGRES_PASSWORD_FILE=/run/secrets/postgres_password_secret
       - POSTGRES_DB=settings
+    secrets:
+      - postgres_user_secret
+      - postgres_password_secret
+  db_user:
+    image: postgres:17.2-alpine3.20
+    container_name: postgres_user
+    environment:
+      - POSTGRES_USER_FILE=/run/secrets/postgres_user_secret
+      - POSTGRES_PASSWORD_FILE=/run/secrets/postgres_password_secret
+      - POSTGRES_DB=user
+    secrets:
+      - postgres_user_secret
+      - postgres_password_secret
+  db_userinteraction:
+    image: postgres:17.2-alpine3.20
+    container_name: postgres_userinteraction
+    environment:
+      - POSTGRES_USER_FILE=/run/secrets/postgres_user_secret
+      - POSTGRES_PASSWORD_FILE=/run/secrets/postgres_password_secret
+      - POSTGRES_DB=user
     secrets:
       - postgres_user_secret
       - postgres_password_secret
@@ -89,16 +104,6 @@ services:
     build:
       context: .
       dockerfile: Services/Upload/Upload.API/Dockerfile
-    secrets:
-      - rabbit_connection_string
-      - postgres_user_secret
-      - postgres_password_secret
-  settings.api:
-    image: ${DOCKER_REGISTRY-}settingsapi
-    container_name: settingsservice
-    build:
-      context: .
-      dockerfile: Services/Settings/Settings.API/Dockerfile
     secrets:
       - rabbit_connection_string
       - postgres_user_secret
@@ -164,3 +169,33 @@ services:
     secrets:
       - rabbit_connection_string
       - google_api_key_secret
+  settings.api:
+    image: ${DOCKER_REGISTRY-}settingsapi
+    container_name: settingsservice
+    build:
+      context: .
+      dockerfile: Services/Settings/Settings.API/Dockerfile
+    secrets:
+      - rabbit_connection_string
+      - postgres_user_secret
+      - postgres_password_secret
+  user.api:
+    image: ${DOCKER_REGISTRY-}userapi
+    container_name: userservice
+    build:
+      context: .
+      dockerfile: Services/User/User.API/Dockerfile
+    secrets:
+      - rabbit_connection_string
+      - postgres_user_secret
+      - postgres_password_secret
+  userinteraction.api:
+    image: ${DOCKER_REGISTRY-}userinteractionapi
+    container_name: userinteractionservice
+    build:
+      context: .
+      dockerfile: Services/UserInteraction/UserInteraction.API/Dockerfile
+    secrets:
+      - rabbit_connection_string
+      - postgres_user_secret
+      - postgres_password_secret

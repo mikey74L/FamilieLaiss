@@ -14,8 +14,20 @@
         /// <summary>
         /// RabbitMQ Connection-String for CloudAMP
         /// </summary>
-        public string RabbitMqConnection => System.IO.File.ReadAllText(RabbitMqConnectionFile);
-
+        public string RabbitMqConnection
+        {
+            get
+            {
+                try
+                {
+                    return File.ReadAllText(RabbitMqConnectionFile);
+                }
+                catch
+                {
+                    return "withoutdocker";
+                }
+            }
+        }
 
         #region Endpoints
         /// <summary>
@@ -35,7 +47,20 @@
         /// <summary>
         /// Postgres user
         /// </summary>
-        public string PostgresUser => System.IO.File.ReadAllText(PostgresUserFile);
+        public string PostgresUser
+        {
+            get
+            {
+                try
+                {
+                    return File.ReadAllText(PostgresUserFile);
+                }
+                catch
+                {
+                    return "withoutdocker";
+                }
+            }
+        }
 
         /// <summary>
         /// Postgres password - Filename for Secret
@@ -45,7 +70,20 @@
         /// <summary>
         /// Postgres password
         /// </summary>
-        public string PostgresPassword => System.IO.File.ReadAllText(PostgresPasswordFile);
+        public string PostgresPassword
+        {
+            get
+            {
+                try
+                {
+                    return File.ReadAllText(PostgresPasswordFile);
+                }
+                catch
+                {
+                    return "withoutdocker";
+                }
+            }
+        }
 
         /// <summary>
         /// Postgres - Port

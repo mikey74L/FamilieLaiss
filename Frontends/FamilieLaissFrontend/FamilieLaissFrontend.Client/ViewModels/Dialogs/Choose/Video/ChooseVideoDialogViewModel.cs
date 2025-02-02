@@ -19,7 +19,7 @@ public partial class ChooseVideoDialogViewModel(
 {
     #region Parameters
 
-    public MudDialogInstance MudDialog { get; set; } = default!;
+    public IMudDialogInstance? MudDialog { get; set; }
 
     #endregion
 
@@ -93,13 +93,13 @@ public partial class ChooseVideoDialogViewModel(
     [RelayCommand]
     private void ChooseVideo(IUploadVideoModel uploadVideoModel)
     {
-        MudDialog.Close(DialogResult.Ok(uploadVideoModel));
+        MudDialog?.Close(DialogResult.Ok(uploadVideoModel));
     }
 
     [RelayCommand]
     private void Cancel()
     {
-        MudDialog.Cancel();
+        MudDialog?.Cancel();
     }
 
     #endregion

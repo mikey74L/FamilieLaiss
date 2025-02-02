@@ -1,0 +1,6 @@
+{
+  "subgraph": "Settings",
+  "http": {
+    "baseAddress": "http://settingsservice/graphql"
+  }
+}

@@ -118,7 +118,7 @@ public partial class MediaListViewModel(
         {
             bool keepUploadItems;
             var userSettings = await userSettingsService.GetCurrentUserSettings(AuthenticationState);
-            if (userSettings?.QuestionKeepUploadWhenDelete is not null && userSettings.QuestionKeepUploadWhenDelete.Value)
+            if (userSettings?.QuestionKeepUploadWhenDelete is not null && userSettings.QuestionKeepUploadWhenDelete)
             {
                 var resultKeepUploadQuestion = await Question(
                     MediaListViewModelRes.QuestionKeepUploadTitle,
@@ -131,7 +131,7 @@ public partial class MediaListViewModel(
             }
             else
             {
-                keepUploadItems = userSettings?.DefaultKeepUploadWhenDelete is not null && userSettings.DefaultKeepUploadWhenDelete.Value;
+                keepUploadItems = userSettings?.DefaultKeepUploadWhenDelete is not null && userSettings.DefaultKeepUploadWhenDelete;
             }
 
             IsSaving = true;

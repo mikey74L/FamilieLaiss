@@ -24,7 +24,7 @@ public class MediaItemCategoryValue : EntityCreation<long>
     /// The media item this category value entry belongs to
     /// </summary>
     [GraphQLDescription("The media item this category value entry belongs to")]
-    public MediaItem MediaItem { get; private set; }
+    public MediaItem MediaItem { get; private set; } = null!;
 
     /// <summary>
     /// Identifier for the media item
@@ -36,16 +36,16 @@ public class MediaItemCategoryValue : EntityCreation<long>
     /// The media item this category value entry belongs to
     /// </summary>
     [GraphQLDescription("The category value this media item belongs to")]
-    public CategoryValue CategoryValue { get; private set; }
+    public CategoryValue CategoryValue { get; private set; } = null!;
 
     #endregion
 
     #region C'tor
 
     /// <summary>
-    /// Constructor
+    /// Default constructor for GraphQL
     /// </summary>
-    protected MediaItemCategoryValue()
+    private MediaItemCategoryValue()
     {
     }
 
@@ -53,11 +53,11 @@ public class MediaItemCategoryValue : EntityCreation<long>
     /// Constructor
     /// </summary>
     /// <param name="mediaItem">The media item the category value belongs to</param>
-    /// <param name="valueID">The identifier for the category value</param>
-    internal MediaItemCategoryValue(MediaItem mediaItem, long valueID)
+    /// <param name="valueId">The identifier for the category value</param>
+    internal MediaItemCategoryValue(MediaItem mediaItem, long valueId)
     {
         MediaItem = mediaItem;
-        CategoryValueId = valueID;
+        CategoryValueId = valueId;
     }
 
     #endregion

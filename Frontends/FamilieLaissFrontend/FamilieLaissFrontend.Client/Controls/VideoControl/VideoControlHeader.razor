@@ -21,8 +21,8 @@
         }
         else
         {
-            <MudTooltip Arrow="true" Placement="Placement.Top" RootStyle="width: 100%" Text="@UploadItem?.Filename">
-                <MudText Typo="Typo.h6" Class="fl-card-video-header-text">@UploadItem?.Filename</MudText>
+            <MudTooltip Arrow="true" Placement="Placement.Top" RootStyle="width: 100%" Text="@UploadItem.Filename">
+                <MudText Typo="Typo.h6" Class="fl-card-video-header-text">@UploadItem.Filename</MudText>
             </MudTooltip>
         }
     </CardHeaderContent>
@@ -30,15 +30,14 @@
     <CardHeaderActions>
         @if (ShowSelectionMode)
         {
-            <MudToggleIconButton Toggled="UploadItem!.IsSelected"
+            <MudToggleIconButton Toggled="UploadItem.IsSelected"
                                  ToggledChanged="ViewModel.ToggledChanged"
                                  Class="@ClassAttributeToggleButton"
                                  Icon="@Icons.Material.Filled.ToggleOff"
                                  Color="Color.Error"
-                                 Title="@VideoControlHeaderRes.TooltipNotSelected"
+                                 title="@(UploadItem.IsSelected ? @VideoControlHeaderRes.TooltipSelected : @VideoControlHeaderRes.TooltipNotSelected)"
                                  ToggledIcon="@Icons.Material.Filled.ToggleOn"
-                                 ToggledColor="Color.Success"
-                                 ToggledTitle="@VideoControlHeaderRes.TooltipSelected" />
+                                 ToggledColor="Color.Success"/>
         }
     </CardHeaderActions>
 </MudCardHeader>
@@ -54,38 +53,27 @@
     public bool ShowSelectionMode { get; set; }
 
     [Parameter]
-    public IUploadVideoModel? UploadItem 
+    [EditorRequired]
+    public IUploadVideoModel UploadItem 
     { 
-        get
-        {
-            return ViewModel.UploadItem;
-        }
-        set
-        {
-            ViewModel.UploadItem = value;
-        }
+        get => ViewModel.UploadItem;
+        set => ViewModel.UploadItem = value;
     }
 
     [Parameter]
     public EventCallback ToggleChanged 
     { 
-        get
-        {
-            return ViewModel.ToggleChanged;
-        }
-        set
-        {
-            ViewModel.ToggleChanged = value;
-        }
+        get => ViewModel.ToggleChanged;
+        set => ViewModel.ToggleChanged = value;
     }
 
     private string ClassAttributeToggleButton
     {
         get
         {
-            string result = "fl-card-video-toggle-button ";
+            var result = "fl-card-video-toggle-button ";
 
-            if (UploadItem?.IsSelected ?? false)
+            if (UploadItem.IsSelected)
             {
                 result += "fl-card-video-toggle-button-selected ";
             }

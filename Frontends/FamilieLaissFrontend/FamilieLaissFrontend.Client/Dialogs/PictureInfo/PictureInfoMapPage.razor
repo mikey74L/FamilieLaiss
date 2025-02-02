@@ -12,8 +12,14 @@
                  Zoom="17"
                  MarkerClick="async (data) => await ViewModel.MarkerClickCommand.ExecuteAsync(data)">
     <Markers>
-        <RadzenGoogleMapMarker Title="@UploadItem!.Filename"
-                               Position="@(new GoogleMapPosition() { Lng = UploadItem!.GoogleGeoCodingAddress!.Longitude!.Value, Lat = UploadItem!.GoogleGeoCodingAddress!.Latitude!.Value})" />
+        @if(UploadItem?.GoogleGeoCodingAddress?.Longitude is not null && UploadItem?.GoogleGeoCodingAddress?.Latitude is not null)
+        {
+            <RadzenGoogleMapMarker Title="@UploadItem.Filename"
+                                   Position="@(new GoogleMapPosition() 
+                                                 { Lng = UploadItem.GoogleGeoCodingAddress.Longitude.Value, 
+                                                   Lat = UploadItem.GoogleGeoCodingAddress.Latitude.Value })"/>
+
+        }
     </Markers>
 </RadzenGoogleMap>
 
@@ -26,26 +32,14 @@
     [Parameter]
     public IUploadPictureModel? UploadItem 
     { 
-        get
-        {
-            return ViewModel.UploadItem;
-        }
-        set
-        {
-            ViewModel.UploadItem = value;
-        }
+        get => ViewModel.UploadItem;
+        set => ViewModel.UploadItem = value;
     }
 
     [Parameter]
     public IMediaItemModel? MediaItem 
     { 
-        get
-        {
-            return ViewModel.MediaItem;
-        }
-        set
-        {
-            ViewModel.MediaItem = value;
-        }
+        get => ViewModel.MediaItem;
+        set => ViewModel.MediaItem = value;
     }
 }

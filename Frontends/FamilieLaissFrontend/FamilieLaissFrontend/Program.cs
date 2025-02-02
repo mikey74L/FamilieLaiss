@@ -1,5 +1,4 @@
 using Auth0.AspNetCore.Authentication;
-using FamilieLaissFrontend.Authentication;
 using FamilieLaissFrontend.Client.Extensions;
 using FamilieLaissFrontend.Client.Pages;
 using FamilieLaissFrontend.Client.ServiceRegistrations;
@@ -8,7 +7,6 @@ using FamilieLaissFrontend.Extensions;
 using FamilieLaissModels.Models;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Components.Authorization;
 using Yarp.ReverseProxy.Transforms;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -16,7 +14,6 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddHttpForwarder();
 
 builder.Services.AddCascadingAuthenticationState();
-builder.Services.AddScoped<AuthenticationStateProvider, PersistingRevalidatingAuthenticationStateProvider>();
 
 builder.Services
     .AddAuth0WebAppAuthentication(options =>
@@ -33,7 +30,8 @@ builder.Services
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents()
-    .AddInteractiveWebAssemblyComponents();
+    .AddInteractiveWebAssemblyComponents()
+    .AddAuthenticationStateSerialization(options => options.SerializeAllClaims = true);
 
 //Add configuration 
 var appSettingsSection = builder.Configuration.GetSection("AppSettings");
@@ -44,7 +42,7 @@ AppSettings? appSettings = appSettingsSection.Get<AppSettings>();
 //Configure common services
 builder.Services.AddGraphQlClient(appSettings);
 builder.Services.ConfigureCommonServices(appSettings);
-builder.Services.AddLocalizersServer();
+builder.Services.AddLocalizeServer();
 
 var app = builder.Build();
 
@@ -61,7 +59,7 @@ else
 }
 
 app.UseHttpsRedirection();
-app.UseStaticFiles();
+app.MapStaticAssets();
 app.UseAntiforgery();
 
 app.MapGet("/Account/Login", async (HttpContext httpContext, string redirectUri = "/") =>

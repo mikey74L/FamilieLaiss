@@ -21,7 +21,7 @@ public class MediaItem : EntityModify<long>
 {
     #region Private Members
 
-    private ILazyLoader lazyLoader;
+    private ILazyLoader? _lazyLoader;
 
     #endregion
 
@@ -88,25 +88,25 @@ public class MediaItem : EntityModify<long>
     /// <summary>
     /// ID for the assigned upload picture item 
     /// </summary>
-    [GraphQLDescription("Id of the assigned upload picture if the item is of type picture")]
+    [GraphQLIgnore]
     public long? UploadPictureId { get; private set; }
 
     /// <summary>
     /// The upload picture for this media item
     /// </summary>
-    [GraphQLIgnore]
+    [GraphQLDescription("The assigned upload picture if the item is of type picture")]
     public UploadPicture? UploadPicture { get; private set; }
 
     /// <summary>
     /// ID for the assigned upload video item 
     /// </summary>
-    [GraphQLDescription("Id of the assigned upload video if the item is of type video")]
+    [GraphQLIgnore]
     public long? UploadVideoId { get; private set; }
 
     /// <summary>
     /// The upload video for this media item
     /// </summary>
-    [GraphQLIgnore]
+    [GraphQLDescription("The assigned upload video if the item is of type video")]
     public UploadVideo? UploadVideo { get; private set; }
 
     /// <summary>
@@ -125,7 +125,7 @@ public class MediaItem : EntityModify<long>
     /// <param name="lazyLoader"></param>
     private MediaItem(ILazyLoader lazyLoader)
     {
-        this.lazyLoader = lazyLoader;
+        this._lazyLoader = lazyLoader;
     }
 
     /// <summary>
@@ -193,24 +193,25 @@ public class MediaItem : EntityModify<long>
     private async Task RemoveCategoryValue(long categoryValueId)
     {
         //Deklaration
-        bool ItemFound = false;
+        var itemFound = false;
 
         //Laden der Kategorie-Werte wenn noch nicht geschehen
-        await lazyLoader.LoadAsync(this, navigationName: nameof(MediaItemCategoryValues));
+        if (_lazyLoader is not null)
+        {
+            await _lazyLoader.LoadAsync(this, navigationName: nameof(MediaItemCategoryValues));
+        }
 
         //Entfernen des Items
-        foreach (var Item in MediaItemCategoryValues)
+        foreach (var item in MediaItemCategoryValues)
         {
-            if (Item.CategoryValueId == categoryValueId)
-            {
-                ItemFound = true;
-                MediaItemCategoryValues.Remove(Item);
-                break;
-            }
+            if (item.CategoryValueId != categoryValueId) continue;
+            itemFound = true;
+            MediaItemCategoryValues.Remove(item);
+            break;
         }
 
         //Item wurde nicht gefunden
-        if (!ItemFound)
+        if (!itemFound)
         {
             throw new DomainException(DomainExceptionType.NoDataFound,
                 $"Category value with ID = {categoryValueId} not found.");
@@ -273,7 +274,10 @@ public class MediaItem : EntityModify<long>
     public async Task UpdateCategoryValues(IEnumerable<long> values)
     {
         //Laden der Kategorie-Werte wenn noch nicht geschehen
-        await lazyLoader.LoadAsync(this, navigationName: nameof(MediaItemCategoryValues));
+        if (_lazyLoader is not null)
+        {
+            await _lazyLoader.LoadAsync(this, navigationName: nameof(MediaItemCategoryValues));
+        }
 
         //Ermitteln der zu löschenden Items
         List<long> itemsToDelete = [];
@@ -340,7 +344,10 @@ public class MediaItem : EntityModify<long>
     public async Task AssignCategoryValues(IEnumerable<long> values)
     {
         //Laden der Kategorie-Werte wenn noch nicht geschehen
-        await lazyLoader.LoadAsync(this, navigationName: nameof(MediaItemCategoryValues));
+        if (_lazyLoader is not null)
+        {
+            await _lazyLoader.LoadAsync(this, navigationName: nameof(MediaItemCategoryValues));
+        }
 
         //Über alle IDs iterieren
         foreach (var id in values)
@@ -407,7 +414,10 @@ public class MediaItem : EntityModify<long>
         {
             if (MediaType == EnumMediaType.Picture)
             {
-                await lazyLoader.LoadAsync(this, navigationName: nameof(UploadPicture));
+                if (_lazyLoader is not null)
+                {
+                    await _lazyLoader.LoadAsync(this, navigationName: nameof(UploadPicture));
+                }
 
                 if (UploadPicture is not null)
                 {
@@ -427,7 +437,10 @@ public class MediaItem : EntityModify<long>
             }
             else
             {
-                await lazyLoader.LoadAsync(this, navigationName: nameof(UploadVideo));
+                if (_lazyLoader is not null)
+                {
+                    await _lazyLoader.LoadAsync(this, navigationName: nameof(UploadVideo));
+                }
 
                 if (UploadVideo is not null)
                 {

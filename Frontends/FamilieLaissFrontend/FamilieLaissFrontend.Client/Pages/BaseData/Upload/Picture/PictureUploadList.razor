@@ -70,28 +70,16 @@
     [EditorRequired]
     public ExtendedObservableCollection<IUploadPictureModel> UploadItems
     {
-        get
-        {
-            return ViewModel.UploadItems;
-        }
-        set
-        {
-            ViewModel.UploadItems = value;
-        }
+        get => ViewModel.UploadItems;
+        set => ViewModel.UploadItems = value;
     }
 
     [Parameter]
     [EditorRequired]
     public EventCallback ReloadUploadPictures
     {
-        get
-        {
-            return ViewModel.ReloadUploadPictures;
-        }
-        set
-        {
-            ViewModel.ReloadUploadPictures = value;
-        }
+        get => ViewModel.ReloadUploadPictures;
+        set => ViewModel.ReloadUploadPictures = value;
     }
 
     [Parameter]
@@ -100,40 +88,22 @@
     [Parameter]
     public bool ShowLoading
     {
-        get
-        {
-            return ViewModel.IsLoading;
-        }
-        set
-        {
-            ViewModel.IsLoading = value;
-        }
+        get => ViewModel.IsLoading;
+        set => ViewModel.IsLoading = value;
     }
 
     [Parameter]
     public bool ShowError
     {
-        get
-        {
-            return ViewModel.HasError;
-        }
-        set
-        {
-            ViewModel.HasError = value;
-        }
+        get => ViewModel.HasError;
+        set => ViewModel.HasError = value;
     }
 
     [Parameter]
     [EditorRequired]
     public IGraphQlSortAndFilterService<IUploadPictureModel, UploadPictureSortInput, UploadPictureFilterInput> SortAndFilterService
     {
-        get
-        {
-            return ViewModel.SortAndFilterService;
-        }
-        set
-        {
-            ViewModel.SortAndFilterService = value;
-        }
+        get => ViewModel.SortAndFilterService;
+        set => ViewModel.SortAndFilterService = value;
     }
 }

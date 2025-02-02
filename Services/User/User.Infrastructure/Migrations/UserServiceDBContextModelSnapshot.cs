@@ -10,14 +10,14 @@ using User.Infrastructure.DBContext;
 
 namespace User.Infrastructure.Migrations
 {
-    [DbContext(typeof(UserServiceDBContext))]
-    partial class UserServiceDBContextModelSnapshot : ModelSnapshot
+    [DbContext(typeof(UserServiceDbContext))]
+    partial class UserServiceDbContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.0")
+                .HasAnnotation("ProductVersion", "9.0.1")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -27,7 +27,7 @@ namespace User.Infrastructure.Migrations
                     b.Property<string>("Id")
                         .HasColumnType("text");
 
-                    b.Property<DateTimeOffset>("CreateDate")
+                    b.Property<DateTimeOffset?>("CreateDate")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("NameEnglish")
@@ -45,7 +45,7 @@ namespace User.Infrastructure.Migrations
                     b.ToTable("Countries");
                 });
 
-            modelBuilder.Entity("User.Domain.Aggregates.User", b =>
+            modelBuilder.Entity("User.Domain.Aggregates.UserAccount", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("text");
@@ -57,10 +57,10 @@ namespace User.Infrastructure.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");
 
-                    b.Property<string>("CountryID")
+                    b.Property<string>("CountryId")
                         .HasColumnType("text");
 
-                    b.Property<DateTimeOffset>("CreateDate")
+                    b.Property<DateTimeOffset?>("CreateDate")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("EMail")
@@ -72,15 +72,14 @@ namespace User.Infrastructure.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");
 
-                    b.Property<string>("GenderID")
-                        .HasMaxLength(20)
-                        .HasColumnType("character varying(20)");
+                    b.Property<int>("Gender")
+                        .HasColumnType("integer");
 
                     b.Property<string>("GivenName")
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");
 
-                    b.Property<string>("HNR")
+                    b.Property<string>("Hnr")
                         .HasMaxLength(20)
                         .HasColumnType("character varying(20)");
 
@@ -93,22 +92,22 @@ namespace User.Infrastructure.Migrations
                         .HasMaxLength(15)
                         .HasColumnType("character varying(15)");
 
-                    b.Property<string>("ZIP")
+                    b.Property<string>("Zip")
                         .HasMaxLength(20)
                         .HasColumnType("character varying(20)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CountryID");
+                    b.HasIndex("CountryId");
 
-                    b.ToTable("Users");
+                    b.ToTable("UserAccounts");
                 });
 
-            modelBuilder.Entity("User.Domain.Aggregates.User", b =>
+            modelBuilder.Entity("User.Domain.Aggregates.UserAccount", b =>
                 {
                     b.HasOne("User.Domain.Aggregates.Country", "Country")
                         .WithMany("Users")
-                        .HasForeignKey("CountryID");
+                        .HasForeignKey("CountryId");
 
                     b.Navigation("Country");
                 });

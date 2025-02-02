@@ -21,7 +21,7 @@ public class MediaGroup : EntityModify<long>
 {
     #region Private Members
 
-    private ILazyLoader lazyLoader;
+    private readonly ILazyLoader? _lazyLoader;
 
     #endregion
 
@@ -80,20 +80,19 @@ public class MediaGroup : EntityModify<long>
     #endregion
 
     #region C'tor
+    /// <summary>
+    /// Constructor would be used by GraphQL
+    /// </summary>
+    private MediaGroup()
+    {
+    }
 
     /// <summary>
     /// Constructor would be used by EF-Core
     /// </summary>
     private MediaGroup(ILazyLoader lazyLoader)
     {
-        this.lazyLoader = lazyLoader;
-    }
-
-    /// <summary>
-    /// Constructor would be used by GraphQL
-    /// </summary>
-    private MediaGroup()
-    {
+        this._lazyLoader = lazyLoader;
     }
 
     /// <summary>
@@ -200,7 +199,10 @@ public class MediaGroup : EntityModify<long>
         MediaItem? result = null;
 
         //Laden der Kategorie - Werte wenn noch nicht geschehen
-        await lazyLoader.LoadAsync(this, navigationName: nameof(MediaItems));
+        if (_lazyLoader is not null)
+        {
+            await _lazyLoader.LoadAsync(this, navigationName: nameof(MediaItems));
+        }
 
         //Entfernen des Items
         foreach (var item in MediaItems)
@@ -249,7 +251,10 @@ public class MediaGroup : EntityModify<long>
     {
         AddDomainEvent(new DomainEventMediaGroupDeleted(Id));
 
-        await lazyLoader.LoadAsync(this, navigationName: nameof(MediaItems));
+        if (_lazyLoader is not null)
+        {
+            await _lazyLoader.LoadAsync(this, navigationName: nameof(MediaItems));
+        }
 
         foreach (var item in MediaItems)
         {

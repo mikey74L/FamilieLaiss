@@ -1,5 +1,11 @@
-﻿using DomainHelper.AbstractClasses;
+﻿
+
+using DomainHelper.AbstractClasses;
 using DomainHelper.Exceptions;
+using HotChocolate;
+using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using UserInteraction.Domain.DomainEvents;
 
@@ -11,26 +17,34 @@ namespace UserInteraction.Domain.Aggregates
         /// <summary>
         /// Identifier for user interaction info
         /// </summary>
-        public long UserInteractionInfoID { get; private set; }
+        [Required]
+        [GraphQLIgnore]
+        public long UserInteractionInfoId { get; private set; }
 
         /// <summary>
-        /// The user interaction info this rating belongs to
+        /// The user interaction info this comment belongs to
         /// </summary>
+        [GraphQLDescription("The user interaction info this comment belongs to")]
         public UserInteractionInfo UserInteractionInfo { get; private set; }
 
         /// <summary>
-        /// Identifier for user account
+        /// Identifier for media item
         /// </summary>
-        public string UserAccountID { get; private set; }
+        [Required]
+        [GraphQLIgnore]
+        public long MediaItemId { get; private set; }
 
         /// <summary>
-        /// The user account this rating belongs to
+        /// The media item this comment belongs to
         /// </summary>
-        public UserAccount UserAccount { get; private set; }
+        [GraphQLDescription("The media item this comment belongs to")]
+        public MediaItem MediaItem { get; private set; }
 
         /// <summary>
         /// Content for the comment
         /// </summary>
+        [GraphQLDescription("Content for the comment")]
+        [MaxLength(2000)]
         public string Content { get; private set; }
         #endregion
 
@@ -47,19 +61,14 @@ namespace UserInteraction.Domain.Aggregates
         /// C'tor
         /// </summary>
         /// <param name="userInteractionInfo">The user interaction info this comment belongs to</param>
-        /// <param name="userAccountID">Identifier for user account</param>
         /// <param name="content">The content text for this comment</param>
-        public Comment(UserInteractionInfo userInteractionInfo, string userAccountID, string content)
+        public Comment(UserInteractionInfo userInteractionInfo, string content)
         {
             //Überprüfen ob eine Rating-Info übergeben wurde
             if (userInteractionInfo == null) throw new DomainException("A user interaction info is needed");
 
-            //Überprüfen ob ein UserAccount übergeben wurde
-            if (string.IsNullOrEmpty(userAccountID)) throw new DomainException("A user account is needed");
-
             //Übernehmen der Werte
             UserInteractionInfo = userInteractionInfo;
-            UserAccountID = userAccountID;
             Content = content;
         }
         #endregion
@@ -68,19 +77,19 @@ namespace UserInteraction.Domain.Aggregates
         #endregion
 
         #region Called from Change Tracker
-        public override Task EntityAddedAsync()
+        public override Task EntityAddedAsync(DbContext dbContext, IDictionary<string, object> dictContextParams)
         {
             //Feuern des Domain-Events 
-            AddDomainEvent(new MtrEventCommentAdded(Id, UserInteractionInfo.Id, UserAccountID));
+            AddDomainEvent(new MtrEventCommentAdded(Id, UserInteractionInfo.Id));
 
             //Funktionsergebnis
             return Task.CompletedTask;
         }
 
-        public override Task EntityDeletedAsync()
+        public override Task EntityDeletedAsync(DbContext dbContext, IDictionary<string, object> dictContextParams)
         {
             //Hinzufügen der Domain-Events
-            AddDomainEvent(new MtrEventCommentDeleted(Id, UserInteractionInfoID, UserAccountID));
+            AddDomainEvent(new MtrEventCommentDeleted(Id, UserInteractionInfoId));
 
             //Funktionsergebnis
             return Task.CompletedTask;

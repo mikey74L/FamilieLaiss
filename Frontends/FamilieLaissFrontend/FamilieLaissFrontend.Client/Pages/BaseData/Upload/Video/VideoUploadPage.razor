@@ -5,7 +5,7 @@
 
 @inherits FlComponentBase<VideoUploadPageViewModel>
 
-@page "/basedata-video-upload"
+@page "/base-data-video-upload"
 
 <NavigationLock OnBeforeInternalNavigation="async () => await ViewModel.BeforeInternalNavigationCommand.ExecuteAsync(null)" ConfirmExternalNavigation="@ViewModel.IsUploading" />
 

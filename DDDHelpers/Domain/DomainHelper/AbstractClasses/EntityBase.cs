@@ -139,7 +139,7 @@ public abstract class EntityCreation<T> : EntityBase<T>, IEntityCreation
 
     public void SetCreateDate()
     {
-        CreateDate = DateTimeOffset.UtcNow;
+        CreateDate = DateTimeOffset.Now;
     }
 
     #endregion
@@ -164,7 +164,7 @@ public abstract class EntityModify<T> : EntityCreation<T>, iEntityModify
     /// </summary>
     public void SetChangeDate()
     {
-        ChangeDate = DateTimeOffset.UtcNow;
+        ChangeDate = DateTimeOffset.Now;
     }
 
     #endregion

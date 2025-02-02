@@ -1,4 +1,6 @@
-﻿using PictureConvert.Infrastructure.DBContext;
+﻿using HotChocolate.Fusion.SourceSchema.Types;
+using PictureConvert.API.GraphQL.DataLoaders.PictureConvertStatus;
+using PictureConvert.Infrastructure.DBContext;
 
 namespace PictureConvert.API.GraphQL.Queries.PictureConvertStatus;
 
@@ -14,4 +16,9 @@ public class GraphQlQueryPictureConvertStatus
     {
         return context.ConvertStatusEntries;
     }
+
+    [GraphQLDescription("Returns a picture convert status item")]
+    [Lookup]
+    public async Task<Domain.Entities.PictureConvertStatus> GetPictureConvertStatus(long id, PictureConvertStatusDataLoader dataLoader)
+        => await dataLoader.LoadAsync(id);
 }

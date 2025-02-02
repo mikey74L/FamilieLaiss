@@ -30,15 +30,14 @@
     <CardHeaderActions>
         @if (ShowSelectionMode)
         {
-            <MudToggleIconButton Toggled="UploadItem!.IsSelected"
+            <MudToggleIconButton Toggled="UploadItem.IsSelected"
                                  ToggledChanged="async () => await ViewModel.ChangeToggleCommand.ExecuteAsync(null)"
                                  Class="@ViewModel.ClassAttributeToggleButton"
                                  Icon="@Icons.Material.Filled.ToggleOff"
                                  Color="Color.Error"
-                                 Title="@PictureControlHeaderRes.TooltipNotSelected"
+                                 title="@(UploadItem.IsSelected ? @PictureControlHeaderRes.TooltipSelected : @PictureControlHeaderRes.TooltipNotSelected)"
                                  ToggledIcon="@Icons.Material.Filled.ToggleOn"
-                                 ToggledColor="Color.Success"
-                                 ToggledTitle="@PictureControlHeaderRes.TooltipSelected" />
+                                 ToggledColor="Color.Success"/>
         }
     </CardHeaderActions>
 </MudCardHeader>
@@ -54,28 +53,17 @@
     public bool ShowSelectionMode { get; set; }
 
     [Parameter]
-    public IUploadPictureModel? UploadItem
+    [EditorRequired]
+    public IUploadPictureModel UploadItem
     {
-        get
-        {
-            return ViewModel.UploadItem;
-        }
-        set
-        {
-            ViewModel.UploadItem = value;
-        }
+        get => ViewModel.UploadItem;
+        set => ViewModel.UploadItem = value;
     }
 
     [Parameter]
     public EventCallback ToggleChanged 
     { 
-        get
-        {
-            return ViewModel.ToggleChanged;
-        }
-        set
-        {
-            ViewModel.ToggleChanged = value;
-        }
+        get => ViewModel.ToggleChanged;
+        set => ViewModel.ToggleChanged = value;
     }
 }

@@ -40,11 +40,8 @@ public partial class PictureControlMediaViewModel(
             { "MediaItem", MediaItem }
         };
 
-        var dialogOptions = GetDialogOptions();
-        dialogOptions.CloseButton = true;
-        dialogOptions.CloseOnEscapeKey = true;
-        dialogOptions.Position = DialogPosition.Center;
-        dialogOptions.MaxWidth = MaxWidth.ExtraExtraLarge;
+        var dialogOptions = GetDialogOptions(true, true, DialogPosition.Center, 
+            MaxWidth.ExtraExtraLarge);
 
         await dialogService.ShowAsync<PictureInfoDialog>("", dialogParams, dialogOptions);
     }

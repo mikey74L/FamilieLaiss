@@ -1,4 +1,6 @@
-﻿using Catalog.Infrastructure.DBContext;
+﻿using Catalog.API.GraphQL.DataLoaders.CategoryValue;
+using Catalog.Infrastructure.DBContext;
+using HotChocolate.Fusion.SourceSchema.Types;
 using Microsoft.EntityFrameworkCore;
 
 namespace Catalog.API.GraphQL.Queries.CategoryValue;
@@ -14,6 +16,11 @@ public class GraphQlQueryCategoryValue
     {
         return context.CategoryValues;
     }
+
+    [GraphQLDescription("Returns a category value")]
+    [Lookup]
+    public async Task<Domain.Aggregates.CategoryValue> GetCategoryValue(long id, CategoryValueDataLoader dataLoader)
+        => await dataLoader.LoadAsync(id);
 
     [GraphQLDescription("Validate german category value name")]
     public async Task<bool> GermanCategoryValueNameExistsAsync(CatalogServiceDbContext context,
