@@ -26,23 +26,22 @@ public partial class VideoUploadPageViewModel(
 {
     #region Public Properties
     [ObservableProperty]
-    // ReSharper disable once InconsistentNaming
-    public int _uploadFileCount;
+    public partial int UploadFileCount { get; set; }
 
     [ObservableProperty]
-    private bool _isUploading;
+    public partial bool IsUploading { get; set; }
 
     [ObservableProperty]
-    private int _currentTabIndex;
+    public partial int CurrentTabIndex { get; set; }
 
     [ObservableProperty]
-    private ExtendedObservableCollection<IUploadVideoModel> _uploadVideoItems = [];
+    public partial ExtendedObservableCollection<IUploadVideoModel> UploadVideoItems { get; set; } = [];
 
     [ObservableProperty]
-    private int _currentCountUploadVideos;
+    public partial int CurrentCountUploadVideos { get; set; }
 
     [ObservableProperty]
-    private IGraphQlSortAndFilterService<IUploadVideoModel, UploadVideoSortInput, UploadVideoFilterInput> _sortAndFilterService = default!;
+    public partial IGraphQlSortAndFilterService<IUploadVideoModel, UploadVideoSortInput, UploadVideoFilterInput> SortAndFilterService { get; set; }
     #endregion
 
     #region Lifecycle Overrides

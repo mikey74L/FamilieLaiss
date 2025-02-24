@@ -24,6 +24,7 @@ public class UploadServiceDbContext(DbContextOptions<UploadServiceDbContext> opt
     protected override void OnModelCreatingInternal(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfiguration(new UploadPictureEntityTypeConfiguration());
+        modelBuilder.ApplyConfiguration(new ConvertStatusEntityTypeConfiguration());
         modelBuilder.ApplyConfiguration(new UploadVideoEntityTypeConfiguration());
         modelBuilder.ApplyConfiguration(new UploadIdentifierEntityTypeConfiguration());
     }
@@ -35,6 +36,8 @@ public class UploadServiceDbContext(DbContextOptions<UploadServiceDbContext> opt
     public DbSet<UploadIdentifier> UploadIdentifiers { get; set; }
 
     public DbSet<UploadPicture> UploadPictures { get; set; }
+
+    public DbSet<PictureConvertStatus> PictureConvertStatusEntries { get; set; }
 
     public DbSet<UploadVideo> UploadVideos { get; set; }
 

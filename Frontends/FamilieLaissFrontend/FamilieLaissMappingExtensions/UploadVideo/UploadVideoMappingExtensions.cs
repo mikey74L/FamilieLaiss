@@ -33,7 +33,7 @@ public static class UploadVideoMappingExtensions
             DurationHour = sourceItem.DurationHour,
             DurationMinute = sourceItem.DurationMinute,
             DurationSecond = sourceItem.DurationSecond,
-            Status = sourceItem.Status,
+            State = sourceItem.State,
             CreateDate = sourceItem.CreateDate,
         };
 
@@ -60,19 +60,19 @@ public static class UploadVideoMappingExtensions
         IServiceProvider serviceProvider)
     {
         return sourceItems.Select(sourceItem => new UploadVideoModel()
-            {
-                Id = sourceItem.Id,
-                Filename = sourceItem.Filename,
-                Height = sourceItem.Height,
-                Width = sourceItem.Width,
-                VideoType = sourceItem.VideoType,
-                Status = sourceItem.Status,
-                CreateDate = sourceItem.CreateDate,
-                DurationHour = sourceItem.DurationHour,
-                DurationMinute = sourceItem.DurationMinute,
-                DurationSecond = sourceItem.DurationSecond,
-                //GoogleGeoCodingAddress = sourceItem.GoogleGeoCodingAddress.Map()
-            })
+        {
+            Id = sourceItem.Id,
+            Filename = sourceItem.Filename,
+            Height = sourceItem.Height,
+            Width = sourceItem.Width,
+            VideoType = sourceItem.VideoType,
+            State = sourceItem.State,
+            CreateDate = sourceItem.CreateDate,
+            DurationHour = sourceItem.DurationHour,
+            DurationMinute = sourceItem.DurationMinute,
+            DurationSecond = sourceItem.DurationSecond,
+            //GoogleGeoCodingAddress = sourceItem.GoogleGeoCodingAddress.Map()
+        })
             .Cast<IUploadVideoModel>()
             .ToList();
     }

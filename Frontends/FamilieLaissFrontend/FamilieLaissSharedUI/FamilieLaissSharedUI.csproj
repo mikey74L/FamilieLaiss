@@ -4,7 +4,7 @@
 		<TargetFramework>net9.0</TargetFramework>
 		<Nullable>enable</Nullable>
 		<ImplicitUsings>enable</ImplicitUsings>
-		<LangVersion>latest</LangVersion>
+		<LangVersion>preview</LangVersion>
 	</PropertyGroup>
 
 
@@ -17,7 +17,7 @@
 		<PackageReference Include="FluentValidation" Version="11.11.0" />
 		<PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="9.0.1" />
 		<PackageReference Include="Majorsoft.Blazor.Components.Loading" Version="1.5.0" />
-		<PackageReference Include="MudBlazor" Version="8.1.0" />
+		<PackageReference Include="MudBlazor" Version="8.2.0" />
 		<PackageReference Include="System.Reactive" Version="6.0.1" />
 	</ItemGroup>
 

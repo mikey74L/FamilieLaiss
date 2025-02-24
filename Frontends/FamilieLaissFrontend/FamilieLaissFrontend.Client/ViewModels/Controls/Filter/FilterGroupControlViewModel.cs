@@ -21,10 +21,10 @@ public partial class FilterGroupControlViewModel(
 
     #region Public Properties
     [ObservableProperty]
-    private bool _showResetButton;
+    public partial bool ShowResetButton { get; set; }
 
     [ObservableProperty]
-    private Dictionary<Guid, bool> _valueDictFilterItems = [];
+    public partial Dictionary<Guid, bool> ValueDictFilterItems { get; set; } = [];
     #endregion
 
     #region Commands

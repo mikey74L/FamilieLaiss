@@ -1,22 +1,18 @@
-using GraphQL.Server.Ui.Voyager;
 using InfrastructureHelper.EventDispatchHandler;
+using MassTransit;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Localization;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Npgsql;
 using Serilog;
 using ServiceLayerHelper;
 using ServiceLayerHelper.Logging;
-using Steeltoe.Discovery.Client;
-using Steeltoe.Discovery.Eureka;
 using System;
 using System.Globalization;
-using MassTransit;
+using System.Linq;
 using UserInteraction.API;
 using UserInteraction.API.GraphQl.DataLoaders.Comment;
 using UserInteraction.API.GraphQl.DataLoaders.Favorite;
@@ -46,43 +42,47 @@ Console.Title = "UserInteraction-Service";
 
 var builder = WebApplication.CreateBuilder(args);
 
+//Integrate Aspire
+builder
+    .AddServiceDefaults()
+    .AddNpgsqlDbContext<UserInteractionServiceDBContext>("user-interaction-db",
+        settings => settings.DisableRetry = true);
+
+//Logging
 var logger = new LoggerConfiguration()
-  .ReadFrom.Configuration(builder.Configuration)
-  .CreateLogger();
+    .ReadFrom.Configuration(builder.Configuration)
+    .CreateLogger();
 builder.Logging.ClearProviders();
 builder.Host.UseSerilog(logger);
 
+//Create the bootstrap logger for Serilog
 Log.Logger = new LoggerConfiguration()
-  .ReadFrom.Configuration(builder.Configuration)
-  .CreateBootstrapLogger();
+    .ReadFrom.Configuration(builder.Configuration)
+    .CreateBootstrapLogger();
 
-builder.AddServiceDiscovery(options => options.UseEureka());
-
+//Adding an HTTPContextAccessor
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
+//Adding the Hosted-Services (Background-Services)
 builder.Services.AddHostedService<EventDispatcherBackgroundService>();
 
+//Adding the global exception handler middleware
 builder.Services.AddSingleton<ILog, LogSerilog>();
 
+//Adding configuration (App-Settings) to the IOC container
 var appSettingsSection = builder.Configuration.GetSection("AppSettings");
 builder.Services.Configure<AppSettings>(appSettingsSection);
-AppSettings? appSettings = appSettingsSection.Get<AppSettings>();
+var appSettings = appSettingsSection.Get<AppSettings>();
 
-NpgsqlConnectionStringBuilder postgresConnectionStringBuilder = new()
-{
-    ApplicationName = "UserInteraction-Service",
-    Host = appSettings?.PostgresHost,
-    Port = appSettings?.PostgresPort ?? 0,
-    Multiplexing = appSettings?.PostgresMultiplexing ?? false,
-    Database = appSettings?.PostgresDatabase,
-    Username = appSettings?.PostgresUser,
-    Password = appSettings?.PostgresPassword
-};
-builder.Services.AddPooledDbContextFactory<UserInteractionServiceDBContext>(
-    o => o.UseNpgsql(postgresConnectionStringBuilder.ToString()))
-.AddUnitOfWork<UserInteractionServiceDBContext>();
+//Adding pooled context factory and add unit of work
+builder.Services.AddPooledDbContextFactory<UserInteractionServiceDBContext>(options =>
+    {
+    })
+    .AddUnitOfWork<UserInteractionServiceDBContext>();
 
+//Adding GraphQL Server
 builder.Services.AddGraphQLServer()
+    .ModifyCostOptions(o => o.EnforceCostLimits = false)
     .RegisterDbContextFactory<UserInteractionServiceDBContext>()
 //    .AddMutationType<Mutation>()
 //    .AddTypeExtension<GraphQlMutationCategory>()
@@ -115,15 +115,26 @@ builder.Services.AddGraphQLServer()
 //    .AddAuthorization()
     .InitializeOnStartup();
 
+//Add localization for ASP.NET Core
 builder.Services.AddLocalization(options => options.ResourcesPath = "Localize");
 
-builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<Program>());
+//Register MediatR with the current assembly
+if (!args.Contains("schema"))
+{
+    builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<Program>());
+}
 
-Startup.ConfigureEndpointConventions(appSettings);
+//Setting the EndpointConventions for MassTransit
+if (!args.Contains("schema"))
+{
+    Startup.ConfigureEndpointConventions(appSettings);
+}
 
+//Adding the consumers to the DI container
 //builder.Services.AddScoped<MediaItemCreatedConsumer>();
 
-if (appSettings is not null)
+//Adding MassTransit with RabbitMQ
+if (appSettings is not null && !args.Contains("schema"))
 {
     builder.Services.AddMassTransit(x =>
     {
@@ -131,7 +142,9 @@ if (appSettings is not null)
 
         x.UsingRabbitMq((context, cfg) =>
         {
-            cfg.Host(new Uri(appSettings.RabbitMqConnection));
+            var configuration = context.GetRequiredService<IConfiguration>();
+            var host = configuration.GetConnectionString("RabbitMQConnection");
+            cfg.Host(host);
 
             cfg.ReceiveEndpoint(appSettings.EndpointUserInteractionService, e =>
             {
@@ -147,39 +160,49 @@ if (appSettings is not null)
 
 try
 {
-    Log.Information("Starting Web-Host...");
+    Log.Information("Building web app");
 
     var app = builder.Build();
 
+    var lifetime = app.Lifetime;
+    lifetime.ApplicationStarted.Register(() => Log.Information("Web app started"));
+    lifetime.ApplicationStopped.Register(() => Log.Information("Application stopped"));
+    
     var supportedCultures = new[]
     {
         new CultureInfo("de"),
         new CultureInfo("en")
     };
 
+    Log.Information("Add logging to pipeline");
     app.UseSerilogRequestLogging();
-
     app.UseRequestLocalization(new RequestLocalizationOptions
     {
         DefaultRequestCulture = new RequestCulture("en-US"),
         SupportedCultures = supportedCultures,
         SupportedUICultures = supportedCultures
     });
-
     if (builder.Environment.IsDevelopment())
     {
         app.UseDeveloperExceptionPage();
     }
-
+    
+    Log.Information("Configure global exception handler");
     app.ConfigureExceptionHandler();
 
-    if (appSettings?.PostgresUser != "withoutdocker")
+    if (!args.Contains("schema"))
     {
+        Log.Information("Initialize and seed database");
         Startup.InitializeDatabase(app);
     }
 
+    Log.Information("Add routing to pipeline");
     app.UseRouting();
 
+    Log.Information("Add aspire endpoints to pipeline");
+    app.MapDefaultEndpoints();
+    
+    Log.Information("Add GraphQl to pipeline");
     if (builder.Environment.IsDevelopment())
     {
         app.MapGraphQL();
@@ -190,22 +213,14 @@ try
         app.MapGraphQLWebSocket();
     }
 
-    if (builder.Environment.IsDevelopment())
-    {
-        app.UseGraphQLVoyager("/graphql-voyager", new VoyagerOptions()
-        {
-            GraphQLEndPoint = "/graphql"
-        });
-    }
-
+    Log.Information("Starting web app...");
     app.RunWithGraphQLCommands(args);
 }
 catch (Exception ex)
 {
-    Log.Fatal(ex, "Web-Host terminated unexpectedly");
+    Log.Fatal(ex, "Web app terminated unexpectedly");
 }
 finally
 {
-    Log.Information("Web-Host stopped");
     Log.CloseAndFlush();
 }

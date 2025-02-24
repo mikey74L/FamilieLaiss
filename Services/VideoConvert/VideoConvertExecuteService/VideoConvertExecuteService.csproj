@@ -9,8 +9,8 @@
 
 	<ItemGroup>
 		<PackageReference Include="GraphQL.Server.Ui.Voyager" Version="8.2.0" />
-		<PackageReference Include="MassTransit" Version="8.3.4" />
-		<PackageReference Include="MassTransit.RabbitMQ" Version="8.3.4" />
+		<PackageReference Include="MassTransit" Version="8.3.6" />
+		<PackageReference Include="MassTransit.RabbitMQ" Version="8.3.6" />
 		<PackageReference Include="MediatR" Version="12.4.1" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.1" />
 		<PackageReference Include="Microsoft.Extensions.Configuration" Version="9.0.1" />
@@ -33,7 +33,6 @@
 		<PackageReference Include="Serilog.Enrichers.Environment" Version="3.0.1" />
 		<PackageReference Include="Serilog.Enrichers.Process" Version="3.0.0" />
 		<PackageReference Include="Serilog.Enrichers.Thread" Version="4.0.0" />
-		<PackageReference Include="System.Linq.Dynamic.Core" Version="1.5.1" />
 		<PackageReference Include="Tocronx.SimpleAsync" Version="1.7.0" />
 		<PackageReference Include="Xabe.FFmpeg" Version="5.2.6" />
 		<PackageReference Include="Xabe.FFmpeg.Downloader" Version="5.2.6" />

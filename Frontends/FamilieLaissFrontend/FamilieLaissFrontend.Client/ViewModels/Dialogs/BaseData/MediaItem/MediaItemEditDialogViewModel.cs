@@ -48,13 +48,17 @@ public partial class MediaItemEditDialogViewModel(
 
     public MudForm? Form { get; set; }
 
-    [ObservableProperty] private EnumMediaType? _currentMediaType;
+    [ObservableProperty]
+    public partial EnumMediaType? CurrentMediaType { get; set; }
 
-    [ObservableProperty] private IUploadPictureModel? _selectedPicture;
+    [ObservableProperty]
+    public partial IUploadPictureModel? SelectedPicture { get; set; }
 
-    [ObservableProperty] private IUploadVideoModel? _selectedVideo;
+    [ObservableProperty]
+    public partial IUploadVideoModel? SelectedVideo { get; set; }
 
-    [ObservableProperty] private List<ICategoryValueModel> _categoryValues = [];
+    [ObservableProperty]
+    public partial List<ICategoryValueModel> CategoryValues { get; set; } = [];
 
     public IEnumerable<ICategoryValueModel>? SelectedCategoryValues { get; set; }
 
@@ -109,7 +113,7 @@ public partial class MediaItemEditDialogViewModel(
                                             if (mediaItemCategoryValue.CategoryValue?.Id is not null)
                                             {
                                                 //catValues.Add(CategoryValues.First(x =>
-                                                  //  x.Id == mediaItemCategoryValue.CategoryValue.Id));
+                                                //  x.Id == mediaItemCategoryValue.CategoryValue.Id));
                                             }
                                         }
                                     }
@@ -364,7 +368,7 @@ public partial class MediaItemEditDialogViewModel(
     [RelayCommand]
     private async Task ShowChoosePictureDialogAsync()
     {
-        var dialogOptions = GetDialogOptions( maxWidth: MaxWidth.ExtraExtraLarge);
+        var dialogOptions = GetDialogOptions(maxWidth: MaxWidth.ExtraExtraLarge);
 
         var dialog =
             await dialogService.ShowAsync<ChoosePictureDialog>(MediaItemEditDialogViewModelRes.ChoosePicture,
@@ -393,9 +397,9 @@ public partial class MediaItemEditDialogViewModel(
                         }
                     }
 
-                    if (result.Data is IUploadVideoModel uploadVideoModel)
+                    if (result.Data is IUploadPictureModel uploadPictureModel)
                     {
-                        SelectedVideo = uploadVideoModel;
+                        SelectedPicture = uploadPictureModel;
                     }
                     CurrentMediaType = EnumMediaType.Picture;
                     if (Model is null) return Task.CompletedTask;
@@ -428,7 +432,7 @@ public partial class MediaItemEditDialogViewModel(
     [RelayCommand]
     private async Task ShowChooseVideoDialogAsync()
     {
-        var dialogOptions = GetDialogOptions( maxWidth: MaxWidth.ExtraExtraLarge);
+        var dialogOptions = GetDialogOptions(maxWidth: MaxWidth.ExtraExtraLarge);
 
         var dialog =
             await dialogService.ShowAsync<ChooseVideoDialog>(MediaItemEditDialogViewModelRes.ChooseVideo,

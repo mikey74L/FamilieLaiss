@@ -6,6 +6,7 @@
     <Nullable>enable</Nullable>
     <NoDefaultLaunchSettingsFile>true</NoDefaultLaunchSettingsFile>
     <StaticWebAssetProjectMode>Default</StaticWebAssetProjectMode>
+	<LangVersion>preview</LangVersion>
 	<NoWarn>$(NoWarn);BL0007</NoWarn>
   </PropertyGroup>
 
@@ -28,8 +29,8 @@
     <PackageReference Include="Microsoft.Extensions.Http.Polly" Version="9.0.1" />
     <PackageReference Include="Microsoft.Extensions.Localization" Version="9.0.1" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="9.0.1" />
-    <PackageReference Include="MudBlazor" Version="8.1.0" />
-    <PackageReference Include="Radzen.Blazor" Version="5.9.6" />
+    <PackageReference Include="MudBlazor" Version="8.2.0" />
+    <PackageReference Include="Radzen.Blazor" Version="5.9.8" />
     <PackageReference Include="Tocronx.SimpleAsync" Version="1.7.0" />
   </ItemGroup>
 

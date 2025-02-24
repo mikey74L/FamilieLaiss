@@ -13,18 +13,16 @@ namespace Upload.API.MicroServices;
 /// <remarks>
 /// Primary constructor
 /// </remarks>
-/// <param name="steeltoeDiscoClient">Steeltoe disco client. Injected by DI</param>
+/// <param name="httpClient">Typed HTTp-Client from factory</param>
 /// <param name="appSettings">App-Settings. Injected by DI</param>
-public class GoogleMicroService(IDiscoveryClient steeltoeDiscoClient, IOptions<AppSettings> appSettings)
-    : MicroserviceBase(steeltoeDiscoClient), IGoogleMicroService
+public class GoogleMicroService(HttpClient httpClient, IOptions<AppSettings> appSettings)
+    : IGoogleMicroService
 {
     /// <inheritdoc />
     public async Task<GoogleGeoCodingAdressDTO?> GetGoogleGeoCodingAddressAsync(GoogleGeoCodingRequestDTO request)
     {
         try
         {
-            var httpClient = await GetHttpClient(appSettings.Value.GoogleMicroserviceUrl);
-
             var result =
                 await httpClient.PostAsJsonAsync(
                     $"api/{appSettings.Value.GoogleMicroserviceVersion}/GeoCoding/GetGeoCodingAddress", request);

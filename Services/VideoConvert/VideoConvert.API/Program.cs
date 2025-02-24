@@ -77,20 +77,21 @@ builder.Services.AddLocalization(options => options.ResourcesPath = "Localize");
 
 //Den GraphQL-Server hinzufügen
 var graphQlBuilder = builder.Services.AddGraphQLServer()
-                                     .RegisterDbContextFactory<VideoConvertServiceDbContext>()
-                                     .AddDiagnosticEventListener<QueryLogger>()
-                                     .AddQueryType<Query>()
-                                     .AddTypeExtension<GraphQlQueryVideoConvertStatus>()
-                                     .AddType<GraphQlVideoConvertStatusType>()
-                                     .AddType<GraphQlUploadVideoType>()
-                                     .AddSubscriptionType<Subscription>()
-                                     .AddTypeExtension<VideoConvertSubscription>()
-                                     .AddDataLoader<VideoConvertStatusDataLoader>()
-                                     .AddProjections()
-                                     .AddFiltering()
-                                     .AddSorting()
-                                     .AddInMemorySubscriptions()
-                                     .InitializeOnStartup();
+    .ModifyCostOptions(o => o.EnforceCostLimits = false)
+    .RegisterDbContextFactory<VideoConvertServiceDbContext>()
+    .AddDiagnosticEventListener<QueryLogger>()
+    .AddQueryType<Query>()
+    .AddTypeExtension<GraphQlQueryVideoConvertStatus>()
+    .AddType<GraphQlVideoConvertStatusType>()
+    .AddType<GraphQlUploadVideoType>()
+    .AddSubscriptionType<Subscription>()
+    .AddTypeExtension<VideoConvertSubscription>()
+    .AddDataLoader<VideoConvertStatusDataLoader>()
+    .AddProjections()
+    .AddFiltering()
+    .AddSorting()
+    .AddInMemorySubscriptions()
+    .InitializeOnStartup();
 
 //Registrieren von MediatR mit der aktuellen Assembly
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<Program>());

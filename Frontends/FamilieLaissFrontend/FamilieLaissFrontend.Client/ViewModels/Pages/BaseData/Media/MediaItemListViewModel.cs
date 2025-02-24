@@ -7,6 +7,7 @@ using FamilieLaissInterfaces.DataServices;
 using FamilieLaissInterfaces.Enums;
 using FamilieLaissInterfaces.Models.Data;
 using FamilieLaissInterfaces.Services;
+using FamilieLaissModels.EventAggregator.MediaControl;
 using FamilieLaissModels.EventAggregator.MediaItem;
 using FamilieLaissResources.Resources.ViewModels.Pages.BaseData.Media;
 using FamilieLaissServices.Extensions;
@@ -21,12 +22,12 @@ namespace FamilieLaissFrontend.Client.ViewModels.Pages.BaseData.Media;
 public partial class MediaItemListViewModel : ViewModelBase, IHandle<AggMediaItemCreated>, IHandle<AggMediaItemChanged>
 {
     #region Services
-    private readonly IEventAggregator _eventAggregator;
-    private readonly IMediaGroupDataService _mediaGroupService;
-    private readonly IMediaItemDataService _mediaItemDataService;
-    private readonly IUserSettingsService _userSettingsService;
-    private readonly IDialogService _dialogService;
-    private readonly IMvvmNavigationManager _navManager;
+    private readonly IEventAggregator eventAggregator;
+    private readonly IMediaGroupDataService mediaGroupService;
+    private readonly IMediaItemDataService mediaItemDataService;
+    private readonly IUserSettingsService userSettingsService;
+    private readonly IDialogService dialogService;
+    private readonly IMvvmNavigationManager navManager;
     #endregion
 
     #region Parameters
@@ -39,9 +40,20 @@ public partial class MediaItemListViewModel : ViewModelBase, IHandle<AggMediaIte
 
     #region Properties
     [ObservableProperty]
-    private IMediaGroupModel? _mediaGroup;
+    public partial IMediaGroupModel? MediaGroup { get; set; }
 
     public SortableObservableCollection<IMediaItemModel> MediaItems { get; } = [];
+
+    [ObservableProperty]
+    public partial bool ShowSelectionMode { get; set; }
+
+
+    [ObservableProperty]
+    public partial bool IsSortSidebarVisible { get; set; }
+
+    [ObservableProperty]
+    public partial bool IsFilterSidebarVisible { get; set; }
+
     #endregion
 
     #region C'tor
@@ -52,12 +64,12 @@ public partial class MediaItemListViewModel : ViewModelBase, IHandle<AggMediaIte
     {
         this.QueryStringParameters.Add(nameof(MediaGroupId), typeof(long));
 
-        this._eventAggregator = eventAggregator;
-        this._mediaGroupService = mediaGroupDataService;
-        this._mediaItemDataService = mediaItemDataService;
-        this._userSettingsService = userSettingsService;
-        this._dialogService = dialogService;
-        this._navManager = navManager;
+        this.eventAggregator = eventAggregator;
+        this.mediaGroupService = mediaGroupDataService;
+        this.mediaItemDataService = mediaItemDataService;
+        this.userSettingsService = userSettingsService;
+        this.dialogService = dialogService;
+        this.navManager = navManager;
 
         this.MediaItems.CollectionChanged += MediaItems_CollectionChanged;
     }
@@ -68,7 +80,7 @@ public partial class MediaItemListViewModel : ViewModelBase, IHandle<AggMediaIte
     {
         base.OnInitialized();
 
-        _eventAggregator.Subscribe(this);
+        eventAggregator.Subscribe(this);
     }
 
     public override async Task OnInitializedAsync()
@@ -86,7 +98,7 @@ public partial class MediaItemListViewModel : ViewModelBase, IHandle<AggMediaIte
     #region Private Methods
     private async Task LoadMediaGroup()
     {
-        await _mediaGroupService.GetMediaGroupAsync(MediaGroupId)
+        await mediaGroupService.GetMediaGroupAsync(MediaGroupId)
             .HandleSuccess((result) =>
             {
                 MediaGroup = result;
@@ -105,7 +117,7 @@ public partial class MediaItemListViewModel : ViewModelBase, IHandle<AggMediaIte
     {
         if (MediaGroup is not null)
         {
-            await _mediaItemDataService.GetMediaItemsForGroupAsync(MediaGroup)
+            await mediaItemDataService.GetMediaItemsForGroupAsync(MediaGroup)
                 .HandleSuccess((result) =>
                 {
                     MediaItems.Clear();
@@ -129,7 +141,7 @@ public partial class MediaItemListViewModel : ViewModelBase, IHandle<AggMediaIte
     {
         DialogParameters dialogParam = new() { { "IsInEditMode", false }, { "MediaGroupId", MediaGroupId } };
 
-        var dialogRef = await _dialogService.ShowAsync<MediaItemEditDialog>(
+        var dialogRef = await dialogService.ShowAsync<MediaItemEditDialog>(
             MediaItemListViewModelRes.DialogTitleAdd, dialogParam, GetDialogOptions());
         await dialogRef.Result;
     }
@@ -139,7 +151,7 @@ public partial class MediaItemListViewModel : ViewModelBase, IHandle<AggMediaIte
     {
         DialogParameters dialogParam = new() { { "IsInEditMode", true }, { "Model", model }, { "MediaGroupId", MediaGroupId } };
 
-        await _dialogService.ShowAsync<MediaItemEditDialog>(
+        await dialogService.ShowAsync<MediaItemEditDialog>(
             MediaItemListViewModelRes.DialogTitleEdit, dialogParam, GetDialogOptions());
     }
 
@@ -156,7 +168,7 @@ public partial class MediaItemListViewModel : ViewModelBase, IHandle<AggMediaIte
         if (result.HasValue && result.Value)
         {
             bool keepUploadItem;
-            var userSettings = await _userSettingsService.GetCurrentUserSettings(AuthenticationState);
+            var userSettings = await userSettingsService.GetCurrentUserSettings(AuthenticationState);
             if (userSettings?.QuestionKeepUploadWhenDelete is not null && userSettings.QuestionKeepUploadWhenDelete)
             {
                 var title = model.MediaType == EnumMediaType.Picture ?
@@ -181,7 +193,7 @@ public partial class MediaItemListViewModel : ViewModelBase, IHandle<AggMediaIte
 
             IsSaving = true;
 
-            await _mediaItemDataService.DeleteMediaItemAsync(model, keepUploadItem)
+            await mediaItemDataService.DeleteMediaItemAsync(model, keepUploadItem)
                 .HandleSuccess(() =>
                 {
                     var itemToRemove = MediaItems.SingleOrDefault(x => x.Id == model.Id);
@@ -224,8 +236,45 @@ public partial class MediaItemListViewModel : ViewModelBase, IHandle<AggMediaIte
     [RelayCommand]
     private void NavigateBack()
     {
-        _navManager.NavigateTo<MediaListViewModel>();
+        navManager.NavigateTo<MediaListViewModel>();
     }
+
+    [RelayCommand]
+    private void ToggleSelectionMode()
+    {
+        ShowSelectionMode = !ShowSelectionMode;
+    }
+
+    [RelayCommand]
+    private void ShowSortSidebar()
+    {
+        IsSortSidebarVisible = true;
+    }
+
+    [RelayCommand]
+    private void ShowFilterSidebar()
+    {
+        IsFilterSidebarVisible = true;
+    }
+
+    [RelayCommand]
+    private async Task SelectAll()
+    {
+        await eventAggregator.PublishAsync(new AggSelectAllMediaItems());
+    }
+
+    [RelayCommand]
+    public async Task DeSelectAll()
+    {
+        await eventAggregator.PublishAsync(new AggDeSelectAllMediaItems());
+    }
+
+    [RelayCommand]
+    private async Task RefreshItems()
+    {
+        //await ReloadUploadPictures.InvokeAsync();
+    }
+
     #endregion
 
     #region Event-Handler
@@ -238,7 +287,7 @@ public partial class MediaItemListViewModel : ViewModelBase, IHandle<AggMediaIte
     #region Event-Aggregator
     public async Task HandleAsync(AggMediaItemCreated message)
     {
-        await _mediaItemDataService.GetMediaItemAsync(message.MediaItem.Id)
+        await mediaItemDataService.GetMediaItemAsync(message.MediaItem.Id)
             .HandleSuccess((result) =>
             {
                 if (result is not null)
@@ -258,7 +307,7 @@ public partial class MediaItemListViewModel : ViewModelBase, IHandle<AggMediaIte
 
     public async Task HandleAsync(AggMediaItemChanged message)
     {
-        await _mediaItemDataService.GetMediaItemAsync(message.MediaItem.Id)
+        await mediaItemDataService.GetMediaItemAsync(message.MediaItem.Id)
             .HandleSuccess(result =>
             {
                 if (result is not null)
@@ -288,7 +337,7 @@ public partial class MediaItemListViewModel : ViewModelBase, IHandle<AggMediaIte
 
     public override void Dispose()
     {
-        _eventAggregator.Unsubscribe(this);
+        eventAggregator.Unsubscribe(this);
 
         MediaItems.CollectionChanged -= MediaItems_CollectionChanged;
     }

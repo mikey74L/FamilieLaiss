@@ -1,6 +1,1 @@
-{
-  "subgraph": "User",
-  "http": {
-    "baseAddress": "http://userservice/graphql"
-  }
-}
+{"subgraph":"user-service","http":{"baseAddress":"http://localhost:5000/graphql","clientName":"http"}}

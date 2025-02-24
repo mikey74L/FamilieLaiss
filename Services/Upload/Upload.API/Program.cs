@@ -1,5 +1,4 @@
-﻿using GraphQL.Server.Ui.Voyager;
-using Hangfire;
+﻿using Hangfire;
 using Hangfire.PostgreSql;
 using InfrastructureHelper.EventDispatchHandler;
 using MassTransit;
@@ -9,8 +8,6 @@ using Npgsql;
 using Serilog;
 using ServiceLayerHelper;
 using ServiceLayerHelper.Logging;
-using Steeltoe.Discovery.Client;
-using Steeltoe.Discovery.Eureka;
 using System.Globalization;
 using Upload.API;
 using Upload.API.GraphQL.DataLoaders.UploadPicture;
@@ -31,15 +28,24 @@ using Upload.API.Interfaces;
 using Upload.API.Logging;
 using Upload.API.MassTransit.Consumers.MediaItem;
 using Upload.API.MassTransit.Consumers.UploadPicture;
+using Upload.API.MassTransit.Consumers.UploadVideo;
 using Upload.API.MicroServices;
 using Upload.API.Models;
 using Upload.API.Services;
 using Upload.Infrastructure.DBContext;
 
-//Den Titel für das Konsolenfenster setzen
 Console.Title = "Upload-Service";
 
 var builder = WebApplication.CreateBuilder(args);
+
+//Integrate Aspire
+builder
+    .AddServiceDefaults()
+    .AddAzureBlobClient("blob-storage");
+builder
+    .AddNpgsqlDbContext<UploadServiceDbContext>("upload-db",
+        settings => settings.DisableRetry = true);
+    
 
 //Logging
 var logger = new LoggerConfiguration()
@@ -48,19 +54,23 @@ var logger = new LoggerConfiguration()
 builder.Logging.ClearProviders();
 builder.Host.UseSerilog(logger);
 
-//Den Logger für Serilog erstellen
+//Create the bootstrap logger for Serilog
 Log.Logger = new LoggerConfiguration()
     .ReadFrom.Configuration(builder.Configuration)
     .CreateBootstrapLogger();
 
-//Hinzufügen der Service-Discovery
-builder.AddServiceDiscovery(options => options.UseEureka());
-
-//Hinzufügen eines HTTPContextAccessor 
+//Adding an HTTPContextAccessor
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
-//Hinzufügen der Hosted-Services (Background-Services)
+//Adding the Hosted-Services (Background-Services)
 builder.Services.AddHostedService<EventDispatcherBackgroundService>();
+
+//Adding the global exception handler middleware
+builder.Services.AddSingleton<ILog, LogSerilog>();
+
+//Adding Http-Clients for other microservices
+builder.Services.AddHttpClient<IGoogleMicroService, GoogleMicroService>(
+    client => client.BaseAddress = new("http://google-service"));
 
 //Adding unique identifier service
 builder.Services.AddTransient<IUniqueIdentifierGenerator, UniqueIdentifierGeneratorService>();
@@ -68,38 +78,58 @@ builder.Services.AddTransient<IUniqueIdentifierGenerator, UniqueIdentifierGenera
 //Adding Google MicroService
 builder.Services.AddSingleton<IGoogleMicroService, GoogleMicroService>();
 
-//Hinzufügen det globalen Exception-Handler Middleware
-builder.Services.AddSingleton<ILog, LogSerilog>();
+//Adding the folder helper service
+builder.Services.AddSingleton<IFolderHelperService, FolderHelperService>();
 
-//Hinzufügen der Konfiguration (App-Settings) zum IOC-Container
+//Adding configuration (App-Settings) to the IOC container
 var appSettingsSection = builder.Configuration.GetSection("AppSettings");
 builder.Services.Configure<AppSettings>(appSettingsSection);
 AppSettings? appSettings = appSettingsSection.Get<AppSettings>();
 
-//Die DB-Context Factory hinzufügen inklusive der UnitOfWork
-NpgsqlConnectionStringBuilder postgresConnectionStringBuilder = new()
-{
-    ApplicationName = "Upload-Service",
-    Host = appSettings?.PostgresHost,
-    Port = appSettings?.PostgresPort ?? 0,
-    Multiplexing = appSettings?.PostgresMultiplexing ?? false,
-    Database = appSettings?.PostgresDatabase,
-    Username = appSettings?.PostgresUser,
-    Password = appSettings?.PostgresPassword
-};
-builder.Services.AddPooledDbContextFactory<UploadServiceDbContext>(
-        o => o.UseNpgsql(postgresConnectionStringBuilder.ToString()))
+//Adding pooled context factory and add unit of work
+builder.Services.AddPooledDbContextFactory<UploadServiceDbContext>(options =>
+    {
+    })
     .AddUnitOfWork<UploadServiceDbContext>();
 
+//Create database for Hangfire because hangfire not yet supports aspire database creation
+if (!args.Contains("schema"))
+{
+    var connectionStringHangfire = builder.Configuration.GetConnectionString("upload-hangfire-db");
+    var connectionStringBuilder = new NpgsqlConnectionStringBuilder(connectionStringHangfire);
+    var originalDatabaseName = connectionStringBuilder.Database;
+    connectionStringBuilder.Database = "postgres";
+    using var connection = new NpgsqlConnection(connectionStringBuilder.ToString());
+    connection.Open();
+    using var checkCommand =
+        new NpgsqlCommand($"SELECT 1 FROM pg_database WHERE datname='{originalDatabaseName}'", connection);
+    var exists = (int?)checkCommand.ExecuteScalar() == 1;
+    if (!exists)
+    {
+        using var command = new NpgsqlCommand($"CREATE DATABASE \"{originalDatabaseName}\";", connection);
+        command.ExecuteNonQuery();
+    }
+
+    connection.Close();
+}
+
 //Add hangfire 
-builder.Services.AddHangfire(options =>
-    options.UsePostgreSqlStorage(o => { o.UseNpgsqlConnection(postgresConnectionStringBuilder.ConnectionString); }));
-builder.Services.AddTransient<IJobOperations, JobOperationsService>();
-builder.Services.AddTransient<JobExecutor>();
-builder.Services.AddHangfireServer(x => x.ServerTimeout = TimeSpan.FromDays(1));
+if (!args.Contains("schema"))
+{
+    builder.Services.AddHangfire(options =>
+        options.UsePostgreSqlStorage(o =>
+        {
+            o.UseNpgsqlConnection(
+                builder.Configuration.GetConnectionString("upload-hangfire-db"));
+        }));
+    builder.Services.AddTransient<IJobOperations, JobOperationsService>();
+    builder.Services.AddTransient<JobExecutorUploadPicture>();
+    builder.Services.AddHangfireServer(x => x.ServerTimeout = TimeSpan.FromDays(1));
+}
 
 //Adding GraphQL Server
-var graphQlBuilder = builder.Services.AddGraphQLServer()
+builder.Services.AddGraphQLServer()
+    .ModifyCostOptions(o => o.EnforceCostLimits = false)
     .RegisterDbContextFactory<UploadServiceDbContext>()
     //.AddDiagnosticEventListener<QueryLogger>()
     .AddMutationType<Mutation>()
@@ -120,41 +150,47 @@ var graphQlBuilder = builder.Services.AddGraphQLServer()
     .AddErrorFilter<GraphQlErrorFilter>()
     .InitializeOnStartup();
 
-
-//Lokalisierung für ASP.NET Core hinzufügen
+//Add localization for ASP.NET Core
 builder.Services.AddLocalization(options => options.ResourcesPath = "Localize");
 
-//Registrieren von MediatR mit der aktuellen Assembly
-builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<Program>());
+//Register MediatR with the current assembly
+if (!args.Contains("schema"))
+{
+    builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<Program>());
+}
 
-//Festlegen der EndpointConventions für MassTransit
-if (appSettings is not null)
+//Setting the EndpointConventions for MassTransit
+if (!args.Contains("schema"))
 {
     Startup.ConfigureEndpointConventions(appSettings);
 }
 
-//Hinzufügen der Consumer zum DI-Container
-builder.Services.AddScoped<MediaItemCreatedConsumer>();
-builder.Services.AddScoped<MediaItemDeletedConsumer>();
-builder.Services.AddScoped<SetUploadPictureExifInfoConsumer>();
-builder.Services.AddScoped<SetUploadPictureDimensionsConsumer>();
+//Adding the consumers to the DI container
+if (!args.Contains("schema"))
+{
+    builder.Services.AddScoped<MediaItemCreatedConsumer>();
+    builder.Services.AddScoped<MediaItemDeletedConsumer>();
+    builder.Services.AddScoped<VideoInfoChangedConsumer>();
+    builder.Services.AddScoped<VideoConvertedConsumer>();
+}
 
-//Mass-Transit konfigurieren
-if (appSettings is not null)
+//Adding MassTransit wit RabbitMQ
+if (appSettings is not null && !args.Contains("schema"))
 {
     builder.Services.AddMassTransit(x =>
     {
         //Hinzufügen der Consumer
         x.AddConsumer<MediaItemCreatedConsumer>();
         x.AddConsumer<MediaItemDeletedConsumer>();
-        x.AddConsumer<SetUploadPictureExifInfoConsumer>();
-        x.AddConsumer<SetUploadPictureDimensionsConsumer>();
+        x.AddConsumer<VideoConvertedConsumer>();
+        x.AddConsumer<VideoInfoChangedConsumer>();
 
         //RabbitMq hinzufügen
         x.UsingRabbitMq((context, cfg) =>
         {
-            //Konfigurieren des Hosts
-            cfg.Host(new Uri(appSettings.RabbitMqConnection));
+            var configuration = context.GetRequiredService<IConfiguration>();
+            var host = configuration.GetConnectionString("RabbitMQConnection");
+            cfg.Host(host);
 
             cfg.ReceiveEndpoint(appSettings.EndpointUploadService, e =>
             {
@@ -164,85 +200,79 @@ if (appSettings is not null)
 
                 e.ConfigureConsumer<MediaItemCreatedConsumer>(context);
                 e.ConfigureConsumer<MediaItemDeletedConsumer>(context);
-                e.ConfigureConsumer<SetUploadPictureExifInfoConsumer>(context);
-                e.ConfigureConsumer<SetUploadPictureDimensionsConsumer>(context);
+                e.ConfigureConsumer<VideoConvertedConsumer>(context);
+                e.ConfigureConsumer<VideoInfoChangedConsumer>(context);
             });
         });
     });
 }
 
-//Den Web-Host ausführen
 try
 {
-    Log.Information("Starting Web-Host...");
+    Log.Information("Building web app");
 
     var app = builder.Build();
 
-    //Die von der Website unterstützen Sprachen hinzufügen
+    var lifetime = app.Lifetime;
+    lifetime.ApplicationStarted.Register(() => Log.Information("Web app started"));
+    lifetime.ApplicationStopped.Register(() => Log.Information("Application stopped"));
+    
     var supportedCultures = new[]
     {
         new CultureInfo("de"),
         new CultureInfo("en")
     };
 
-    //Hinzufügen des Request-Loggings von Serilog
+    Log.Information("Add logging to pipeline");
     app.UseSerilogRequestLogging();
-
-    //Lokalisierung anhand von Requests zur Pipeline hinzufügen
     app.UseRequestLocalization(new RequestLocalizationOptions
     {
         DefaultRequestCulture = new RequestCulture("en-US"),
         SupportedCultures = supportedCultures,
         SupportedUICultures = supportedCultures
     });
-
-    //Wenn im Entwicklungsmodus dann wird eine detaillierte Exception-Page angezeigt
     if (builder.Environment.IsDevelopment())
     {
         app.UseDeveloperExceptionPage();
     }
 
-    //Konfigurieren der Exception-Handler-Middleware
+    Log.Information("Configure global exception handler");
     app.ConfigureExceptionHandler();
 
-    //Initialisieren der Datenbank (Migration und Seeden)
-    if (appSettings?.PostgresUser != "withoutdocker")
+    if (!args.Contains("schema"))
     {
+        Log.Information("Initialize and seed database");
         Startup.InitializeDatabase(app);
     }
 
-    //Add routing to pipeline
+    Log.Information("Add routing to pipeline");
     app.UseRouting();
-
-    //Initialize endpoints for GraphQL
-    if (builder.Environment.IsDevelopment())
+    
+    Log.Information("Add aspire endpoints to pipeline");
+    app.MapDefaultEndpoints();
+    
+    Log.Information("Add GraphQl to pipeline");
+    app.UseEndpoints(endpoints =>
     {
-        app.MapGraphQL();
-    }
-    else
-    {
-        app.MapGraphQLHttp();
-        app.MapGraphQLWebSocket();
-    }
-
-    //Initialize Endpoints for GraphQL-Voyager
-    if (builder.Environment.IsDevelopment())
-    {
-        app.UseGraphQLVoyager("/graphql-voyager", new VoyagerOptions()
+        if (builder.Environment.IsDevelopment())
         {
-            GraphQLEndPoint = "/graphql"
-        });
-    }
+            endpoints.MapGraphQL();
+        }
+        else
+        {
+            endpoints.MapGraphQLHttp();
+            endpoints.MapGraphQLWebSocket();
+        }
+    });
 
-    //Start the API
+    Log.Information("Starting web app...");
     app.RunWithGraphQLCommands(args);
 }
 catch (Exception ex)
 {
-    Log.Fatal(ex, "Web-Host terminated unexpectedly");
+    Log.Fatal(ex, "Web app terminated unexpectedly");
 }
 finally
 {
-    Log.Information("Web-Host stopped");
     Log.CloseAndFlush();
 }

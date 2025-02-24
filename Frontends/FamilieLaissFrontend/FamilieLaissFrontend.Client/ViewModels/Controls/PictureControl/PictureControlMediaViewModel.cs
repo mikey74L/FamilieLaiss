@@ -24,7 +24,7 @@ public partial class PictureControlMediaViewModel(
 
     #region Public Properties
     [ObservableProperty]
-    private bool _isOverlayPictureActive;
+    public partial bool IsOverlayPictureActive { get; set; }
 
     public string ImageUrl => UploadItem is not null ? urlHelperService.GetUrlForUploadPictureCard(UploadItem) : "";
     #endregion
@@ -40,7 +40,7 @@ public partial class PictureControlMediaViewModel(
             { "MediaItem", MediaItem }
         };
 
-        var dialogOptions = GetDialogOptions(true, true, DialogPosition.Center, 
+        var dialogOptions = GetDialogOptions(true, true, DialogPosition.Center,
             MaxWidth.ExtraExtraLarge);
 
         await dialogService.ShowAsync<PictureInfoDialog>("", dialogParams, dialogOptions);

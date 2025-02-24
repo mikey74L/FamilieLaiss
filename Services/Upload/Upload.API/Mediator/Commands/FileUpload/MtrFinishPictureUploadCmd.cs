@@ -1,9 +1,7 @@
 ﻿using MassTransit;
 using MediatR;
-using Microsoft.Extensions.Options;
 using Upload.API.GraphQL.Mutations.FileUpload;
 using Upload.API.Hangfire;
-using Upload.API.Models;
 
 namespace Upload.API.Mediator.Commands.FileUpload;
 
@@ -26,7 +24,6 @@ public class MtrFinishPictureUploadCmd : IRequest<bool>
 /// Mediatr Command-Handler for finish video upload 
 /// </summary>
 public class MtrFinishPictureUploadCmdHandler(
-    IOptions<AppSettings> appSettings,
     IBus bus,
     IJobOperations jobOperations,
     ILogger<MtrFinishPictureUploadCmdHandler> logger) : IRequestHandler<MtrFinishPictureUploadCmd, bool>
@@ -39,22 +36,42 @@ public class MtrFinishPictureUploadCmdHandler(
     /// <param name="request">The request data</param>
     /// <param name="cancellationToken">The cancellation token</param>
     /// <returns>Task</returns>
-    public async Task<bool> Handle(MtrFinishPictureUploadCmd request, CancellationToken cancellationToken)
+    public Task<bool> Handle(MtrFinishPictureUploadCmd request, CancellationToken cancellationToken)
     {
         logger.LogInformation("Mediatr-Handler for finish picture upload command was called:");
 
         try
         {
             logger.LogDebug("Create Hangfire-Job for create file from chunks");
-            var jobIdFather = jobOperations.UploadMakeFileFromChunks(
-                appSettings.Value.TempDirectoryUploadPicture,
-                appSettings.Value.DirectoryUploadPicture,
-                request.Data.TargetFilename, request.Data.LastChunkNumber, false, 15);
+            var jobIdChunks = jobOperations.UploadMakeFileFromChunks(
+                request.Data.TargetFilename, request.Data.LastChunkNumber, true, 15);
+
+            var uploadPictureId = Convert.ToInt64(System.IO.Path.GetFileNameWithoutExtension(
+                request.Data.TargetFilename));
 
             logger.LogDebug("Create Hangfire-Job for make database entry");
-            jobOperations.WriteToUploadQueue(jobIdFather, Upload.API.Enums.UploadType.Picture,
-                Convert.ToInt64(System.IO.Path.GetFileNameWithoutExtension(
-                    request.Data.TargetFilename)), request.Data.OriginalFilename, "");
+            var jobIdUpload = jobOperations.WriteToUploadQueue(jobIdChunks, Upload.API.Enums.UploadType.Picture,
+                uploadPictureId, request.Data.OriginalFilename, "");
+
+            logger.LogDebug("Create Hangfire-Job for extract picture info");
+            var jobIdPictureInfo = jobOperations.ExtractPictureInfo(jobIdUpload, uploadPictureId,
+                request.Data.TargetFilename);
+
+            logger.LogDebug("Create Hangfire-Job for extract picture metadata");
+            var jobIdPictureMetadata = jobOperations.ExtractPictureMetadata(jobIdPictureInfo, uploadPictureId,
+                request.Data.TargetFilename);
+
+            logger.LogDebug("Create Hangfire-Job for convert picture");
+            var jobIdPictureConvert = jobOperations.ConvertPicture(jobIdPictureMetadata, uploadPictureId,
+                request.Data.TargetFilename);
+
+            logger.LogDebug("Create Hangfire-Job for uploading to blob storage");
+            var jobIdBlobStorage = jobOperations.UploadPictureToBlobStorage(jobIdPictureConvert, uploadPictureId,
+                request.Data.TargetFilename);
+
+            logger.LogDebug("Create Hangfire-Job for deleting files from physical drive");
+            var jobIdDeleteFiles = jobOperations.DeleteFilesFromPhysicalDrive(jobIdBlobStorage, uploadPictureId,
+                request.Data.TargetFilename);
 
             //logger.LogDebug("Create message command"); //TODO: Activate this when message service is ready
             //var germanText = Resources.Message.PictureUploadedGerman;
@@ -67,11 +84,11 @@ public class MtrFinishPictureUploadCmdHandler(
             //logger.LogDebug("Sending Command over service bus"); 
             //await bus.Send<iCreateMessageForUserGroupCmd>(command, cancellationToken: cancellationToken);
 
-            return true;
+            return Task.FromResult(true);
         }
         catch
         {
-            return false;
+            return Task.FromResult(false);
         }
     }
 

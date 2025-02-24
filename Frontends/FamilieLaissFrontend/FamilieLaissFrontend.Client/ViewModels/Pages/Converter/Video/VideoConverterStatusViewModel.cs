@@ -18,13 +18,16 @@ public partial class VideoConverterStatusViewModel(
 {
     #region Public Properties
     [ObservableProperty]
-    private ExtendedObservableCollection<IVideoConvertStatusModel> _listWaiting = [];
+    public partial ExtendedObservableCollection<IVideoConvertStatusModel> ListWaiting { get; set; } = [];
+
     [ObservableProperty]
-    private ExtendedObservableCollection<IVideoConvertStatusModel> _listSuccess = [];
+    public partial ExtendedObservableCollection<IVideoConvertStatusModel> ListSuccess { get; set; } = [];
+
     [ObservableProperty]
-    private ExtendedObservableCollection<IVideoConvertStatusModel> _listError = [];
+    public partial ExtendedObservableCollection<IVideoConvertStatusModel> ListError { get; set; } = [];
+
     [ObservableProperty]
-    private IVideoConvertStatusModel? _currentConversionItem;
+    public partial IVideoConvertStatusModel? CurrentConversionItem { get; set; }
     #endregion
 
     #region Lifecycle

@@ -21,7 +21,8 @@ public partial class VideoControlInfoViewModel(
 
     #region Properties
 
-    [ObservableProperty] private string _urlForResolutionPng = string.Empty;
+    [ObservableProperty]
+    public partial string UrlForResolutionPng { get; set; } = string.Empty;
 
     #endregion
 

@@ -21,7 +21,7 @@ public partial class FilterControlViewModel(
 
     #region Public Properties
     [ObservableProperty]
-    private bool _isFilterValueSet;
+    public partial bool IsFilterValueSet { get; set; }
     #endregion
 
     #region Commands

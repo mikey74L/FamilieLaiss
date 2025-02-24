@@ -33,9 +33,10 @@ public partial class MediaListViewModel(
 
     #region Public Properties
     [ObservableProperty]
-    private ExtendedObservableCollection<IMediaGroupModel> _items = [];
+    public partial ExtendedObservableCollection<IMediaGroupModel> Items { get; set; } = [];
 
     public string? SearchString { get; set; }
+
     public MudDataGrid<IMediaGroupModel>? DataGrid { get; set; }
     #endregion
 

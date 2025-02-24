@@ -39,7 +39,7 @@ public static class UploadPictureMappingExtensions
         {
             Id = sourceItem.Id,
             Filename = sourceItem.Filename,
-            Status = sourceItem.Status,
+            State = sourceItem.State,
             CreateDate = sourceItem.CreateDate,
         };
 
@@ -59,7 +59,7 @@ public static class UploadPictureMappingExtensions
             Filename = sourceItem.Filename,
             Height = sourceItem.Height,
             Width = sourceItem.Width,
-            Status = sourceItem.Status,
+            State = sourceItem.State,
             CreateDate = sourceItem.CreateDate,
             UploadPictureExifInfo = sourceItem.UploadPictureExifInfo.Map(),
             GoogleGeoCodingAddress = sourceItem.GoogleGeoCodingAddress.Map()
@@ -81,7 +81,7 @@ public static class UploadPictureMappingExtensions
             Filename = sourceItem.Filename,
             Height = sourceItem.Height,
             Width = sourceItem.Width,
-            Status = sourceItem.Status,
+            State = sourceItem.State,
             CreateDate = sourceItem.CreateDate,
             UploadPictureExifInfo = sourceItem.UploadPictureExifInfo.Map(),
             GoogleGeoCodingAddress = sourceItem.GoogleGeoCodingAddress.Map()
@@ -93,7 +93,7 @@ public static class UploadPictureMappingExtensions
     public static IUploadPictureExifInfoModel? Map(this IFrUploadPictureExifInfo? source)
     {
         if (source is null) return null;
-        
+
         var result = new UploadPictureExifInfoModel()
         {
             Contrast = source.Contrast,

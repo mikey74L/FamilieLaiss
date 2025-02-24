@@ -19,7 +19,7 @@ public partial class PictureInfoGeneralPageViewModel(
 
     #region Public Properties
     [ObservableProperty]
-    private IUploadPictureModel _pictureModel = default!;
+    public partial IUploadPictureModel PictureModel { get; set; }
 
     public string UrlPicture => urlHelperService.GetUrlForUploadPictureInfo(PictureModel);
     #endregion

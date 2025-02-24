@@ -11,6 +11,8 @@ using Yarp.ReverseProxy.Transforms;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.AddServiceDefaults();
+
 builder.Services.AddHttpForwarder();
 
 builder.Services.AddCascadingAuthenticationState();
@@ -38,7 +40,6 @@ var appSettingsSection = builder.Configuration.GetSection("AppSettings");
 builder.Services.Configure<AppSettings>(appSettingsSection);
 AppSettings? appSettings = appSettingsSection.Get<AppSettings>();
 
-
 //Configure common services
 builder.Services.AddGraphQlClient(appSettings);
 builder.Services.ConfigureCommonServices(appSettings);
@@ -57,6 +58,8 @@ else
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
+
+app.MapDefaultEndpoints();
 
 app.UseHttpsRedirection();
 app.MapStaticAssets();

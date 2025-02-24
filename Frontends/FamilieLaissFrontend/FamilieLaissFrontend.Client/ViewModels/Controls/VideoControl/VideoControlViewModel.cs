@@ -2,6 +2,7 @@
 using EventAggregator.Blazor;
 using FamilieLaissInterfaces.Models.Data;
 using FamilieLaissInterfaces.Services;
+using FamilieLaissModels.EventAggregator.VideoControl;
 using FamilieLaissSharedUI.ViewModels;
 using MudBlazor;
 
@@ -11,7 +12,7 @@ public partial class VideoControlViewModel(
     ISnackbar snackbarService,
     IMessageBoxService messageBoxService,
     IEventAggregator eventAggregator)
-    : ViewModelBase(snackbarService, messageBoxService)
+    : ViewModelBase(snackbarService, messageBoxService), IHandle<AggSelectAllVideo>, IHandle<AggDeSelectAllVideo>
 {
     #region Parameters
 
@@ -61,29 +62,29 @@ public partial class VideoControlViewModel(
 
     #region EventAggregator
 
-    //public Task HandleAsync(AggSelectAllPicture message)
-    //{
-    //    if (UploadItem is not null)
-    //    {
-    //        UploadItem.IsSelected = true;
+    public Task HandleAsync(AggSelectAllVideo message)
+    {
+        if (UploadItem is not null)
+        {
+            UploadItem.IsSelected = true;
 
-    //        NotifyStateChanged();
-    //    }
+            NotifyStateChanged();
+        }
 
-    //    return Task.CompletedTask;
-    //}
+        return Task.CompletedTask;
+    }
 
-    //public Task HandleAsync(AggDeSelectAllPicture message)
-    //{
-    //    if (UploadItem is not null)
-    //    {
-    //        UploadItem.IsSelected = false;
+    public Task HandleAsync(AggDeSelectAllVideo message)
+    {
+        if (UploadItem is not null)
+        {
+            UploadItem.IsSelected = false;
 
-    //        NotifyStateChanged();
-    //    }
+            NotifyStateChanged();
+        }
 
-    //    return Task.CompletedTask;
-    //}
+        return Task.CompletedTask;
+    }
 
     #endregion
 

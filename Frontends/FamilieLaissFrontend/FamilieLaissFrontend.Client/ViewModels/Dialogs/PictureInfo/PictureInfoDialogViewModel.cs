@@ -16,7 +16,7 @@ public partial class PictureInfoDialogViewModel(ISnackbar snackbarService, IMess
 
     #region Public Properties
     [ObservableProperty]
-    private IUploadPictureModel _pictureModel = default!;
+    public partial IUploadPictureModel PictureModel { get; set; }
     #endregion
 
     #region Lifecycle

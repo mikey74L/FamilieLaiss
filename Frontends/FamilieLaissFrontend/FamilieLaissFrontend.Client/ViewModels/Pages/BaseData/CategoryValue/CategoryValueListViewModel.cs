@@ -34,18 +34,18 @@ public partial class CategoryValueListViewModel : ViewModelBase, IHandle<AggCate
 
     #region Public Properties
     [ObservableProperty]
-    private ExtendedObservableCollection<ICategoryValueModel> _items = [];
+    public partial ExtendedObservableCollection<ICategoryValueModel> Items { get; set; } = [];
 
     [ObservableProperty]
-    private SortableObservableCollection<ICategoryModel> _categories = [];
+    public partial SortableObservableCollection<ICategoryModel> Categories { get; set; } = [];
 
     public string SearchString { get; set; } = string.Empty;
 
     [ObservableProperty]
-    private ICategoryModel? _category;
+    public partial ICategoryModel? Category { get; set; }
 
     [ObservableProperty]
-    private ICategoryModel? _selectedCategory;
+    public partial ICategoryModel? SelectedCategory { get; set; }
     #endregion
 
     #region C'tor

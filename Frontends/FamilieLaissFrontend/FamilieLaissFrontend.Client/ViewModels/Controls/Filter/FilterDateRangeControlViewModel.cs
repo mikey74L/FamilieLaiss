@@ -26,7 +26,8 @@ public partial class FilterDateRangeControlViewModel(
 
     #region Public Properties
     [ObservableProperty]
-    private DateRange _dateRangeValue = new(null, null);
+    public partial DateRange DateRangeValue { get; set; } = new(null, null);
+
     partial void OnDateRangeValueChanged(DateRange value)
     {
         if (ValueChanged.HasDelegate)

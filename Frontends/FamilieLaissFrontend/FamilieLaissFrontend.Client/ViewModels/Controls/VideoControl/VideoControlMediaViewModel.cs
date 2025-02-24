@@ -23,7 +23,7 @@ public partial class VideoControlMediaViewModel(
     public string ImageUrlForVideo => UploadItem is not null ? urlHelperService.GetUrlForUploadVideoCard(UploadItem) : "";
 
     [ObservableProperty]
-    private bool _isOverlayVideoActive;
+    public partial bool IsOverlayVideoActive { get; set; }
     #endregion
 
     #region Commands
@@ -41,7 +41,7 @@ public partial class VideoControlMediaViewModel(
             { "UploadVideoItem", UploadItem }
         };
 
-        var dialogOptions = GetDialogOptions(true, true, DialogPosition.Center, 
+        var dialogOptions = GetDialogOptions(true, true, DialogPosition.Center,
             MaxWidth.ExtraExtraLarge);
 
         await dialogService.ShowAsync<VideoPlayerDialog>("", dialogParams, dialogOptions);

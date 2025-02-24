@@ -27,10 +27,10 @@ public partial class FilterAppBarControlViewModel<TModel, TSortInput, TFilterInp
 
     #region Public Properties
     [ObservableProperty]
-    private string _currentSortCriteria = string.Empty;
+    public partial string CurrentSortCriteria { get; set; } = string.Empty;
 
     [ObservableProperty]
-    private string _currentFilterCriteria = string.Empty;
+    public partial string CurrentFilterCriteria { get; set; } = string.Empty;
     #endregion
 
     #region Lifecycle

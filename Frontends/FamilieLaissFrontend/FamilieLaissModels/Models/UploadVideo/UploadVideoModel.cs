@@ -12,7 +12,7 @@ public class UploadVideoModel : IUploadVideoModel
     public int? DurationHour { get; set; }
     public int? DurationMinute { get; set; }
     public int? DurationSecond { get; set; }
-    public EnumUploadStatus? Status { get; set; }
+    public EnumUploadState? State { get; set; }
     public EnumVideoType? VideoType { get; set; }
     public DateTimeOffset? CreateDate { get; set; }
 

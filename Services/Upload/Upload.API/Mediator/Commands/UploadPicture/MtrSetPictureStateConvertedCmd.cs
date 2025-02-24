@@ -14,7 +14,7 @@ public class MtrSetPictureStateConvertedCmd : IRequest
     /// <summary>
     /// Message data
     /// </summary>
-    public required IMassPictureConvertedEvent Message { get; init; }
+    public required long UploadPictureId { get; init; }
 }
 
 /// <summary>
@@ -39,14 +39,14 @@ public class MtrSetPictureStateConvertedCmdHandler(
     /// <returns>Task</returns>
     public async Task Handle(MtrSetPictureStateConvertedCmd request, CancellationToken cancellationToken)
     {
-        logger.LogInformation("Mediatr-Handler for set picture state to converted command was called for {@Message}",
-            request.Message);
+        logger.LogInformation("Mediatr-Handler for set picture state to converted command was called for {@UploadPictureId}",
+            request.UploadPictureId);
 
         logger.LogInformation("Get repository from unit of work");
         var repo = unitOfWork.GetRepository<Domain.Entities.UploadPicture>();
 
-        logger.LogInformation($"Get entity from repository for ID = {request.Message.UploadPictureId}");
-        var entity = await repo.GetOneAsync(request.Message.UploadPictureId);
+        logger.LogInformation($"Get entity from repository for ID = {request.UploadPictureId}");
+        var entity = await repo.GetOneAsync(request.UploadPictureId);
 
         logger.LogInformation($"Set state to converted");
         entity.SetPictureStateToConverted();

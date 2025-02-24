@@ -16,9 +16,9 @@
     }
 </SectionContent>
 
-<VideoUploadListDrawers @bind-IsFilterSidebarVisible="ViewModel.IsFilterSidebarVisible"
+@* <VideoUploadListDrawers @bind-IsFilterSidebarVisible="ViewModel.IsFilterSidebarVisible"
                         @bind-IsSortSidebarVisible="ViewModel.IsSortSidebarVisible"
-                        SortAndFilterService="SortAndFilterService" />
+                        SortAndFilterService="SortAndFilterService" /> *@
 
 @{
     string classForContainer;
@@ -48,7 +48,7 @@
                               ShowSkeleton="false"
                               UploadItem="item"
                               IsDisabled="ViewModel.IsBusy"
-                              DeleteClicked="async (data) => await ViewModel.DeleteUploadVideoCommand.ExecuteAsync(data)"
+                              DeleteUploadClicked="async (data) => await ViewModel.DeleteUploadVideoCommand.ExecuteAsync(data)"
                               ShowSelectionMode="ViewModel.ShowSelectionMode" />
             }
 

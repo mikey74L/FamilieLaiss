@@ -29,12 +29,12 @@ public partial class PictureInfoMapPageViewModel(
 
     #region Public Properties
     [ObservableProperty]
-    private GoogleMapPosition _googleMapPosition = default!;
+    public partial GoogleMapPosition GoogleMapPosition { get; set; }
 
     [ObservableProperty]
-    private IUploadPictureModel _pictureModel = default!;
+    public partial IUploadPictureModel PictureModel { get; set; }
 
-    public RadzenGoogleMap MapControl { get; set; } = default!;
+    public RadzenGoogleMap MapControl { get; set; }
     #endregion
 
     #region Lifecycle

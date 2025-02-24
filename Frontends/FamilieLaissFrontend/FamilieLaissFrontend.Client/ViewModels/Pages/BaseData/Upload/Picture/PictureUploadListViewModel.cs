@@ -35,13 +35,16 @@ public partial class PictureUploadListViewModel(
 
     #region Public Properties
     [ObservableProperty]
-    private bool _isSortSidebarVisible;
+    public partial bool IsSortSidebarVisible { get; set; }
+
     [ObservableProperty]
-    private bool _isFilterSidebarVisible;
+    public partial bool IsFilterSidebarVisible { get; set; }
+
     [ObservableProperty]
-    private bool _isFilterActive;
+    public partial bool IsFilterActive { get; set; }
+
     [ObservableProperty]
-    private bool _showSelectionMode;
+    public partial bool ShowSelectionMode { get; set; }
     #endregion
 
     #region Lifecycle

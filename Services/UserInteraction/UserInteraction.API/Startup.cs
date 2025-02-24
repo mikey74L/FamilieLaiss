@@ -17,22 +17,24 @@ public static class Startup
     #region Migrate Database for Service
     public static void InitializeDatabase(IApplicationBuilder app)
     {
-        Task.Run(async () =>
-        {
-            using var serviceScope = app.ApplicationServices.GetService<IServiceScopeFactory>()!.CreateScope();
-            
-            var factory = serviceScope.ServiceProvider.GetRequiredService<IDbContextFactory<UserInteractionServiceDBContext>>();
+        using var serviceScope = app.ApplicationServices.GetService<IServiceScopeFactory>()!.CreateScope();
 
-            var dbContext = await factory.CreateDbContextAsync();
+        //Ermitteln der DB-Factory
+        var factory = serviceScope.ServiceProvider.GetRequiredService<IDbContextFactory<UserInteractionServiceDBContext>>();
 
-            var retryPolicy = Policy.Handle<Exception>()
-                .WaitAndRetry(10, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)));
+        //Ermitteln des DB-Contexts aus der Factory
+        using var dbContext = factory.CreateDbContext();
 
-            await retryPolicy.Execute(async () =>
-            {
-                await dbContext.Database.MigrateAsync();
-            });
-        });
+        //Eine Retry-Policy mit Polly erstellen.
+        //Falls beim Start des Containers der zugehörige Datenbankcontainer noch nicht bereit sein sollte
+        var retryPolicy = Policy.Handle<Exception>()
+            .WaitAndRetry(10, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)));
+
+        //Starten der Migration über die Retry-Policy
+        retryPolicy.Execute(dbContext.Database.Migrate);
+
+        //Freigeben des DBContexts
+        dbContext.Database.CloseConnection();
     }
     #endregion
 

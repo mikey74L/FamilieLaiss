@@ -14,33 +14,31 @@ public static class Startup
 
     public static void InitializeDatabase(IApplicationBuilder app)
     {
-        var serviceScopeFactory = app.ApplicationServices.GetService<IServiceScopeFactory>();
+        using var serviceScope = app.ApplicationServices.GetService<IServiceScopeFactory>()!.CreateScope();
 
-        if (serviceScopeFactory is not null)
-        {
-            using var serviceScope = serviceScopeFactory.CreateScope();
+        //Ermitteln der DB-Factory
+        var factory = serviceScope.ServiceProvider.GetRequiredService<IDbContextFactory<UploadServiceDbContext>>();
 
-            var factory = serviceScope.ServiceProvider.GetRequiredService<IDbContextFactory<UploadServiceDbContext>>();
+        //Ermitteln des DB-Contexts aus der Factory
+        using var dbContext = factory.CreateDbContext();
 
-            var dbContext = factory.CreateDbContext();
+        //Eine Retry-Policy mit Polly erstellen.
+        //Falls beim Start des Containers der zugehörige Datenbankcontainer noch nicht bereit sein sollte
+        var retryPolicy = Policy.Handle<Exception>()
+            .WaitAndRetry(10, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)));
 
-            //Eine Retry-Policy mit Polly erstellen.
-            //Falls beim Start des Containers der zugehörige Datenbankcontainer noch nicht bereit sein sollte
-            var retryPolicy = Policy.Handle<Exception>()
-                .WaitAndRetry(10, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)));
+        //Starten der Migration über die Retry-Policy
+        retryPolicy.Execute(dbContext.Database.Migrate);
 
-            retryPolicy.Execute(dbContext.Database.Migrate);
-
-            dbContext.Database.CloseConnection();
-            dbContext.Dispose();
-        }
+        //Freigeben des DBContexts
+        dbContext.Database.CloseConnection();
     }
 
     #endregion
 
     #region MassTransit EndpointConventions
 
-    public static void ConfigureEndpointConventions(AppSettings appSettings)
+    public static void ConfigureEndpointConventions(AppSettings? appSettings)
     {
         //Setzen der Sending-Endpoint-Mappings
         //EndpointConvention.Map<iCreateMessageForUserGroupCmd>(new Uri("queue:" + appSettings.Endpoint_MessageService));

@@ -9,37 +9,42 @@ using MassTransit;
 using Microsoft.AspNetCore.Localization;
 using Serilog;
 using ServiceLayerHelper.Logging;
-using Steeltoe.Discovery.Client;
-using Steeltoe.Discovery.Eureka;
 using System.Globalization;
 
-// Set the title for the console window
 Console.Title = "Google-Service";
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Logging
+//Integrate Aspire
+builder
+    .AddServiceDefaults()
+    .AddAzureKeyVaultClient("key-vault");
+
+if (!args.Contains("schema"))
+{
+    builder
+        .Configuration.AddAzureKeyVaultSecrets("key-vault");
+}
+
+//Logging
 var logger = new LoggerConfiguration()
     .ReadFrom.Configuration(builder.Configuration)
     .CreateLogger();
 builder.Logging.ClearProviders();
 builder.Host.UseSerilog(logger);
 
-// Create the logger for Serilog
+//Create the bootstrap logger for Serilog
 Log.Logger = new LoggerConfiguration()
     .ReadFrom.Configuration(builder.Configuration)
     .CreateBootstrapLogger();
 
-// Add service discovery
-builder.AddServiceDiscovery(options => options.UseEureka());
-
-// Add an HttpContextAccessor
+//Adding an HTTPContextAccessor
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
-// Add global exception handler middleware
+//Adding the global exception handler middleware
 builder.Services.AddSingleton<ILog, LogSerilog>();
 
-// Add everything for API versioning
+//Add everything for API versioning
 var apiVersioningBuilder = builder.Services.AddApiVersioning(o =>
 {
     o.AssumeDefaultVersionWhenUnspecified = true;
@@ -53,39 +58,46 @@ apiVersioningBuilder.AddApiExplorer(
         options.SubstituteApiVersionInUrl = true;
     });
 
-// Add everything for WebApi
+//Add everything for WebApi
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 
-// Add the configuration (App-Settings) to the IOC container
+//Add the configuration (App-Settings) to the IOC container
 var appSettingsSection = builder.Configuration.GetSection("AppSettings");
 builder.Services.Configure<AppSettings>(appSettingsSection);
 AppSettings? appSettings = appSettingsSection.Get<AppSettings>();
 
-// Add localization for ASP.NET Core
+//Add localization for ASP.NET Core
 builder.Services.AddLocalization(options => options.ResourcesPath = "Localize");
 
-// Register MediatR with the current assembly
-builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<Program>());
+//Register MediatR with the current assembly
+if (!args.Contains("schema"))
+{
+    builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<Program>());
+}
 
-// Register the GoogleGeoCoding service
+//Register the GoogleGeoCoding service
 builder.Services.AddTransient<IWsGoogleGeoCoding, WsGoogleGeoCodingService>();
 
 //Adding GraphQL Server
-var graphQlBuilder = builder.Services.AddGraphQLServer()
+builder.Services.AddGraphQLServer()
+    .ModifyCostOptions(o => o.EnforceCostLimits = false)
     .AddQueryType<Query>()
     .AddTypeExtension<GraphQlQueryGoogle>()
     .AddAuthorization()
     .InitializeOnStartup();
 
-// Set the EndpointConventions for MassTransit
-Startup.ConfigureEndpointConventions(appSettings);
+//Set the EndpointConventions for MassTransit
+if (!args.Contains("schema"))
+{
+    Startup.ConfigureEndpointConventions(appSettings);
+}
 
-// Add the Consumer to the DI container
+//Add the Consumer to the DI container
 //builder.Services.AddScoped<PictureInfoChangedConsumer>();
 
 // Configure Mass-Transit
-if (appSettings is not null)
+if (appSettings is not null && !args.Contains("schema"))
 {
     builder.Services.AddMassTransit(x =>
     {
@@ -95,8 +107,9 @@ if (appSettings is not null)
         // Add RabbitMq
         x.UsingRabbitMq((context, cfg) =>
         {
-            // Configure the Host
-            cfg.Host(new Uri(appSettings.RabbitMqConnection));
+            var configuration = context.GetRequiredService<IConfiguration>();
+            var host = configuration.GetConnectionString("RabbitMQConnection");
+            cfg.Host(host);
 
             cfg.ReceiveEndpoint(appSettings.EndpointGoogleApiService, e =>
             {
@@ -110,44 +123,45 @@ if (appSettings is not null)
     });
 }
 
-// Run the Web-Host
 try
 {
-    Log.Information("Starting Web-Host...");
+    Log.Information("Building web app");
 
     var app = builder.Build();
 
-    // Add the supported languages for the website
+    var lifetime = app.Lifetime;
+    lifetime.ApplicationStarted.Register(() => Log.Information("Web app started"));
+    lifetime.ApplicationStopped.Register(() => Log.Information("Application stopped"));
+
     var supportedCultures = new[]
     {
         new CultureInfo("de"),
         new CultureInfo("en")
     };
 
-    // Add Serilog Request Logging
+    Log.Information("Add logging to pipeline");
     app.UseSerilogRequestLogging();
-
-    // Add localization based on requests to the pipeline
     app.UseRequestLocalization(new RequestLocalizationOptions
     {
         DefaultRequestCulture = new RequestCulture("en-US"),
         SupportedCultures = supportedCultures,
         SupportedUICultures = supportedCultures
     });
-
-    // If in development mode, show a detailed exception page
     if (builder.Environment.IsDevelopment())
     {
         app.UseDeveloperExceptionPage();
     }
 
-    // Configure the Exception Handler Middleware
+    Log.Information("Configure global exception handler");
     app.ConfigureExceptionHandler();
 
-    //Add routing to pipeline
+    Log.Information("Add routing to pipeline");
     app.UseRouting();
 
-    //Initialize endpoints for GraphQL
+    Log.Information("Add aspire endpoints to pipeline");
+    app.MapDefaultEndpoints();
+
+    Log.Information("Add GraphQl to pipeline");
     if (builder.Environment.IsDevelopment())
     {
         app.MapGraphQL();
@@ -158,18 +172,17 @@ try
         app.MapGraphQLWebSocket();
     }
 
-    // Add Controllers
+    Log.Information("Add controllers to pipeline");
     app.MapControllers();
 
-    //Start the API
+    Log.Information("Starting web app...");
     app.RunWithGraphQLCommands(args);
 }
 catch (Exception ex)
 {
-    Log.Fatal(ex, "Web-Host terminated unexpectedly");
+    Log.Fatal(ex, "Web app terminated unexpectedly");
 }
 finally
 {
-    Log.Information("Web-Host stopped");
     Log.CloseAndFlush();
 }

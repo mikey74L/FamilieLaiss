@@ -42,15 +42,15 @@ public class MtrFinishVideoUploadCmdHandler(
         try
         {
             logger.LogDebug("Create Hangfire-Job for create file from chunks");
-            string jobIdFather = jobOperations.UploadMakeFileFromChunks(
-                appSettings.Value.TempDirectoryUploadVideo,
-                appSettings.Value.DirectoryUploadVideo,
-                request.Data.TargetFilename, request.Data.LastChunkNumber, false, 15);
+            // string jobIdFather = jobOperations.UploadMakeFileFromChunks(
+            //     appSettings.Value.TempDirectoryUploadVideo,
+            //     appSettings.Value.DirectoryUploadVideo,
+            //     request.Data.TargetFilename, request.Data.LastChunkNumber, false, 15);
 
             logger.LogDebug("Create Hangfire-Job for make database entry");
-            jobOperations.WriteToUploadQueue(jobIdFather, Upload.API.Enums.UploadType.Video,
-                Convert.ToInt64(System.IO.Path.GetFileNameWithoutExtension(
-                    request.Data.TargetFilename)), request.Data.OriginalFilename, "");
+            // jobOperations.WriteToUploadQueue(jobIdFather, Upload.API.Enums.UploadType.Video,
+            //     Convert.ToInt64(System.IO.Path.GetFileNameWithoutExtension(
+            //         request.Data.TargetFilename)), request.Data.OriginalFilename, "");
 
             //logger.LogDebug("Create message command"); //TODO: Activate this when message service is ready
             //string germanText = Resources.Message.VideoUploadedGerman;

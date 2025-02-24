@@ -31,7 +31,8 @@ public partial class FilterNumberListControlViewModel(
 
     #region Public Properties
     [ObservableProperty]
-    private FilterItemNumberValue? _selectedValue;
+    public partial FilterItemNumberValue? SelectedValue { get; set; }
+
     partial void OnSelectedValueChanged(FilterItemNumberValue? value)
     {
         if (ValueChanged.HasDelegate)
@@ -48,7 +49,7 @@ public partial class FilterNumberListControlViewModel(
     }
 
     [ObservableProperty]
-    private List<FilterItemNumberValue> _filterItems = [];
+    public partial List<FilterItemNumberValue> FilterItems { get; set; } = [];
     #endregion
 
     #region Lifecycle

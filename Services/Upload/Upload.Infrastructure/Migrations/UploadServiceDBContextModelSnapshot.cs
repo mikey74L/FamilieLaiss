@@ -22,8 +22,68 @@ namespace Upload.Infrastructure.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.HasSequence("SequencePictureConvertStatus")
+                .IncrementsBy(10);
+
             modelBuilder.HasSequence("SequenceUploadIdentifier")
                 .IncrementsBy(10);
+
+            modelBuilder.Entity("Upload.Domain.Entities.PictureConvertStatus", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseHiLo(b.Property<long>("Id"), "SequencePictureConvertStatus");
+
+                    b.Property<string>("ErrorMessage")
+                        .IsRequired()
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)");
+
+                    b.Property<DateTimeOffset?>("FinishDateConvert")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset?>("FinishDateDeleteFiles")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset?>("FinishDateExif")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset?>("FinishDateInfo")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset?>("FinishDateUploadBlob")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset?>("StartDateConvert")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset?>("StartDateDeleteFiles")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset?>("StartDateExif")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset?>("StartDateInfo")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset?>("StartDateUploadBlob")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<byte>("Status")
+                        .HasColumnType("smallint");
+
+                    b.Property<long>("UploadPictureId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UploadPictureId")
+                        .IsUnique();
+
+                    b.ToTable("PictureConvertStatusEntries");
+                });
 
             modelBuilder.Entity("Upload.Domain.Entities.UploadIdentifier", b =>
                 {
@@ -116,6 +176,17 @@ namespace Upload.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("UploadVideos");
+                });
+
+            modelBuilder.Entity("Upload.Domain.Entities.PictureConvertStatus", b =>
+                {
+                    b.HasOne("Upload.Domain.Entities.UploadPicture", "UploadPicture")
+                        .WithOne("Status")
+                        .HasForeignKey("Upload.Domain.Entities.PictureConvertStatus", "UploadPictureId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("UploadPicture");
                 });
 
             modelBuilder.Entity("Upload.Domain.Entities.UploadPicture", b =>
@@ -304,6 +375,11 @@ namespace Upload.Infrastructure.Migrations
                         });
 
                     b.Navigation("GoogleGeoCodingAddress");
+                });
+
+            modelBuilder.Entity("Upload.Domain.Entities.UploadPicture", b =>
+                {
+                    b.Navigation("Status");
                 });
 #pragma warning restore 612, 618
         }

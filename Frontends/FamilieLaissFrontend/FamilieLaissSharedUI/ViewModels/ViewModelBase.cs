@@ -16,17 +16,17 @@ public abstract partial class ViewModelBase(ISnackbar snackbarService, IMessageB
     #region Properties
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsBusy))]
-    private bool _isLoading;
+    public partial bool IsLoading { get; set; }
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsBusy))]
-    private bool _isSaving;
+    public partial bool IsSaving { get; set; }
 
     [ObservableProperty]
-    private EnumSaveMode _saveMode;
+    public partial EnumSaveMode SaveMode { get; set; }
 
     [ObservableProperty]
-    private bool _hasError;
+    public partial bool HasError { get; set; }
 
     public bool IsBusy => IsLoading || IsSaving;
 

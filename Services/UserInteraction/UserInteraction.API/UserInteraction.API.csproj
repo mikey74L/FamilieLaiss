@@ -9,29 +9,26 @@
 
 	<ItemGroup>
 		<PackageReference Include="Hangfire" Version="1.8.17" />
-		<PackageReference Include="Hangfire.AspNetCore" Version="1.8.17" />
+		<PackageReference Include="Aspire.Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.0" />
 		<PackageReference Include="HotChocolate.Fusion.SourceSchema" Version="14.3.0" />
-		<PackageReference Include="Mapster" Version="7.4.0" />
-		<PackageReference Include="MassTransit" Version="8.3.4" />
-		<PackageReference Include="MassTransit.RabbitMQ" Version="8.3.4" />
+		<PackageReference Include="MassTransit" Version="8.3.6" />
+		<PackageReference Include="MassTransit.RabbitMQ" Version="8.3.6" />
 		<PackageReference Include="MediatR" Version="12.4.1" />
 		<PackageReference Include="Polly" Version="8.5.1" />
-		<PackageReference Include="Serilog.Sinks.File" Version="6.0.0" />
-		<PackageReference Include="Steeltoe.Discovery.ClientCore" Version="3.2.8" />
 		<PackageReference Include="Serilog.AspNetCore" Version="9.0.0" />
 		<PackageReference Include="Serilog.Enrichers.Environment" Version="3.0.1" />
 		<PackageReference Include="Serilog.Enrichers.Process" Version="3.0.0" />
 		<PackageReference Include="Serilog.Enrichers.Thread" Version="4.0.0" />
-		<PackageReference Include="Steeltoe.Discovery.Eureka" Version="3.2.8" />
 		<PackageReference Include="HotChocolate.AspNetCore" Version="14.3.0" />
 		<PackageReference Include="HotChocolate.AspNetCore.Authorization" Version="14.3.0" />
 		<PackageReference Include="HotChocolate.AspNetCore.CommandLine" Version="14.3.0" />
 		<PackageReference Include="HotChocolate.Data.EntityFramework" Version="14.3.0" />
-		<PackageReference Include="GraphQL.Server.Ui.Voyager" Version="8.2.0" />
-		<PackageReference Include="System.Linq.Dynamic.Core" Version="1.5.1" />
+		<PackageReference Include="Serilog.Sinks.Console" Version="6.0.0" />
+		<PackageReference Include="Serilog.Sinks.OpenTelemetry" Version="4.1.1" />
 	</ItemGroup>
 
 	<ItemGroup>
+		<ProjectReference Include="..\..\..\AspireServiceDefaults\ServiceDefaultsFamilieLaiss\ServiceDefaultsFamilieLaiss.csproj" />
 		<ProjectReference Include="..\..\..\DDDHelpers\ServiceLayer\ServiceLayerHelper\ServiceLayerHelper.csproj" />
 		<ProjectReference Include="..\..\..\FamilieLaissCoreHelpers\FamilieLaissCoreHelpers.csproj" />
 		<ProjectReference Include="..\..\..\FamilieLaissMassTransitDefinitions\FamilieLaissMassTransitDefinitions.csproj" />
@@ -45,12 +42,6 @@
 	  <Folder Include="GraphQl\Policies\" />
 	  <Folder Include="MassTransit\Consumers\" />
 	  <Folder Include="Mediator\Commands\" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <Content Include="..\..\..\.dockerignore">
-	    <Link>.dockerignore</Link>
-	  </Content>
 	</ItemGroup>
 
 </Project>

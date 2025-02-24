@@ -23,7 +23,7 @@ public partial class UserSettingsControlViewModel(
 
     #region Public Properties
     [ObservableProperty]
-    private IUserSettingsModel? _model;
+    public partial IUserSettingsModel? Model { get; set; }
 
     public MudForm? Form { get; set; }
     #endregion

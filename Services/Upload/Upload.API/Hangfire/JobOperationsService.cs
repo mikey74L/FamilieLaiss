@@ -13,20 +13,53 @@ public class JobOperationsService : IJobOperations
     /// Creates from a list of chunks a file and move this file to the target directory.
     /// After this the chucks would be deleted.
     /// </summary>
-    /// <param name="tempUploadFolder">Temporary Upload-Folder.</param>
-    /// <param name="uploadFolder">Upload-Folder (Target Directory).</param>
     /// <param name="destinationFilename">Filename for target file.</param>
     /// <param name="lastChunkNumber">The last chunk number used for the upload file</param>
     /// <param name="waitTimeForJob">Wait time before the job will be executed.</param>
     /// <param name="deleteAlreadyExisting">Delete an already existing file with the same name in target directory.</param>
     /// <returns>Job-ID</returns>
-    public string UploadMakeFileFromChunks(string tempUploadFolder, string uploadFolder, string destinationFilename,
+    public string UploadMakeFileFromChunks(string destinationFilename,
         long lastChunkNumber, bool deleteAlreadyExisting, int waitTimeForJob)
     {
-        return BackgroundJob.Schedule<JobExecutor>(x => x.UploadMakeFileFromChunks(tempUploadFolder, uploadFolder,
+        return BackgroundJob.Schedule<JobExecutorGeneral>(x => x.UploadMakeFileFromChunks(
                 destinationFilename,
                 lastChunkNumber, deleteAlreadyExisting),
             TimeSpan.FromSeconds(waitTimeForJob));
+    }
+ 
+    /// <inheritdoc />
+    public string ExtractPictureInfo(string jobIdParent, long id, string destinationFilename)
+    {
+        return BackgroundJob.ContinueJobWith<JobExecutorUploadPicture>(jobIdParent,
+            x => x.ExtractPictureInfo(id, destinationFilename));
+    }
+
+    /// <inheritdoc />
+    public string ExtractPictureMetadata(string jobIdParent, long id, string destinationFilename)
+    {
+        return BackgroundJob.ContinueJobWith<JobExecutorUploadPicture>(jobIdParent,
+            x => x.ExtractPictureMetadata(id, destinationFilename));
+    }
+
+    /// <inheritdoc />
+    public string ConvertPicture(string jobIdParent, long id, string destinationFilename)
+    {
+        return BackgroundJob.ContinueJobWith<JobExecutorUploadPicture>(jobIdParent,
+            x => x.ConvertPicture(id, destinationFilename));
+    }
+
+    /// <inheritdoc />
+    public string UploadPictureToBlobStorage(string jobIdParent, long id, string destinationFilename)
+    {
+        return BackgroundJob.ContinueJobWith<JobExecutorUploadPicture>(jobIdParent,
+            x => x.UploadPictureToBlobStorage(id, destinationFilename));
+    }
+
+    /// <inheritdoc />
+    public string DeleteFilesFromPhysicalDrive(string jobIdParent, long id, string destinationFilename)
+    {
+        return BackgroundJob.ContinueJobWith<JobExecutorUploadPicture>(jobIdParent,
+            x => x.DeleteFilesFromPhysicalDrive(id, destinationFilename));
     }
 
     /// <summary>
@@ -43,7 +76,7 @@ public class JobOperationsService : IJobOperations
         string originalName,
         string userName)
     {
-        return BackgroundJob.ContinueJobWith<JobExecutor>(jobIdParent,
+        return BackgroundJob.ContinueJobWith<JobExecutorGeneral>(jobIdParent,
             x => x.WriteToUploadQueue(uploadType, id, originalName, userName));
     }
 

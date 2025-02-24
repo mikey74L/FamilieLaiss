@@ -16,7 +16,7 @@ public partial class PictureInfoGeneralPartViewModel(ISnackbar snackbarService, 
 
     #region Public Properties
     [ObservableProperty]
-    private IUploadPictureModel _pictureModel = default!;
+    public partial IUploadPictureModel PictureModel { get; set; }
     #endregion
 
     #region Lifecycle

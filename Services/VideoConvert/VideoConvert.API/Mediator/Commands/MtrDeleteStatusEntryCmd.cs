@@ -48,7 +48,7 @@ public class MtrDeleteStatusEntryCmdHandler(iUnitOfWork unitOfWork, ILogger<MtrD
 
         logger.LogDebug("Get status item from repository");
         var itemDoDelete =
-            (await repositoryStatus.GetAll(x => x.UploadVideoId == request.Data.Id, null, "UploadVideo"))
+            (await repositoryStatus.GetAll(x => x.UploadVideoId == request.Data.Id, "UploadVideo"))
             .FirstOrDefault();
 
         if (itemDoDelete is not null)

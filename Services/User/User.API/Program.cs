@@ -1,8 +1,6 @@
-using GraphQL.Server.Ui.Voyager;
 using InfrastructureHelper.EventDispatchHandler;
 using MassTransit;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
@@ -14,10 +12,9 @@ using Npgsql;
 using Serilog;
 using ServiceLayerHelper;
 using ServiceLayerHelper.Logging;
-using Steeltoe.Discovery.Client;
-using Steeltoe.Discovery.Eureka;
 using System;
 using System.Globalization;
+using System.Linq;
 using User.API;
 using User.API.GraphQL.DataLoaders.Country;
 using User.API.GraphQL.DataLoaders.UserAccount;
@@ -32,11 +29,15 @@ using User.API.Logging;
 using User.API.Models;
 using User.Infrastructure.DBContext;
 
-
-//Den Titel für das Konsolenfenster setzen
 Console.Title = "User-Service";
 
 var builder = WebApplication.CreateBuilder(args);
+
+//Integrate Aspire
+builder
+    .AddServiceDefaults()
+    .AddNpgsqlDbContext<UserServiceDbContext>("user-db",
+        settings => settings.DisableRetry = true);
 
 //Logging
 var logger = new LoggerConfiguration()
@@ -45,45 +46,34 @@ var logger = new LoggerConfiguration()
 builder.Logging.ClearProviders();
 builder.Host.UseSerilog(logger);
 
-//Den Logger für Serilog erstellen
+//Create the bootstrap logger for Serilog
 Log.Logger = new LoggerConfiguration()
-  .ReadFrom.Configuration(builder.Configuration)
-  .CreateBootstrapLogger();
+    .ReadFrom.Configuration(builder.Configuration)
+    .CreateBootstrapLogger();
 
-//Hinzufügen der Service-Discovery
-builder.AddServiceDiscovery(options => options.UseEureka());
-
-//Hinzufügen eines HTTPContextAccessor 
+//Adding an HTTPContextAccessor
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
-//Hinzufügen der Hosted-Services (Background-Services)
+//Adding the Hosted-Services (Background-Services)
 builder.Services.AddHostedService<EventDispatcherBackgroundService>();
 
-//Hinzufügen det globalen Exception-Handler Middleware
+//Adding the global exception handler middleware
 builder.Services.AddSingleton<ILog, LogSerilog>();
 
-//Hinzufügen der Konfiguration (App-Settings) zum IOC-Container
+//Adding configuration (App-Settings) to the IOC container
 var appSettingsSection = builder.Configuration.GetSection("AppSettings");
 builder.Services.Configure<AppSettings>(appSettingsSection);
 var appSettings = appSettingsSection.Get<AppSettings>();
 
-//Die DB-Context Factory hinzufügen inklusive der UnitOfWork
-NpgsqlConnectionStringBuilder postgresConnectionStringBuilder = new()
-{
-    ApplicationName = "User-Service",
-    Host = appSettings?.PostgresHost,
-    Port = appSettings?.PostgresPort ?? 0,
-    Multiplexing = appSettings?.PostgresMultiplexing ?? false,
-    Database = appSettings?.PostgresDatabase,
-    Username = appSettings?.PostgresUser,
-    Password = appSettings?.PostgresPassword
-};
-builder.Services.AddPooledDbContextFactory<UserServiceDbContext>(
-        o => o.UseNpgsql(postgresConnectionStringBuilder.ToString()))
+//Adding pooled context factory and add unit of work
+builder.Services.AddPooledDbContextFactory<UserServiceDbContext>(options =>
+    {
+    })
     .AddUnitOfWork<UserServiceDbContext>();
 
-//Den GraphQL-Server hinzufügen
-var GraphQLBuilder = builder.Services.AddGraphQLServer()
+//Adding GraphQL Server
+builder.Services.AddGraphQLServer()
+    .ModifyCostOptions(o => o.EnforceCostLimits = false)
     .RegisterDbContextFactory<UserServiceDbContext>()
     .AddMutationType<Mutation>()
     .AddTypeExtension<MutationsUser>()
@@ -100,31 +90,36 @@ var GraphQLBuilder = builder.Services.AddGraphQLServer()
     .AddErrorFilter<GraphQlErrorFilter>()
     .InitializeOnStartup();
 
-//Lokalisierung für ASP.NET Core hinzufügen
+//Add localization for ASP.NET Core
 builder.Services.AddLocalization(options => options.ResourcesPath = "Localize");
 
-//Registrieren von MediatR mit der aktuellen Assembly
-builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<Program>());
+//Register MediatR with the current assembly
+if (!args.Contains("schema"))
+{
+    builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<Program>());
+}
 
-//Festlegen der EndpointConventions für MassTransit
-Startup.ConfigureEndpointConventions(appSettings);
+//Setting the EndpointConventions for MassTransit
+if (!args.Contains("schema"))
+{
+    Startup.ConfigureEndpointConventions(appSettings);
+}
 
-//Hinzufügen der Consumer zum DI-Container
+//Adding the consumers to the DI container
 //services.AddScoped<CreateMessageForUserConsumer>();
 
-//Mass-Transit konfigurieren
-if (appSettings is not null)
+//Adding MassTransit with RabbitMQ
+if (appSettings is not null && !args.Contains("schema"))
 {
     builder.Services.AddMassTransit(x =>
     {
-        //Hinzufügen der Consumer
         //x.AddConsumer<PictureUploadedConsumer>();
 
-        //RabbitMq hinzufügen
         x.UsingRabbitMq((context, cfg) =>
         {
-            //Konfigurieren des Hosts
-            cfg.Host(new Uri(appSettings.RabbitMqConnection));
+            var configuration = context.GetRequiredService<IConfiguration>();
+            var host = configuration.GetConnectionString("RabbitMQConnection");
+            cfg.Host(host);
 
             cfg.ReceiveEndpoint(appSettings.EndpointUserService, e =>
             {
@@ -138,58 +133,52 @@ if (appSettings is not null)
     });
 }
 
-//Den Web-Host ausführen
 try
 {
-    Log.Information("Starting Web-Host...");
+    Log.Information("Building web app");
 
     var app = builder.Build();
 
-    //Die von der Website unterstützen Sprachen hinzufügen
+    var lifetime = app.Lifetime;
+    lifetime.ApplicationStarted.Register(() => Log.Information("Web app started"));
+    lifetime.ApplicationStopped.Register(() => Log.Information("Application stopped"));
+    
     var supportedCultures = new[]
     {
         new CultureInfo("de"),
         new CultureInfo("en")
     };
 
-    //Hinzufügen des Request-Loggings von Serilog
+    Log.Information("Add logging to pipeline");
     app.UseSerilogRequestLogging();
-
-    //Lokalisierung anhand von Requests zur Pipeline hinzufügen
     app.UseRequestLocalization(new RequestLocalizationOptions
     {
         DefaultRequestCulture = new RequestCulture("en-US"),
         SupportedCultures = supportedCultures,
         SupportedUICultures = supportedCultures
     });
-
-    //Wenn im Entwicklungsmodus dann wird eine detaillierte Exception-Page angezeigt
     if (builder.Environment.IsDevelopment())
     {
         app.UseDeveloperExceptionPage();
     }
-
-    //Konfigurieren der Exception-Handler-Middleware
+    
+    Log.Information("Configure global exception handler");
     app.ConfigureExceptionHandler();
 
-    //Routing hinzufügen
-    app.UseRouting();
-
-    //Initialisieren der Datenbank (Migration und Seeden)
-    if (appSettings?.PostgresUser != "withoutdocker")
+    if (!args.Contains("schema"))
     {
+        Log.Information("Initialize and seed database");
         Startup.InitializeDatabase(app);
         Startup.SeedDatabase(app);
     }
 
-    //Authentifizierung verwenden
-    if (!builder.Environment.IsDevelopment())
-    {
-        app.UseAuthentication();
-        app.UseAuthorization();
-    }
+    Log.Information("Add routing to pipeline");
+    app.UseRouting();
 
-    //Initialisieren der Endpoints für GraphQL
+    Log.Information("Add aspire endpoints to pipeline");
+    app.MapDefaultEndpoints();
+    
+    Log.Information("Add GraphQl to pipeline");
     if (builder.Environment.IsDevelopment())
     {
         app.MapGraphQL();
@@ -200,23 +189,14 @@ try
         app.MapGraphQLWebSocket();
     }
 
-    //Initialisieren des Endpoints für GraphQL-Voyager
-    if (builder.Environment.IsDevelopment())
-    {
-        app.UseGraphQLVoyager("/graphql-voyager", new VoyagerOptions()
-        {
-            GraphQLEndPoint = "/graphql"
-        });
-    }
-
+    Log.Information("Starting web app...");
     app.RunWithGraphQLCommands(args);
 }
 catch (Exception ex)
 {
-    Log.Fatal(ex, "Web-Host terminated unexpectedly");
+    Log.Fatal(ex, "Web app terminated unexpectedly");
 }
 finally
 {
-    Log.Information("Web-Host stoped");
     Log.CloseAndFlush();
 }

@@ -1,4 +1,5 @@
-﻿using Google.API.Interfaces;
+﻿using Azure.Security.KeyVault.Secrets;
+using Google.API.Interfaces;
 using Google.API.Models;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
@@ -8,7 +9,7 @@ namespace Google.API.Services;
 /// <summary>
 /// Helper-Class for getting Google-Geo-Coding-Information from Google-API
 /// </summary>
-public class WsGoogleGeoCodingService(IOptions<AppSettings> appSettings) : IWsGoogleGeoCoding
+public class WsGoogleGeoCodingService(SecretClient secretClient, IOptions<AppSettings> appSettings) : IWsGoogleGeoCoding
 {
     #region Private Methods
 
@@ -103,11 +104,14 @@ public class WsGoogleGeoCodingService(IOptions<AppSettings> appSettings) : IWsGo
 
         HttpClient client = new();
 
+        var secret = secretClient.GetSecret("GoogleApiKey");
+        var apiKey = secret.Value.Value;
+        
         var latitudeString = latitude.ToString();
         latitudeString = latitudeString.Replace(",", ".");
         var longitudeString = longitude.ToString();
         longitudeString = longitudeString.Replace(",", ".");
-        var urlParams = $"/json?latlng={latitudeString},{longitudeString}&key={appSettings.Value.GoogleApiKey}";
+        var urlParams = $"/json?latlng={latitudeString},{longitudeString}&key={apiKey}";
         var response = await client.GetAsync(appSettings.Value.BaseUrlGoogleGeoCodingApi + urlParams);
 
         if (response.IsSuccessStatusCode)

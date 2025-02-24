@@ -26,10 +26,10 @@ public partial class FilterNumberRangeControlViewModel(
 
     #region Public Properties
     [ObservableProperty]
-    private int? _intValueFrom;
+    public partial int? IntValueFrom { get; set; }
 
     [ObservableProperty]
-    private int? _intValueTo;
+    public partial int? IntValueTo { get; set; }
     #endregion
 
     #region Lifecycle

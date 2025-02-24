@@ -45,9 +45,11 @@ public partial class UploadControlViewModel : ViewModelBase
 
     #region Public Properties
 
-    [ObservableProperty] private string _idInputFile;
+    [ObservableProperty]
+    public partial string IdInputFile { get; set; }
 
-    [ObservableProperty] private string _allowedFileExtensions;
+    [ObservableProperty]
+    public partial string AllowedFileExtensions { get; set; }
 
     public string StatusText
     {
@@ -61,9 +63,11 @@ public partial class UploadControlViewModel : ViewModelBase
         }
     }
 
-    [ObservableProperty] private bool _isUploading;
+    [ObservableProperty]
+    public partial bool IsUploading { get; set; }
 
-    [ObservableProperty] private List<IUploadFileInfo> _uploadFileInfoList = [];
+    [ObservableProperty]
+    public partial List<IUploadFileInfo> UploadFileInfoList { get; set; } = [];
 
     #endregion
 

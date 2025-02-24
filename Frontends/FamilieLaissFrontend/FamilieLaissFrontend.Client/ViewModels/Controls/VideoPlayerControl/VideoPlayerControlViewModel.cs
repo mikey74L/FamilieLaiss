@@ -32,7 +32,7 @@ public partial class VideoPlayerControlViewModel(
 
     #region Public Properties
     [ObservableProperty]
-    private string _idPlayer = string.Empty;
+    public partial string IdPlayer { get; set; } = string.Empty;
     #endregion
 
     #region Lifecycle

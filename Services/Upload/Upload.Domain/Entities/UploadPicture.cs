@@ -66,6 +66,11 @@ public class UploadPicture : EntityCreation<long>
     [GraphQLDescription("Google geo coding address for this upload picture")]
     public GoogleGeoCodingAddress? GoogleGeoCodingAddress { get; private set; }
 
+    /// <summary>
+    /// The converting status for this upload picture
+    /// </summary>
+    [GraphQLDescription("The converting status for this upload picture")]
+    public PictureConvertStatus? Status { get; private set; }
     #endregion
 
     #region C'tor
@@ -250,16 +255,12 @@ public class UploadPicture : EntityCreation<long>
     [GraphQLIgnore]
     public override Task EntityAddedAsync(DbContext dbContext, IDictionary<string, object> dictContextParams)
     {
-        AddDomainEvent(new DomainEventUploadPictureCreated(Id, Filename, State));
-
         return Task.CompletedTask;
     }
 
     [GraphQLIgnore]
     public override Task EntityDeletedAsync(DbContext dbContext, IDictionary<string, object> dictContextParams)
     {
-        AddDomainEvent(new DomainEventUploadPictureDeleted(Id));
-
         return Task.CompletedTask;
     }
 

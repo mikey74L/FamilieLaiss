@@ -88,6 +88,37 @@ type Mutation {
   videoUploadFinish(input: FinishVideoUploadInput!): FinishVideoUploadPayload! @cost(weight: "10")
 }
 
+"Picture convert status"
+type PictureConvertStatus {
+  "The current state for the conversion"
+  status: EnumPictureConvertStatus!
+  "Error message when conversion is in state \"Finished with errors\""
+  errorMessage: String!
+  "Timestamp for \"Read Picture Info from file - Begin\""
+  startDateInfo: DateTime
+  "Timestamp for \"Read Picture Info from file - End\""
+  finishDateInfo: DateTime
+  "Timestamp for \"Read Exif-Information from file - Begin\""
+  startDateExif: DateTime
+  "Timestamp for \"Read Exif-Information from file - End\""
+  finishDateExif: DateTime
+  "Timestamp for \"Convert picture - Begin\""
+  startDateConvert: DateTime
+  "Timestamp for \"Convert picture - End\""
+  finishDateConvert: DateTime
+  "Timestamp for \"Upload to blob - Begin\""
+  startDateUploadBlob: DateTime
+  "Timestamp for \"Upload to blob - End\""
+  finishDateUploadBlob: DateTime
+  "Timestamp for \"Delete files - Begin\""
+  startDateDeleteFiles: DateTime
+  "Timestamp for \"Delete files - End\""
+  finishDateDeleteFiles: DateTime
+  "Id of the upload picture that is converted"
+  uploadPicture: UploadPicture!
+  id: Long!
+}
+
 type Query {
   "Returns a list of upload picture"
   uploadPictures(where: UploadPictureFilterInput @cost(weight: "10") order: [UploadPictureSortInput!] @cost(weight: "10")): [UploadPicture!]! @cost(weight: "10")
@@ -125,6 +156,8 @@ type UploadPicture {
   uploadPictureExifInfo: UploadPictureExifInfo
   "Google geo coding address for this upload picture"
   googleGeoCodingAddress: GoogleGeoCodingAddress
+  "The converting status for this upload picture"
+  status: PictureConvertStatus
 }
 
 "Exif information to the upload picture"
@@ -288,6 +321,13 @@ input DeleteUploadVideoInput {
   id: Long!
 }
 
+input EnumPictureConvertStatusOperationFilterInput {
+  eq: EnumPictureConvertStatus @cost(weight: "10")
+  neq: EnumPictureConvertStatus @cost(weight: "10")
+  in: [EnumPictureConvertStatus!] @cost(weight: "10")
+  nin: [EnumPictureConvertStatus!] @cost(weight: "10")
+}
+
 input EnumUploadStateOperationFilterInput {
   eq: EnumUploadState @cost(weight: "10")
   neq: EnumUploadState @cost(weight: "10")
@@ -403,6 +443,70 @@ input LongOperationFilterInput {
   nlt: Long @cost(weight: "10")
   lte: Long @cost(weight: "10")
   nlte: Long @cost(weight: "10")
+}
+
+"Picture convert status"
+input PictureConvertStatusFilterInput {
+  and: [PictureConvertStatusFilterInput!]
+  or: [PictureConvertStatusFilterInput!]
+  "The current state for the conversion"
+  status: EnumPictureConvertStatusOperationFilterInput
+  "Error message when conversion is in state \"Finished with errors\""
+  errorMessage: StringOperationFilterInput
+  "Timestamp for \"Read Picture Info from file - Begin\""
+  startDateInfo: DateTimeOperationFilterInput
+  "Timestamp for \"Read Picture Info from file - End\""
+  finishDateInfo: DateTimeOperationFilterInput
+  "Timestamp for \"Read Exif-Information from file - Begin\""
+  startDateExif: DateTimeOperationFilterInput
+  "Timestamp for \"Read Exif-Information from file - End\""
+  finishDateExif: DateTimeOperationFilterInput
+  "Timestamp for \"Convert picture - Begin\""
+  startDateConvert: DateTimeOperationFilterInput
+  "Timestamp for \"Convert picture - End\""
+  finishDateConvert: DateTimeOperationFilterInput
+  "Timestamp for \"Upload to blob - Begin\""
+  startDateUploadBlob: DateTimeOperationFilterInput
+  "Timestamp for \"Upload to blob - End\""
+  finishDateUploadBlob: DateTimeOperationFilterInput
+  "Timestamp for \"Delete files - Begin\""
+  startDateDeleteFiles: DateTimeOperationFilterInput
+  "Timestamp for \"Delete files - End\""
+  finishDateDeleteFiles: DateTimeOperationFilterInput
+  "Id of the upload picture that is converted"
+  uploadPicture: UploadPictureFilterInput
+  id: LongOperationFilterInput
+}
+
+"Picture convert status"
+input PictureConvertStatusSortInput {
+  "The current state for the conversion"
+  status: SortEnumType @cost(weight: "10")
+  "Error message when conversion is in state \"Finished with errors\""
+  errorMessage: SortEnumType @cost(weight: "10")
+  "Timestamp for \"Read Picture Info from file - Begin\""
+  startDateInfo: SortEnumType @cost(weight: "10")
+  "Timestamp for \"Read Picture Info from file - End\""
+  finishDateInfo: SortEnumType @cost(weight: "10")
+  "Timestamp for \"Read Exif-Information from file - Begin\""
+  startDateExif: SortEnumType @cost(weight: "10")
+  "Timestamp for \"Read Exif-Information from file - End\""
+  finishDateExif: SortEnumType @cost(weight: "10")
+  "Timestamp for \"Convert picture - Begin\""
+  startDateConvert: SortEnumType @cost(weight: "10")
+  "Timestamp for \"Convert picture - End\""
+  finishDateConvert: SortEnumType @cost(weight: "10")
+  "Timestamp for \"Upload to blob - Begin\""
+  startDateUploadBlob: SortEnumType @cost(weight: "10")
+  "Timestamp for \"Upload to blob - End\""
+  finishDateUploadBlob: SortEnumType @cost(weight: "10")
+  "Timestamp for \"Delete files - Begin\""
+  startDateDeleteFiles: SortEnumType @cost(weight: "10")
+  "Timestamp for \"Delete files - End\""
+  finishDateDeleteFiles: SortEnumType @cost(weight: "10")
+  "Id of the upload picture that is converted"
+  uploadPicture: UploadPictureSortInput @cost(weight: "10")
+  id: SortEnumType @cost(weight: "10")
 }
 
 input ShortOperationFilterInput {
@@ -553,6 +657,8 @@ input UploadPictureFilterInput {
   uploadPictureExifInfo: UploadPictureExifInfoFilterInput
   "Google geo coding address for this upload picture"
   googleGeoCodingAddress: GoogleGeoCodingAddressFilterInput
+  "The converting status for this upload picture"
+  status: PictureConvertStatusFilterInput
   createDate: DateTimeOperationFilterInput
   id: LongOperationFilterInput
 }
@@ -571,6 +677,8 @@ input UploadPictureSortInput {
   uploadPictureExifInfo: UploadPictureExifInfoSortInput @cost(weight: "10")
   "Google geo coding address for this upload picture"
   googleGeoCodingAddress: GoogleGeoCodingAddressSortInput @cost(weight: "10")
+  "The converting status for this upload picture"
+  status: PictureConvertStatusSortInput @cost(weight: "10")
   createDate: SortEnumType @cost(weight: "10")
   id: SortEnumType @cost(weight: "10")
 }
@@ -631,6 +739,23 @@ input UploadVideoSortInput {
   googleGeoCodingAddress: GoogleGeoCodingAddressSortInput @cost(weight: "10")
   createDate: SortEnumType @cost(weight: "10")
   id: SortEnumType @cost(weight: "10")
+}
+
+enum EnumPictureConvertStatus {
+  WAITING_FOR_CONVERSION
+  READ_INFO_BEGIN
+  READ_INFO_END
+  READ_EXIF_BEGIN
+  READ_EXIF_END
+  CONVERT_BEGIN
+  CONVERT_END
+  UPLOAD_PICTURE_TO_BLOB_BEGIN
+  UPLOAD_PICTURE_TO_BLOB_END
+  DELETE_FILES_BEGIN
+  DELETE_FILES_END
+  SUCESSFULLY_CONVERTED
+  CONVERTED_WITH_ERRORS
+  TRANSIENT_ERROR
 }
 
 "State for upload item"

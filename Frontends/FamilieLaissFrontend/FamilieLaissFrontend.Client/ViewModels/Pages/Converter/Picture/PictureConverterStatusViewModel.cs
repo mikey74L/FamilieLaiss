@@ -18,13 +18,16 @@ public partial class PictureConverterStatusViewModel(
 {
     #region Public Properties
     [ObservableProperty]
-    private ExtendedObservableCollection<IPictureConvertStatusModel> _listWaiting = [];
+    public partial ExtendedObservableCollection<IPictureConvertStatusModel> ListWaiting { get; set; } = [];
+
     [ObservableProperty]
-    private ExtendedObservableCollection<IPictureConvertStatusModel> _listSuccess = [];
+    public partial ExtendedObservableCollection<IPictureConvertStatusModel> ListSuccess { get; set; } = [];
+
     [ObservableProperty]
-    private ExtendedObservableCollection<IPictureConvertStatusModel> _listError = [];
+    public partial ExtendedObservableCollection<IPictureConvertStatusModel> ListError { get; set; } = [];
+
     [ObservableProperty]
-    private IPictureConvertStatusModel? _currentConversionItem;
+    public partial IPictureConvertStatusModel? CurrentConversionItem { get; set; }
     #endregion
 
     #region Lifecycle

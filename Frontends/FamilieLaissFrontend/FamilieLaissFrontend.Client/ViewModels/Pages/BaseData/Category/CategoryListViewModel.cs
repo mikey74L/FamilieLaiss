@@ -28,8 +28,7 @@ public partial class CategoryListViewModel(
 {
     #region Public Properties
     [ObservableProperty]
-    // ReSharper disable once InconsistentNaming
-    public ExtendedObservableCollection<ICategoryModel> _items = [];
+    public partial ExtendedObservableCollection<ICategoryModel> Items { get; set; } = [];
 
     public string SearchString { get; set; } = string.Empty;
     #endregion

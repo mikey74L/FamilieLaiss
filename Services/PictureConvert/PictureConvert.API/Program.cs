@@ -74,6 +74,7 @@ builder.Services.AddPooledDbContextFactory<PictureConvertServiceDbContext>(
 
 //Den GraphQL-Server hinzufügen
 var graphQlBuilder = builder.Services.AddGraphQLServer()
+    .ModifyCostOptions(o => o.EnforceCostLimits = false)
     .RegisterDbContextFactory<PictureConvertServiceDbContext>()
     .AddQueryType<Query>()
     .AddTypeExtension<GraphQlQueryPictureConvertStatus>()

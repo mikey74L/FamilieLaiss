@@ -27,23 +27,22 @@ public partial class PictureUploadPageViewModel(
 {
     #region Public Properties
     [ObservableProperty]
-    // ReSharper disable once InconsistentNaming
-    public int _uploadFileCount;
+    public partial int UploadFileCount { get; set; }
 
     [ObservableProperty]
-    private bool _isUploading;
+    public partial bool IsUploading { get; set; }
 
     [ObservableProperty]
-    private int _currentTabIndex;
+    public partial int CurrentTabIndex { get; set; }
 
     [ObservableProperty]
-    private ExtendedObservableCollection<IUploadPictureModel> _uploadPictureItems = [];
+    public partial ExtendedObservableCollection<IUploadPictureModel> UploadPictureItems { get; set; } = [];
 
     [ObservableProperty]
-    private int _currentCountUploadPictures;
+    public partial int CurrentCountUploadPictures { get; set; }
 
     [ObservableProperty]
-    private IGraphQlSortAndFilterService<IUploadPictureModel, UploadPictureSortInput, UploadPictureFilterInput> _sortAndFilterService = default!;
+    public partial IGraphQlSortAndFilterService<IUploadPictureModel, UploadPictureSortInput, UploadPictureFilterInput> SortAndFilterService { get; set; }
     #endregion
 
     #region Lifecycle Overrides

@@ -17,5 +17,9 @@ internal class UploadPictureEntityTypeConfiguration : EntityTypeConfigurationBas
 
         modelBuilder.OwnsOne(x => x.GoogleGeoCodingAddress).ToTable("GoogleGeoCodingAddressesPicture");
         modelBuilder.Navigation(x => x.GoogleGeoCodingAddress).IsRequired(false);
+        
+        modelBuilder.HasOne(a => a.Status).WithOne(b => b.UploadPicture)
+            .HasForeignKey<PictureConvertStatus>(b => b.UploadPictureId);
+
     }
 }

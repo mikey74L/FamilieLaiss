@@ -25,24 +25,24 @@ public partial class FilterNumberOnlyControlViewModel(
 
     #region Public Properties
     [ObservableProperty]
-    private int? _selectedValueInt;
+    public partial int? SelectedValueInt { get; set; }
     partial void OnSelectedValueIntChanged(int? value)
     {
         CheckHasValue();
     }
 
     [ObservableProperty]
-    private double? _selectedValueDouble;
+    public partial double? SelectedValueDouble { get; set; }
     partial void OnSelectedValueDoubleChanged(double? value)
     {
         CheckHasValue();
     }
 
     [ObservableProperty]
-    private List<int?> _filterItemsInt = [];
+    public partial List<int?> FilterItemsInt { get; set; } = [];
 
     [ObservableProperty]
-    private List<double?> _filterItemsDouble = [];
+    public partial List<double?> FilterItemsDouble { get; set; } = [];
     #endregion
 
     #region Lifecycle

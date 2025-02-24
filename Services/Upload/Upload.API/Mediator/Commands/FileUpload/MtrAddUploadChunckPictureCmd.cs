@@ -1,7 +1,6 @@
 ﻿using MediatR;
-using Microsoft.Extensions.Options;
 using Upload.API.GraphQL.Mutations.FileUpload;
-using Upload.API.Models;
+using Upload.API.Interfaces;
 
 namespace Upload.API.Mediator.Commands.FileUpload;
 
@@ -20,8 +19,8 @@ public class MtrAddUploadChunkPictureCmd : IRequest<bool>
 /// Mediatr Command-Handler for add upload chunk data for picture
 /// </summary>
 public class MtrAddUploadChunkPictureCmdHandler(
-    IOptions<AppSettings> appSettings,
-    ILogger<MtrAddUploadChunkPictureCmdHandler> logger) : IRequestHandler<MtrAddUploadChunkPictureCmd, bool>
+    ILogger<MtrAddUploadChunkPictureCmdHandler> logger,
+    IFolderHelperService folderHelperService) : IRequestHandler<MtrAddUploadChunkPictureCmd, bool>
 {
     #region Mediatr-Handler
 
@@ -36,11 +35,9 @@ public class MtrAddUploadChunkPictureCmdHandler(
         logger.LogInformation("Mediatr-Command-Handler for add upload chunk picture was called");
 
         var extension = System.IO.Path.GetExtension(request.Data.TargetFilename);
-
         var filenameWithoutExtension = System.IO.Path.GetFileNameWithoutExtension(request.Data.TargetFilename);
 
-        var chunkFilename = System.IO.Path.Combine(appSettings.Value.TempDirectoryUploadPicture,
-            $"{filenameWithoutExtension}-{request.Data.ChunkNumber}{extension}");
+        var chunkFilename = $"{filenameWithoutExtension}-{request.Data.ChunkNumber}{extension}";
 
         var status = true;
         var allowedExtensions = new List<string> { ".jpeg", ".jpg", ".png", ".bmp" };
@@ -53,8 +50,7 @@ public class MtrAddUploadChunkPictureCmdHandler(
             {
                 logger.LogDebug("Write chunk to disk");
 
-                var fullFilenameOfChunk =
-                    System.IO.Path.Combine(appSettings.Value.TempDirectoryUploadPicture, chunkFilename);
+                var fullFilenameOfChunk = folderHelperService.GetFullFilenameForTempUploadPicture(chunkFilename);
 
                 if (!Directory.Exists(System.IO.Path.GetDirectoryName(fullFilenameOfChunk)))
                 {
@@ -63,7 +59,12 @@ public class MtrAddUploadChunkPictureCmdHandler(
 
                 var chunkData = Convert.FromBase64String(request.Data.ChunkData);
 
-                using var stream = new FileStream(fullFilenameOfChunk, FileMode.CreateNew);
+                if (File.Exists(fullFilenameOfChunk))
+                {
+                    File.Delete(fullFilenameOfChunk);
+                }
+
+                await using var stream = new FileStream(fullFilenameOfChunk, FileMode.CreateNew);
                 await stream.WriteAsync(chunkData, 0, request.Data.ChunkSize, cancellationToken);
 
                 stream.Close();

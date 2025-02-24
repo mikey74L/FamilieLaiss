@@ -11,8 +11,11 @@
 }
 
 .fl-card-picture-header-text {
-    width: 93% !important;
     overflow: hidden !important;
     white-space: nowrap !important;
     text-overflow: ellipsis !important;
+}
+
+.mud-card-header-fl .mud-card-header-content {
+    width: 95%;
 }

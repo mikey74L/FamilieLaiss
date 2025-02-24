@@ -39,6 +39,8 @@ public class PictureInfoExtractorService(
         var tuple = GetWidthAndHeightForImage(consumerContext.Message.Id, filename);
         logger.LogDebug($"Width / Height: {tuple.width} / {tuple.height}");
 
+        var repo = unitOfWork.GetRepository<Domain.Entities.UploadPicture>();
+
         logger.LogInformation("Send command over message bus to set picture dimensions");
         var newCommand = new MassSetUploadPictureDimensionsCmd()
         {

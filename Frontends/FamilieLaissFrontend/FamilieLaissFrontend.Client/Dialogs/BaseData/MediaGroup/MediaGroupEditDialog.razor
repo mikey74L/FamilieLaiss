@@ -22,21 +22,24 @@
                             <MudButton Class="mr-auto align-self-start" OnClick="async () => await ViewModel.GoToTodayCommand.ExecuteAsync(null)">Today</MudButton>
                         </PickerActions>
                     </MudDatePicker>
-                    <MudTextField Disabled="@ViewModel.IsBusy"
+                    <MudTextField Class="mt-2"
+                                  Disabled="@ViewModel.IsBusy"
                                   @bind-Value="Model.NameGerman"
                                   For="@(() => Model.NameGerman)"
                                   Label="@MediaGroupEditDialogRes.LabelNameGerman"
                                   HelperText="@MediaGroupEditDialogRes.DescriptionNameGerman"
                                   HelperTextOnFocus="true"
                                   Variant="MudBlazor.Variant.Text" />
-                    <MudTextField Disabled="@ViewModel.IsBusy"
+                    <MudTextField Class="mt-2"
+                                  Disabled="@ViewModel.IsBusy"
                                   @bind-Value="Model.NameEnglish"
                                   For="@(() => Model.NameEnglish)"
                                   Label="@MediaGroupEditDialogRes.LabelNameEnglish"
                                   HelperText="@MediaGroupEditDialogRes.DescriptionNameEnglish"
                                   HelperTextOnFocus="true"
                                   Variant="MudBlazor.Variant.Text" />
-                    <MudTextField Disabled="@ViewModel.IsBusy"
+                    <MudTextField class="mt-2"
+                                  Disabled="@ViewModel.IsBusy"
                                   @bind-Value="Model.DescriptionGerman"
                                   For="@(() => Model.DescriptionGerman)"
                                   Lines="4"
@@ -44,7 +47,8 @@
                                   HelperText="@MediaGroupEditDialogRes.DescriptionDescriptionGerman"
                                   HelperTextOnFocus="true"
                                   Variant="MudBlazor.Variant.Text" />
-                    <MudTextField Disabled="@ViewModel.IsBusy"
+                    <MudTextField Class="mt-2"
+                                  Disabled="@ViewModel.IsBusy"
                                   @bind-Value="Model.DescriptionEnglish"
                                   For="@(() => Model.DescriptionEnglish)"
                                   Lines="4"
@@ -57,7 +61,7 @@
         </MudContainer>
     </DialogContent>
     <DialogActions>
-        @if (ViewModel.SaveMode == EnumSaveMode.Save)
+        @if (IsInEditMode)
         {
             <MudTooltip Placement="Placement.Top" Arrow="true" Text="@MediaGroupEditDialogRes.TooltipSave" ShowOnFocus="false">
                 <MudLoadingButton Loading="@ViewModel.IsSaving"
@@ -70,32 +74,25 @@
         }
         else
         {
-            <MudTooltip Placement="Placement.Top" Arrow="true" Text="@MediaGroupEditDialogRes.TooltipSaveContinue" ShowOnFocus="false">
-                <MudLoadingButton Loading="@ViewModel.IsSaving"
-                                  LoadingAdornment="Adornment.Start"
-                                  StartIcon="@Icons.Material.Filled.Save"
-                                  Color="Color.Primary"
-                                  Variant="MudBlazor.Variant.Filled"
-                                  OnClick="async () => await ViewModel.SaveCommand.ExecuteAsync(true)">@MediaGroupEditDialogRes.ButtonSaveContinue</MudLoadingButton>
-            </MudTooltip>
-        }
-        @if (!IsInEditMode)
-        {
-            <MudMenu Style="margin-left: 1px!important">
-                <ActivatorContent>
-                    <MudTooltip Text="@MediaGroupEditDialogRes.TooltipShowSaveOptions" ShowOnFocus="false">
-                        <MudIconButton Icon="@Icons.Material.Filled.ArrowDropDown"
-                                       Variant="MudBlazor.Variant.Filled"
-                                       Color="Color.Primary"
-                                       Disabled="@ViewModel.IsSaving">
-                        </MudIconButton>
-                    </MudTooltip>
-                </ActivatorContent>
-                <ChildContent>
-                    <MudMenuItem OnClick="async () => await ViewModel.SaveCommand.ExecuteAsync(false)">@MediaGroupEditDialogRes.ButtonSave</MudMenuItem>
-                    <MudMenuItem OnClick="async () => await ViewModel.SaveCommand.ExecuteAsync(true)">@MediaGroupEditDialogRes.TooltipSaveContinue</MudMenuItem>
-                </ChildContent>
-            </MudMenu>
+            <MudButtonGroup Color="Color.Primary" Variant="MudBlazor.Variant.Filled">
+                <MudTooltip Placement="Placement.Top" Arrow="true"
+                            Text="@(ViewModel.SaveMode == EnumSaveMode.Save ? @MediaGroupEditDialogRes.TooltipSave : @MediaGroupEditDialogRes.TooltipSaveContinue)"
+                            ShowOnFocus="false">
+                    <MudLoadingButton Loading="@ViewModel.IsSaving"
+                                      LoadingAdornment="Adornment.Start"
+                                      StartIcon="@Icons.Material.Filled.Save"
+                                      Color="Color.Primary"
+                                      Variant="MudBlazor.Variant.Filled"
+                                      OnClick="async () => await ViewModel.SaveCommand.ExecuteAsync(false)">@(ViewModel.SaveMode == EnumSaveMode.Save ? @MediaGroupEditDialogRes.ButtonSave : @MediaGroupEditDialogRes.ButtonSaveContinue)</MudLoadingButton>
+                </MudTooltip>
+                <MudTooltip Text="@MediaGroupEditDialogRes.TooltipShowSaveOptions" ShowOnFocus="false">
+                    <MudMenu Disabled="@ViewModel.IsSaving" Icon="@Icons.Material.Filled.ArrowDropDown"
+                             Style="align-self: auto;">
+                        <MudMenuItem OnClick="async () => await ViewModel.SaveCommand.ExecuteAsync(false)">@MediaGroupEditDialogRes.ButtonSave</MudMenuItem>
+                        <MudMenuItem OnClick="async () => await ViewModel.SaveCommand.ExecuteAsync(true)">@MediaGroupEditDialogRes.TooltipSaveContinue</MudMenuItem>
+                    </MudMenu>
+                </MudTooltip>
+            </MudButtonGroup>
         }
         <MudTooltip Placement="Placement.Top" Arrow="true" Text="@MediaGroupEditDialogRes.TooltipCancel" ShowOnFocus="false">
             <MudButton Disabled="@ViewModel.IsSaving" OnClick="async () => await ViewModel.CancelCommand.ExecuteAsync(null)">@MediaGroupEditDialogRes.ButtonCancel</MudButton>
@@ -106,22 +103,22 @@
 @code
 {
     [CascadingParameter]
-    public IMudDialogInstance? MudDialog 
-    { 
+    public IMudDialogInstance? MudDialog
+    {
         get => ViewModel.MudDialog;
         set => ViewModel.MudDialog = value;
-    } 
+    }
 
     [Parameter]
-    public bool IsInEditMode 
-    { 
+    public bool IsInEditMode
+    {
         get => ViewModel.IsInEditMode;
         set => ViewModel.IsInEditMode = value;
     }
 
     [Parameter]
-    public IMediaGroupModel? Model 
-    { 
+    public IMediaGroupModel? Model
+    {
         get => ViewModel.Model;
         set => ViewModel.Model = value;
     }

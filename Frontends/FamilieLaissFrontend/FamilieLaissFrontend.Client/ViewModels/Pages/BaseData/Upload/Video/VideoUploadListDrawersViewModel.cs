@@ -26,7 +26,7 @@ public partial class VideoUploadListDrawersViewModel(
 
     #region Public Properties
     [ObservableProperty]
-    private bool _isSortSidebarVisible;
+    public partial bool IsSortSidebarVisible { get; set; }
     partial void OnIsSortSidebarVisibleChanged(bool value)
     {
         if (IsSortSidebarVisibleChanged.HasDelegate)
@@ -35,7 +35,7 @@ public partial class VideoUploadListDrawersViewModel(
         }
     }
     [ObservableProperty]
-    private bool _isFilterSidebarVisible;
+    public partial bool IsFilterSidebarVisible { get; set; }
     partial void OnIsFilterSidebarVisibleChanged(bool value)
     {
         if (IsFilterSidebarVisibleChanged.HasDelegate)
@@ -45,7 +45,7 @@ public partial class VideoUploadListDrawersViewModel(
     }
 
     [ObservableProperty]
-    private IGraphQlSortCriteria<UploadVideoSortInput> _selectedSortCriteria = default!;
+    public partial IGraphQlSortCriteria<UploadVideoSortInput> SelectedSortCriteria { get; set; }
     partial void OnSelectedSortCriteriaChanged(IGraphQlSortCriteria<UploadVideoSortInput> value)
     {
         SortAndFilterService.SelectedSortCriteria = value;

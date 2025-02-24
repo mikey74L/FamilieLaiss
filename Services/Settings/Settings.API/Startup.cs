@@ -20,7 +20,7 @@ public class Startup
         var factory = serviceScope.ServiceProvider.GetRequiredService<IDbContextFactory<SettingsServiceDbContext>>();
 
         //Ermitteln des DB-Contexts aus der Factory
-        var dbContext = factory.CreateDbContext();
+        using var dbContext = factory.CreateDbContext();
 
         //Eine Retry-Policy mit Polly erstellen.
         //Falls beim Start des Containers der zugehörige Datenbankcontainer noch nicht bereit sein sollte
@@ -28,14 +28,10 @@ public class Startup
             .WaitAndRetry(10, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)));
 
         //Starten der Migration über die Retry-Policy
-        retryPolicy.Execute(() =>
-        {
-            dbContext.Database.Migrate();
-        });
+        retryPolicy.Execute(dbContext.Database.Migrate);
 
         //Freigeben des DBContexts
         dbContext.Database.CloseConnection();
-        dbContext.Dispose();
     }
 
     public static void SeedDatabase(IApplicationBuilder app)
@@ -47,7 +43,7 @@ public class Startup
         var factory = serviceScope.ServiceProvider.GetRequiredService<IDbContextFactory<SettingsServiceDbContext>>();
 
         //Ermitteln des DB-Contexts aus der Factory
-        var dbContext = factory.CreateDbContext();
+        using var dbContext = factory.CreateDbContext();
 
         //Eine Retry-Policy mit Polly erstellen.
         //Falls beim Start des Containers der zugehörige Datenbankcontainer noch nicht bereit sein sollte
@@ -73,7 +69,6 @@ public class Startup
 
         //Freigeben des DBContexts
         dbContext.Database.CloseConnection();
-        dbContext.Dispose();
     }
     #endregion
 

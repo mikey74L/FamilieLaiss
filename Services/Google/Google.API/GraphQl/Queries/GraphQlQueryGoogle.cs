@@ -1,4 +1,5 @@
-﻿using Google.API.Models;
+﻿using Azure.Security.KeyVault.Secrets;
+using Google.API.Models;
 using Microsoft.Extensions.Options;
 
 namespace Google.API.GraphQl.Queries;
@@ -7,8 +8,9 @@ namespace Google.API.GraphQl.Queries;
 public class GraphQlQueryGoogle
 {
     [GraphQLDescription("Returns the api key for google maps")]
-    public string GetGoogleMapsApiKey([Service] IOptions<AppSettings> appSettings)
+    public string GetGoogleMapsApiKey([Service] SecretClient secretClient)
     {
-        return appSettings.Value.GoogleApiKey;
+        var secret = secretClient.GetSecret("GoogleApiKey");
+        return secret.Value.Value;
     }
 }

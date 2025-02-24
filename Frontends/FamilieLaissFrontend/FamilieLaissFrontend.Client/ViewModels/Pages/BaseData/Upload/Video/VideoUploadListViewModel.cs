@@ -7,7 +7,7 @@ using FamilieLaissInterfaces.Enums;
 using FamilieLaissInterfaces.Models.Data;
 using FamilieLaissInterfaces.Services;
 using FamilieLaissModels.EventAggregator.Filter;
-using FamilieLaissModels.EventAggregator.PictureControl;
+using FamilieLaissModels.EventAggregator.VideoControl;
 using FamilieLaissResources.Resources.ViewModels.Pages.BaseData.Upload.Video;
 using FamilieLaissServices.Extensions;
 using FamilieLaissSharedUI.Helper;
@@ -35,13 +35,16 @@ public partial class VideoUploadListViewModel(
 
     #region Public Properties
     [ObservableProperty]
-    private bool _isSortSidebarVisible;
+    public partial bool IsSortSidebarVisible { get; set; }
+
     [ObservableProperty]
-    private bool _isFilterSidebarVisible;
+    public partial bool IsFilterSidebarVisible { get; set; }
+
     [ObservableProperty]
-    private bool _isFilterActive;
+    public partial bool IsFilterActive { get; set; }
+
     [ObservableProperty]
-    private bool _showSelectionMode;
+    public partial bool ShowSelectionMode { get; set; }
     #endregion
 
     #region Lifecycle
@@ -202,13 +205,13 @@ public partial class VideoUploadListViewModel(
     [RelayCommand]
     private async Task SelectAll()
     {
-        await eventAggregator.PublishAsync(new AggSelectAllPicture());
+        await eventAggregator.PublishAsync(new AggSelectAllVideo());
     }
 
     [RelayCommand]
     private async Task DeSelectAll()
     {
-        await eventAggregator.PublishAsync(new AggDeSelectAllPicture());
+        await eventAggregator.PublishAsync(new AggDeSelectAllVideo());
     }
     #endregion
 

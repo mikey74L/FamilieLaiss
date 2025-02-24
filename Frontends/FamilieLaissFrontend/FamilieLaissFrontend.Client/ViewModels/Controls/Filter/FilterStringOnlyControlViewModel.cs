@@ -26,7 +26,7 @@ public partial class FilterStringOnlyControlViewModel(
 
     #region Public Properties
     [ObservableProperty]
-    private string? _selectedValue;
+    public partial string? SelectedValue { get; set; }
     partial void OnSelectedValueChanged(string? oldValue, string? newValue)
     {
         if (ValueChanged.HasDelegate)
@@ -43,7 +43,7 @@ public partial class FilterStringOnlyControlViewModel(
     }
 
     [ObservableProperty]
-    private List<string> _filterItems = [];
+    public partial List<string> FilterItems { get; set; } = [];
     #endregion
 
     #region Lifecycle

@@ -117,37 +117,37 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Button_Cancel" xml:space="preserve">
+  <data name="ButtonCancel" xml:space="preserve">
     <value />
   </data>
-  <data name="Button_Save" xml:space="preserve">
+  <data name="ButtonSave" xml:space="preserve">
     <value />
   </data>
-  <data name="Button_Save_Continue" xml:space="preserve">
+  <data name="ButtonSaveContinue" xml:space="preserve">
     <value />
   </data>
-  <data name="Description_NameEnglish" xml:space="preserve">
+  <data name="DescriptionNameEnglish" xml:space="preserve">
     <value />
   </data>
-  <data name="Description_NameGerman" xml:space="preserve">
+  <data name="DescriptionNameGerman" xml:space="preserve">
     <value />
   </data>
-  <data name="Label_NameEnglish" xml:space="preserve">
+  <data name="LabelNameEnglish" xml:space="preserve">
     <value />
   </data>
-  <data name="Label_NameGerman" xml:space="preserve">
+  <data name="LabelNameGerman" xml:space="preserve">
     <value />
   </data>
-  <data name="Tooltip_Cancel" xml:space="preserve">
+  <data name="TooltipCancel" xml:space="preserve">
     <value />
   </data>
-  <data name="Tooltip_Save" xml:space="preserve">
+  <data name="TooltipSave" xml:space="preserve">
     <value />
   </data>
-  <data name="Tooltip_Save_Continue" xml:space="preserve">
+  <data name="TooltipSaveContinue" xml:space="preserve">
     <value />
   </data>
-  <data name="Tooltip_ShowSaveOptions" xml:space="preserve">
+  <data name="TooltipShowSaveOptions" xml:space="preserve">
     <value />
   </data>
 </root>

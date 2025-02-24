@@ -26,7 +26,7 @@ public partial class PictureUploadListDrawersViewModel(
 
     #region Public Properties
     [ObservableProperty]
-    private bool _isSortSidebarVisible;
+    public partial bool IsSortSidebarVisible { get; set; }
     partial void OnIsSortSidebarVisibleChanged(bool value)
     {
         if (IsSortSidebarVisibleChanged.HasDelegate)
@@ -35,7 +35,7 @@ public partial class PictureUploadListDrawersViewModel(
         }
     }
     [ObservableProperty]
-    private bool _isFilterSidebarVisible;
+    public partial bool IsFilterSidebarVisible { get; set; }
     partial void OnIsFilterSidebarVisibleChanged(bool value)
     {
         if (IsFilterSidebarVisibleChanged.HasDelegate)
@@ -45,7 +45,7 @@ public partial class PictureUploadListDrawersViewModel(
     }
 
     [ObservableProperty]
-    private IGraphQlSortCriteria<UploadPictureSortInput> _selectedSortCriteria = default!;
+    public partial IGraphQlSortCriteria<UploadPictureSortInput> SelectedSortCriteria { get; set; }
     partial void OnSelectedSortCriteriaChanged(IGraphQlSortCriteria<UploadPictureSortInput> value)
     {
         SortAndFilterService.SelectedSortCriteria = value;
