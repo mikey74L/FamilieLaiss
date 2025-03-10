@@ -10,29 +10,24 @@ using MudBlazor;
 
 namespace FamilieLaissFrontend.Client.ViewModels.Pages.Converter.Picture;
 
-public partial class PictureConverterStatusViewModel : ViewModelBase
+public partial class PictureConverterStatusViewModel(
+    ISnackbar snackbarService,
+    IMessageBoxService messageBoxService,
+    IPictureConvertStatusDataService statusService)
+    : ViewModelBase(snackbarService, messageBoxService)
 {
-    #region Services
-    private readonly IPictureConvertStatusDataService statusService;
-    #endregion
-
     #region Public Properties
     [ObservableProperty]
-    private ExtendedObservableCollection<IPictureConvertStatusModel> _listWaiting = [];
-    [ObservableProperty]
-    private ExtendedObservableCollection<IPictureConvertStatusModel> _listSuccess = [];
-    [ObservableProperty]
-    private ExtendedObservableCollection<IPictureConvertStatusModel> _listError = [];
-    [ObservableProperty]
-    private IPictureConvertStatusModel? _currentConversionItem;
-    #endregion
+    public partial ExtendedObservableCollection<IPictureConvertStatusModel> ListWaiting { get; set; } = [];
 
-    #region C'tor
-    public PictureConverterStatusViewModel(ISnackbar snackbarService, IMessageBoxService messageBoxService,
-        IPictureConvertStatusDataService statusService) : base(snackbarService, messageBoxService)
-    {
-        this.statusService = statusService;
-    }
+    [ObservableProperty]
+    public partial ExtendedObservableCollection<IPictureConvertStatusModel> ListSuccess { get; set; } = [];
+
+    [ObservableProperty]
+    public partial ExtendedObservableCollection<IPictureConvertStatusModel> ListError { get; set; } = [];
+
+    [ObservableProperty]
+    public partial IPictureConvertStatusModel? CurrentConversionItem { get; set; }
     #endregion
 
     #region Lifecycle

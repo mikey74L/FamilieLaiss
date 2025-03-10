@@ -35,7 +35,7 @@ public class MessageBoxService : IMessageBoxService
         YesButtonIcon = buttonIcon;
         YesButtonRed = buttonRed;
 
-        return await MsgBoxMessage.Show();
+        return await MsgBoxMessage.ShowAsync();
     }
 
     public Task<bool?> Question(string title, string message, string yesButtonText, string noButtonText, bool yesButtonRed, bool noButtonRed)
@@ -55,7 +55,7 @@ public class MessageBoxService : IMessageBoxService
         YesButtonRed = yesButtonRed;
         NoButtonRed = noButtonRed;
 
-        return await MsgBoxQuestion.Show();
+        return await MsgBoxQuestion.ShowAsync();
     }
 
     public Task<bool?> QuestionConfirmRed(string title, string message, string yesButtonText, string noButtonText)
@@ -74,7 +74,7 @@ public class MessageBoxService : IMessageBoxService
         YesButtonRed = true;
         NoButtonRed = false;
 
-        return await MsgBoxQuestion.Show();
+        return await MsgBoxQuestion.ShowAsync();
     }
 
     public Task<bool?> QuestionWithCancel(string title, string message, string yesButtonText, string noButtonText, string cancelButtonText,
@@ -99,6 +99,6 @@ public class MessageBoxService : IMessageBoxService
         CancelButtonIcon = cancelButtonIcon;
         CancelButtonRed = cancelButtonRed;
 
-        return await MsgBoxQuestionCancel.Show();
+        return await MsgBoxQuestionCancel.ShowAsync();
     }
 }

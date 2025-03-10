@@ -6,9 +6,9 @@
 @inherits FlComponentBase<ChoosePictureDialogViewModel>
 
 @{
-    var classForContainer = "";
+    string classForContainer;
 
-    if (ViewModel.UploadItems.Count == 0 && !ViewModel.HasError && !ViewModel.IsLoading || ViewModel.HasError)
+    if (ViewModel.UploadItems.Count == 0 && ViewModel is { HasError: false, IsLoading: false } || ViewModel.HasError)
     {
         classForContainer = "mt-5 container-upload-picture-choose";
     }
@@ -54,15 +54,9 @@
 
 @code {
     [CascadingParameter]
-    public MudDialogInstance MudDialog
+    public IMudDialogInstance? MudDialog
     {
-        get
-        {
-            return ViewModel.MudDialog;
-        }
-        set
-        {
-            ViewModel.MudDialog = value;
-        }
+        get => ViewModel.MudDialog;
+        set => ViewModel.MudDialog = value;
     }
 }

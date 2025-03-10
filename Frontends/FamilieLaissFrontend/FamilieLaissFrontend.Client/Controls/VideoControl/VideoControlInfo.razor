@@ -1,17 +1,24 @@
 ﻿@using FamilieLaissEnums
 @using FamilieLaissInterfaces.Models.Data
 @using FamilieLaissResources.Resources.Controls.VideoControl
+@using FamilieLaissSharedUI.Components
+@using FamilieLaissFrontend.Client.ViewModels.Controls.VideoControl
+
+@inherits FlComponentBase<VideoControlInfoViewModel>
 
 <MudGrid Spacing="1">
     @if (ShowSkeleton)
     {
-        <!-- Skeleton für Datum -->
-        <MudItem xs="6">
-            <MudSkeleton SkeletonType="SkeletonType.Text" Width="70%" />
-        </MudItem>
-        <MudItem xs="6">
-            <MudSkeleton SkeletonType="SkeletonType.Text" Width="70%" />
-        </MudItem>
+        <!-- Skeleton für Hinzufüge-Datum -->
+        @if (ControlType != EnumVideoControlType.Choose)
+        {
+            <MudItem xs="6">
+                <MudSkeleton SkeletonType="SkeletonType.Text" Width="70%" />
+            </MudItem>
+            <MudItem xs="6">
+                <MudSkeleton SkeletonType="SkeletonType.Text" Width="70%" />
+            </MudItem>
+        }
 
         <!-- Skeleton für Auflösung -->
         <MudItem xs="6">
@@ -30,8 +37,8 @@
         </MudItem>
     }
 
-    <!-- Ausgeben des Hinzufügedatums nur wenn es sich um ein Media-Item handelt-->
-    @if (MediaItem?.CreateDate != null)
+    <!-- Ausgeben des Hinzufüge-Datums, nur wenn es sich um ein Media-Item handelt-->
+    @if (MediaItem?.CreateDate is not null)
     {
         <MudItem xs="6">
             <MudText>@VideoControlInfoRes.LabelAddDate:</MudText>
@@ -42,7 +49,7 @@
     }
 
     <!-- Ausgeben des Hochladedatums -->
-    @if (ControlType != EnumVideoControlType.MediaItemBaseData && UploadItem?.CreateDate != null)
+    @if (ControlType != EnumVideoControlType.MediaItemBaseData && ControlType != EnumVideoControlType.Choose && UploadItem?.CreateDate != null)
     {
         <MudItem xs="6">
             <MudText>@VideoControlInfoRes.LabelUploadDatum:</MudText>
@@ -52,14 +59,19 @@
         </MudItem>
     }
 
-    <!-- Ausgeben der Laufzeit -->
+    <!-- Ausgeben der Auflösung -->
     @if (UploadItem is not null)
     {
+        var resolution = $"{ViewModel.Model?.Width} x {ViewModel.Model?.Height}";
         <MudItem xs="6">
-            <MudText>@VideoControlInfoRes.LabelVideoSize:</MudText>
+            <MudStack Style="height: 100%;" Justify="Justify.Center">
+                <MudText>@VideoControlInfoRes.LabelVideoSize:</MudText>
+            </MudStack>
         </MudItem>
         <MudItem xs="6">
-            <MudText>@UploadItem.VideoSize</MudText>
+            <MudTooltip Text="@resolution" Placement="Placement.Top" Arrow="true">
+                <MudImage Height="30" Src="@ViewModel.UrlForResolutionPng" Elevation="25"></MudImage>
+            </MudTooltip>
         </MudItem>
     }
 
@@ -86,7 +98,11 @@
     public EnumVideoControlType ControlType { get; set; }
 
     [Parameter]
-    public IUploadVideoModel? UploadItem { get; set; }
+    public IUploadVideoModel? UploadItem
+    {
+        get => ViewModel.Model;
+        set => ViewModel.Model = value;
+    }
 
     [Parameter]
     public IMediaItemModel? MediaItem { get; set; }

@@ -5,7 +5,7 @@
 
 @inherits FlComponentBase<VideoUploadPageViewModel>
 
-@page "/basedata-video-upload"
+@page "/base-data-video-upload"
 
 <NavigationLock OnBeforeInternalNavigation="async () => await ViewModel.BeforeInternalNavigationCommand.ExecuteAsync(null)" ConfirmExternalNavigation="@ViewModel.IsUploading" />
 
@@ -17,7 +17,7 @@
                  Disabled="@ViewModel.IsUploading">
         <UploadControl UploadMultipleFiles="true"
                        UploadType="EnumUploadType.Video"
-                       UploadCountChanged="() => ViewModel.UploadCountChangedCommand.Execute(null)"
+                       UploadCountChanged="(param) => ViewModel.UploadCountChangedCommand.Execute(param)"
                        UploadStarted="() => ViewModel.UploadStartedCommand.Execute(null)"
                        UploadFinished="() => ViewModel.UploadFinishedCommand.Execute(null)" />
     </MudTabPanel>

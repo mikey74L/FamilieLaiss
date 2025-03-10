@@ -4,12 +4,11 @@
 
 @inherits FlComponentBase<CategoryListViewModel>
 
-@page "/basedata-category"
+@page "/base-data-category"
 
 <PageTitle>@CategoryListRes.PageTitle</PageTitle>
 
 <MudDataGrid Items="@ViewModel.Items"
-             Sortable="true"
              QuickFilter="@ViewModel.QuickFilter"
              Hover="true"
              Striped="true"

@@ -17,40 +17,27 @@ using MudBlazor;
 
 namespace FamilieLaissFrontend.Client.ViewModels.Pages.BaseData.Media;
 
-public partial class MediaListViewModel : ViewModelBase, IHandle<AggMediaGroupCreated>, IHandle<AggMediaGroupChanged>
+public partial class MediaListViewModel(
+    ISnackbar snackbarService,
+    IMessageBoxService messageBoxService,
+    IMediaGroupDataService mediaGroupService,
+    IDialogService dialogService,
+    IUserSettingsService userSettingsService,
+    IEventAggregator eventAggregator,
+    IMvvmNavigationManager navigationManager)
+    : ViewModelBase(snackbarService, messageBoxService), IHandle<AggMediaGroupCreated>, IHandle<AggMediaGroupChanged>
 {
-    #region Services
-    private readonly IMediaGroupDataService mediaGroupService;
-    private readonly IDialogService dialogService;
-    private readonly IUserSettingsService userSettingsService;
-    private readonly IEventAggregator eventAggregator;
-    private readonly IMvvmNavigationManager navigationManager;
-    #endregion
-
     #region Parameters
     public Task<AuthenticationState> AuthenticationState { get; set; } = default!;
     #endregion
 
     #region Public Properties
     [ObservableProperty]
-    private ExtendedObservableCollection<IMediaGroupModel> _items = [];
+    public partial ExtendedObservableCollection<IMediaGroupModel> Items { get; set; } = [];
 
     public string? SearchString { get; set; }
-    public MudDataGrid<IMediaGroupModel>? DataGrid { get; set; }
-    #endregion
 
-    #region C'tor
-    public MediaListViewModel(ISnackbar snackbarService, IMessageBoxService messageBoxService,
-        IMediaGroupDataService mediaGroupService, IDialogService dialogService,
-        IUserSettingsService userSettingsService, IEventAggregator eventAggregator,
-        IMvvmNavigationManager navigationManager) : base(snackbarService, messageBoxService)
-    {
-        this.mediaGroupService = mediaGroupService;
-        this.dialogService = dialogService;
-        this.userSettingsService = userSettingsService;
-        this.eventAggregator = eventAggregator;
-        this.navigationManager = navigationManager;
-    }
+    public MudDataGrid<IMediaGroupModel>? DataGrid { get; set; }
     #endregion
 
     #region Lifecycle
@@ -130,9 +117,9 @@ public partial class MediaListViewModel : ViewModelBase, IHandle<AggMediaGroupCr
             MediaListViewModelRes.QuestionDeleteButtonCancel);
         if (result.HasValue && result.Value)
         {
-            bool keepUploadItems = false;
+            bool keepUploadItems;
             var userSettings = await userSettingsService.GetCurrentUserSettings(AuthenticationState);
-            if (userSettings?.QuestionKeepUploadWhenDelete is not null && userSettings.QuestionKeepUploadWhenDelete.Value)
+            if (userSettings?.QuestionKeepUploadWhenDelete is not null && userSettings.QuestionKeepUploadWhenDelete)
             {
                 var resultKeepUploadQuestion = await Question(
                     MediaListViewModelRes.QuestionKeepUploadTitle,
@@ -141,18 +128,11 @@ public partial class MediaListViewModel : ViewModelBase, IHandle<AggMediaGroupCr
                     MediaListViewModelRes.QuestionKeepUploadButtonCancel,
                     false,
                     false);
-                if (resultKeepUploadQuestion.HasValue)
-                {
-                    keepUploadItems = resultKeepUploadQuestion.Value;
-                }
-                else
-                {
-                    keepUploadItems = false;
-                }
+                keepUploadItems = resultKeepUploadQuestion.HasValue && resultKeepUploadQuestion.Value;
             }
             else
             {
-                keepUploadItems = userSettings?.DefaultKeepUploadWhenDelete is not null && userSettings.DefaultKeepUploadWhenDelete.Value;
+                keepUploadItems = userSettings?.DefaultKeepUploadWhenDelete is not null && userSettings.DefaultKeepUploadWhenDelete;
             }
 
             IsSaving = true;

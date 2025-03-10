@@ -1,5 +1,3 @@
-version: '3.4'
-
 services:
   messagebus:
     ports:
@@ -8,12 +6,60 @@ services:
   eureka:
     ports:
       - 8761:8761
-  db_fl_backend:
+  db_catalog:
     volumes:
-      - PostgresDataFlBackend:/var/lib/postgresql/data
+      - PostgresDataCatalog:/var/lib/postgresql/data
+    ports:
+      - 5430:5432
+  db_upload:
+    volumes:
+      - PostgresDataUpload:/var/lib/postgresql/data
+    ports:
+      - 5431:5432
+  db_pictureconvert:
+    volumes:
+      - PostgresDataPictureConvert:/var/lib/postgresql/data
     ports:
       - 5432:5432
-  flbackend.api:
+  db_videoconvert:
+    volumes:
+      - PostgresDataVideoConvert:/var/lib/postgresql/data
+    ports:
+      - 5433:5432
+  db_settings:
+    volumes:
+      - PostgresDataSettings:/var/lib/postgresql/data
+    ports:
+      - 5434:5432
+  db_user:
+    volumes:
+      - PostgresDataUser:/var/lib/postgresql/data
+    ports:
+      - 5435:5432
+  db_userinteraction:
+    volumes:
+      - PostgresDataUserInteraction:/var/lib/postgresql/data
+    ports:
+      - 5436:5432
+  gateway.spa:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80
+    depends_on:
+      - catalog.api
+      - pictureconvert.api
+      - videoconvert.api 
+      - upload.api
+      - google.api  
+      - settings.api
+      - user.api
+      - userinteraction.api 
+      - eureka
+    ports:
+      - 9000:80
+    volumes:
+      - C:\FamilieLaissLogging\Gateway:/var/lib/familielaiss/logs
+  catalog.api:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:80
@@ -22,17 +68,41 @@ services:
       - AppSettings__PostgresPasswordFile=/run/secrets/postgres_password_secret
     depends_on:
       - eureka
-      - db_fl_backend
-      - pictureconvertexecute
-      - google.api 
-      - videoconvertexecute
-      # - picture.api
-      # - video.api
+      - db_catalog
     ports:
-      - 9000:80
+      - 9001:80
+    volumes:
+      - C:\FamilieLaissLogging\Catalog:/var/lib/familielaiss/logs
+  upload.api:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80
+      - AppSettings__RabbitMqConnectionFile=/run/secrets/rabbit_connection_string
+      - AppSettings__PostgresUserFile=/run/secrets/postgres_user_secret
+      - AppSettings__PostgresPasswordFile=/run/secrets/postgres_password_secret
+    depends_on:
+      - eureka
+      - db_upload
+    ports:
+      - 9002:80
     volumes:
       - C:\FamilieLaissContent:/var/lib/familielaiss/Content
-      - C:\FamilieLaissLogging\Backend:/var/lib/familielaiss/logs
+      - C:\FamilieLaissLogging\Upload:/var/lib/familielaiss/logs
+  pictureconvert.api:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80
+      - AppSettings__RabbitMqConnectionFile=/run/secrets/rabbit_connection_string
+      - AppSettings__PostgresUserFile=/run/secrets/postgres_user_secret
+      - AppSettings__PostgresPasswordFile=/run/secrets/postgres_password_secret
+    depends_on:
+      - eureka
+      - db_pictureconvert
+    ports:
+      - 9003:80
+    volumes:
+      - C:\FamilieLaissContent:/var/lib/familielaiss/Content
+      - C:\FamilieLaissLogging\PictureConvert:/var/lib/familielaiss/logs
   pictureconvertexecute:
     environment:
       - Environment=Development
@@ -47,12 +117,27 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:80
     ports:
-      - 9002:80
+      - 9004:80
     depends_on:
       - eureka
     volumes:
       - C:\FamilieLaissContent:/var/lib/familielaiss/Content
       - C:\FamilieLaissLogging\Picture:/var/lib/familielaiss/logs
+  videoconvert.api:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80
+      - AppSettings__RabbitMqConnectionFile=/run/secrets/rabbit_connection_string
+      - AppSettings__PostgresUserFile=/run/secrets/postgres_user_secret
+      - AppSettings__PostgresPasswordFile=/run/secrets/postgres_password_secret
+    depends_on:
+      - eureka
+      - db_videoconvert
+    ports:
+      - 9005:80
+    volumes:
+      - C:\FamilieLaissContent:/var/lib/familielaiss/Content
+      - C:\FamilieLaissLogging\VideoConvert:/var/lib/familielaiss/logs
   videoconvertexecute:
     environment:
       - Environment=Development
@@ -62,6 +147,18 @@ services:
     volumes:
       - C:\FamilieLaissContent:/var/lib/familielaiss/Content
       - C:\FamilieLaissLogging\VideoConvert:/var/lib/familielaiss/logs
+  google.api:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80
+      - AppSettings__RabbitMqConnectionFile=/run/secrets/rabbit_connection_string
+      - AppSettings__GoogleApiKeyFile=/run/secrets/google_api_key_secret
+    depends_on:
+      - eureka
+    ports:
+      - 9006:80
+    volumes:
+      - C:\FamilieLaissLogging\Google:/var/lib/familielaiss/logs
   video.api:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
@@ -69,25 +166,61 @@ services:
     depends_on:
       - eureka
     ports:
-      - 9004:80
+      - 9007:80
     volumes:
       - C:\FamilieLaissContent:/var/lib/familielaiss/Content
       - C:\FamilieLaissLogging\Video:/var/lib/familielaiss/logs
-  google.api:
+  settings.api:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:80
-      - AppSettings__RabbitMQConnection_FILE=/run/secrets/rabbit_connection_string
-      - AppSettings__GoogleAPIKey_FILE=/run/secrets/google_api_key_secret
+      - AppSettings__RabbitMqConnectionFile=/run/secrets/rabbit_connection_string
+      - AppSettings__PostgresUserFile=/run/secrets/postgres_user_secret
+      - AppSettings__PostgresPasswordFile=/run/secrets/postgres_password_secret
     depends_on:
       - eureka
+      - db_settings
     ports:
-      - 9001:80
+      - 9008:80
     volumes:
-      - C:\FamilieLaissLogging\Google:/var/lib/familielaiss/logs
+      - C:\FamilieLaissLogging\Settings:/var/lib/familielaiss/logs
+  user.api:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80
+      - AppSettings__RabbitMqConnectionFile=/run/secrets/rabbit_connection_string
+      - AppSettings__PostgresUserFile=/run/secrets/postgres_user_secret
+      - AppSettings__PostgresPasswordFile=/run/secrets/postgres_password_secret
+    depends_on:
+      - eureka
+      - db_user
+    ports:
+      - 9009:80
+    volumes:
+      - C:\FamilieLaissLogging\Settings:/var/lib/familielaiss/logs
+  userinteraction.api:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80
+      - AppSettings__RabbitMqConnectionFile=/run/secrets/rabbit_connection_string
+      - AppSettings__PostgresUserFile=/run/secrets/postgres_user_secret
+      - AppSettings__PostgresPasswordFile=/run/secrets/postgres_password_secret
+    depends_on:
+      - eureka
+      - db_userinteraction
+    ports:
+      - 9010:80
+    volumes:
+      - C:\FamilieLaissLogging\Settings:/var/lib/familielaiss/logs
 volumes:
   Database:
-  PostgresDataFlBackend:
+  PostgresDataUser:
+  PostgresDataUserInteraction:
+  PostgresDataSettings:
+  PostgresDataCatalog:
+  PostgresDataUpload:
+  PostgresDataPictureConvert:
+  PostgresDataVideoConvert:
 secrets:
   db_user_secret:
     file: C:\SecretsForFamilieLaiss\DBUsername.txt

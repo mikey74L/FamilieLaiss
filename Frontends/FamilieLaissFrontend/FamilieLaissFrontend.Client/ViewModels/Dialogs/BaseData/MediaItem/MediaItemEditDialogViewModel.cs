@@ -19,55 +19,53 @@ using MudBlazor;
 
 namespace FamilieLaissFrontend.Client.ViewModels.Dialogs.BaseData.MediaItem;
 
-public partial class MediaItemEditDialogViewModel : ViewModelBase
+public partial class MediaItemEditDialogViewModel(
+    ISnackbar snackbarService,
+    IMessageBoxService messageBoxService,
+    IValidatorFl<IMediaItemModel> validator,
+    IMediaItemDataService mediaItemService,
+    ICategoryDataService categoryService,
+    IEventAggregator eventAggregator,
+    IDialogService dialogService)
+    : ViewModelBase(snackbarService, messageBoxService)
 {
     #region Services
-    public readonly IValidatorFl<IMediaItemModel> Validator;
-    private readonly IMediaItemDataService mediaItemService;
-    private readonly ICategoryDataService categoryService;
-    private readonly IEventAggregator eventAggregator;
-    private readonly IDialogService dialogService;
+
+    public readonly IValidatorFl<IMediaItemModel> Validator = validator;
+
     #endregion
 
     #region Parameters
-    public MudDialogInstance MudDialog { get; set; } = default!;
+
+    public IMudDialogInstance? MudDialog { get; set; }
     public bool IsInEditMode { get; set; }
     public IMediaItemModel? Model { get; set; }
     public long? MediaGroupId { get; set; }
+
     #endregion
 
     #region Public Properties
+
     public MudForm? Form { get; set; }
 
     [ObservableProperty]
-    private EnumMediaType? currentMediaType;
+    public partial EnumMediaType? CurrentMediaType { get; set; }
 
     [ObservableProperty]
-    private IUploadPictureModel? _selectedPicture;
+    public partial IUploadPictureModel? SelectedPicture { get; set; }
 
     [ObservableProperty]
-    private IUploadVideoModel? _selectedVideo;
+    public partial IUploadVideoModel? SelectedVideo { get; set; }
 
     [ObservableProperty]
-    private List<ICategoryValueModel> _categoryValues = [];
+    public partial List<ICategoryValueModel> CategoryValues { get; set; } = [];
 
     public IEnumerable<ICategoryValueModel>? SelectedCategoryValues { get; set; }
-    #endregion
 
-    #region C'tor
-    public MediaItemEditDialogViewModel(ISnackbar snackbarService, IMessageBoxService messageBoxService,
-        IValidatorFl<IMediaItemModel> validator, IMediaItemDataService mediaItemService, ICategoryDataService categoryService,
-        IEventAggregator eventAggregator, IDialogService dialogService) : base(snackbarService, messageBoxService)
-    {
-        Validator = validator;
-        this.mediaItemService = mediaItemService;
-        this.categoryService = categoryService;
-        this.eventAggregator = eventAggregator;
-        this.dialogService = dialogService;
-    }
     #endregion
 
     #region Lifecycle
+
     public override async Task OnInitializedAsync()
     {
         if (!IsInEditMode)
@@ -94,39 +92,39 @@ public partial class MediaItemEditDialogViewModel : ViewModelBase
 
                                     if (resultCategories is not null)
                                     {
-                                        foreach (var category in resultCategories.ToList().OrderBy(x => x.LocalizedName))
+                                        foreach (var category in resultCategories.ToList()
+                                                     .OrderBy(x => x.LocalizedName))
                                         {
-                                            if (category.CategoryValues is not null)
+                                            if (category.CategoryValues is null) continue;
+                                            foreach (var categoryValue in category.CategoryValues.OrderBy(x =>
+                                                         x.LocalizedName))
                                             {
-                                                foreach (var categoryValue in category.CategoryValues.OrderBy(x => x.LocalizedName))
-                                                {
-                                                    categoryValue.Category = category;
-                                                    CategoryValues.Add(categoryValue);
-                                                }
+                                                categoryValue.Category = category;
+                                                CategoryValues.Add(categoryValue);
                                             }
                                         }
                                     }
+
                                     if (Model.MediaItemCategoryValues is not null)
                                     {
-                                        var catValues = new List<ICategoryValueModel>();
+                                        //var catValues = new List<ICategoryValueModel>();
                                         foreach (var mediaItemCategoryValue in Model.MediaItemCategoryValues)
                                         {
-                                            if (mediaItemCategoryValue?.CategoryValue?.Id is not null)
+                                            if (mediaItemCategoryValue.CategoryValue?.Id is not null)
                                             {
-                                                catValues.Add(CategoryValues.First(x => x.Id == mediaItemCategoryValue.CategoryValue.Id));
+                                                //catValues.Add(CategoryValues.First(x =>
+                                                //  x.Id == mediaItemCategoryValue.CategoryValue.Id));
                                             }
                                         }
                                     }
 
                                     Model = result;
-                                    if (Model?.MediaType is not null)
-                                    {
-                                        CurrentMediaType = Model.MediaType;
+                                    if (Model?.MediaType is null) return Task.CompletedTask;
+                                    CurrentMediaType = Model.MediaType;
 
-                                        if (CurrentMediaType == EnumMediaType.Picture)
-                                        {
-                                            SelectedPicture = Model.UploadPicture;
-                                        }
+                                    if (CurrentMediaType == EnumMediaType.Picture)
+                                    {
+                                        SelectedPicture = Model.UploadPicture;
                                     }
 
                                     return Task.CompletedTask;
@@ -174,15 +172,19 @@ public partial class MediaItemEditDialogViewModel : ViewModelBase
             IsLoading = false;
         }
     }
+
     #endregion
 
     #region Abstract overrides
+
     public override void Dispose()
     {
     }
+
     #endregion
 
     #region Commands
+
     [RelayCommand]
     private async Task SaveAsync(bool stayInDialog)
     {
@@ -196,11 +198,14 @@ public partial class MediaItemEditDialogViewModel : ViewModelBase
             {
                 if (!IsInEditMode)
                 {
-                    await mediaItemService.AddMediaItemAsync(Model, SelectedCategoryValues?.Select(x => x.Id).ToList() ?? new())
+                    await mediaItemService
+                        .AddMediaItemAsync(Model, SelectedCategoryValues?.Select(x => x.Id).ToList() ?? new())
                         .HandleStatus(APIResultErrorType.NoError, async () =>
                         {
                             ShowSuccessToast(string.Format(MediaItemEditDialogViewModelRes.ToastSaveAddSuccess,
-                                Model.MediaType == EnumMediaType.Picture ? Model.UploadPicture?.Filename : Model.LocalizedName));
+                                Model.MediaType == EnumMediaType.Picture
+                                    ? Model.UploadPicture?.Filename
+                                    : Model.LocalizedName));
 
                             await eventAggregator.PublishAsync(new AggMediaItemCreated() { MediaItem = Model });
                         })
@@ -208,7 +213,9 @@ public partial class MediaItemEditDialogViewModel : ViewModelBase
                         {
                             ShowErrorToast(string.Format(
                                 MediaItemEditDialogViewModelRes.ToastSaveAddErrorNotAuthorized,
-                                Model.MediaType == EnumMediaType.Picture ? Model.UploadPicture?.Filename : Model.LocalizedName));
+                                Model.MediaType == EnumMediaType.Picture
+                                    ? Model.UploadPicture?.Filename
+                                    : Model.LocalizedName));
 
                             return Task.CompletedTask;
                         })
@@ -216,7 +223,9 @@ public partial class MediaItemEditDialogViewModel : ViewModelBase
                         {
                             ShowErrorToast(string.Format(
                                 MediaItemEditDialogViewModelRes.ToastSaveAddErrorConflict,
-                                Model.MediaType == EnumMediaType.Picture ? Model.UploadPicture?.Filename : Model.LocalizedName));
+                                Model.MediaType == EnumMediaType.Picture
+                                    ? Model.UploadPicture?.Filename
+                                    : Model.LocalizedName));
 
                             return Task.CompletedTask;
                         })
@@ -224,7 +233,9 @@ public partial class MediaItemEditDialogViewModel : ViewModelBase
                         {
                             ShowErrorToast(string.Format(
                                 MediaItemEditDialogViewModelRes.ToastSaveAddErrorServer,
-                                Model.MediaType == EnumMediaType.Picture ? Model.UploadPicture?.Filename : Model.LocalizedName));
+                                Model.MediaType == EnumMediaType.Picture
+                                    ? Model.UploadPicture?.Filename
+                                    : Model.LocalizedName));
 
                             return Task.CompletedTask;
                         })
@@ -232,14 +243,17 @@ public partial class MediaItemEditDialogViewModel : ViewModelBase
                         {
                             ShowErrorToast(string.Format(
                                 MediaItemEditDialogViewModelRes.ToastSaveAddErrorCommunication,
-                                Model.MediaType == EnumMediaType.Picture ? Model.UploadPicture?.Filename : Model.LocalizedName));
+                                Model.MediaType == EnumMediaType.Picture
+                                    ? Model.UploadPicture?.Filename
+                                    : Model.LocalizedName));
 
                             return Task.CompletedTask;
                         });
                 }
                 else
                 {
-                    await mediaItemService.UpdateMediaItemAsync(Model, SelectedCategoryValues?.Select(x => x.Id).ToList() ?? new())
+                    await mediaItemService.UpdateMediaItemAsync(Model,
+                            SelectedCategoryValues?.Select(x => x.Id).ToList() ?? new())
                         .HandleStatus(APIResultErrorType.NoError, async () =>
                         {
                             ShowSuccessToast(string.Format(MediaItemEditDialogViewModelRes.ToastSaveEditSuccess,
@@ -251,7 +265,9 @@ public partial class MediaItemEditDialogViewModel : ViewModelBase
                         {
                             ShowErrorToast(string.Format(
                                 MediaItemEditDialogViewModelRes.ToastSaveEditErrorNotAuthorized,
-                                Model.MediaType == EnumMediaType.Picture ? Model.UploadPicture?.Filename : Model.LocalizedName));
+                                Model.MediaType == EnumMediaType.Picture
+                                    ? Model.UploadPicture?.Filename
+                                    : Model.LocalizedName));
 
                             return Task.CompletedTask;
                         })
@@ -259,7 +275,9 @@ public partial class MediaItemEditDialogViewModel : ViewModelBase
                         {
                             ShowErrorToast(string.Format(
                                 MediaItemEditDialogViewModelRes.ToastSaveEditErrorNotFound,
-                                Model.MediaType == EnumMediaType.Picture ? Model.UploadPicture?.Filename : Model.LocalizedName));
+                                Model.MediaType == EnumMediaType.Picture
+                                    ? Model.UploadPicture?.Filename
+                                    : Model.LocalizedName));
 
                             return Task.CompletedTask;
                         })
@@ -267,7 +285,9 @@ public partial class MediaItemEditDialogViewModel : ViewModelBase
                         {
                             ShowErrorToast(string.Format(
                                 MediaItemEditDialogViewModelRes.ToastSaveEditErrorConflict,
-                                Model.MediaType == EnumMediaType.Picture ? Model.UploadPicture?.Filename : Model.LocalizedName));
+                                Model.MediaType == EnumMediaType.Picture
+                                    ? Model.UploadPicture?.Filename
+                                    : Model.LocalizedName));
 
                             return Task.CompletedTask;
                         })
@@ -275,7 +295,9 @@ public partial class MediaItemEditDialogViewModel : ViewModelBase
                         {
                             ShowErrorToast(string.Format(
                                 MediaItemEditDialogViewModelRes.ToastSaveEditErrorServer,
-                                Model.MediaType == EnumMediaType.Picture ? Model.UploadPicture?.Filename : Model.LocalizedName));
+                                Model.MediaType == EnumMediaType.Picture
+                                    ? Model.UploadPicture?.Filename
+                                    : Model.LocalizedName));
 
                             return Task.CompletedTask;
                         })
@@ -283,7 +305,9 @@ public partial class MediaItemEditDialogViewModel : ViewModelBase
                         {
                             ShowErrorToast(string.Format(
                                 MediaItemEditDialogViewModelRes.ToastSaveEditErrorCommunication,
-                                Model.MediaType == EnumMediaType.Picture ? Model.UploadPicture?.Filename : Model.LocalizedName));
+                                Model.MediaType == EnumMediaType.Picture
+                                    ? Model.UploadPicture?.Filename
+                                    : Model.LocalizedName));
 
                             return Task.CompletedTask;
                         });
@@ -299,7 +323,7 @@ public partial class MediaItemEditDialogViewModel : ViewModelBase
                 }
                 else
                 {
-                    MudDialog.Close();
+                    MudDialog?.Close();
                 }
             }
         }
@@ -314,16 +338,16 @@ public partial class MediaItemEditDialogViewModel : ViewModelBase
     {
         if (Form is { IsTouched: true })
         {
-            string title = !IsInEditMode
+            var title = !IsInEditMode
                 ? MediaItemEditDialogViewModelRes.AlertCancelAddTitle
                 : MediaItemEditDialogViewModelRes.AlertCancelEditTitle;
-            string message = !IsInEditMode
+            var message = !IsInEditMode
                 ? MediaItemEditDialogViewModelRes.AlertCancelAddMessage
                 : MediaItemEditDialogViewModelRes.AlertCancelEditMessage;
-            string buttonCancel = !IsInEditMode
+            var buttonCancel = !IsInEditMode
                 ? MediaItemEditDialogViewModelRes.AlertCancelAddCancel
                 : MediaItemEditDialogViewModelRes.AlertCancelEditCancel;
-            string buttonConfirm = !IsInEditMode
+            var buttonConfirm = !IsInEditMode
                 ? MediaItemEditDialogViewModelRes.AlertCancelAddConfirm
                 : MediaItemEditDialogViewModelRes.AlertCancelEditConfirm;
 
@@ -332,25 +356,26 @@ public partial class MediaItemEditDialogViewModel : ViewModelBase
 
             if (dialogResult.HasValue && dialogResult.Value)
             {
-                MudDialog.Cancel();
+                MudDialog?.Cancel();
             }
         }
         else
         {
-            MudDialog.Cancel();
+            MudDialog?.Cancel();
         }
     }
 
     [RelayCommand]
     private async Task ShowChoosePictureDialogAsync()
     {
-        var dialogOptions = GetDialogOptions();
-        dialogOptions.MaxWidth = MaxWidth.ExtraExtraLarge;
+        var dialogOptions = GetDialogOptions(maxWidth: MaxWidth.ExtraExtraLarge);
 
-        var dialog = await dialogService.ShowAsync<ChoosePictureDialog>(MediaItemEditDialogViewModelRes.ChoosePicture, dialogOptions);
+        var dialog =
+            await dialogService.ShowAsync<ChoosePictureDialog>(MediaItemEditDialogViewModelRes.ChoosePicture,
+                dialogOptions);
         var result = await dialog.Result;
 
-        if (!result.Canceled)
+        if (result is not null && !result.Canceled)
         {
             await categoryService.GetPhotoCategoriesWithValuesAsync()
                 .HandleStatus(APIResultErrorType.NoError, (resultCategories) =>
@@ -372,13 +397,14 @@ public partial class MediaItemEditDialogViewModel : ViewModelBase
                         }
                     }
 
-                    SelectedPicture = (IUploadPictureModel)result.Data;
-                    CurrentMediaType = EnumMediaType.Picture;
-                    if (Model is not null)
+                    if (result.Data is IUploadPictureModel uploadPictureModel)
                     {
-                        Model.MediaType = CurrentMediaType;
-                        Model.UploadPicture = SelectedPicture;
+                        SelectedPicture = uploadPictureModel;
                     }
+                    CurrentMediaType = EnumMediaType.Picture;
+                    if (Model is null) return Task.CompletedTask;
+                    Model.MediaType = CurrentMediaType;
+                    Model.UploadPicture = SelectedPicture;
 
                     return Task.CompletedTask;
                 })
@@ -406,10 +432,63 @@ public partial class MediaItemEditDialogViewModel : ViewModelBase
     [RelayCommand]
     private async Task ShowChooseVideoDialogAsync()
     {
-        var dialogOptions = GetDialogOptions();
-        dialogOptions.MaxWidth = MaxWidth.ExtraExtraLarge;
+        var dialogOptions = GetDialogOptions(maxWidth: MaxWidth.ExtraExtraLarge);
 
-        await dialogService.ShowAsync<ChooseVideoDialog>("Video auswählen", dialogOptions);
+        var dialog =
+            await dialogService.ShowAsync<ChooseVideoDialog>(MediaItemEditDialogViewModelRes.ChooseVideo,
+                dialogOptions);
+        var result = await dialog.Result;
+        if (result is not null && !result.Canceled)
+        {
+            await categoryService.GetVideoCategoriesWithValuesAsync()
+                .HandleStatus(APIResultErrorType.NoError, (resultCategories) =>
+                {
+                    CategoryValues.Clear();
+
+                    if (resultCategories is not null)
+                    {
+                        foreach (var category in resultCategories.ToList().OrderBy(x => x.LocalizedName))
+                        {
+                            if (category.CategoryValues is null) continue;
+                            foreach (var categoryValue in category.CategoryValues.OrderBy(x => x.LocalizedName))
+                            {
+                                categoryValue.Category = category;
+                                CategoryValues.Add(categoryValue);
+                            }
+                        }
+                    }
+
+                    if (result.Data is IUploadVideoModel uploadVideoModel)
+                    {
+                        SelectedVideo = uploadVideoModel;
+                    }
+                    CurrentMediaType = EnumMediaType.Video;
+                    if (Model is null) return Task.CompletedTask;
+                    Model.MediaType = CurrentMediaType;
+                    Model.UploadVideo = SelectedVideo;
+
+                    return Task.CompletedTask;
+                })
+                .HandleStatus(APIResultErrorType.NotAuthorized, (_) =>
+                {
+                    ShowErrorToast(MediaItemEditDialogViewModelRes.ToastLoadingErrorNotAuthorized);
+
+                    return Task.CompletedTask;
+                })
+                .HandleStatus(APIResultErrorType.ServerError, (_) =>
+                {
+                    ShowErrorToast(MediaItemEditDialogViewModelRes.ToastLoadingErrorServerError);
+
+                    return Task.CompletedTask;
+                })
+                .HandleStatus(APIResultErrorType.CommunicationError, (_) =>
+                {
+                    ShowErrorToast(MediaItemEditDialogViewModelRes.ToastLoadingErrorCommunication);
+
+                    return Task.CompletedTask;
+                });
+        }
     }
+
     #endregion
 }

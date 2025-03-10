@@ -71,11 +71,11 @@ public class AppSettings
 
     #region Content Directories
 
-    public string DirectoryUploadPicture { get; set; }
+    public string DirectoryUploadPicture { get; set; } = string.Empty;
 
-    public string DirectoryUploadVideo { get; set; }
+    public string DirectoryUploadVideo { get; set; } = string.Empty;
 
-    public string DirectoryConvertVideo { get; set; }
+    public string DirectoryConvertVideo { get; set; } = string.Empty;
 
     #endregion
 
@@ -94,7 +94,8 @@ public class AppSettings
 
     #region Endpoint-Names
 
-    public string EndpointNameExecutor { get; set; }
+    public string EndpointNameExecutor { get; set; } = string.Empty;
+    public string EndpointNameUploadService { get; set; } = string.Empty;
 
     #endregion
 }

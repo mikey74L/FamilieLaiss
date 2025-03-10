@@ -3,6 +3,7 @@
 @using FamilieLaissInterfaces.Models.Data
 @using FamilieLaissResources.Resources.Dialogs.BaseData.CategoryValue
 @using FamilieLaissSharedUI.Components
+@using Variant = MudBlazor.Variant
 
 @inherits FlComponentBase<CategoryValueEditDialogViewModel>
 
@@ -15,64 +16,59 @@
                     <MudTextField Disabled="@ViewModel.IsBusy"
                                   @bind-Value="Model.NameGerman"
                                   For="@(() => Model.NameGerman)"
-                                  Label="@CategoryValueEditDialogRes.Label_NameGerman"
-                                  HelperText="@CategoryValueEditDialogRes.Description_NameGerman"
+                                  Label="@CategoryValueEditDialogRes.LabelNameGerman"
+                                  HelperText="@CategoryValueEditDialogRes.DescriptionNameGerman"
                                   HelperTextOnFocus="true"
-                                  Variant="MudBlazor.Variant.Text" />
+                                  Variant="Variant.Text" />
                     <MudTextField Disabled="@ViewModel.IsBusy"
                                   @bind-Value="Model.NameEnglish"
                                   For="@(() => Model.NameEnglish)"
-                                  Label="@CategoryValueEditDialogRes.Label_NameEnglish"
-                                  HelperText="@CategoryValueEditDialogRes.Description_NameEnglish"
+                                  Label="@CategoryValueEditDialogRes.LabelNameEnglish"
+                                  HelperText="@CategoryValueEditDialogRes.DescriptionNameEnglish"
                                   HelperTextOnFocus="true"
-                                  Variant="MudBlazor.Variant.Text" />
+                                  Variant="Variant.Text" />
                 }
             </MudForm>
         </MudContainer>
     </DialogContent>
     <DialogActions>
-        @if (ViewModel.SaveMode == EnumSaveMode.Save)
+        @if (IsInEditMode)
         {
-            <MudTooltip Placement="Placement.Top" Arrow="true" Text="@CategoryValueEditDialogRes.Tooltip_Save" ShowOnFocus="false">
+            <MudTooltip Placement="Placement.Top" Arrow="true" Text="@CategoryValueEditDialogRes.TooltipSave" ShowOnFocus="false">
                 <MudLoadingButton Loading="@ViewModel.IsSaving"
                                   LoadingAdornment="Adornment.Start"
                                   StartIcon="@Icons.Material.Filled.Save"
                                   Color="Color.Primary"
-                                  Variant="MudBlazor.Variant.Filled"
-                                  OnClick="async () => await ViewModel.SaveCommand.ExecuteAsync(false)">@CategoryValueEditDialogRes.Button_Save</MudLoadingButton>
+                                  Variant="Variant.Filled"
+                                  OnClick="async () => await ViewModel.SaveCommand.ExecuteAsync(false)">@CategoryValueEditDialogRes.ButtonSave</MudLoadingButton>
             </MudTooltip>
         }
         else
         {
-            <MudTooltip Placement="Placement.Top" Arrow="true" Text="@CategoryValueEditDialogRes.Tooltip_Save_Continue" ShowOnFocus="false">
-                <MudLoadingButton Loading="@ViewModel.IsSaving"
-                                  LoadingAdornment="Adornment.Start"
-                                  StartIcon="@Icons.Material.Filled.Save"
-                                  Color="Color.Primary"
-                                  Variant="MudBlazor.Variant.Filled"
-                                  OnClick="async () => await ViewModel.SaveCommand.ExecuteAsync(true)">@CategoryValueEditDialogRes.Button_Save_Continue</MudLoadingButton>
-            </MudTooltip>
+            <MudButtonGroup Color="Color.Primary" Variant="Variant.Filled">
+                <MudTooltip Placement="Placement.Top" Arrow="true"
+                            Text="@(ViewModel.SaveMode == EnumSaveMode.Save ? @CategoryValueEditDialogRes.TooltipSave : @CategoryValueEditDialogRes.TooltipSaveContinue)"
+                            ShowOnFocus="false">
+                    <MudLoadingButton Loading="@ViewModel.IsSaving"
+                                      LoadingAdornment="Adornment.Start"
+                                      StartIcon="@Icons.Material.Filled.Save"
+                                      Color="Color.Primary"
+                                      Variant="Variant.Filled"
+                                      OnClick="async () => await ViewModel.SaveCommand.ExecuteAsync(false)">@(ViewModel.SaveMode == EnumSaveMode.Save ? @CategoryValueEditDialogRes.ButtonSave : @CategoryValueEditDialogRes.ButtonSaveContinue)</MudLoadingButton>
+                </MudTooltip>
+                <MudTooltip Text="@CategoryValueEditDialogRes.TooltipShowSaveOptions" ShowOnFocus="false">
+                    <MudMenu Disabled="@ViewModel.IsSaving" Icon="@Icons.Material.Filled.ArrowDropDown"
+                             Style="align-self: auto;">
+                        <MudMenuItem
+                            OnClick="async () => await ViewModel.SaveCommand.ExecuteAsync(false)">@CategoryValueEditDialogRes.ButtonSave</MudMenuItem>
+                        <MudMenuItem
+                            OnClick="async () => await ViewModel.SaveCommand.ExecuteAsync(true)">@CategoryValueEditDialogRes.TooltipSaveContinue</MudMenuItem>
+                    </MudMenu>
+                </MudTooltip>
+            </MudButtonGroup>
         }
-        @if (!IsInEditMode)
-        {
-            <MudMenu Style="margin-left: 1px!important">
-                <ActivatorContent>
-                    <MudTooltip Text="@CategoryValueEditDialogRes.Tooltip_ShowSaveOptions" ShowOnFocus="false">
-                        <MudIconButton Icon="@Icons.Material.Filled.ArrowDropDown"
-                                       Variant="MudBlazor.Variant.Filled"
-                                       Color="Color.Primary"
-                                       Disabled="@ViewModel.IsSaving">
-                        </MudIconButton>
-                    </MudTooltip>
-                </ActivatorContent>
-                <ChildContent>
-                    <MudMenuItem OnClick="async () => await ViewModel.SaveCommand.ExecuteAsync(false)">@CategoryValueEditDialogRes.Button_Save</MudMenuItem>
-                    <MudMenuItem OnClick="async () => await ViewModel.SaveCommand.ExecuteAsync(true)">@CategoryValueEditDialogRes.Tooltip_Save_Continue</MudMenuItem>
-                </ChildContent>
-            </MudMenu>
-        }
-        <MudTooltip Placement="Placement.Top" Arrow="true" Text="@CategoryValueEditDialogRes.Tooltip_Cancel" ShowOnFocus="false">
-            <MudButton Disabled="@ViewModel.IsSaving" OnClick="async () => await ViewModel.CancelCommand.ExecuteAsync(null)">@CategoryValueEditDialogRes.Button_Cancel</MudButton>
+        <MudTooltip Placement="Placement.Top" Arrow="true" Text="@CategoryValueEditDialogRes.TooltipCancel" ShowOnFocus="false">
+            <MudButton Disabled="@ViewModel.IsSaving" OnClick="async () => await ViewModel.CancelCommand.ExecuteAsync(null)">@CategoryValueEditDialogRes.ButtonCancel</MudButton>
         </MudTooltip>
     </DialogActions>
 </MudDialog>
@@ -80,54 +76,30 @@
 @code
 {
     [CascadingParameter]
-    public MudDialogInstance MudDialog
+    public IMudDialogInstance MudDialog
     {
-        get
-        {
-            return ViewModel.MudDialog;
-        }
-        set
-        {
-            ViewModel.MudDialog = value;
-        }
+        get => ViewModel.MudDialog;
+        set => ViewModel.MudDialog = value;
     }
 
     [Parameter]
     public bool IsInEditMode
     {
-        get
-        {
-            return ViewModel.IsInEditMode;
-        }
-        set
-        {
-            ViewModel.IsInEditMode = value;
-        }
+        get => ViewModel.IsInEditMode;
+        set => ViewModel.IsInEditMode = value;
     }
 
     [Parameter]
     public ICategoryValueModel? Model
     {
-        get
-        {
-            return ViewModel.Model;
-        }
-        set
-        {
-            ViewModel.Model = value;
-        }
+        get => ViewModel.Model;
+        set => ViewModel.Model = value;
     }
 
     [Parameter]
     public ICategoryModel ModelCategory 
     { 
-        get
-        {
-            return ViewModel.ModelCategory;
-        }
-        set
-        {
-            ViewModel.ModelCategory = value;
-        }
+        get => ViewModel.ModelCategory;
+        set => ViewModel.ModelCategory = value;
     }
 }

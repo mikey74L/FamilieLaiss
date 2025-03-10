@@ -9,7 +9,7 @@ public class UploadPictureModel : IUploadPictureModel
     public string? Filename { get; set; }
     public int? Height { get; set; }
     public int? Width { get; set; }
-    public EnumUploadStatus? Status { get; set; }
+    public EnumUploadState? State { get; set; }
     public IUploadPictureExifInfoModel? UploadPictureExifInfo { get; set; }
     public IGoogleGeoCodingAddressModel? GoogleGeoCodingAddress { get; set; }
 

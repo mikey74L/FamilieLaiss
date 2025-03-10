@@ -1,0 +1,271 @@
+﻿schema {
+  query: Query
+  mutation: Mutation
+}
+
+"The result for a new added user setting"
+type AddUserSettingPayload {
+  "The new added user setting"
+  userSetting: UserSetting!
+}
+
+type Mutation {
+  "Add a new user setting"
+  addUserSetting(input: AddUserSettingInput!): AddUserSettingPayload! @cost(weight: "10")
+  "Update existing user setting"
+  updateUserSetting(input: UpdateUserSettingInput!): UpdateUserSettingPayload! @cost(weight: "10")
+}
+
+type Query {
+  "Returns a list of user settings"
+  userSettings(where: UserSettingFilterInput @cost(weight: "10")): [UserSetting!]! @cost(weight: "10")
+  "Returns a category"
+  userSetting(id: String!): UserSetting! @lookup @cost(weight: "10")
+}
+
+"The result for a updated user setting"
+type UpdateUserSettingPayload {
+  "The updated user setting"
+  userSetting: UserSetting!
+}
+
+"User setting"
+type UserSetting {
+  "The identifier for this user setting"
+  id: String!
+  "When was this user setting added to database"
+  createDate: DateTime!
+  "When was this user setting the last time changed in database"
+  changeDate: DateTime
+  "Should the question to keep the upload item be shown?"
+  questionKeepUploadWhenDelete: Boolean!
+  "What should be the default when question would not be shown"
+  defaultKeepUploadWhenDelete: Boolean!
+  "Should videos automatically start playing when video player is shown"
+  videoAutoPlay: Boolean!
+  "The default volume vor video player all videos start playing with"
+  videoVolume: Int!
+  "Should videos play in a loop"
+  videoLoop: Boolean!
+  "Should other videos of current album play after current video is fnished"
+  videoAutoPlayOtherVideos: Boolean!
+  "Wait time to play other video in of current album in seconds"
+  videoTimeToPlayNextVideo: Int!
+  "Show zoom info in video player"
+  showZoomInfo: Boolean!
+  "Allow zoom with mouse wheel in video player"
+  allowZoomingWithMouseWheel: Boolean!
+  "Show tooltip for playtime in video player when mouse over"
+  showTooltipForPlaytimeOnMouseCursor: Boolean!
+  "Show tooltip for current playtime in video player"
+  showTooltipForCurrentPlaytime: Boolean!
+  "Should the seek forward button be shown in the player"
+  showButtonForward: Boolean!
+  "Should the seek backward button be shown in the player"
+  showButtonRewind: Boolean!
+  "Should the player show the zoom menu"
+  showZoomMenu: Boolean!
+  "Show play rate menu in video player"
+  showPlayRateMenu: Boolean!
+  "Show mirror button in video player"
+  showMirrorButton: Boolean!
+  "Show quality menu in video player"
+  showQualityMenu: Boolean!
+  "Time in seconds the seek forward \/ rewind button will jump ahead \/ back in the video"
+  videoTimeSeekForwardRewind: Int!
+  "Close gallery with pressing the Escape-Key"
+  galleryCloseEsc: Boolean!
+  "Close gallery with clicking on background"
+  galleryCloseDimmer: Boolean!
+  "Change current photo in gallery by using the mouse wheel"
+  galleryMouseWheelChangeSlide: Boolean!
+  "Show thumbnails from begin on"
+  galleryShowThumbnails: Boolean!
+  "Start gallery in full screen mode"
+  galleryShowFullScreen: Boolean!
+  "Time to transition from current picture to next picture in milliseconds"
+  galleryTransitionDuration: Int!
+  "Name of the transition animation"
+  galleryTransitionType: String!
+}
+
+"InputData type for adding user setting"
+input AddUserSettingInput {
+  "The id for the user"
+  id: String!
+}
+
+input BooleanOperationFilterInput {
+  eq: Boolean @cost(weight: "10")
+  neq: Boolean @cost(weight: "10")
+}
+
+input DateTimeOperationFilterInput {
+  eq: DateTime @cost(weight: "10")
+  neq: DateTime @cost(weight: "10")
+  in: [DateTime] @cost(weight: "10")
+  nin: [DateTime] @cost(weight: "10")
+  gt: DateTime @cost(weight: "10")
+  ngt: DateTime @cost(weight: "10")
+  gte: DateTime @cost(weight: "10")
+  ngte: DateTime @cost(weight: "10")
+  lt: DateTime @cost(weight: "10")
+  nlt: DateTime @cost(weight: "10")
+  lte: DateTime @cost(weight: "10")
+  nlte: DateTime @cost(weight: "10")
+}
+
+input IntOperationFilterInput {
+  eq: Int @cost(weight: "10")
+  neq: Int @cost(weight: "10")
+  in: [Int] @cost(weight: "10")
+  nin: [Int] @cost(weight: "10")
+  gt: Int @cost(weight: "10")
+  ngt: Int @cost(weight: "10")
+  gte: Int @cost(weight: "10")
+  ngte: Int @cost(weight: "10")
+  lt: Int @cost(weight: "10")
+  nlt: Int @cost(weight: "10")
+  lte: Int @cost(weight: "10")
+  nlte: Int @cost(weight: "10")
+}
+
+input StringOperationFilterInput {
+  and: [StringOperationFilterInput!]
+  or: [StringOperationFilterInput!]
+  eq: String @cost(weight: "10")
+  neq: String @cost(weight: "10")
+  contains: String @cost(weight: "20")
+  ncontains: String @cost(weight: "20")
+  in: [String] @cost(weight: "10")
+  nin: [String] @cost(weight: "10")
+  startsWith: String @cost(weight: "20")
+  nstartsWith: String @cost(weight: "20")
+  endsWith: String @cost(weight: "20")
+  nendsWith: String @cost(weight: "20")
+}
+
+input UpdateUserSettingInput {
+  "The id for the user"
+  id: String!
+  "Should the question to keep the upload item be shown?"
+  questionKeepUploadWhenDelete: Boolean!
+  "What should be the default when question would not be shown"
+  defaultKeepUploadWhenDelete: Boolean!
+  "Should videos automatically start playing when video player is shown"
+  videoAutoPlay: Boolean!
+  "The default volume vor video player all videos start playing with"
+  videoVolume: Int!
+  "Should videos play in a loop"
+  videoLoop: Boolean!
+  "Should other videos of current album play after current video is fnished"
+  videoAutoPlayOtherVideos: Boolean!
+  "Wait time to play other video in of current album in seconds"
+  videoTimeToPlayNextVideo: Int!
+  "Show zoom info in video player"
+  showZoomInfo: Boolean!
+  "Allow zoom with mouse wheel in video player"
+  allowZoomingWithMouseWheel: Boolean!
+  "Show tooltip for playtime in video player when mouse over"
+  showTooltipForPlaytimeOnMouseCursor: Boolean!
+  "Show tooltip for current playtime in video player"
+  showTooltipForCurrentPlaytime: Boolean!
+  "Should the seek forward button be shown in the player"
+  showButtonForward: Boolean!
+  "Should the seek backward button be shown in the player"
+  showButtonRewind: Boolean!
+  "Should the player show the zoom menu"
+  showZoomMenu: Boolean!
+  "Show play rate menu in video player"
+  showPlayRateMenu: Boolean!
+  "Show mirror button in video player"
+  showMirrorButton: Boolean!
+  "Show quality menu in video player"
+  showQualityMenu: Boolean!
+  "Time in seconds the seek forward \/ rewind button will jump ahead \/ back in the video"
+  videoTimeSeekForwardRewind: Int!
+  "Close gallery with pressing the Escape-Key"
+  galleryCloseEsc: Boolean!
+  "Close gallery with clicking on background"
+  galleryCloseDimmer: Boolean!
+  "Change current photo in gallery by using the mouse wheel"
+  galleryMouseWheelChangeSlide: Boolean!
+  "Show thumbnails from begin on"
+  galleryShowThumbnails: Boolean!
+  "Start gallery in full screen mode"
+  galleryShowFullScreen: Boolean!
+  "Time to transition from current picture to next picture in milliseconds"
+  galleryTransitionDuration: Int!
+  "Name of the transition animation"
+  galleryTransitionType: String!
+}
+
+"User setting"
+input UserSettingFilterInput {
+  and: [UserSettingFilterInput!]
+  or: [UserSettingFilterInput!]
+  "Should the question to keep the upload item be shown?"
+  questionKeepUploadWhenDelete: BooleanOperationFilterInput
+  "What should be the default when question would not be shown"
+  defaultKeepUploadWhenDelete: BooleanOperationFilterInput
+  "Should videos automatically start playing when video player is shown"
+  videoAutoPlay: BooleanOperationFilterInput
+  "The default volume vor video player all videos start playing with"
+  videoVolume: IntOperationFilterInput
+  "Should videos play in a loop"
+  videoLoop: BooleanOperationFilterInput
+  "Should other videos of current album play after current video is fnished"
+  videoAutoPlayOtherVideos: BooleanOperationFilterInput
+  "Wait time to play other video in of current album in seconds"
+  videoTimeToPlayNextVideo: IntOperationFilterInput
+  "Show zoom info in video player"
+  showZoomInfo: BooleanOperationFilterInput
+  "Allow zoom with mouse wheel in video player"
+  allowZoomingWithMouseWheel: BooleanOperationFilterInput
+  "Show tooltip for playtime in video player when mouse over"
+  showTooltipForPlaytimeOnMouseCursor: BooleanOperationFilterInput
+  "Show tooltip for current playtime in video player"
+  showTooltipForCurrentPlaytime: BooleanOperationFilterInput
+  "Should the seek forward button be shown in the player"
+  showButtonForward: BooleanOperationFilterInput
+  "Should the seek backward button be shown in the player"
+  showButtonRewind: BooleanOperationFilterInput
+  "Should the player show the zoom menu"
+  showZoomMenu: BooleanOperationFilterInput
+  "Show play rate menu in video player"
+  showPlayRateMenu: BooleanOperationFilterInput
+  "Show mirror button in video player"
+  showMirrorButton: BooleanOperationFilterInput
+  "Show quality menu in video player"
+  showQualityMenu: BooleanOperationFilterInput
+  "Time in seconds the seek forward \/ rewind button will jump ahead \/ back in the video"
+  videoTimeSeekForwardRewind: IntOperationFilterInput
+  "Close gallery with pressing the Escape-Key"
+  galleryCloseEsc: BooleanOperationFilterInput
+  "Close gallery with clicking on background"
+  galleryCloseDimmer: BooleanOperationFilterInput
+  "Change current photo in gallery by using the mouse wheel"
+  galleryMouseWheelChangeSlide: BooleanOperationFilterInput
+  "Show thumbnails from begin on"
+  galleryShowThumbnails: BooleanOperationFilterInput
+  "Start gallery in full screen mode"
+  galleryShowFullScreen: BooleanOperationFilterInput
+  "Time to transition from current picture to next picture in milliseconds"
+  galleryTransitionDuration: IntOperationFilterInput
+  "Name of the transition animation"
+  galleryTransitionType: StringOperationFilterInput
+  changeDate: DateTimeOperationFilterInput
+  createDate: DateTimeOperationFilterInput
+  id: StringOperationFilterInput
+}
+
+"The purpose of the `cost` directive is to define a `weight` for GraphQL types, fields, and arguments. Static analysis can use these weights when calculating the overall cost of a query or response."
+directive @cost("The `weight` argument defines what value to add to the overall cost for every appearance, or possible appearance, of a type, field, argument, etc." weight: String!) on SCALAR | OBJECT | FIELD_DEFINITION | ARGUMENT_DEFINITION | ENUM | INPUT_FIELD_DEFINITION
+
+directive @lookup on FIELD_DEFINITION
+
+"The `@specifiedBy` directive is used within the type system definition language to provide a URL for specifying the behavior of custom scalar definitions."
+directive @specifiedBy("The specifiedBy URL points to a human-readable specification. This field will only read a result for scalar types." url: String!) on SCALAR
+
+"The `DateTime` scalar represents an ISO-8601 compliant date time type."
+scalar DateTime @specifiedBy(url: "https:\/\/www.graphql-scalars.com\/date-time")

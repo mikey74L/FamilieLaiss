@@ -1,0 +1,748 @@
+﻿schema {
+  query: Query
+  mutation: Mutation
+}
+
+"The result for a new added category"
+type AddCategoryPayload {
+  "The new added category"
+  category: Category!
+}
+
+"The result for a new added category value"
+type AddCategoryValuePayload {
+  "The new added category value"
+  categoryValue: CategoryValue!
+}
+
+"The result for a new added media group"
+type AddMediaGroupPayload {
+  "The new added media group"
+  mediaGroup: MediaGroup!
+}
+
+"The result for a new added media item"
+type AddMediaItemPayload {
+  "The new added media item"
+  mediaItem: MediaItem!
+}
+
+"Category group"
+type Category {
+  "The identifier for this category"
+  id: Long!
+  "When was this category last changed"
+  changeDate: DateTime
+  "When was this category created"
+  createDate: DateTime!
+  "The type of category"
+  categoryType: EnumCategoryType!
+  "German name for this category"
+  nameGerman: String!
+  "English name for this category"
+  nameEnglish: String!
+  "List of related category values"
+  categoryValues(where: CategoryValueFilterInput @cost(weight: "10") order: [CategoryValueSortInput!] @cost(weight: "10")): [CategoryValue!]!
+}
+
+"Category values"
+type CategoryValue {
+  "The identifier for this category value"
+  id: Long!
+  "When was this category value last changed"
+  changeDate: DateTime
+  "When was this category value created"
+  createDate: DateTime!
+  "The Category this category value entry belongs to"
+  category: Category!
+  "German name for this category value"
+  nameGerman: String!
+  "English name for this category value"
+  nameEnglish: String!
+  "List of related media item category values"
+  mediaItemCategoryValues(where: MediaItemCategoryValueFilterInput @cost(weight: "10") order: [MediaItemCategoryValueSortInput!] @cost(weight: "10")): [MediaItemCategoryValue!]!
+}
+
+"The result for a deleted category"
+type DeleteCategoryPayload {
+  "The deleted category"
+  category: Category!
+}
+
+"The result for a deleted category value"
+type DeleteCategoryValuePayload {
+  "The deleted category value"
+  categoryValue: CategoryValue!
+}
+
+"The result for a deleted media group"
+type DeleteMediaGroupPayload {
+  "The deleted media group"
+  mediaGroup: MediaGroup!
+}
+
+"The result for a deleted media item"
+type DeleteMediaItemPayload {
+  "The deleted media item"
+  mediaItem: MediaItem!
+}
+
+"Media group"
+type MediaGroup {
+  "The identifier for this media group"
+  id: Long!
+  "When was this media group last changed"
+  changeDate: DateTime
+  "When was this media group created"
+  createDate: DateTime!
+  "German name for this media group"
+  nameGerman: String!
+  "English name for this media group"
+  nameEnglish: String!
+  "German description for this media group"
+  descriptionGerman: String!
+  "English description for this media group"
+  descriptionEnglish: String!
+  "The date on which the event took place"
+  eventDate: DateTime!
+  "List of related media items"
+  mediaItems(where: MediaItemFilterInput @cost(weight: "10") order: [MediaItemSortInput!] @cost(weight: "10")): [MediaItem!]!
+}
+
+"Media item"
+type MediaItem {
+  "The identifier for this media item"
+  id: Long!
+  "When was this media item last changed"
+  changeDate: DateTime
+  "When was this media item created"
+  createDate: DateTime!
+  "The media group this media item entry belongs to"
+  mediaGroup: MediaGroup!
+  "The type of media item"
+  mediaType: EnumMediaType!
+  "German name for this media item"
+  nameGerman: String!
+  "English name for this media item"
+  nameEnglish: String!
+  "German description for this media item"
+  descriptionGerman: String
+  "English description for this media item"
+  descriptionEnglish: String
+  "Is this media item is only visible for family users"
+  onlyFamily: Boolean!
+  "The assigned upload picture if the item is of type picture"
+  uploadPicture: UploadPicture
+  "The assigned upload video if the item is of type video"
+  uploadVideo: UploadVideo
+  "List of related media item category values"
+  mediaItemCategoryValues: [MediaItemCategoryValue!]!
+}
+
+"Media item assigned category value"
+type MediaItemCategoryValue {
+  "The identifier for this media item category value"
+  id: Long!
+  "When was this media item category value created"
+  createDate: DateTime!
+  "The media item this category value entry belongs to"
+  mediaItem: MediaItem!
+  "The category value this media item belongs to"
+  categoryValue: CategoryValue!
+}
+
+type Mutation {
+  "Add a new category"
+  addCategory(input: AddCategoryInput!): AddCategoryPayload! @cost(weight: "10")
+  "Update existing category"
+  updateCategory(input: UpdateCategoryInput!): UpdateCategoryPayload! @cost(weight: "10")
+  "Delete existing category"
+  deleteCategory(input: DeleteCategoryInput!): DeleteCategoryPayload! @cost(weight: "10")
+  "Add a new category value"
+  addCategoryValue(input: AddCategoryValueInput!): AddCategoryValuePayload! @cost(weight: "10")
+  "Update existing category value"
+  updateCategoryValue(input: UpdateCategoryValueInput!): UpdateCategoryValuePayload! @cost(weight: "10")
+  "Delete existing category value"
+  deleteCategoryValue(input: DeleteCategoryValueInput!): DeleteCategoryValuePayload! @cost(weight: "10")
+  "Add a new media group"
+  addMediaGroup(input: AddMediaGroupInput!): AddMediaGroupPayload! @cost(weight: "10")
+  "Update existing media group"
+  updateMediaGroup(input: UpdateMediaGroupInput!): UpdateMediaGroupPayload! @cost(weight: "10")
+  "Delete existing media group"
+  deleteMediaGroup(input: DeleteMediaGroupInput!): DeleteMediaGroupPayload! @cost(weight: "10")
+  "Add a new media item"
+  addMediaItem(input: AddMediaItemInput!): AddMediaItemPayload! @cost(weight: "10")
+  "Update existing media item"
+  updateMediaItem(input: UpdateMediaItemInput!): UpdateMediaItemPayload! @cost(weight: "10")
+  "Delete existing media item"
+  deleteMediaItem(input: DeleteMediaItemInput!): DeleteMediaItemPayload! @cost(weight: "10")
+}
+
+type Query {
+  "Returns a list of categories"
+  categories(where: CategoryFilterInput @cost(weight: "10") order: [CategorySortInput!] @cost(weight: "10")): [Category!]! @cost(weight: "10")
+  "Returns a category"
+  category(id: Long!): Category! @lookup @cost(weight: "10")
+  "Validate german category name"
+  germanCategoryNameExists(iD: Long! categoryType: EnumCategoryType! germanName: String!): Boolean! @cost(weight: "10")
+  "Validate english category name"
+  englishCategoryNameExists(iD: Long! categoryType: EnumCategoryType! englishName: String!): Boolean! @cost(weight: "10")
+  "Returns a list of category values"
+  categoryValues(where: CategoryValueFilterInput @cost(weight: "10") order: [CategoryValueSortInput!] @cost(weight: "10")): [CategoryValue!]! @cost(weight: "10")
+  "Returns a category value"
+  categoryValue(id: Long!): CategoryValue! @lookup @cost(weight: "10")
+  "Validate german category value name"
+  germanCategoryValueNameExists(iD: Long! categoryId: Long! germanName: String!): Boolean! @cost(weight: "10")
+  "Validate english category value name"
+  englishCategoryValueNameExists(iD: Long! categoryId: Long! englishName: String!): Boolean! @cost(weight: "10")
+  "Returns a list of media groups"
+  mediaGroups(where: MediaGroupFilterInput @cost(weight: "10") order: [MediaGroupSortInput!] @cost(weight: "10")): [MediaGroup!]! @cost(weight: "10")
+  "Returns a media group"
+  mediaGroup(id: Long!): MediaGroup! @lookup @cost(weight: "10")
+  "Returns a list of media items"
+  mediaItems(where: MediaItemFilterInput @cost(weight: "10") order: [MediaItemSortInput!] @cost(weight: "10")): [MediaItem!]! @cost(weight: "10")
+  "Returns a media item"
+  mediaItem(id: Long!): MediaItem! @lookup @cost(weight: "10")
+  "Validate german media group name"
+  germanMediaGroupNameExists(iD: Long! germanName: String!): Boolean! @cost(weight: "10")
+  "Validate english media group name"
+  englishMediaGroupNameExists(iD: Long! englishName: String!): Boolean! @cost(weight: "10")
+  "Validate german media item name"
+  germanMediaItemNameExists(iD: Long! mediaGroupId: Long! germanName: String!): Boolean! @cost(weight: "10")
+  "Validate english media item name"
+  englishMediaItemNameExists(iD: Long! mediaGroupId: Long! englishName: String!): Boolean! @cost(weight: "10")
+  "Returns a upload picture"
+  uploadPicture(id: Long!): UploadPicture! @lookup @cost(weight: "10")
+  "Returns a upload video"
+  uploadVideo(id: Long!): UploadVideo! @lookup @cost(weight: "10")
+}
+
+"The result for a updated category"
+type UpdateCategoryPayload {
+  "The updated category"
+  category: Category!
+}
+
+"The result for a updated category value"
+type UpdateCategoryValuePayload {
+  "The updated category value"
+  categoryValue: CategoryValue!
+}
+
+"The result for a updated media group"
+type UpdateMediaGroupPayload {
+  "The updated media group"
+  mediaGroup: MediaGroup!
+}
+
+"The result for a updated media item"
+type UpdateMediaItemPayload {
+  "The updated media item"
+  mediaItem: MediaItem!
+}
+
+type UploadPicture {
+  "The identifier for this upload picture"
+  id: Long!
+  "Is the upload picture assigned to a media item"
+  isAssigned: Boolean!
+  "The media item the upload picture is assigned to"
+  mediaItem: MediaItem
+}
+
+type UploadVideo {
+  "The identifier for this upload video"
+  id: Long!
+  "Is the upload video assigned to a media item"
+  isAssigned: Boolean!
+  "The media item the upload video is assigned to"
+  mediaItem: MediaItem
+}
+
+"InputData type for adding categories"
+input AddCategoryInput {
+  "The type of category"
+  categoryType: EnumCategoryType!
+  "German name for this category"
+  nameGerman: String!
+  "English name for this category"
+  nameEnglish: String!
+}
+
+"Input type for adding category value"
+input AddCategoryValueInput {
+  "The key for the category"
+  categoryId: Long!
+  "German name for this category value"
+  nameGerman: String!
+  "English name for this category value"
+  nameEnglish: String!
+}
+
+"InputData type for adding media group"
+input AddMediaGroupInput {
+  "German name for this media group"
+  nameGerman: String!
+  "English name for this media group"
+  nameEnglish: String!
+  "German description for this media group"
+  descriptionGerman: String!
+  "English description for this media group"
+  descriptionEnglish: String!
+  "The date on which the event took place"
+  eventDate: DateTime!
+}
+
+"InputData type for adding media item"
+input AddMediaItemInput {
+  "The unique identifier for the media group this media item belongs to"
+  mediaGroupId: Long!
+  "The type of media item"
+  mediaType: EnumMediaType!
+  "German name for this media item"
+  nameGerman: String!
+  "English name for this media item"
+  nameEnglish: String!
+  "German description for this media item"
+  descriptionGerman: String
+  "English description for this media item"
+  descriptionEnglish: String
+  "Is this media item only visible for family users"
+  onlyFamily: Boolean!
+  "The unique identifier for the assigned upload item (picture or video)"
+  uploadItemId: Long!
+  "The list of unique identifiers for the category values added to this media item"
+  categoryValueIds: [Long!]!
+}
+
+input BooleanOperationFilterInput {
+  eq: Boolean @cost(weight: "10")
+  neq: Boolean @cost(weight: "10")
+}
+
+"Category group"
+input CategoryFilterInput {
+  and: [CategoryFilterInput!]
+  or: [CategoryFilterInput!]
+  "The type of category"
+  categoryType: EnumCategoryTypeOperationFilterInput
+  "German name for this category"
+  nameGerman: StringOperationFilterInput
+  "English name for this category"
+  nameEnglish: StringOperationFilterInput
+  "List of related category values"
+  categoryValues: ListFilterInputTypeOfCategoryValueFilterInput
+  changeDate: DateTimeOperationFilterInput
+  createDate: DateTimeOperationFilterInput
+  id: LongOperationFilterInput
+}
+
+"Category group"
+input CategorySortInput {
+  "The type of category"
+  categoryType: SortEnumType @cost(weight: "10")
+  "German name for this category"
+  nameGerman: SortEnumType @cost(weight: "10")
+  "English name for this category"
+  nameEnglish: SortEnumType @cost(weight: "10")
+  changeDate: SortEnumType @cost(weight: "10")
+  createDate: SortEnumType @cost(weight: "10")
+  id: SortEnumType @cost(weight: "10")
+}
+
+"Category values"
+input CategoryValueFilterInput {
+  and: [CategoryValueFilterInput!]
+  or: [CategoryValueFilterInput!]
+  "The Category this category value entry belongs to"
+  category: CategoryFilterInput
+  "German name for this category value"
+  nameGerman: StringOperationFilterInput
+  "English name for this category value"
+  nameEnglish: StringOperationFilterInput
+  "List of related media item category values"
+  mediaItemCategoryValues: ListFilterInputTypeOfMediaItemCategoryValueFilterInput
+  changeDate: DateTimeOperationFilterInput
+  createDate: DateTimeOperationFilterInput
+  id: LongOperationFilterInput
+}
+
+"Category values"
+input CategoryValueSortInput {
+  "The Category this category value entry belongs to"
+  category: CategorySortInput @cost(weight: "10")
+  "German name for this category value"
+  nameGerman: SortEnumType @cost(weight: "10")
+  "English name for this category value"
+  nameEnglish: SortEnumType @cost(weight: "10")
+  changeDate: SortEnumType @cost(weight: "10")
+  createDate: SortEnumType @cost(weight: "10")
+  id: SortEnumType @cost(weight: "10")
+}
+
+input DateTimeOperationFilterInput {
+  eq: DateTime @cost(weight: "10")
+  neq: DateTime @cost(weight: "10")
+  in: [DateTime] @cost(weight: "10")
+  nin: [DateTime] @cost(weight: "10")
+  gt: DateTime @cost(weight: "10")
+  ngt: DateTime @cost(weight: "10")
+  gte: DateTime @cost(weight: "10")
+  ngte: DateTime @cost(weight: "10")
+  lt: DateTime @cost(weight: "10")
+  nlt: DateTime @cost(weight: "10")
+  lte: DateTime @cost(weight: "10")
+  nlte: DateTime @cost(weight: "10")
+}
+
+"InputData type for deleting categories"
+input DeleteCategoryInput {
+  "The Id for the category"
+  id: Long!
+}
+
+"Input type for deleting category values"
+input DeleteCategoryValueInput {
+  "The ID for the category value"
+  id: Long!
+}
+
+"InputData type for deleting media group"
+input DeleteMediaGroupInput {
+  "The Id for the media group"
+  id: Long!
+  "Should assigned upload items be kept in the upload area?"
+  keepUploadItems: Boolean!
+}
+
+"InputData type for deleting media item"
+input DeleteMediaItemInput {
+  "The ID for the media group the media item belongs to"
+  mediaGroupId: Long!
+  "The ID for the media item to delete"
+  mediaItemId: Long!
+  "Should assigned upload item be kept in the upload area?"
+  keepUploadItem: Boolean!
+}
+
+input EnumCategoryTypeOperationFilterInput {
+  eq: EnumCategoryType @cost(weight: "10")
+  neq: EnumCategoryType @cost(weight: "10")
+  in: [EnumCategoryType!] @cost(weight: "10")
+  nin: [EnumCategoryType!] @cost(weight: "10")
+}
+
+input EnumMediaTypeOperationFilterInput {
+  eq: EnumMediaType @cost(weight: "10")
+  neq: EnumMediaType @cost(weight: "10")
+  in: [EnumMediaType!] @cost(weight: "10")
+  nin: [EnumMediaType!] @cost(weight: "10")
+}
+
+input ListFilterInputTypeOfCategoryValueFilterInput {
+  all: CategoryValueFilterInput @cost(weight: "10")
+  none: CategoryValueFilterInput @cost(weight: "10")
+  some: CategoryValueFilterInput @cost(weight: "10")
+  any: Boolean @cost(weight: "10")
+}
+
+input ListFilterInputTypeOfMediaItemCategoryValueFilterInput {
+  all: MediaItemCategoryValueFilterInput @cost(weight: "10")
+  none: MediaItemCategoryValueFilterInput @cost(weight: "10")
+  some: MediaItemCategoryValueFilterInput @cost(weight: "10")
+  any: Boolean @cost(weight: "10")
+}
+
+input ListFilterInputTypeOfMediaItemFilterInput {
+  all: MediaItemFilterInput @cost(weight: "10")
+  none: MediaItemFilterInput @cost(weight: "10")
+  some: MediaItemFilterInput @cost(weight: "10")
+  any: Boolean @cost(weight: "10")
+}
+
+input LongOperationFilterInput {
+  eq: Long @cost(weight: "10")
+  neq: Long @cost(weight: "10")
+  in: [Long] @cost(weight: "10")
+  nin: [Long] @cost(weight: "10")
+  gt: Long @cost(weight: "10")
+  ngt: Long @cost(weight: "10")
+  gte: Long @cost(weight: "10")
+  ngte: Long @cost(weight: "10")
+  lt: Long @cost(weight: "10")
+  nlt: Long @cost(weight: "10")
+  lte: Long @cost(weight: "10")
+  nlte: Long @cost(weight: "10")
+}
+
+"Media group"
+input MediaGroupFilterInput {
+  and: [MediaGroupFilterInput!]
+  or: [MediaGroupFilterInput!]
+  "German name for this media group"
+  nameGerman: StringOperationFilterInput
+  "English name for this media group"
+  nameEnglish: StringOperationFilterInput
+  "German description for this media group"
+  descriptionGerman: StringOperationFilterInput
+  "English description for this media group"
+  descriptionEnglish: StringOperationFilterInput
+  "The date on which the event took place"
+  eventDate: DateTimeOperationFilterInput
+  "List of related media items"
+  mediaItems: ListFilterInputTypeOfMediaItemFilterInput
+  changeDate: DateTimeOperationFilterInput
+  createDate: DateTimeOperationFilterInput
+  id: LongOperationFilterInput
+}
+
+"Media group"
+input MediaGroupSortInput {
+  "German name for this media group"
+  nameGerman: SortEnumType @cost(weight: "10")
+  "English name for this media group"
+  nameEnglish: SortEnumType @cost(weight: "10")
+  "German description for this media group"
+  descriptionGerman: SortEnumType @cost(weight: "10")
+  "English description for this media group"
+  descriptionEnglish: SortEnumType @cost(weight: "10")
+  "The date on which the event took place"
+  eventDate: SortEnumType @cost(weight: "10")
+  changeDate: SortEnumType @cost(weight: "10")
+  createDate: SortEnumType @cost(weight: "10")
+  id: SortEnumType @cost(weight: "10")
+}
+
+"Media item assigned category value"
+input MediaItemCategoryValueFilterInput {
+  and: [MediaItemCategoryValueFilterInput!]
+  or: [MediaItemCategoryValueFilterInput!]
+  "The media item this category value entry belongs to"
+  mediaItem: MediaItemFilterInput
+  "The category value this media item belongs to"
+  categoryValue: CategoryValueFilterInput
+  createDate: DateTimeOperationFilterInput
+  id: LongOperationFilterInput
+}
+
+"Media item assigned category value"
+input MediaItemCategoryValueSortInput {
+  "The media item this category value entry belongs to"
+  mediaItem: MediaItemSortInput @cost(weight: "10")
+  "The category value this media item belongs to"
+  categoryValue: CategoryValueSortInput @cost(weight: "10")
+  createDate: SortEnumType @cost(weight: "10")
+  id: SortEnumType @cost(weight: "10")
+}
+
+"Media item"
+input MediaItemFilterInput {
+  and: [MediaItemFilterInput!]
+  or: [MediaItemFilterInput!]
+  "The media group this media item entry belongs to"
+  mediaGroup: MediaGroupFilterInput
+  "The type of media item"
+  mediaType: EnumMediaTypeOperationFilterInput
+  "German name for this media item"
+  nameGerman: StringOperationFilterInput
+  "English name for this media item"
+  nameEnglish: StringOperationFilterInput
+  "German description for this media item"
+  descriptionGerman: StringOperationFilterInput
+  "English description for this media item"
+  descriptionEnglish: StringOperationFilterInput
+  "Is this media item is only visible for family users"
+  onlyFamily: BooleanOperationFilterInput
+  "The assigned upload picture if the item is of type picture"
+  uploadPicture: UploadPictureFilterInput
+  "The assigned upload video if the item is of type video"
+  uploadVideo: UploadVideoFilterInput
+  "List of related media item category values"
+  mediaItemCategoryValues: ListFilterInputTypeOfMediaItemCategoryValueFilterInput
+  changeDate: DateTimeOperationFilterInput
+  createDate: DateTimeOperationFilterInput
+  id: LongOperationFilterInput
+}
+
+"Media item"
+input MediaItemSortInput {
+  "The media group this media item entry belongs to"
+  mediaGroup: MediaGroupSortInput @cost(weight: "10")
+  "The type of media item"
+  mediaType: SortEnumType @cost(weight: "10")
+  "German name for this media item"
+  nameGerman: SortEnumType @cost(weight: "10")
+  "English name for this media item"
+  nameEnglish: SortEnumType @cost(weight: "10")
+  "German description for this media item"
+  descriptionGerman: SortEnumType @cost(weight: "10")
+  "English description for this media item"
+  descriptionEnglish: SortEnumType @cost(weight: "10")
+  "Is this media item is only visible for family users"
+  onlyFamily: SortEnumType @cost(weight: "10")
+  "The assigned upload picture if the item is of type picture"
+  uploadPicture: UploadPictureSortInput @cost(weight: "10")
+  "The assigned upload video if the item is of type video"
+  uploadVideo: UploadVideoSortInput @cost(weight: "10")
+  changeDate: SortEnumType @cost(weight: "10")
+  createDate: SortEnumType @cost(weight: "10")
+  id: SortEnumType @cost(weight: "10")
+}
+
+input StringOperationFilterInput {
+  and: [StringOperationFilterInput!]
+  or: [StringOperationFilterInput!]
+  eq: String @cost(weight: "10")
+  neq: String @cost(weight: "10")
+  contains: String @cost(weight: "20")
+  ncontains: String @cost(weight: "20")
+  in: [String] @cost(weight: "10")
+  nin: [String] @cost(weight: "10")
+  startsWith: String @cost(weight: "20")
+  nstartsWith: String @cost(weight: "20")
+  endsWith: String @cost(weight: "20")
+  nendsWith: String @cost(weight: "20")
+}
+
+"InputData type for updating categories"
+input UpdateCategoryInput {
+  "The ID for the category to update"
+  id: Long!
+  "German name for this category"
+  nameGerman: String!
+  "English name for this category"
+  nameEnglish: String!
+}
+
+"Input type for updating category values"
+input UpdateCategoryValueInput {
+  "The ID for the category value to update"
+  id: Long!
+  "German name for this category value"
+  nameGerman: String!
+  "English name for this category value"
+  nameEnglish: String!
+}
+
+"InputData type for updating media group"
+input UpdateMediaGroupInput {
+  "The unique identifier for the media group to update"
+  id: Long!
+  "German name for this media group"
+  nameGerman: String!
+  "English name for this media group"
+  nameEnglish: String!
+  "German description for this media group"
+  descriptionGerman: String!
+  "English description for this media group"
+  descriptionEnglish: String!
+  "The date on which the event took place"
+  eventDate: DateTime!
+}
+
+"InputData type for updating media item"
+input UpdateMediaItemInput {
+  "The unique identifier for the media item to update"
+  id: Long!
+  "German name for this media item"
+  nameGerman: String!
+  "English name for this media item"
+  nameEnglish: String!
+  "German description for this media item"
+  descriptionGerman: String
+  "English description for this media item"
+  descriptionEnglish: String
+  "Is this media item only visible for family users"
+  onlyFamily: Boolean!
+  "The list of unique identifiers for the category values added to this media item"
+  categoryValueIds: [Long!]!
+}
+
+input UploadPictureFilterInput {
+  and: [UploadPictureFilterInput!]
+  or: [UploadPictureFilterInput!]
+  "Is the upload picture assigned to a media item"
+  isAssigned: BooleanOperationFilterInput
+  "The media item the upload picture is assigned to"
+  mediaItem: MediaItemFilterInput
+  createDate: DateTimeOperationFilterInput
+  id: LongOperationFilterInput
+}
+
+input UploadPictureSortInput {
+  "Is the upload picture assigned to a media item"
+  isAssigned: SortEnumType @cost(weight: "10")
+  "The media item the upload picture is assigned to"
+  mediaItem: MediaItemSortInput @cost(weight: "10")
+  createDate: SortEnumType @cost(weight: "10")
+  id: SortEnumType @cost(weight: "10")
+}
+
+input UploadVideoFilterInput {
+  and: [UploadVideoFilterInput!]
+  or: [UploadVideoFilterInput!]
+  "Is the upload video assigned to a media item"
+  isAssigned: BooleanOperationFilterInput
+  "The media item the upload video is assigned to"
+  mediaItem: MediaItemFilterInput
+  createDate: DateTimeOperationFilterInput
+  id: LongOperationFilterInput
+}
+
+input UploadVideoSortInput {
+  "Is the upload video assigned to a media item"
+  isAssigned: SortEnumType @cost(weight: "10")
+  "The media item the upload video is assigned to"
+  mediaItem: MediaItemSortInput @cost(weight: "10")
+  createDate: SortEnumType @cost(weight: "10")
+  id: SortEnumType @cost(weight: "10")
+}
+
+"Defines when a policy shall be executed."
+enum ApplyPolicy {
+  "Before the resolver was executed."
+  BEFORE_RESOLVER
+  "After the resolver was executed."
+  AFTER_RESOLVER
+  "The policy is applied in the validation step before the execution."
+  VALIDATION
+}
+
+"Enumeration for setting the category type for categories"
+enum EnumCategoryType {
+  "Is usable for picture and photo"
+  BOTH
+  "Is usable for Picture"
+  PICTURE
+  "Is usable for video"
+  VIDEO
+}
+
+"Setting the type for a media item"
+enum EnumMediaType {
+  "The media item is a photo"
+  PICTURE
+  "The media is a video"
+  VIDEO
+  "The media type for mixed content (photo \/ video)"
+  BOTH
+}
+
+enum SortEnumType {
+  ASC
+  DESC
+}
+
+"The purpose of the `cost` directive is to define a `weight` for GraphQL types, fields, and arguments. Static analysis can use these weights when calculating the overall cost of a query or response."
+directive @cost("The `weight` argument defines what value to add to the overall cost for every appearance, or possible appearance, of a type, field, argument, etc." weight: String!) on SCALAR | OBJECT | FIELD_DEFINITION | ARGUMENT_DEFINITION | ENUM | INPUT_FIELD_DEFINITION
+
+directive @lookup on FIELD_DEFINITION
+
+"The `@specifiedBy` directive is used within the type system definition language to provide a URL for specifying the behavior of custom scalar definitions."
+directive @specifiedBy("The specifiedBy URL points to a human-readable specification. This field will only read a result for scalar types." url: String!) on SCALAR
+
+"The `DateTime` scalar represents an ISO-8601 compliant date time type."
+scalar DateTime @specifiedBy(url: "https:\/\/www.graphql-scalars.com\/date-time")
+
+"The `Long` scalar type represents non-fractional signed whole 64-bit numeric values. Long can represent values between -(2^63) and 2^63 - 1."
+scalar Long

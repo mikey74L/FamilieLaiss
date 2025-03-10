@@ -127,30 +127,37 @@ public class UnitOfWork<TContext> : iRepositoryFactory, iUnitOfWork<TContext>, i
                 }
             }
 
-            foreach (var Item in changedEntities)
-            {
-                if (Item.Entity is DomainEntity entity)
-                {
-                    domainEvents.AddRange(entity.DomainEvents);
-                }
-            }
-
             var result = await Context.SaveChangesAsync();
 
 
             foreach (var entity in addedEntities)
             {
                 await entity.EntityAddedAsync(Context, contextParameters);
+
+                if (entity is DomainEntity domainEntity)
+                {
+                    domainEvents.AddRange(domainEntity.DomainEvents);
+                }
             }
 
             foreach (var entity in modifiedEntities)
             {
                 await entity.EntityModifiedAsync(Context, contextParameters);
+
+                if (entity is DomainEntity domainEntity)
+                {
+                    domainEvents.AddRange(domainEntity.DomainEvents);
+                }
             }
 
             foreach (var entity in deletedEntities)
             {
                 await entity.EntityDeletedAsync(Context, contextParameters);
+
+                if (entity is DomainEntity domainEntity)
+                {
+                    domainEvents.AddRange(domainEntity.DomainEvents);
+                }
             }
 
             foreach (var @event in domainEvents)

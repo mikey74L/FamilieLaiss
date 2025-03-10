@@ -11,26 +11,18 @@ using MudBlazor;
 
 namespace FamilieLaissFrontend.Client.ViewModels.Dialogs.Choose.Picture;
 
-public partial class ChoosePictureDialogViewModel : ViewModelBase
+public partial class ChoosePictureDialogViewModel(
+    ISnackbar snackbarService,
+    IMessageBoxService messageBoxService,
+    IUploadPictureDataService uploadPictureDataService)
+    : ViewModelBase(snackbarService, messageBoxService)
 {
-    #region Private Services
-    private IUploadPictureDataService uploadPictureDataService;
-    #endregion
-
     #region Parameters
-    public MudDialogInstance MudDialog { get; set; } = default!;
+    public IMudDialogInstance? MudDialog { get; set; } 
     #endregion
 
     #region Properties
     public ExtendedObservableCollection<IUploadPictureModel> UploadItems { get; } = [];
-    #endregion
-
-    #region C'tor
-    public ChoosePictureDialogViewModel(ISnackbar snackbarService, IMessageBoxService messageBoxService,
-        IUploadPictureDataService uploadPictureDataService) : base(snackbarService, messageBoxService)
-    {
-        this.uploadPictureDataService = uploadPictureDataService;
-    }
     #endregion
 
     #region Lifecycle Methods
@@ -92,13 +84,13 @@ public partial class ChoosePictureDialogViewModel : ViewModelBase
     [RelayCommand]
     private void ChoosePicture(IUploadPictureModel uploadPictureModel)
     {
-        MudDialog.Close(DialogResult.Ok(uploadPictureModel));
+        MudDialog?.Close(DialogResult.Ok(uploadPictureModel));
     }
 
     [RelayCommand]
     private void Cancel()
     {
-        MudDialog.Cancel();
+        MudDialog?.Cancel();
     }
     #endregion
 

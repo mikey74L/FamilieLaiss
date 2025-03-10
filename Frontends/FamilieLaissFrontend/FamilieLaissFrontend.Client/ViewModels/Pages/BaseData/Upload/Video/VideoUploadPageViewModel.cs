@@ -16,43 +16,32 @@ using MudBlazor;
 
 namespace FamilieLaissFrontend.Client.ViewModels.Pages.BaseData.Upload.Video;
 
-public partial class VideoUploadPageViewModel : ViewModelBase, IHandle<AggFilterChanged>
+public partial class VideoUploadPageViewModel(
+    ISnackbar snackbarService,
+    IMessageBoxService messageBoxService,
+    IUploadVideoDataService uploadVideoDataService,
+    IGraphQlSortAndFilterServiceFactory graphQlSortAndFilterServiceFactory,
+    IEventAggregator eventAggregator)
+    : ViewModelBase(snackbarService, messageBoxService), IHandle<AggFilterChanged>
 {
-    #region Private Services
-    private readonly IUploadVideoDataService uploadVideoDataService;
-    private readonly IGraphQlSortAndFilterServiceFactory graphQlSortAndFilterServiceFactory;
-    private readonly IEventAggregator eventAggregator;
-    #endregion
-
     #region Public Properties
     [ObservableProperty]
-    public int _uploadFileCount;
+    public partial int UploadFileCount { get; set; }
 
     [ObservableProperty]
-    private bool _isUploading;
+    public partial bool IsUploading { get; set; }
 
     [ObservableProperty]
-    private int _currentTabIndex;
+    public partial int CurrentTabIndex { get; set; }
 
     [ObservableProperty]
-    private ExtendedObservableCollection<IUploadVideoModel> _uploadVideoItems = [];
+    public partial ExtendedObservableCollection<IUploadVideoModel> UploadVideoItems { get; set; } = [];
 
     [ObservableProperty]
-    private int _currentCountUploadVideos;
+    public partial int CurrentCountUploadVideos { get; set; }
 
     [ObservableProperty]
-    private IGraphQlSortAndFilterService<IUploadVideoModel, UploadVideoSortInput, UploadVideoFilterInput> _sortAndFilterService = default!;
-    #endregion
-
-    #region C'tor
-    public VideoUploadPageViewModel(ISnackbar snackbarService, IMessageBoxService messageBoxService,
-        IUploadVideoDataService uploadVideoDataService,
-        IGraphQlSortAndFilterServiceFactory graphQlSortAndFilterServiceFactory, IEventAggregator eventAggregator) : base(snackbarService, messageBoxService)
-    {
-        this.uploadVideoDataService = uploadVideoDataService;
-        this.graphQlSortAndFilterServiceFactory = graphQlSortAndFilterServiceFactory;
-        this.eventAggregator = eventAggregator;
-    }
+    public partial IGraphQlSortAndFilterService<IUploadVideoModel, UploadVideoSortInput, UploadVideoFilterInput> SortAndFilterService { get; set; }
     #endregion
 
     #region Lifecycle Overrides
@@ -97,7 +86,6 @@ public partial class VideoUploadPageViewModel : ViewModelBase, IHandle<AggFilter
     private Dictionary<int, string> ProvideNumberList(string propertyName)
     {
         return new Dictionary<int, string>();
-        //return (typeof(ILocalizerService<UploadPictureExifInfoModel>), UploadPictureExifInfoModel.GetNumberValues(propertyName));
     }
     #endregion
 
@@ -146,7 +134,7 @@ public partial class VideoUploadPageViewModel : ViewModelBase, IHandle<AggFilter
     {
         if (IsUploading)
         {
-            var result = await Message(VideoUploadPageViewModelRes.MessageTitleUploadInProgress,
+            await Message(VideoUploadPageViewModelRes.MessageTitleUploadInProgress,
                 VideoUploadPageViewModelRes.MessageContentUploadInProgress,
                 VideoUploadPageViewModelRes.MessageButtonUploadInProgress, false);
 
@@ -167,16 +155,12 @@ public partial class VideoUploadPageViewModel : ViewModelBase, IHandle<AggFilter
     #region Abstract overrides
     protected override async void DebouncedLoading()
     {
-        bool changeState = true;
-        if (IsLoading)
-        {
-            changeState = false;
-        }
+        bool changeState = !IsLoading;
 
         IsLoading = true;
 
         await uploadVideoDataService.GetUploadVideosForUploadViewAsync([SortAndFilterService.SelectedSortCriteria.GraphQlSortInput],
-            SortAndFilterService.GetGraphQlFilterCriteria())
+                SortAndFilterService.GetGraphQlFilterCriteria())
             .HandleStatus(APIResultErrorType.NoError, (result) =>
             {
                 UploadVideoItems.Clear();

@@ -13,26 +13,14 @@
     [EditorRequired]
     public IUploadVideoModel VideoItemToPlay 
     { 
-        get
-        {
-            return ViewModel.VideoItemToPlay;
-        }
-        set
-        {
-            ViewModel.VideoItemToPlay = value;
-        }
+        get => ViewModel.VideoItemToPlay;
+        set => ViewModel.VideoItemToPlay = value;
     }
 
     [CascadingParameter]
     public Task<AuthenticationState> AuthenticationState 
     { 
-        get
-        {
-            return ViewModel.AuthenticationState;
-        }
-        set
-        {
-            ViewModel.AuthenticationState = value;
-        }
+        get => ViewModel.AuthenticationState;
+        set => ViewModel.AuthenticationState = value;
     } 
 }

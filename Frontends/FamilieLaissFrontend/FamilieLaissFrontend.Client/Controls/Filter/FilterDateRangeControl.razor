@@ -33,9 +33,9 @@
                         Clearable="true"
                         Style="margin-bottom: 15px;">
         <PickerActions>
-            <MudButton Class="mr-auto align-self-start" OnClick="@(() => ViewModel.PickerControl.Clear())">@FilterDateRangeControlRes.DateEditReset</MudButton>
-            <MudButton OnClick="@(() => ViewModel.PickerControl.Close(false))">@FilterDateRangeControlRes.DateEditCancel</MudButton>
-            <MudButton Color="Color.Primary" OnClick="@(() => ViewModel.PickerControl.Close())">@FilterDateRangeControlRes.DateEditOk</MudButton>
+            <MudButton Class="mr-auto align-self-start" OnClick="@(async () => await ViewModel.PickerControl.ClearAsync())">@FilterDateRangeControlRes.DateEditReset</MudButton>
+            <MudButton OnClick="@(async () => await ViewModel.PickerControl.CloseAsync(false))">@FilterDateRangeControlRes.DateEditCancel</MudButton>
+            <MudButton Color="Color.Primary" OnClick="@(async () => await ViewModel.PickerControl.CloseAsync())">@FilterDateRangeControlRes.DateEditOk</MudButton>
         </PickerActions>
     </MudDateRangePicker>
 </MudStack>
@@ -46,27 +46,15 @@
     [EditorRequired]
     public IGraphQlFilterCriteria FilterCriteria 
     { 
-        get
-        {
-            return ViewModel.FilterCriteria;
-        }
-        set
-        {
-            ViewModel.FilterCriteria = value;
-        }
+        get => ViewModel.FilterCriteria;
+        set => ViewModel.FilterCriteria = value;
     } 
 
     [Parameter]
     [EditorRequired]
     public EventCallback<(Guid id, bool hasValue)> ValueChanged 
     { 
-        get
-        {
-            return ViewModel.ValueChanged;
-        }
-        set
-        {
-            ViewModel.ValueChanged = value;
-        }
+        get => ViewModel.ValueChanged;
+        set => ViewModel.ValueChanged = value;
     }
 }

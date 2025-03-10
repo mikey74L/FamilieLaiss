@@ -6,44 +6,31 @@ using MudBlazor;
 
 namespace FamilieLaissSharedUI.ViewModels;
 
-public abstract partial class ViewModelBase : ObservableObject, IDisposable, IViewModelBase
+public abstract partial class ViewModelBase(ISnackbar snackbarService, IMessageBoxService messageBoxService)
+    : ObservableObject, IDisposable, IViewModelBase
 {
-    #region Private Service Members
-    private readonly ISnackbar snackbarService;
-    private readonly IMessageBoxService messageBoxService;
-    #endregion
-
     #region Protected Fields
-    protected System.Timers.Timer? loadingTimer;
+    protected System.Timers.Timer? LoadingTimer;
     #endregion
 
     #region Properties
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsBusy))]
-    private bool _isLoading;
+    public partial bool IsLoading { get; set; }
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsBusy))]
-    private bool _isSaving;
+    public partial bool IsSaving { get; set; }
 
     [ObservableProperty]
-    private EnumSaveMode _saveMode;
+    public partial EnumSaveMode SaveMode { get; set; }
 
     [ObservableProperty]
-    private bool _hasError;
+    public partial bool HasError { get; set; }
 
     public bool IsBusy => IsLoading || IsSaving;
 
     public Dictionary<string, Type> QueryStringParameters { get; } = [];
-    #endregion
-
-    #region C'tor
-    public ViewModelBase(ISnackbar snackbarService, IMessageBoxService messageBoxService)
-    {
-        this.snackbarService = snackbarService;
-        this.messageBoxService = messageBoxService;
-
-    }
     #endregion
 
     #region Lifecycle Methods
@@ -141,11 +128,16 @@ public abstract partial class ViewModelBase : ObservableObject, IDisposable, IVi
     #endregion
 
     #region Dialog
-    protected DialogOptions GetDialogOptions()
+    protected DialogOptions GetDialogOptions(bool? closeButton = null, bool? closeOnEscape = null,
+        DialogPosition? dialogPosition = null, MaxWidth? maxWidth = null)
     {
         DialogOptions dialogOptions = new()
         {
-            ClassBackground = "blury-dialog"
+            CloseButton = closeButton,
+            CloseOnEscapeKey = closeOnEscape,
+            Position = dialogPosition,
+            MaxWidth = maxWidth,
+            BackgroundClass = "blury-dialog"
         };
 
         return dialogOptions;
@@ -155,22 +147,22 @@ public abstract partial class ViewModelBase : ObservableObject, IDisposable, IVi
     #region Loading Debounce
     private void DisposeLoadingTimer()
     {
-        if (loadingTimer is not null)
+        if (LoadingTimer is not null)
         {
-            loadingTimer.Elapsed -= LoadingTimer_Elapsed;
-            loadingTimer.Stop();
-            loadingTimer.Dispose();
-            loadingTimer = null;
+            LoadingTimer.Elapsed -= LoadingTimer_Elapsed;
+            LoadingTimer.Stop();
+            LoadingTimer.Dispose();
+            LoadingTimer = null;
         }
     }
 
     protected void StartLoading()
     {
         DisposeLoadingTimer();
-        loadingTimer = new(500);
-        loadingTimer.Elapsed += LoadingTimer_Elapsed;
-        loadingTimer.Enabled = true;
-        loadingTimer.Start();
+        LoadingTimer = new(500);
+        LoadingTimer.Elapsed += LoadingTimer_Elapsed;
+        LoadingTimer.Enabled = true;
+        LoadingTimer.Start();
     }
 
     private void LoadingTimer_Elapsed(object? sender, System.Timers.ElapsedEventArgs e)

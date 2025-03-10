@@ -81,7 +81,15 @@ public class AppSettings
 
     #region Endpoint-Names
 
+    /// <summary>
+    /// Endpoint-Name for Video-Converter-Execute-Service
+    /// </summary>
     public string EndpointNameExecutor { get; set; }
+
+    /// <summary>
+    /// Endpoint-Name for Upload-Service
+    /// </summary>
+    public string EndpointNameUploadService { get; set; }
 
     #endregion
 

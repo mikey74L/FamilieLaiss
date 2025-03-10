@@ -1,5 +1,4 @@
 ﻿@using FamilieLaissFrontend.Client.ViewModels.Controls.User
-@using FamilieLaissInterfaces.Services
 @using FamilieLaissResources.Resources.Controls.User
 @using FamilieLaissSharedUI.Components
 
@@ -54,13 +53,7 @@
     [CascadingParameter]
     private Task<AuthenticationState>? AuthenticationState 
     { 
-        get
-        {
-            return ViewModel.AuthenticationState;
-        }
-        set
-        {
-            ViewModel.AuthenticationState = value;
-        }
+        get => ViewModel.AuthenticationState;
+        set => ViewModel.AuthenticationState = value;
     }
 }

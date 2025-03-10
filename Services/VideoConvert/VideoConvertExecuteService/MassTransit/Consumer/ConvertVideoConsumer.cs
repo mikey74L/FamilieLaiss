@@ -1,10 +1,8 @@
-﻿using System;
-using System.Threading.Tasks;
-using FamilieLaissMassTransitDefinitions.Contracts.Commands;
-using FamilieLaissMassTransitDefinitions.Contracts.Events;
-using FamilieLaissMassTransitDefinitions.Events;
+﻿using FamilieLaissMassTransitDefinitions.Contracts.Commands.UploadVideo;
 using MassTransit;
 using Microsoft.Extensions.Logging;
+using System;
+using System.Threading.Tasks;
 using VideoConvertExecuteService.Interfaces;
 
 namespace VideoConvertExecuteService.MassTransit.Consumer;
@@ -13,11 +11,11 @@ public class ConvertVideoConsumer(
     ILogger<ConvertVideoConsumer> logger,
     IJobExecutor jobExecutor,
     IDatabaseOperations databaseOperations)
-    : IConsumer<IConvertVideoCmd>, IConsumer<Fault<IConvertVideoCmd>>
+    : IConsumer<IMassConvertVideoCmd>, IConsumer<Fault<IMassConvertVideoCmd>>
 {
     #region Interface Implementation
 
-    public async Task Consume(ConsumeContext<IConvertVideoCmd> context)
+    public async Task Consume(ConsumeContext<IMassConvertVideoCmd> context)
     {
         logger.LogInformation("Consumer for ConvertPicture was called with message {$Message}", context.Message);
 
@@ -45,7 +43,7 @@ public class ConvertVideoConsumer(
         }
     }
 
-    public async Task Consume(ConsumeContext<Fault<IConvertVideoCmd>> context)
+    public async Task Consume(ConsumeContext<Fault<IMassConvertVideoCmd>> context)
     {
         logger.LogInformation("Fault-Consumer for ConvertPicture was called");
 
@@ -63,12 +61,13 @@ public class ConvertVideoConsumer(
         try
         {
             logger.LogInformation("Send error event");
-            var newEvent = new VideoConvertErrorEvent()
-            {
-                ConvertStatusId = context.Message.Message.ConvertStatusId,
-                UploadVideoId = context.Message.Message.Id
-            };
-            await context.Publish<IVideoConvertErrorEvent>(newEvent);
+            //TODO: Implement event
+            //var newEvent = new MassVideoConvertErrorEvent()
+            //{
+            //    ConvertStatusId = context.Message.Message.ConvertStatusId,
+            //    UploadVideoId = context.Message.Message.Id
+            //};
+            //await context.Publish<IMassVideoConvertErrorEvent>(newEvent);
         }
         catch (Exception ex)
         {

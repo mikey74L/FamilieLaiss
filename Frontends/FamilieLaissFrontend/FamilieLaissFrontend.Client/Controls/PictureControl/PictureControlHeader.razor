@@ -5,7 +5,7 @@
 
 @inherits FlComponentBase<PictureControlHeaderViewModel>
 
-<MudCardHeader>
+<MudCardHeader Class="mud-card-header-fl">
     <CardHeaderContent>
         <!-- Print title -->
         @if (ShowSkeleton)
@@ -21,24 +21,23 @@
         }
         else
         {
-            <MudTooltip Arrow="true" Placement="Placement.Top" RootStyle="width: 100%" Text="@UploadItem?.Filename">
+            <MudTooltip Arrow="true" Placement="Placement.Top" RootStyle="width: 97%" Text="@UploadItem?.Filename">
                 <MudText Typo="Typo.h6" Class="fl-card-picture-header-text">@UploadItem?.Filename</MudText>
             </MudTooltip>
-        }
+         }
     </CardHeaderContent>
 
     <CardHeaderActions>
         @if (ShowSelectionMode)
         {
-            <MudToggleIconButton Toggled="UploadItem!.IsSelected"
+            <MudToggleIconButton Toggled="UploadItem.IsSelected"
                                  ToggledChanged="async () => await ViewModel.ChangeToggleCommand.ExecuteAsync(null)"
                                  Class="@ViewModel.ClassAttributeToggleButton"
                                  Icon="@Icons.Material.Filled.ToggleOff"
                                  Color="Color.Error"
-                                 Title="@PictureControlHeaderRes.TooltipNotSelected"
+                                 title="@(UploadItem.IsSelected ? @PictureControlHeaderRes.TooltipSelected : @PictureControlHeaderRes.TooltipNotSelected)"
                                  ToggledIcon="@Icons.Material.Filled.ToggleOn"
-                                 ToggledColor="Color.Success"
-                                 ToggledTitle="@PictureControlHeaderRes.TooltipSelected" />
+                                 ToggledColor="Color.Success"/>
         }
     </CardHeaderActions>
 </MudCardHeader>
@@ -54,28 +53,17 @@
     public bool ShowSelectionMode { get; set; }
 
     [Parameter]
-    public IUploadPictureModel? UploadItem
+    [EditorRequired]
+    public IUploadPictureModel UploadItem
     {
-        get
-        {
-            return ViewModel.UploadItem;
-        }
-        set
-        {
-            ViewModel.UploadItem = value;
-        }
+        get => ViewModel.UploadItem;
+        set => ViewModel.UploadItem = value;
     }
 
     [Parameter]
     public EventCallback ToggleChanged 
     { 
-        get
-        {
-            return ViewModel.ToggleChanged;
-        }
-        set
-        {
-            ViewModel.ToggleChanged = value;
-        }
+        get => ViewModel.ToggleChanged;
+        set => ViewModel.ToggleChanged = value;
     }
 }

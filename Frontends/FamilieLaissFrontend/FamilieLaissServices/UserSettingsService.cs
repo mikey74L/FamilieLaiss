@@ -17,11 +17,11 @@ public class UserSettingsService(IUserSettingsStoreService storeService,
         if (taskAuthState is not null)
         {
             var authState = await taskAuthState;
-            var user = authState?.User;
+            var user = authState.User;
 
-            var userId = user?.Claims.FirstOrDefault(x => x.Type == "https://familielaiss.de/user_id")?.Value ?? "";
+            var userId = user.Claims.FirstOrDefault(x => x.Type == "https://familielaiss.de/user_id")?.Value ?? "";
 
-            return userId ?? "";
+            return userId;
         }
 
         return "";
@@ -37,11 +37,7 @@ public class UserSettingsService(IUserSettingsStoreService storeService,
 
                 return Task.CompletedTask;
             })
-            .HandleErrors((data) =>
-            {
-                ///TODO: Ausgeben von Toast
-                return Task.CompletedTask;
-            });
+            .HandleErrors((_) => Task.CompletedTask);
     }
 
     public void ResetUserSettings()

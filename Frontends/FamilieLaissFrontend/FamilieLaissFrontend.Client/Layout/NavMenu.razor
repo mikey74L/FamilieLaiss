@@ -1,4 +1,5 @@
-﻿@using FamilieLaissResources.Resources.Layout
+﻿@using FamilieLaissConstants
+@using FamilieLaissResources.Resources.Layout
 
 <MudNavMenu>
     <div class="ml-6 my-3">
@@ -14,11 +15,11 @@
     <div class="ml-6 my-3">
         <MudText Typo="Typo.caption"><b>@NavMenuRes.BaseData</b></MudText>
     </div>
-    <MudNavLink Href="/basedata-category" Icon="@Icons.Material.Filled.Category" IconColor="Color.Info" Match="NavLinkMatch.Prefix">@NavMenuRes.Category</MudNavLink>
-    <MudNavLink Href="/basedata-media" Icon="@Icons.Material.Filled.PhotoAlbum" IconColor="Color.Info" Match="NavLinkMatch.Prefix">@NavMenuRes.Media</MudNavLink>
+    <MudNavLink Href="@NavigationConstants.Categories" Icon="@Icons.Material.Filled.Category" IconColor="Color.Info" Match="NavLinkMatch.Prefix">@NavMenuRes.Category</MudNavLink>
+    <MudNavLink Href="@NavigationConstants.MediaGroups" Icon="@Icons.Material.Filled.PhotoAlbum" IconColor="Color.Info" Match="NavLinkMatch.Prefix">@NavMenuRes.Media</MudNavLink>
     <MudNavGroup Title="@NavMenuRes.UploadArea" Icon="@Icons.Material.Filled.CloudUpload">
-        <MudNavLink Href="/basedata-picture-upload" Icon="@Icons.Material.Filled.Photo" IconColor="Color.Info" Match="NavLinkMatch.Prefix">@NavMenuRes.Fotos</MudNavLink>
-        <MudNavLink Href="/basedata-video-upload" Icon="@Icons.Material.Filled.OndemandVideo" IconColor="Color.Info" Match="NavLinkMatch.Prefix">@NavMenuRes.Videos</MudNavLink>
+        <MudNavLink Href="@NavigationConstants.PictureUpload" Icon="@Icons.Material.Filled.Photo" IconColor="Color.Info" Match="NavLinkMatch.Prefix">@NavMenuRes.Fotos</MudNavLink>
+        <MudNavLink Href="@NavigationConstants.VideoUpload" Icon="@Icons.Material.Filled.OndemandVideo" IconColor="Color.Info" Match="NavLinkMatch.Prefix">@NavMenuRes.Videos</MudNavLink>
     </MudNavGroup>
     <MudNavLink Href="/basedata-blog" Icon="@Icons.Material.Filled.Article" IconColor="Color.Info" Match="NavLinkMatch.Prefix">@NavMenuRes.Blog</MudNavLink>
     <MudNavGroup Title="@NavMenuRes.Calendar" Icon="@Icons.Material.Filled.CalendarMonth">
@@ -29,8 +30,8 @@
     <div class="ml-6 my-3">
         <MudText Typo="Typo.caption"><b>@NavMenuRes.Converter</b></MudText>
     </div>
-    <MudNavLink Href="/pictureconverter" Icon="@Icons.Material.Filled.Photo" IconColor="Color.Info" Match="NavLinkMatch.Prefix">@NavMenuRes.ConverterPhoto</MudNavLink>
-    <MudNavLink Href="/videoconverter" Icon="@Icons.Material.Filled.OndemandVideo" IconColor="Color.Info" Match="NavLinkMatch.Prefix">@NavMenuRes.ConverterVideo</MudNavLink>
+    <MudNavLink Href="@NavigationConstants.PictureConverter" Icon="@Icons.Material.Filled.Photo" IconColor="Color.Info" Match="NavLinkMatch.Prefix">@NavMenuRes.ConverterPhoto</MudNavLink>
+    <MudNavLink Href="@NavigationConstants.VideoConverter" Icon="@Icons.Material.Filled.OndemandVideo" IconColor="Color.Info" Match="NavLinkMatch.Prefix">@NavMenuRes.ConverterVideo</MudNavLink>
 
     <div class="ml-6 my-3">
         <MudText Typo="Typo.caption"><b>@NavMenuRes.Administration</b></MudText>

@@ -1,15 +1,14 @@
-﻿using System;
-using System.Threading.Tasks;
-using DomainHelper.Interfaces;
-using FamilieLaissSharedObjects.Enums;
-using FLBackEnd.Domain.Entities;
-using FLBackEnd.Infrastructure.DatabaseContext;
+﻿using DomainHelper.Interfaces;
 using InfrastructureHelper.EventDispatchHandler;
 using InfrastructureHelper.UnitOfWork;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Npgsql;
+using System;
+using System.Threading.Tasks;
+using VideoConvert.Domain.Entities;
+using VideoConvert.Infrastructure.DBContext;
 using VideoConvertExecuteService.Interfaces;
 using VideoConvertExecuteService.Models;
 
@@ -23,7 +22,7 @@ public class DatabaseOperationsService(
 {
     #region Private Methods
 
-    private FamilieLaissDbContext CreateDbContext()
+    private VideoConvertServiceDbContext CreateDbContext()
     {
         NpgsqlConnectionStringBuilder postgresConnectionStringBuilder = new()
         {
@@ -36,10 +35,10 @@ public class DatabaseOperationsService(
             Password = appSettings.Value.PostgresPassword
         };
 
-        var optionsBuilder = new DbContextOptionsBuilder<FamilieLaissDbContext>();
+        var optionsBuilder = new DbContextOptionsBuilder<VideoConvertServiceDbContext>();
         optionsBuilder.UseNpgsql(postgresConnectionStringBuilder.ConnectionString);
 
-        FamilieLaissDbContext context = new(optionsBuilder.Options);
+        VideoConvertServiceDbContext context = new(optionsBuilder.Options);
 
         return context;
     }
@@ -48,7 +47,7 @@ public class DatabaseOperationsService(
     {
         var context = CreateDbContext();
 
-        UnitOfWork<FamilieLaissDbContext> workUnit = new(context, eventStore);
+        UnitOfWork<VideoConvertServiceDbContext> workUnit = new(context, eventStore);
 
         return workUnit;
     }
@@ -775,34 +774,6 @@ public class DatabaseOperationsService(
 
         logger.LogInformation("Setting status to Delete-Temporary-End");
         entity.SetStatusEndDeleteTemporaryFiles();
-
-        logger.LogInformation("Save changes");
-        await workUnit.SaveChangesAsync();
-
-        logger.LogInformation("Disposing unit of work and database context");
-        workUnit.Dispose();
-    }
-
-    #endregion
-
-    #region SetVideoInfo
-
-    public async Task SetVideoInfoData(long id, EnumVideoType videoType, int height, int width, int hours, int minutes,
-        int seconds,
-        double? longitude,
-        double? latitude)
-    {
-        logger.LogInformation("Get unit of work");
-        var workUnit = GetUnitOfWork();
-
-        logger.LogInformation("Get repository from unit of work");
-        var repo = workUnit.GetRepository<UploadVideo>();
-
-        logger.LogInformation($"Get entity from repository for ID = {id}");
-        var entity = await repo.GetOneAsync(id);
-
-        logger.LogInformation($"Set video info data for entity");
-        entity.UpdateVideoInfo(videoType, height, width, hours, minutes, seconds, longitude, latitude);
 
         logger.LogInformation("Save changes");
         await workUnit.SaveChangesAsync();

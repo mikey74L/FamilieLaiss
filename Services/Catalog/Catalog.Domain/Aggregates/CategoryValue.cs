@@ -1,107 +1,149 @@
-﻿using DomainHelper.AbstractClasses;
+﻿using Catalog.Domain.DomainEvents.CategoryValue;
+using DomainHelper.AbstractClasses;
 using DomainHelper.Exceptions;
+using HotChocolate;
+using HotChocolate.Data;
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 
-namespace Catalog.Domain.Aggregates
+namespace Catalog.Domain.Aggregates;
+
+/// <summary>
+/// Entity for category value
+/// </summary>
+[GraphQLDescription("Category values")]
+public class CategoryValue : EntityModify<long>
 {
+    #region Properties
+
     /// <summary>
-    /// Entity for category value
+    /// Identifier for the category
     /// </summary>
-    public class CategoryValue : EntityModify<long>
+    [GraphQLIgnore]
+    [Required]
+    public long CategoryId { get; private set; }
+
+    /// <summary>
+    /// The Category this category value entry belongs to
+    /// </summary>
+    [GraphQLDescription("The Category this category value entry belongs to")]
+    public Category Category { get; private set; } = default!;
+
+    /// <summary>
+    /// German name for this category value
+    /// </summary>
+    [Required]
+    [MaxLength(300)]
+    [GraphQLDescription("German name for this category value")]
+    [GraphQLNonNullType]
+    public string NameGerman { get; private set; } = string.Empty;
+
+    /// <summary>
+    /// English name for this category value
+    /// </summary>
+    [Required]
+    [MaxLength(300)]
+    [GraphQLDescription("English name for this category value")]
+    [GraphQLNonNullType]
+    public string NameEnglish { get; private set; } = string.Empty;
+
+    /// <summary>
+    /// List of related media item category values
+    /// </summary>
+    [GraphQLDescription("List of related media item category values")]
+    [UseFiltering]
+    [UseSorting]
+    public ICollection<MediaItemCategoryValue> MediaItemCategoryValues { get; private set; } = [];
+
+    #endregion
+
+    #region C'tor
+
+    /// <summary>
+    /// Constructor without parameters would be used by EF-Core and GraphQL
+    /// </summary>
+    protected CategoryValue()
     {
-        #region Properties
-        /// <summary>
-        /// Identifier for the category
-        /// </summary>
-        public long CategoryID { get; private set; }
-
-        /// <summary>
-        /// The Category this category value entry belongs to
-        /// </summary>
-        public Category Category { get; private set; } = default!;
-
-        /// <summary>
-        /// German name for this category value
-        /// </summary>
-        public string NameGerman { get; private set; } = string.Empty;
-
-        /// <summary>
-        /// English name for this category value
-        /// </summary>
-        public string NameEnglish { get; private set; } = string.Empty;
-
-        /// <summary>
-        /// List of related media item category values
-        /// </summary>
-        public ICollection<MediaItemCategoryValue> MediaItemCategoryValues { get; private set; }
-        #endregion
-
-        #region C'tor
-        /// <summary>
-        /// C'tor without parameters would be used by EF-Core
-        /// </summary>
-        protected CategoryValue()
-        {
-
-        }
-
-        /// <summary>
-        /// C'tor
-        /// </summary>
-        /// <param name="category">The category for this value</param>
-        /// <param name="nameGerman">The german name for this value</param>
-        /// <param name="nameEnglish">The english name for this value</param>
-        internal CategoryValue(Category category, string? nameGerman, string? nameEnglish)
-        {
-            //Überprüfen ob ein German-Name festgelegt wurde
-            if (string.IsNullOrEmpty(nameGerman)) throw new DomainException("A german name is needed for this category value");
-
-            //Überprüfen ob ein English-Name festgelgt wurde
-            if (string.IsNullOrEmpty(nameEnglish)) throw new DomainException("A english name is needed for this category value");
-
-            //Übernehmen der Werte
-            Category = category;
-            NameGerman = nameGerman;
-            NameEnglish = nameEnglish;
-        }
-        #endregion
-
-        #region Domain-Methods
-        /// <summary>
-        /// Updates the category value data
-        /// </summary>
-        /// <param name="nameGerman">The german name for category value</param>
-        /// <param name="nameEnglish">The english name for category value</param>
-        public void Update(string? nameGerman, string? nameEnglish)
-        {
-            //Überprüfen ob ein German-Name festgelegt wurde
-            if (string.IsNullOrEmpty(nameGerman)) throw new DomainException("A german name is needed for this category value");
-
-            //Überprüfen ob ein English-Name festgelgt wurde
-            if (string.IsNullOrEmpty(nameEnglish)) throw new DomainException("A english name is needed for this category value");
-
-            //Übernehmen der Werte
-            NameGerman = nameGerman;
-            NameEnglish = nameEnglish;
-        }
-        #endregion
-
-        #region Called from Change-Tracker
-        public override Task EntityModifiedAsync()
-        {
-            return Task.CompletedTask;
-        }
-
-        public override Task EntityAddedAsync()
-        {
-            return Task.CompletedTask;
-        }
-
-        public override Task EntityDeletedAsync()
-        {
-            return Task.CompletedTask;
-        }
-        #endregion
     }
+
+    /// <summary>
+    /// Constructor
+    /// </summary>
+    /// <param name="category">The category for this value</param>
+    /// <param name="nameGerman">The german name for this value</param>
+    /// <param name="nameEnglish">The english name for this value</param>
+    internal CategoryValue(Category category, string? nameGerman, string? nameEnglish)
+    {
+        if (string.IsNullOrEmpty(nameGerman))
+        {
+            throw new DomainException("A german name is needed for this category value");
+        }
+
+        if (string.IsNullOrEmpty(nameEnglish))
+        {
+            throw new DomainException("A english name is needed for this category value");
+        }
+
+        Category = category;
+        NameGerman = nameGerman;
+        NameEnglish = nameEnglish;
+    }
+
+    #endregion
+
+    #region Domain-Methods
+
+    /// <summary>
+    /// Updates the category value data
+    /// </summary>
+    /// <param name="nameGerman">The german name for category value</param>
+    /// <param name="nameEnglish">The english name for category value</param>
+    [GraphQLIgnore]
+    public void Update(string? nameGerman, string? nameEnglish)
+    {
+        if (string.IsNullOrEmpty(nameGerman))
+        {
+            throw new DomainException("A german name is needed for this category value");
+        }
+
+        if (string.IsNullOrEmpty(nameEnglish))
+        {
+            throw new DomainException("A english name is needed for this category value");
+        }
+
+        NameGerman = nameGerman;
+        NameEnglish = nameEnglish;
+    }
+
+    #endregion
+
+    #region Called from Change-Tracker
+
+    [GraphQLIgnore]
+    public override Task EntityModifiedAsync(DbContext dbContext, IDictionary<string, object> dictContextParams)
+    {
+        AddDomainEvent(new DomainEventCategoryValueChanged(Id));
+
+        return Task.CompletedTask;
+    }
+
+    [GraphQLIgnore]
+    public override Task EntityAddedAsync(DbContext dbContext, IDictionary<string, object> dictContextParams)
+    {
+        AddDomainEvent(new DomainEventCategoryValueCreated(Id));
+
+        return Task.CompletedTask;
+    }
+
+    [GraphQLIgnore]
+    public override Task EntityDeletedAsync(DbContext dbContext, IDictionary<string, object> dictContextParams)
+    {
+        AddDomainEvent(new DomainEventCategoryValueDeleted(Id));
+
+        return Task.CompletedTask;
+    }
+
+    #endregion
 }

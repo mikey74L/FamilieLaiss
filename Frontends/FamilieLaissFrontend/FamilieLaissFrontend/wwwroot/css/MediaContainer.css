@@ -1,0 +1,12 @@
+﻿.container-base-data-media {
+    padding: 10px;
+}
+
+.container-base-data-media-items {
+    padding: 10px;
+    overflow: auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, 340px);
+    justify-content: space-between;
+    grid-gap: 10px;
+}

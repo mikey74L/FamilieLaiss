@@ -22,7 +22,7 @@ namespace FamilieLaissInterfaces.Models.Data
         [GraphQlFilter("UploadView", "PictureSize", 2, GraphQlFilterType.NumberRange)]
         public int? Width { get; set; }
 
-        public EnumUploadStatus? Status { get; set; }
+        public EnumUploadState? State { get; set; }
 
         [GraphQlSort("UploadView", 3, true, GraphQlSortDirection.Ascending)]
         [GraphQlSort("UploadView", 4, false, GraphQlSortDirection.Descending)]

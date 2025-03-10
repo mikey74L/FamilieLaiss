@@ -1,7 +1,10 @@
-﻿namespace Upload.API.GraphQL.Mutations.UploadVideo
+﻿using HotChocolate;
+
+namespace Upload.API.GraphQL.Mutations.UploadVideo;
+
+[GraphQLDescription("The result for a deleted upload video")]
+public class DeleteUploadVideoPayload
 {
-    public class DeleteUploadVideoPayload
-    {
-        public Upload.Domain.Entities.UploadVideo UploadVideo { get; set; } = default!;
-    }
+    [GraphQLDescription("The deleted upload video")]
+    public Domain.Entities.UploadVideo UploadVideo { get; set; } = default!;
 }

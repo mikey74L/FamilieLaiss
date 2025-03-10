@@ -6,7 +6,7 @@ namespace FamilieLaissMappingExtensions.UploadVideo;
 
 public static class UploadVideoMappingExtensions
 {
-    public static IUploadVideoModel? Map(this IFrUploadVideoOnlyId source)
+    public static IUploadVideoModel Map(this IFrUploadVideoOnlyId source)
     {
         var result = new UploadVideoModel()
         {
@@ -18,14 +18,31 @@ public static class UploadVideoMappingExtensions
 
     public static IEnumerable<IUploadVideoModel> Map(this IReadOnlyList<IFrUploadVideoOnlyId> sourceItems)
     {
-        var result = new List<IUploadVideoModel>();
+        return sourceItems.Select(sourceItem => sourceItem.Map()).ToList();
+    }
 
-        foreach (var sourceItem in sourceItems)
+    public static IUploadVideoModel Map(this IFrUploadVideoForChooseView sourceItem)
+    {
+        var result = new UploadVideoModel()
         {
-            result.Add(sourceItem.Map()!);
-        }
+            Id = sourceItem.Id,
+            Filename = sourceItem.Filename,
+            Height = sourceItem.Height,
+            Width = sourceItem.Width,
+            VideoType = sourceItem.VideoType,
+            DurationHour = sourceItem.DurationHour,
+            DurationMinute = sourceItem.DurationMinute,
+            DurationSecond = sourceItem.DurationSecond,
+            State = sourceItem.State,
+            CreateDate = sourceItem.CreateDate,
+        };
 
         return result;
+    }
+
+    public static IEnumerable<IUploadVideoModel> Map(this IReadOnlyList<IFrUploadVideoForChooseView> sourceItems)
+    {
+        return sourceItems.Select(sourceItem => sourceItem.Map()).ToList();
     }
 
     public static IUploadVideoModel Map(this IFrUploadVideoIdWithFilename sourceItem)
@@ -39,28 +56,25 @@ public static class UploadVideoMappingExtensions
         return newItem;
     }
 
-    public static IEnumerable<IUploadVideoModel> Map(this IReadOnlyList<IFrUploadVideoForUploadView> sourceItems, IServiceProvider serviceProvider)
+    public static IEnumerable<IUploadVideoModel> Map(this IReadOnlyList<IFrUploadVideoForUploadView> sourceItems,
+        IServiceProvider serviceProvider)
     {
-        var result = new List<IUploadVideoModel>();
-
-        foreach (var sourceItem in sourceItems)
+        return sourceItems.Select(sourceItem => new UploadVideoModel()
         {
-            var newItem = new UploadVideoModel()
-            {
-                Id = sourceItem.Id,
-                Filename = sourceItem.Filename,
-                Height = sourceItem.Height,
-                Width = sourceItem.Width,
-                VideoType = sourceItem.VideoType,
-                Status = sourceItem.Status,
-                CreateDate = sourceItem.CreateDate,
-                //GoogleGeoCodingAddress = sourceItem.GoogleGeoCodingAddress.Map()
-            };
-
-            result.Add(newItem);
-        }
-
-        return result;
+            Id = sourceItem.Id,
+            Filename = sourceItem.Filename,
+            Height = sourceItem.Height,
+            Width = sourceItem.Width,
+            VideoType = sourceItem.VideoType,
+            State = sourceItem.State,
+            CreateDate = sourceItem.CreateDate,
+            DurationHour = sourceItem.DurationHour,
+            DurationMinute = sourceItem.DurationMinute,
+            DurationSecond = sourceItem.DurationSecond,
+            //GoogleGeoCodingAddress = sourceItem.GoogleGeoCodingAddress.Map()
+        })
+            .Cast<IUploadVideoModel>()
+            .ToList();
     }
 
     public static IUploadVideoModel Map(this IFrUploadVideoForConvert sourceItem)

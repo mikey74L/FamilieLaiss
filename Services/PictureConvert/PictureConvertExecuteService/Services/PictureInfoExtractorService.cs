@@ -1,15 +1,17 @@
-﻿using System.Threading.Tasks;
-using FamilieLaissMassTransitDefinitions.Contracts.Commands;
+﻿using FamilieLaissMassTransitDefinitions.Commands.UploadPicture;
+using FamilieLaissMassTransitDefinitions.Contracts.Commands.UploadPicture;
 using MassTransit;
 using Microsoft.Extensions.Logging;
 using PictureConvertExecuteService.Interfaces;
 using SixLabors.ImageSharp;
+using System.Threading.Tasks;
 
 namespace PictureConvertExecuteService.Services;
 
 public class PictureInfoExtractorService(
     ILogger<PictureInfoExtractorService> logger,
-    IDatabaseOperations databaseOperations) : IPictureInfoExtractor
+    IDatabaseOperations databaseOperations,
+    IBus massTransit) : IPictureInfoExtractor
 {
     #region Private Methods
 
@@ -28,7 +30,7 @@ public class PictureInfoExtractorService(
 
     #region Interface iPictureInfoExtractor
 
-    public async Task ExtractInfoAsync(ConsumeContext<IConvertPictureCmd> consumerContext, string filename)
+    public async Task ExtractInfoAsync(ConsumeContext<IMassConvertPictureCmd> consumerContext, string filename)
     {
         logger.LogInformation("Set status to read picture info begin");
         await databaseOperations.SetStatusReadInfoBeginAsync(consumerContext.Message.ConvertStatusId);
@@ -37,8 +39,16 @@ public class PictureInfoExtractorService(
         var tuple = GetWidthAndHeightForImage(consumerContext.Message.Id, filename);
         logger.LogDebug($"Width / Height: {tuple.width} / {tuple.height}");
 
-        logger.LogInformation("Set width and height in database");
-        await databaseOperations.SetSizeForPicture(tuple.id, tuple.width, tuple.height);
+        var repo = unitOfWork.GetRepository<Domain.Entities.UploadPicture>();
+
+        logger.LogInformation("Send command over message bus to set picture dimensions");
+        var newCommand = new MassSetUploadPictureDimensionsCmd()
+        {
+            Id = tuple.id,
+            Height = tuple.height,
+            Width = tuple.width
+        };
+        await massTransit.Send<IMassSetUploadPictureDimensionsCmd>(newCommand);
 
         logger.LogInformation("Set status to read picture info end");
         await databaseOperations.SetStatusReadInfoEndAsync(consumerContext.Message.ConvertStatusId);

@@ -7,22 +7,13 @@ using MudBlazor;
 
 namespace FamilieLaissFrontend.Client.ViewModels.Controls.User;
 
-public partial class LoginLogoutControlViewModel : ViewModelBase
+public partial class LoginLogoutControlViewModel(
+    ISnackbar snackbarService,
+    IMessageBoxService messageBoxService,
+    NavigationManager navManager,
+    IMvvmNavigationManager navigationManager)
+    : ViewModelBase(snackbarService, messageBoxService)
 {
-    #region Services
-    private readonly NavigationManager navManager;
-    private readonly IMvvmNavigationManager navigationManager;
-    #endregion
-
-    #region C'tor
-    public LoginLogoutControlViewModel(ISnackbar snackbarService, IMessageBoxService messageBoxService,
-        NavigationManager navManager, IMvvmNavigationManager navigationManager) : base(snackbarService, messageBoxService)
-    {
-        this.navManager = navManager;
-        this.navigationManager = navigationManager;
-    }
-    #endregion
-
     #region Commands
     [RelayCommand]
     public void LogIn()

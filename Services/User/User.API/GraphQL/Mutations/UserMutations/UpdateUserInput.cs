@@ -1,15 +1,16 @@
-﻿using HotChocolate;
+﻿using FamilieLaissSharedObjects.Enums;
+using HotChocolate;
 
 namespace User.API.GraphQL.Mutations.UserMutations
 {
     [GraphQLDescription("Input type for changing users")]
     public class UpdateUserInput
     {
-        [GraphQLDescription("The ID for the user")]
-        public string ID { get; set; }
+        [GraphQLDescription("The Id for the user")]
+        public string Id { get; set; }
 
-        [GraphQLDescription("Gender ID of user")]
-        public string GenderID { get; set; }
+        [GraphQLDescription("Gender for user")]
+        public EnumGenderType Gender { get; set; }
 
         [GraphQLDescription("Givenname of user")]
         public string GivenName { get; set; }
@@ -21,15 +22,15 @@ namespace User.API.GraphQL.Mutations.UserMutations
         public string Street { get; set; }
 
         [GraphQLDescription("Housenumber of living adress")]
-        public string HNR { get; set; }
+        public string Hnr { get; set; }
 
         [GraphQLDescription("ZIP-Code of living adress")]
-        public string ZIP { get; set; }
+        public string Zip { get; set; }
 
         [GraphQLDescription("Cityname of living adress")]
-        public string City { get; set; }    
+        public string City { get; set; }
 
-        [GraphQLDescription("CountryID for the country of living adress")]
-        public string CountryID { get; set; }
+        [GraphQLDescription("CountryId for the country of living adress")]
+        public string CountryId { get; set; }
     }
 }

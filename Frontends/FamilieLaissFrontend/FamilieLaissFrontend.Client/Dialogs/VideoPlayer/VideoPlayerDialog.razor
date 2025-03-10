@@ -12,16 +12,16 @@
     </DialogContent>
     <DialogActions>
         <MudTooltip Arrow="true" Placement="Placement.Top" Text="@VideoPlayerDialogRes.TooltipClose">
-            <MudButton Color="Color.Primary" StartIcon="@Icons.Material.Filled.Close" OnClick="() => { MudDialog.Close(); }">@VideoPlayerDialogRes.ButtonClose</MudButton>
+            <MudButton Color="Color.Primary" StartIcon="@Icons.Material.Filled.Close" OnClick="() => { MudDialog?.Close(); }">@VideoPlayerDialogRes.ButtonClose</MudButton>
         </MudTooltip>
     </DialogActions>
 </MudDialog>
 
 @code{
     [CascadingParameter]
-    public MudDialogInstance MudDialog { get; set; } = default!;
+    public IMudDialogInstance? MudDialog { get; set; }
 
     [Parameter]
     [EditorRequired]
-    public IUploadVideoModel UploadVideoItem { get; set; } = default!;
+    public required IUploadVideoModel UploadVideoItem { get; set; }
 }

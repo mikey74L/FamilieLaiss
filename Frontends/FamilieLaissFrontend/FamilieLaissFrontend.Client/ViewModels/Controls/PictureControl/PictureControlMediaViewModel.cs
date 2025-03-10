@@ -9,13 +9,13 @@ using MudBlazor;
 
 namespace FamilieLaissFrontend.Client.ViewModels.Controls.PictureControl;
 
-public partial class PictureControlMediaViewModel : ViewModelBase
+public partial class PictureControlMediaViewModel(
+    IUrlHelperService urlHelperService,
+    IDialogService dialogService,
+    ISnackbar snackbarService,
+    IMessageBoxService messageBoxService)
+    : ViewModelBase(snackbarService, messageBoxService)
 {
-    #region Private Services
-    private readonly IUrlHelperService urlHelperService;
-    private readonly IDialogService dialogService;
-    #endregion
-
     #region Parameters
     public EnumPictureControlType ControlType { get; set; }
     public IUploadPictureModel? UploadItem { get; set; }
@@ -24,18 +24,9 @@ public partial class PictureControlMediaViewModel : ViewModelBase
 
     #region Public Properties
     [ObservableProperty]
-    private bool _isOverlayPictureActive;
+    public partial bool IsOverlayPictureActive { get; set; }
 
     public string ImageUrl => UploadItem is not null ? urlHelperService.GetUrlForUploadPictureCard(UploadItem) : "";
-    #endregion
-
-    #region C'tor
-    public PictureControlMediaViewModel(IUrlHelperService urlHelperService, IDialogService dialogService,
-        ISnackbar snackbarService, IMessageBoxService messageBoxService) : base(snackbarService, messageBoxService)
-    {
-        this.urlHelperService = urlHelperService;
-        this.dialogService = dialogService;
-    }
     #endregion
 
     #region Commands
@@ -49,11 +40,8 @@ public partial class PictureControlMediaViewModel : ViewModelBase
             { "MediaItem", MediaItem }
         };
 
-        var dialogOptions = GetDialogOptions();
-        dialogOptions.CloseButton = true;
-        dialogOptions.CloseOnEscapeKey = true;
-        dialogOptions.Position = DialogPosition.Center;
-        dialogOptions.MaxWidth = MaxWidth.ExtraExtraLarge;
+        var dialogOptions = GetDialogOptions(true, true, DialogPosition.Center,
+            MaxWidth.ExtraExtraLarge);
 
         await dialogService.ShowAsync<PictureInfoDialog>("", dialogParams, dialogOptions);
     }

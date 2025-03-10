@@ -25,11 +25,9 @@ namespace UserInteraction.Domain.DomainEvents
         /// </summary>
         /// <param name="id">Identifier for media item</param>
         /// <param name="userInteractionInfoID">Identifier for user interaction info</param>
-        /// <param name="userAccountID">Identifier for user account</param>
-        public MtrEventCommentDeleted(long id, long userInteractionInfoID, string userAccountID) : base(id.ToString())
+        public MtrEventCommentDeleted(long id, long userInteractionInfoID) : base(id.ToString())
         {
             UserInteractionInfoID = userInteractionInfoID;
-            UserAccountID = userAccountID;
         }
         #endregion
     }

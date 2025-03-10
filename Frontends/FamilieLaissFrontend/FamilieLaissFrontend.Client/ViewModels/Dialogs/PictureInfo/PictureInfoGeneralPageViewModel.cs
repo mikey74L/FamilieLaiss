@@ -6,12 +6,12 @@ using MudBlazor;
 
 namespace FamilieLaissFrontend.Client.ViewModels.Dialogs.PictureInfo;
 
-public partial class PictureInfoGeneralPageViewModel : ViewModelBase
+public partial class PictureInfoGeneralPageViewModel(
+    ISnackbar snackbarService,
+    IMessageBoxService messageBoxService,
+    IUrlHelperService urlHelperService)
+    : ViewModelBase(snackbarService, messageBoxService)
 {
-    #region Services
-    private readonly IUrlHelperService urlHelperService;
-    #endregion
-
     #region Parameters
     public IUploadPictureModel? UploadItem { get; set; }
     public IMediaItemModel? MediaItem { get; set; }
@@ -19,17 +19,9 @@ public partial class PictureInfoGeneralPageViewModel : ViewModelBase
 
     #region Public Properties
     [ObservableProperty]
-    private IUploadPictureModel _pictureModel = default!;
+    public partial IUploadPictureModel PictureModel { get; set; }
 
     public string UrlPicture => urlHelperService.GetUrlForUploadPictureInfo(PictureModel);
-    #endregion
-
-    #region C'tor
-    public PictureInfoGeneralPageViewModel(ISnackbar snackbarService, IMessageBoxService messageBoxService,
-        IUrlHelperService urlHelperService) : base(snackbarService, messageBoxService)
-    {
-        this.urlHelperService = urlHelperService;
-    }
     #endregion
 
     #region Lifecycle

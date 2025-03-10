@@ -5,7 +5,6 @@ using Microsoft.EntityFrameworkCore.Metadata;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Dynamic.Core;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 
@@ -34,23 +33,16 @@ public class ReadRepository<TEntity> : iReadRepository<TEntity> where TEntity : 
     #endregion
 
     #region Interface iReadRepository
-    public Task<List<TEntity>> GetAll(Expression<Func<TEntity, bool>> predicateWhere = null, string whereClause = null, string includeNav = null, string OrderBy = null, int? Take = null, int? Skip = null)
+    public Task<List<TEntity>> GetAll(Expression<Func<TEntity, bool>> predicateWhere = null, string includeNav = null, int? Take = null, int? Skip = null)
     {
         //Deklaration
         IQueryable<TEntity> Data;
 
         //Query zusammenbauen
         Data = _DBSet;
-        if (!string.IsNullOrEmpty(whereClause) || predicateWhere != null)
+        if (predicateWhere != null)
         {
-            //Where-Bedingung über Dynamic-Linq dazufügen
-            if (!string.IsNullOrEmpty(whereClause)) Data = Data.Where(whereClause);
             if (predicateWhere != null) Data = Data.Where(predicateWhere);
-        }
-        if (!string.IsNullOrEmpty(OrderBy))
-        {
-            //OrderBy-Bedingung über Dynamic-Linq dazufügen
-            Data = Data.OrderBy(OrderBy);
         }
         if (Take.HasValue)
         {
@@ -76,18 +68,13 @@ public class ReadRepository<TEntity> : iReadRepository<TEntity> where TEntity : 
         return Data.ToListAsync();
     }
 
-    public Task<long> GetCount(Expression<Func<TEntity, bool>> predicateWhere = null, string whereClause = null)
+    public Task<long> GetCount(Expression<Func<TEntity, bool>> predicateWhere = null)
     {
         //Deklaration
         IQueryable<TEntity> Data;
 
         //Query zusammenbauen
         Data = _DBSet;
-        if (!string.IsNullOrEmpty(whereClause))
-        {
-            //Where-Bedingung über Dynamic-Linq dazufügen
-            Data = Data.Where(whereClause);
-        }
 
         //Return-Value und Predicate anwenden
         if (predicateWhere != null)

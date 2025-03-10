@@ -4,524 +4,331 @@ schema {
   subscription: Subscription
 }
 
-"Category group"
-type Category {
-  "The identifier for this category"
+"Media item"
+input MediaItemSortInput {
+  changeDate: SortEnumType
+  createDate: SortEnumType
+  "English description for this media item"
+  descriptionEnglish: SortEnumType
+  "German description for this media item"
+  descriptionGerman: SortEnumType
+  id: SortEnumType
+  "The media group this media item entry belongs to"
+  mediaGroup: MediaGroupSortInput
+  "The type of media item"
+  mediaType: SortEnumType
+  "English name for this media item"
+  nameEnglish: SortEnumType
+  "German name for this media item"
+  nameGerman: SortEnumType
+  "Is this media item is only visible for family users"
+  onlyFamily: SortEnumType
+  "The assigned upload picture if the item is of type picture"
+  uploadPicture: UploadPictureSortInput
+  "The assigned upload video if the item is of type video"
+  uploadVideo: UploadVideoSortInput
+}
+
+"InputData type for updating categories"
+input UpdateCategoryInput {
+  "The ID for the category to update"
   id: Long!
-  "When was this category last changed"
-  changeDate: DateTime
-  "When was this category created"
-  createDate: DateTime!
-  "The type of category"
-  categoryType: EnumCategoryType!
-  "German name for this category"
-  nameGerman: String!
   "English name for this category"
   nameEnglish: String!
-  "List of related category values"
-  categoryValues(where: CategoryValueFilterInput order: [CategoryValueSortInput!]): [CategoryValue!]!
-}
-
-"Category values"
-type CategoryValue {
-  "The identifier for this category value"
-  id: Long!
-  "When was this category value last changed"
-  changeDate: DateTime
-  "When was this category value created"
-  createDate: DateTime!
-  "The Category this category value entry belongs to"
-  category: Category!
-  "German name for this category value"
+  "German name for this category"
   nameGerman: String!
-  "English name for this category value"
-  nameEnglish: String!
-  "List of related media item category values"
-  mediaItemCategoryValues(where: MediaItemCategoryValueFilterInput order: [MediaItemCategoryValueSortInput!]): [MediaItemCategoryValue!]!
 }
 
-"Picture convert status"
-type PictureConvertStatus {
-  "The identifier for this picture convert status item"
+type UserInteractionInfo {
+  "When was this user interaction info last changed"
+  changeDate: DateTime
+  "Count of comments"
+  commentCount: Int!
+  "List of related comments"
+  comments(order: [CommentSortInput!] where: CommentFilterInput): [Comment]
+  "When was this user interaction info created"
+  createDate: DateTime!
+  "Count of favorites"
+  favoriteCount: Int!
+  "List of related favorites"
+  favorites(order: [FavoriteSortInput!] where: FavoriteFilterInput): [Favorite]
+  "The identifier for this user interaction info"
   id: Long!
-  "The current state for the conversion"
-  status: EnumPictureConvertStatus!
-  "Error message when conversion is in state \"Finished with errors\""
-  errorMessage: String!
-  "Timestamp for \"Read Picture Info from file - Begin\""
-  startDateInfo: DateTime
-  "Timestamp for \"Read Picture Info from file - End\""
-  finishDateInfo: DateTime
-  "Timestamp for \"Read Exif-Information from file - Begin\""
-  startDateExif: DateTime
-  "Timestamp for \"Read Exif-Information from file - End\""
-  finishDateExif: DateTime
-  "Timestamp for \"Convert picture - Begin\""
-  startDateConvert: DateTime
-  "Timestamp for \"Convert picture - End\""
-  finishDateConvert: DateTime
-  "The upload picture that is converted"
-  uploadPicture: UploadPicture!
+  "Cout of ratings"
+  ratingCount: Int!
+  "List of related ratings"
+  ratings(order: [RatingSortInput!] where: RatingFilterInput): [Rating]
+  "The user account this interaction info is linked to"
+  userAccount: UserAccount
+}
+
+input ListFilterInputTypeOfMediaItemCategoryValueFilterInput {
+  all: MediaItemCategoryValueFilterInput
+  any: Boolean
+  none: MediaItemCategoryValueFilterInput
+  some: MediaItemCategoryValueFilterInput
+}
+
+input ListFilterInputTypeOfCategoryValueFilterInput {
+  all: CategoryValueFilterInput
+  any: Boolean
+  none: CategoryValueFilterInput
+  some: CategoryValueFilterInput
+}
+
+input ListFilterInputTypeOfFavoriteFilterInput {
+  all: FavoriteFilterInput
+  any: Boolean
+  none: FavoriteFilterInput
+  some: FavoriteFilterInput
+}
+
+"User setting"
+type UserSetting {
+  "Allow zoom with mouse wheel in video player"
+  allowZoomingWithMouseWheel: Boolean!
+  "When was this user setting the last time changed in database"
+  changeDate: DateTime
+  "When was this user setting added to database"
+  createDate: DateTime!
+  "What should be the default when question would not be shown"
+  defaultKeepUploadWhenDelete: Boolean!
+  "Close gallery with clicking on background"
+  galleryCloseDimmer: Boolean!
+  "Close gallery with pressing the Escape-Key"
+  galleryCloseEsc: Boolean!
+  "Change current photo in gallery by using the mouse wheel"
+  galleryMouseWheelChangeSlide: Boolean!
+  "Start gallery in full screen mode"
+  galleryShowFullScreen: Boolean!
+  "Show thumbnails from begin on"
+  galleryShowThumbnails: Boolean!
+  "Time to transition from current picture to next picture in milliseconds"
+  galleryTransitionDuration: Int!
+  "Name of the transition animation"
+  galleryTransitionType: String!
+  "The identifier for this user setting"
+  id: String!
+  "Should the question to keep the upload item be shown?"
+  questionKeepUploadWhenDelete: Boolean!
+  "Should the seek forward button be shown in the player"
+  showButtonForward: Boolean!
+  "Should the seek backward button be shown in the player"
+  showButtonRewind: Boolean!
+  "Show mirror button in video player"
+  showMirrorButton: Boolean!
+  "Show play rate menu in video player"
+  showPlayRateMenu: Boolean!
+  "Show quality menu in video player"
+  showQualityMenu: Boolean!
+  "Show tooltip for current playtime in video player"
+  showTooltipForCurrentPlaytime: Boolean!
+  "Show tooltip for playtime in video player when mouse over"
+  showTooltipForPlaytimeOnMouseCursor: Boolean!
+  "Show zoom info in video player"
+  showZoomInfo: Boolean!
+  "Should the player show the zoom menu"
+  showZoomMenu: Boolean!
+  "Should videos automatically start playing when video player is shown"
+  videoAutoPlay: Boolean!
+  "Should other videos of current album play after current video is fnished"
+  videoAutoPlayOtherVideos: Boolean!
+  "Should videos play in a loop"
+  videoLoop: Boolean!
+  "Time in seconds the seek forward \/ rewind button will jump ahead \/ back in the video"
+  videoTimeSeekForwardRewind: Int!
+  "Wait time to play other video in of current album in seconds"
+  videoTimeToPlayNextVideo: Int!
+  "The default volume vor video player all videos start playing with"
+  videoVolume: Int!
+}
+
+enum EnumGenderType {
+  DIVERS
+  FEMALE
+  MALE
+}
+
+"The result for a new added media item"
+type AddMediaItemPayload {
+  "The new added media item"
+  mediaItem: MediaItem!
+}
+
+input DateTimeOperationFilterInput {
+  eq: DateTime
+  gt: DateTime
+  gte: DateTime
+  in: [DateTime]
+  lt: DateTime
+  lte: DateTime
+  neq: DateTime
+  ngt: DateTime
+  ngte: DateTime
+  nin: [DateTime]
+  nlt: DateTime
+  nlte: DateTime
+}
+
+type Subscription {
+  "Subscription for convert status item for currently converted picture"
+  onPictureConvertStatusCurrent: PictureConvertStatus!
+  "Subscription for new picture convert status items in error state"
+  onPictureConvertStatusError: PictureConvertStatus!
+  "Subscription for new picture convert status items in success state"
+  onPictureConvertStatusSuccess: PictureConvertStatus!
+  "Subscription for new picture convert status items in waiting state"
+  onPictureConvertStatusWaiting: PictureConvertStatus!
+  "Subscription for convert status item for currently converted picture"
+  onVideoConvertStatusCurrent: VideoConvertStatus!
+  "Subscription for new video convert status items in error state"
+  onVideoConvertStatusError: VideoConvertStatus!
+  "Subscription for new video convert status items in success state"
+  onVideoConvertStatusSuccess: VideoConvertStatus!
+  "Subscription for new video convert status items in waiting state"
+  onVideoConvertStatusWaiting: VideoConvertStatus!
+}
+
+"InputData type for adding categories"
+input AddCategoryInput {
+  "The type of category"
+  categoryType: EnumCategoryType!
+  "English name for this category"
+  nameEnglish: String!
+  "German name for this category"
+  nameGerman: String!
+}
+
+"User"
+input UserAccountFilterInput {
+  and: [UserAccountFilterInput!]
+  changeDate: DateTimeOperationFilterInput
+  "The name of the city the user lives in"
+  city: StringOperationFilterInput
+  "The assigned country the user lives in"
+  country: CountryFilterInput
+  createDate: DateTimeOperationFilterInput
+  "The eMail-Adress for the user"
+  eMail: StringOperationFilterInput
+  "The family name for the user"
+  familyName: StringOperationFilterInput
+  "The gender for the user"
+  gender: EnumGenderTypeOperationFilterInput
+  "The given name for the user"
+  givenName: StringOperationFilterInput
+  "The house number for the adress of the user"
+  hnr: StringOperationFilterInput
+  id: StringOperationFilterInput
+  or: [UserAccountFilterInput!]
+  "The street name for the adress of the user"
+  street: StringOperationFilterInput
+  "The interaction info this user account is linked to"
+  userInteractionInfo: UserInteractionInfoFilterInput
+  "The user name for the user"
+  userName: StringOperationFilterInput
+  "The ZIP-Code for the adress of the user"
+  zip: StringOperationFilterInput
+}
+
+"Media group"
+input MediaGroupSortInput {
+  changeDate: SortEnumType
+  createDate: SortEnumType
+  "English description for this media group"
+  descriptionEnglish: SortEnumType
+  "German description for this media group"
+  descriptionGerman: SortEnumType
+  "The date on which the event took place"
+  eventDate: SortEnumType
+  id: SortEnumType
+  "English name for this media group"
+  nameEnglish: SortEnumType
+  "German name for this media group"
+  nameGerman: SortEnumType
 }
 
 "Video convert status"
 type VideoConvertStatus {
-  "The identifier for this video convert status item"
-  id: Long!
-  "The type of video for the converted video"
-  videoType: EnumVideoType!
-  "The current state for the conversion"
-  status: EnumVideoConvertStatus!
   "Hour part for the convert time"
   convertHour: Int
   "Minute part for the convert time"
   convertMinute: Int
-  "Second part for the convert time"
-  convertSecond: Int
   "The remaining time for current conversion in hours"
   convertRestHour: Int
   "The remaining time for current conversion in minutes"
   convertRestMinute: Int
   "The remaining time for current conversion in seconds"
   convertRestSecond: Int
+  "Second part for the convert time"
+  convertSecond: Int
   "Error message when conversion is in state \"Finished with errors\""
   errorMessage: String!
-  "The progress for current conversion"
-  progress: Int
-  "Timestamp when converting the video to MP4 begins"
-  startDateMp4: DateTime
-  "Timestamp when converting the video to MP4 ends"
-  finishDateMp4: DateTime
-  "Timestamp when converting the video to HLS 640 x 360 begins"
-  startDateMp4360: DateTime
-  "Timestamp when converting the video to HLS 640 x 360 ends"
-  finishDateMp4360: DateTime
-  "Timestamp when converting the video to HLS 852 x 480 begins"
-  startDateMp4480: DateTime
-  "Timestamp when converting the video to HLS 852 x 480 ends"
-  finishDateMp4480: DateTime
-  "Timestamp when converting the video to HLS 1280 x 720 begins"
-  startDateMp4720: DateTime
-  "Timestamp when converting the video to HLS 1280 x 720 ends"
-  finishDateMp4720: DateTime
-  "Timestamp when converting the video to DASH 1920 x 1080 begins"
-  startDateMp41080: DateTime
-  "Timestamp when converting the video to DASH 1920 x 1080 ends"
-  finishDateMp41080: DateTime
-  "Timestamp when converting the video to DASH 3840 x 2160 begins"
-  startDateMp42160: DateTime
-  "Timestamp when converting the video to DASH 3840 x 2160 ends"
-  finishDateMp42160: DateTime
-  "Timestamp when creating HLS content begins"
-  startDateHls: DateTime
-  "Timestamp when creating HLS content ends"
-  finishDateHls: DateTime
-  "Timestamp when creating thumbnail begins"
-  startDateThumbnail: DateTime
-  "Timestamp when creating thumbnail ends"
-  finishDateThumbnail: DateTime
-  "Timestamp when reading media info begins"
-  startDateMediaInfo: DateTime
-  "Timestamp when reading media info ends"
-  finishDateMediaInfo: DateTime
-  "Timestamp when creating VTT content begins"
-  startDateVtt: DateTime
-  "Timestamp when creating VTT content ends"
-  finishDateVtt: DateTime
-  "Timestamp when copy of converted files begins"
-  startDateCopyConverted: DateTime
-  "Timestamp when copy of converted files ends"
-  finishDateCopyConverted: DateTime
-  "Timestamp when delete temporary files begins"
-  startDateDeleteTemp: DateTime
-  "Timestamp when delete temporary files ends"
-  finishDateDeleteTemp: DateTime
-  "Timestamp when delete original file begins"
-  startDateDeleteOriginal: DateTime
-  "Timestamp when delete original file ends"
-  finishDateDeleteOriginal: DateTime
-  "Timestamp when conversion of preview image begins"
-  startDateConvertPicture: DateTime
   "Timestamp when conversion of preview image ends"
   finishDateConvertPicture: DateTime
+  "Timestamp when copy of converted files ends"
+  finishDateCopyConverted: DateTime
+  "Timestamp when delete original file ends"
+  finishDateDeleteOriginal: DateTime
+  "Timestamp when delete temporary files ends"
+  finishDateDeleteTemp: DateTime
+  "Timestamp when creating HLS content ends"
+  finishDateHls: DateTime
+  "Timestamp when reading media info ends"
+  finishDateMediaInfo: DateTime
+  "Timestamp when converting the video to MP4 ends"
+  finishDateMp4: DateTime
+  "Timestamp when converting the video to DASH 1920 x 1080 ends"
+  finishDateMp41080: DateTime
+  "Timestamp when converting the video to DASH 3840 x 2160 ends"
+  finishDateMp42160: DateTime
+  "Timestamp when converting the video to HLS 640 x 360 ends"
+  finishDateMp4360: DateTime
+  "Timestamp when converting the video to HLS 852 x 480 ends"
+  finishDateMp4480: DateTime
+  "Timestamp when converting the video to HLS 1280 x 720 ends"
+  finishDateMp4720: DateTime
+  "Timestamp when creating thumbnail ends"
+  finishDateThumbnail: DateTime
+  "Timestamp when creating VTT content ends"
+  finishDateVtt: DateTime
+  "The identifier for this video convert status item"
+  id: Long!
+  "The progress for current conversion"
+  progress: Int
+  "Timestamp when conversion of preview image begins"
+  startDateConvertPicture: DateTime
+  "Timestamp when copy of converted files begins"
+  startDateCopyConverted: DateTime
+  "Timestamp when delete original file begins"
+  startDateDeleteOriginal: DateTime
+  "Timestamp when delete temporary files begins"
+  startDateDeleteTemp: DateTime
+  "Timestamp when creating HLS content begins"
+  startDateHls: DateTime
+  "Timestamp when reading media info begins"
+  startDateMediaInfo: DateTime
+  "Timestamp when converting the video to MP4 begins"
+  startDateMp4: DateTime
+  "Timestamp when converting the video to DASH 1920 x 1080 begins"
+  startDateMp41080: DateTime
+  "Timestamp when converting the video to DASH 3840 x 2160 begins"
+  startDateMp42160: DateTime
+  "Timestamp when converting the video to HLS 640 x 360 begins"
+  startDateMp4360: DateTime
+  "Timestamp when converting the video to HLS 852 x 480 begins"
+  startDateMp4480: DateTime
+  "Timestamp when converting the video to HLS 1280 x 720 begins"
+  startDateMp4720: DateTime
+  "Timestamp when creating thumbnail begins"
+  startDateThumbnail: DateTime
+  "Timestamp when creating VTT content begins"
+  startDateVtt: DateTime
+  "The current state for the conversion"
+  status: EnumVideoConvertStatus!
   "The upload video that is converted"
   uploadVideo: UploadVideo!
-}
-
-"Upload picture"
-type UploadPicture {
-  "The identifier for this upload picture"
-  id: Long!
-  "When was this upload picture created"
-  createDate: DateTime!
-  "The original filename for the picture file that was uploaded"
-  filename: String!
-  "The height of the picture"
-  height: Int!
-  "The width of the picture"
-  width: Int!
-  "The status for the upload picture"
-  status: EnumUploadStatus!
-  "The Exif-Info for the upload picture"
-  uploadPictureExifInfo: UploadPictureExifInfo
-  "Google geo coding address for this upload picture"
-  googleGeoCodingAddress: GoogleGeoCodingAddress
-  "The assigned media item"
-  mediaItem: MediaItem
-  "The converting status for this upload picture"
-  convertStatus: PictureConvertStatus!
-}
-
-"Upload video"
-type UploadVideo {
-  "The identifier for this upload video"
-  id: Long!
-  "When was this upload video created"
-  createDate: DateTime!
-  "The original filename for the video file that was uploaded"
-  filename: String!
-  "The status for the upload video"
-  status: EnumUploadStatus!
-  "The video type for the upload video"
+  "The type of video for the converted video"
   videoType: EnumVideoType!
-  "The height of the video"
-  height: Int!
-  "The width of the video"
-  width: Int!
-  "The hour part for the duration of the video"
-  durationHour: Int!
-  "The minute part for the duration of the video"
-  durationMinute: Int!
-  "The second part for the duration of the video"
-  durationSecond: Int!
-  "The longitude for the gps position"
-  gpsLongitude: Float
-  "The latitude for the gps position"
-  gpsLatitude: Float
-  "The google geo coding address for this video"
-  googleGeoCodingAddress: GoogleGeoCodingAddress
-  "The assigned media item"
-  mediaItem: MediaItem
-  "The converting status for this upload video"
-  convertStatus: VideoConvertStatus!
-}
-
-"User setting"
-type UserSetting {
-  "The identifier for this user setting"
-  id: String!
-  "When was this user setting last changed"
-  changeDate: DateTime
-  "When was this user setting created"
-  createDate: DateTime!
-  "Should the question to keep the upload item be shown?"
-  questionKeepUploadWhenDelete: Boolean!
-  "What should be the default when question would not be shown"
-  defaultKeepUploadWhenDelete: Boolean!
-  "Should videos automatically start playing when video player is shown"
-  videoAutoPlay: Boolean!
-  "The default volume vor video player all videos start playing with"
-  videoVolume: Int!
-  "Should videos play in a loop"
-  videoLoop: Boolean!
-  "Should other videos of current album play after current video is fnished"
-  videoAutoPlayOtherVideos: Boolean!
-  "Wait time to play other video in of current album in seconds"
-  videoTimeToPlayNextVideo: Int!
-  "Show zoom info in video player"
-  showZoomInfo: Boolean!
-  "Allow zoom with mouse wheel in video player"
-  allowZoomingWithMouseWheel: Boolean!
-  "Show tooltip for playtime in video player when mouse over"
-  showTooltipForPlaytimeOnMouseCursor: Boolean!
-  "Show tooltip for current playtime in video player"
-  showTooltipForCurrentPlaytime: Boolean!
-  "Should the seek forward button be shown in the player"
-  showButtonForward: Boolean!
-  "Should the seek backward button be shown in the player"
-  showButtonRewind: Boolean!
-  "Should the player show the zoom menu"
-  showZoomMenu: Boolean!
-  "Show play rate menu in video player"
-  showPlayRateMenu: Boolean!
-  "Show mirror button in video player"
-  showMirrorButton: Boolean!
-  "Show quality menu in video player"
-  showQualityMenu: Boolean!
-  "Time in seconds the seek forward \/ rewind button will jump ahead \/ back in the video"
-  videoTimeSeekForwardRewind: Int!
-  "Close gallery with pressing the Escape-Key"
-  galleryCloseEsc: Boolean!
-  "Close gallery with clicking on background"
-  galleryCloseDimmer: Boolean!
-  "Change current photo in gallery by using the mouse wheel"
-  galleryMouseWheelChangeSlide: Boolean!
-  "Show thumbnails from begin on"
-  galleryShowThumbnails: Boolean!
-  "Start gallery in full screen mode"
-  galleryShowFullScreen: Boolean!
-  "Time to transition from current picture to next picture in milliseconds"
-  galleryTransitionDuration: Int!
-  "Name of the transition animation "
-  galleryTransitionType: String!
-}
-
-"Media group"
-type MediaGroup {
-  "The identifier for this media group"
-  id: Long!
-  "When was this media group last changed"
-  changeDate: DateTime
-  "When was this media group created"
-  createDate: DateTime!
-  "German name for this media group"
-  nameGerman: String!
-  "English name for this media group"
-  nameEnglish: String!
-  "German description for this media group"
-  descriptionGerman: String!
-  "English description for this media group"
-  descriptionEnglish: String!
-  "The date on which the event took place"
-  eventDate: DateTime!
-  "List of related media items"
-  mediaItems(where: MediaItemFilterInput order: [MediaItemSortInput!]): [MediaItem!]!
-}
-
-"Media item"
-type MediaItem {
-  "The identifier for this media item"
-  id: Long!
-  "When was this media item last changed"
-  changeDate: DateTime
-  "When was this media item created"
-  createDate: DateTime!
-  "The media group this media item entry belongs to"
-  mediaGroup: MediaGroup!
-  "The type of media item"
-  mediaType: EnumMediaType!
-  "German name for this media item"
-  nameGerman: String!
-  "English name for this media item"
-  nameEnglish: String!
-  "German description for this media item"
-  descriptionGerman: String
-  "English description for this media item"
-  descriptionEnglish: String
-  "Is this media item is only visible for family users"
-  onlyFamily: Boolean!
-  "The assigned picture if the item is of type picture"
-  uploadPicture: UploadPicture
-  "The assigned video if the item is of type video"
-  uploadVideo: UploadVideo
-  "List of related media item category values"
-  mediaItemCategoryValues: [MediaItemCategoryValue!]!
-}
-
-"Media item assigned category value"
-type MediaItemCategoryValue {
-  "The identifier for this media item category value"
-  id: Long!
-  "When was this media item category value created"
-  createDate: DateTime!
-  "The media item this category value entry belongs to"
-  mediaItem: MediaItem!
-  "The category value this media item belongs to"
-  categoryValue: CategoryValue!
-}
-
-"Category values"
-input CategoryValueFilterInput {
-  and: [CategoryValueFilterInput!]
-  or: [CategoryValueFilterInput!]
-  "The Category this category value entry belongs to"
-  category: CategoryFilterInput
-  "German name for this category value"
-  nameGerman: StringOperationFilterInput
-  "English name for this category value"
-  nameEnglish: StringOperationFilterInput
-  "List of related media item category values"
-  mediaItemCategoryValues: ListFilterInputTypeOfMediaItemCategoryValueFilterInput
-  changeDate: DateTimeOperationFilterInput
-  createDate: DateTimeOperationFilterInput
-  id: LongOperationFilterInput
-}
-
-"Category values"
-input CategoryValueSortInput {
-  "The Category this category value entry belongs to"
-  category: CategorySortInput
-  "German name for this category value"
-  nameGerman: SortEnumType
-  "English name for this category value"
-  nameEnglish: SortEnumType
-  changeDate: SortEnumType
-  createDate: SortEnumType
-  id: SortEnumType
-}
-
-"Media item assigned category value"
-input MediaItemCategoryValueFilterInput {
-  and: [MediaItemCategoryValueFilterInput!]
-  or: [MediaItemCategoryValueFilterInput!]
-  "The media item this category value entry belongs to"
-  mediaItem: MediaItemFilterInput
-  "The category value this media item belongs to"
-  categoryValue: CategoryValueFilterInput
-  createDate: DateTimeOperationFilterInput
-  id: LongOperationFilterInput
-}
-
-"Media item assigned category value"
-input MediaItemCategoryValueSortInput {
-  "The media item this category value entry belongs to"
-  mediaItem: MediaItemSortInput
-  "The category value this media item belongs to"
-  categoryValue: CategoryValueSortInput
-  createDate: SortEnumType
-  id: SortEnumType
-}
-
-"Media item"
-input MediaItemFilterInput {
-  and: [MediaItemFilterInput!]
-  or: [MediaItemFilterInput!]
-  "The media group this media item entry belongs to"
-  mediaGroup: MediaGroupFilterInput
-  "The type of media item"
-  mediaType: EnumMediaTypeOperationFilterInput
-  "German name for this media item"
-  nameGerman: StringOperationFilterInput
-  "English name for this media item"
-  nameEnglish: StringOperationFilterInput
-  "German description for this media item"
-  descriptionGerman: StringOperationFilterInput
-  "English description for this media item"
-  descriptionEnglish: StringOperationFilterInput
-  "Is this media item is only visible for family users"
-  onlyFamily: BooleanOperationFilterInput
-  "The assigned picture if the item is of type picture"
-  uploadPicture: UploadPictureFilterInput
-  "The assigned video if the item is of type video"
-  uploadVideo: UploadVideoFilterInput
-  "List of related media item category values"
-  mediaItemCategoryValues: ListFilterInputTypeOfMediaItemCategoryValueFilterInput
-  changeDate: DateTimeOperationFilterInput
-  createDate: DateTimeOperationFilterInput
-  id: LongOperationFilterInput
-}
-
-"Media item"
-input MediaItemSortInput {
-  "The media group this media item entry belongs to"
-  mediaGroup: MediaGroupSortInput
-  "The type of media item"
-  mediaType: SortEnumType
-  "German name for this media item"
-  nameGerman: SortEnumType
-  "English name for this media item"
-  nameEnglish: SortEnumType
-  "German description for this media item"
-  descriptionGerman: SortEnumType
-  "English description for this media item"
-  descriptionEnglish: SortEnumType
-  "Is this media item is only visible for family users"
-  onlyFamily: SortEnumType
-  "The assigned picture if the item is of type picture"
-  uploadPicture: UploadPictureSortInput
-  "The assigned video if the item is of type video"
-  uploadVideo: UploadVideoSortInput
-  changeDate: SortEnumType
-  createDate: SortEnumType
-  id: SortEnumType
-}
-
-enum ApplyPolicy {
-  BEFORE_RESOLVER
-  AFTER_RESOLVER
-  VALIDATION
-}
-
-"Category group"
-input CategoryFilterInput {
-  and: [CategoryFilterInput!]
-  or: [CategoryFilterInput!]
-  "The type of category"
-  categoryType: EnumCategoryTypeOperationFilterInput
-  "German name for this category"
-  nameGerman: StringOperationFilterInput
-  "English name for this category"
-  nameEnglish: StringOperationFilterInput
-  "List of related category values"
-  categoryValues: ListFilterInputTypeOfCategoryValueFilterInput
-  changeDate: DateTimeOperationFilterInput
-  createDate: DateTimeOperationFilterInput
-  id: LongOperationFilterInput
-}
-
-input StringOperationFilterInput {
-  and: [StringOperationFilterInput!]
-  or: [StringOperationFilterInput!]
-  eq: String
-  neq: String
-  contains: String
-  ncontains: String
-  in: [String]
-  nin: [String]
-  startsWith: String
-  nstartsWith: String
-  endsWith: String
-  nendsWith: String
-}
-
-input ListFilterInputTypeOfMediaItemCategoryValueFilterInput {
-  all: MediaItemCategoryValueFilterInput
-  none: MediaItemCategoryValueFilterInput
-  some: MediaItemCategoryValueFilterInput
-  any: Boolean
-}
-
-input DateTimeOperationFilterInput {
-  eq: DateTime
-  neq: DateTime
-  in: [DateTime]
-  nin: [DateTime]
-  gt: DateTime
-  ngt: DateTime
-  gte: DateTime
-  ngte: DateTime
-  lt: DateTime
-  nlt: DateTime
-  lte: DateTime
-  nlte: DateTime
-}
-
-input LongOperationFilterInput {
-  eq: Long
-  neq: Long
-  in: [Long]
-  nin: [Long]
-  gt: Long
-  ngt: Long
-  gte: Long
-  ngte: Long
-  lt: Long
-  nlt: Long
-  lte: Long
-  nlte: Long
-}
-
-"Category group"
-input CategorySortInput {
-  "The type of category"
-  categoryType: SortEnumType
-  "German name for this category"
-  nameGerman: SortEnumType
-  "English name for this category"
-  nameEnglish: SortEnumType
-  changeDate: SortEnumType
-  createDate: SortEnumType
-  id: SortEnumType
 }
 
 enum SortEnumType {
@@ -529,32 +336,401 @@ enum SortEnumType {
   DESC
 }
 
+input FloatOperationFilterInput {
+  eq: Float
+  gt: Float
+  gte: Float
+  in: [Float]
+  lt: Float
+  lte: Float
+  neq: Float
+  ngt: Float
+  ngte: Float
+  nin: [Float]
+  nlt: Float
+  nlte: Float
+}
+
+"The result for a new added user setting"
+type AddUserSettingPayload {
+  "The new added user setting"
+  userSetting: UserSetting!
+}
+
+input EnumVideoTypeOperationFilterInput {
+  eq: EnumVideoType
+  in: [EnumVideoType!]
+  neq: EnumVideoType
+  nin: [EnumVideoType!]
+}
+
+"Media item"
+type MediaItem {
+  "When was this media item last changed"
+  changeDate: DateTime
+  "List of related comments"
+  comments(order: [CommentSortInput!] where: CommentFilterInput): [Comment]
+  "When was this media item created"
+  createDate: DateTime!
+  "English description for this media item"
+  descriptionEnglish: String
+  "German description for this media item"
+  descriptionGerman: String
+  "List of related favorites"
+  favorites(order: [FavoriteSortInput!] where: FavoriteFilterInput): [Favorite]
+  "The identifier for this media item"
+  id: Long!
+  "The media group this media item entry belongs to"
+  mediaGroup: MediaGroup!
+  "List of related media item category values"
+  mediaItemCategoryValues: [MediaItemCategoryValue!]!
+  "The type of media item"
+  mediaType: EnumMediaType!
+  "English name for this media item"
+  nameEnglish: String!
+  "German name for this media item"
+  nameGerman: String!
+  "Is this media item is only visible for family users"
+  onlyFamily: Boolean!
+  "List of related ratings"
+  ratings(order: [RatingSortInput!] where: RatingFilterInput): [Rating]
+  "The assigned upload picture if the item is of type picture"
+  uploadPicture: UploadPicture
+  "The assigned upload video if the item is of type video"
+  uploadVideo: UploadVideo
+}
+
+input LongOperationFilterInput {
+  eq: Long
+  gt: Long
+  gte: Long
+  in: [Long]
+  lt: Long
+  lte: Long
+  neq: Long
+  ngt: Long
+  ngte: Long
+  nin: [Long]
+  nlt: Long
+  nlte: Long
+}
+
+type Query {
+  "Returns a list of categories"
+  categories(order: [CategorySortInput!] where: CategoryFilterInput): [Category!]!
+  "Returns a category"
+  category(id: Long!): Category!
+  "Returns a category value"
+  categoryValue(id: Long!): CategoryValue!
+  "Returns a list of category values"
+  categoryValues(order: [CategoryValueSortInput!] where: CategoryValueFilterInput): [CategoryValue!]!
+  "Returns a comment"
+  comment(id: Long!): Comment!
+  "Returns a list of comments"
+  comments(order: [CommentSortInput!] where: CommentFilterInput): [Comment!]!
+  "Returns a list of countries"
+  countries(order: [CountrySortInput!] where: CountryFilterInput): [Country!]!
+  "Returns a country"
+  country(id: String!): Country!
+  "Validate english category name"
+  englishCategoryNameExists(categoryType: EnumCategoryType! englishName: String! iD: Long!): Boolean!
+  "Validate english category value name"
+  englishCategoryValueNameExists(categoryId: Long! englishName: String! iD: Long!): Boolean!
+  "Validate english media group name"
+  englishMediaGroupNameExists(englishName: String! iD: Long!): Boolean!
+  "Validate english media item name"
+  englishMediaItemNameExists(englishName: String! iD: Long! mediaGroupId: Long!): Boolean!
+  "Returns a favorite"
+  favorite(id: Long!): Favorite!
+  "Returns a list of favorites"
+  favorites(order: [FavoriteSortInput!] where: FavoriteFilterInput): [Favorite!]!
+  "Validate german category name"
+  germanCategoryNameExists(categoryType: EnumCategoryType! germanName: String! iD: Long!): Boolean!
+  "Validate german category value name"
+  germanCategoryValueNameExists(categoryId: Long! germanName: String! iD: Long!): Boolean!
+  "Validate german media group name"
+  germanMediaGroupNameExists(germanName: String! iD: Long!): Boolean!
+  "Validate german media item name"
+  germanMediaItemNameExists(germanName: String! iD: Long! mediaGroupId: Long!): Boolean!
+  "Returns the api key for google maps"
+  googleMapsApiKey: String!
+  "Returns a media group"
+  mediaGroup(id: Long!): MediaGroup!
+  "Returns a list of media groups"
+  mediaGroups(order: [MediaGroupSortInput!] where: MediaGroupFilterInput): [MediaGroup!]!
+  "Returns a media item"
+  mediaItem(id: Long!): MediaItem!
+  "Returns a list of media items"
+  mediaItems(order: [MediaItemSortInput!] where: MediaItemFilterInput): [MediaItem!]!
+  "Get next free upload id"
+  nextUploadId: Long!
+  "Returns a picture convert status item"
+  pictureConvertStatus(id: Long!): PictureConvertStatus!
+  "Returns a list of picture convert status items"
+  pictureConvertStatusItems(order: [PictureConvertStatusSortInput!] where: PictureConvertStatusFilterInput): [PictureConvertStatus!]!
+  "Returns a rating"
+  rating(id: Long!): Rating!
+  "Returns a list of ratings"
+  ratings(order: [RatingSortInput!] where: RatingFilterInput): [Rating!]!
+  "Returns a upload picture"
+  uploadPicture(id: Long!): UploadPicture!
+  "Returns the current count for converted and unassigned upload pictures"
+  uploadPictureCount: Int!
+  "Returns the filter data for upload picture exif infos"
+  uploadPictureExifInfoFilterData: UploadPictureExifInfoFilterData!
+  "Returns a list of upload picture"
+  uploadPictures(order: [UploadPictureSortInput!] where: UploadPictureFilterInput): [UploadPicture!]!
+  "Returns a upload video"
+  uploadVideo(id: Long!): UploadVideo!
+  "Returns the current count for converted and unassigned upload videos"
+  uploadVideoCount: Int!
+  "Returns a list of upload videos"
+  uploadVideos(order: [UploadVideoSortInput!] where: UploadVideoFilterInput): [UploadVideo!]!
+  "Returns a user account"
+  userAccount(id: String!): UserAccount!
+  "Returns a list of users"
+  userAccounts(order: [UserAccountSortInput!] where: UserAccountFilterInput): [UserAccount!]!
+  "Returns a user interaction info"
+  userInteractionInfo(id: Long!): UserInteractionInfo!
+  "Returns a list of user interaction infos"
+  userInteractionInfos(order: [UserInteractionInfoSortInput!] where: UserInteractionInfoFilterInput): [UserInteractionInfo!]!
+  "Returns a category"
+  userSetting(id: String!): UserSetting!
+  "Returns a list of user settings"
+  userSettings(where: UserSettingFilterInput): [UserSetting!]!
+  "Returns a video convert status item"
+  videoConvertStatus(id: Long!): VideoConvertStatus!
+  "Returns a list of video convert status items"
+  videoConvertStatusItems(order: [VideoConvertStatusSortInput!] where: VideoConvertStatusFilterInput): [VideoConvertStatus!]!
+}
+
+"Defines when a policy shall be executed."
+enum ApplyPolicy {
+  "After the resolver was executed."
+  AFTER_RESOLVER
+  "Before the resolver was executed."
+  BEFORE_RESOLVER
+  "The policy is applied in the validation step before the execution."
+  VALIDATION
+}
+
 "Media group"
 input MediaGroupFilterInput {
   and: [MediaGroupFilterInput!]
-  or: [MediaGroupFilterInput!]
-  "German name for this media group"
-  nameGerman: StringOperationFilterInput
-  "English name for this media group"
-  nameEnglish: StringOperationFilterInput
-  "German description for this media group"
-  descriptionGerman: StringOperationFilterInput
+  changeDate: DateTimeOperationFilterInput
+  createDate: DateTimeOperationFilterInput
   "English description for this media group"
   descriptionEnglish: StringOperationFilterInput
+  "German description for this media group"
+  descriptionGerman: StringOperationFilterInput
   "The date on which the event took place"
   eventDate: DateTimeOperationFilterInput
+  id: LongOperationFilterInput
   "List of related media items"
   mediaItems: ListFilterInputTypeOfMediaItemFilterInput
+  "English name for this media group"
+  nameEnglish: StringOperationFilterInput
+  "German name for this media group"
+  nameGerman: StringOperationFilterInput
+  or: [MediaGroupFilterInput!]
+}
+
+"The result for a updated category value"
+type UpdateCategoryValuePayload {
+  "The updated category value"
+  categoryValue: CategoryValue!
+}
+
+"Category values"
+input CategoryValueFilterInput {
+  and: [CategoryValueFilterInput!]
+  "The Category this category value entry belongs to"
+  category: CategoryFilterInput
   changeDate: DateTimeOperationFilterInput
   createDate: DateTimeOperationFilterInput
   id: LongOperationFilterInput
+  "List of related media item category values"
+  mediaItemCategoryValues: ListFilterInputTypeOfMediaItemCategoryValueFilterInput
+  "English name for this category value"
+  nameEnglish: StringOperationFilterInput
+  "German name for this category value"
+  nameGerman: StringOperationFilterInput
+  or: [CategoryValueFilterInput!]
 }
 
-input EnumMediaTypeOperationFilterInput {
-  eq: EnumMediaType
-  neq: EnumMediaType
-  in: [EnumMediaType!]
-  nin: [EnumMediaType!]
+"Upload video"
+type UploadVideo {
+  "The converting status for this upload video"
+  convertStatus: VideoConvertStatus
+  "When was this upload video created"
+  createDate: DateTime!
+  "The hour part for the duration of the video"
+  durationHour: Int!
+  "The minute part for the duration of the video"
+  durationMinute: Int!
+  "The second part for the duration of the video"
+  durationSecond: Int!
+  "The original filename for the video file that was uploaded"
+  filename: String!
+  "The google geo coding address for this video"
+  googleGeoCodingAddress: GoogleGeoCodingAddress
+  "The latitude for the gps position"
+  gpsLatitude: Float
+  "The longitude for the gps position"
+  gpsLongitude: Float
+  "The height of the video"
+  height: Int!
+  "The identifier for this upload video"
+  id: Long!
+  "Is the upload video assigned to a media item"
+  isAssigned: Boolean!
+  "The media item the upload video is assigned to"
+  mediaItem: MediaItem
+  "The state for the upload video"
+  state: EnumUploadState!
+  "The video type for the upload video"
+  videoType: EnumVideoType!
+  "The width of the video"
+  width: Int!
+}
+
+input ListFilterInputTypeOfCommentFilterInput {
+  all: CommentFilterInput
+  any: Boolean
+  none: CommentFilterInput
+  some: CommentFilterInput
+}
+
+"The result for a new added user"
+type AddUserPayload {
+  "The new added user"
+  userAccount: UserAccount!
+}
+
+enum EnumPictureConvertStatus {
+  CONVERT_BEGIN
+  CONVERT_END
+  CONVERTED_WITH_ERRORS
+  READ_EXIF_BEGIN
+  READ_EXIF_END
+  READ_INFO_BEGIN
+  READ_INFO_END
+  SUCESSFULLY_CONVERTED
+  TRANSIENT_ERROR
+  WAITING_FOR_CONVERSION
+}
+
+"Upload video"
+input UploadVideoSortInput {
+  "The converting status for this upload video"
+  convertStatus: VideoConvertStatusSortInput
+  createDate: SortEnumType
+  "The hour part for the duration of the video"
+  durationHour: SortEnumType
+  "The minute part for the duration of the video"
+  durationMinute: SortEnumType
+  "The second part for the duration of the video"
+  durationSecond: SortEnumType
+  "The original filename for the video file that was uploaded"
+  filename: SortEnumType
+  "The google geo coding address for this video"
+  googleGeoCodingAddress: GoogleGeoCodingAddressSortInput
+  "The latitude for the gps position"
+  gpsLatitude: SortEnumType
+  "The longitude for the gps position"
+  gpsLongitude: SortEnumType
+  "The height of the video"
+  height: SortEnumType
+  id: SortEnumType
+  "Is the upload video assigned to a media item"
+  isAssigned: SortEnumType
+  "The media item the upload video is assigned to"
+  mediaItem: MediaItemSortInput
+  "The state for the upload video"
+  state: SortEnumType
+  "The video type for the upload video"
+  videoType: SortEnumType
+  "The width of the video"
+  width: SortEnumType
+}
+
+input ListFilterInputTypeOfMediaItemFilterInput {
+  all: MediaItemFilterInput
+  any: Boolean
+  none: MediaItemFilterInput
+  some: MediaItemFilterInput
+}
+
+"InputData type for adding media item"
+input AddMediaItemInput {
+  "The list of unique identifiers for the category values added to this media item"
+  categoryValueIds: [Long!]!
+  "English description for this media item"
+  descriptionEnglish: String
+  "German description for this media item"
+  descriptionGerman: String
+  "The unique identifier for the media group this media item belongs to"
+  mediaGroupId: Long!
+  "The type of media item"
+  mediaType: EnumMediaType!
+  "English name for this media item"
+  nameEnglish: String!
+  "German name for this media item"
+  nameGerman: String!
+  "Is this media item only visible for family users"
+  onlyFamily: Boolean!
+  "The unique identifier for the assigned upload item (picture or video)"
+  uploadItemId: Long!
+}
+
+"The filter data info for upload picture exif info"
+type UploadPictureExifInfoFilterData {
+  "The distinct list of exposure times"
+  exposureTimes: [Float!]!
+  "The distinct list of fnumbers"
+  fNumbers: [Float!]!
+  "The distinct list of focal lengths"
+  focalLengths: [Float!]!
+  "The distinct list of ISO sensitivities"
+  isoSensitivities: [Int!]!
+  "The distinct list of distinct makes"
+  make: [String!]!
+  "The distinct list of distinct models"
+  model: [String!]!
+  "The distinct list of shutter speeds"
+  shutterSpeeds: [Float!]!
+}
+
+"User"
+type UserAccount {
+  "When was this user last changed"
+  changeDate: DateTime
+  "The name of the city the user lives in"
+  city: String
+  "The assigned country the user lives in"
+  country(where: CountryFilterInput): Country
+  "When was this user created"
+  createDate: DateTime!
+  "The eMail-Adress for the user"
+  eMail: String!
+  "The family name for the user"
+  familyName: String
+  "The gender for the user"
+  gender: EnumGenderType!
+  "The given name for the user"
+  givenName: String
+  "The house number for the adress of the user"
+  hnr: String
+  "The identifier for this user"
+  id: String!
+  "The street name for the adress of the user"
+  street: String
+  "The interaction info this user account is linked to"
+  userInteractionInfo: UserInteractionInfo
+  "The user name for the user"
+  userName: String!
+  "The ZIP-Code for the adress of the user"
+  zip: String
 }
 
 input BooleanOperationFilterInput {
@@ -562,701 +738,357 @@ input BooleanOperationFilterInput {
   neq: Boolean
 }
 
-"Upload picture"
-input UploadPictureFilterInput {
-  and: [UploadPictureFilterInput!]
-  or: [UploadPictureFilterInput!]
-  "The original filename for the picture file that was uploaded"
-  filename: StringOperationFilterInput
-  "The height of the picture"
-  height: IntOperationFilterInput
-  "The width of the picture"
-  width: IntOperationFilterInput
-  "The status for the upload picture"
-  status: EnumUploadStatusOperationFilterInput
-  "The Exif-Info for the upload picture"
-  uploadPictureExifInfo: UploadPictureExifInfoFilterInput
-  "Google geo coding address for this upload picture"
-  googleGeoCodingAddress: GoogleGeoCodingAddressFilterInput
-  "The assigned media item"
-  mediaItem: MediaItemFilterInput
-  "The converting status for this upload picture"
-  convertStatus: PictureConvertStatusFilterInput
-  createDate: DateTimeOperationFilterInput
-  id: LongOperationFilterInput
+"The result for a finished video upload"
+type FinishVideoUploadPayload {
+  "Has the finish operation successfully completed"
+  status: Boolean!
 }
 
-"Upload video"
-input UploadVideoFilterInput {
-  and: [UploadVideoFilterInput!]
-  or: [UploadVideoFilterInput!]
-  "The original filename for the video file that was uploaded"
-  filename: StringOperationFilterInput
-  "The status for the upload video"
-  status: EnumUploadStatusOperationFilterInput
-  "The video type for the upload video"
-  videoType: EnumVideoTypeOperationFilterInput
-  "The height of the video"
-  height: IntOperationFilterInput
-  "The width of the video"
-  width: IntOperationFilterInput
-  "The hour part for the duration of the video"
-  durationHour: IntOperationFilterInput
-  "The minute part for the duration of the video"
-  durationMinute: IntOperationFilterInput
-  "The second part for the duration of the video"
-  durationSecond: IntOperationFilterInput
-  "The longitude for the gps position"
-  gpsLongitude: FloatOperationFilterInput
-  "The latitude for the gps position"
-  gpsLatitude: FloatOperationFilterInput
-  "The google geo coding address for this video"
-  googleGeoCodingAddress: GoogleGeoCodingAddressFilterInput
-  "The assigned media item"
-  mediaItem: MediaItemFilterInput
-  "The converting status for this upload video"
-  convertStatus: VideoConvertStatusFilterInput
-  createDate: DateTimeOperationFilterInput
-  id: LongOperationFilterInput
+"The result for a new added video upload chunk"
+type AddVideoUploadChunkPayload {
+  "Has the chunk been successfully written to the server"
+  status: Boolean!
 }
 
-"Media group"
-input MediaGroupSortInput {
-  "German name for this media group"
-  nameGerman: SortEnumType
-  "English name for this media group"
-  nameEnglish: SortEnumType
-  "German description for this media group"
-  descriptionGerman: SortEnumType
-  "English description for this media group"
-  descriptionEnglish: SortEnumType
-  "The date on which the event took place"
-  eventDate: SortEnumType
+"Category values"
+input CategoryValueSortInput {
+  "The Category this category value entry belongs to"
+  category: CategorySortInput
   changeDate: SortEnumType
   createDate: SortEnumType
   id: SortEnumType
+  "English name for this category value"
+  nameEnglish: SortEnumType
+  "German name for this category value"
+  nameGerman: SortEnumType
 }
 
-"Upload picture"
-input UploadPictureSortInput {
-  "The original filename for the picture file that was uploaded"
-  filename: SortEnumType
-  "The height of the picture"
-  height: SortEnumType
-  "The width of the picture"
-  width: SortEnumType
-  "The status for the upload picture"
-  status: SortEnumType
-  "The Exif-Info for the upload picture"
-  uploadPictureExifInfo: UploadPictureExifInfoSortInput
-  "Google geo coding address for this upload picture"
-  googleGeoCodingAddress: GoogleGeoCodingAddressSortInput
-  "The assigned media item"
-  mediaItem: MediaItemSortInput
-  "The converting status for this upload picture"
-  convertStatus: PictureConvertStatusSortInput
+input CommentSortInput {
+  "Content for the comment"
+  content: SortEnumType
   createDate: SortEnumType
   id: SortEnumType
+  "The media item this comment belongs to"
+  mediaItem: MediaItemSortInput
+  "The user interaction info this comment belongs to"
+  userInteractionInfo: UserInteractionInfoSortInput
 }
 
-"Upload video"
-input UploadVideoSortInput {
-  "The original filename for the video file that was uploaded"
-  filename: SortEnumType
-  "The status for the upload video"
+"The result for a new added media group"
+type AddMediaGroupPayload {
+  "The new added media group"
+  mediaGroup: MediaGroup!
+}
+
+"The result for a updated category"
+type UpdateCategoryPayload {
+  "The updated category"
+  category: Category!
+}
+
+"InputData type for deleting categories"
+input DeleteCategoryInput {
+  "The Id for the category"
+  id: Long!
+}
+
+"The result for a new added category value"
+type AddCategoryValuePayload {
+  "The new added category value"
+  categoryValue: CategoryValue!
+}
+
+"Media item assigned category value"
+input MediaItemCategoryValueSortInput {
+  "The category value this media item belongs to"
+  categoryValue: CategoryValueSortInput
+  createDate: SortEnumType
+  id: SortEnumType
+  "The media item this category value entry belongs to"
+  mediaItem: MediaItemSortInput
+}
+
+"Picture convert status"
+input PictureConvertStatusSortInput {
+  "Error message when conversion is in state \"Finished with errors\""
+  errorMessage: SortEnumType
+  "Timestamp for \"Convert picture - End\""
+  finishDateConvert: SortEnumType
+  "Timestamp for \"Read Exif-Information from file - End\""
+  finishDateExif: SortEnumType
+  "Timestamp for \"Read Picture Info from file - End\""
+  finishDateInfo: SortEnumType
+  id: SortEnumType
+  "Timestamp for \"Convert picture - Begin\""
+  startDateConvert: SortEnumType
+  "Timestamp for \"Read Exif-Information from file - Begin\""
+  startDateExif: SortEnumType
+  "Timestamp for \"Read Picture Info from file - Begin\""
+  startDateInfo: SortEnumType
+  "The current state for the conversion"
   status: SortEnumType
-  "The video type for the upload video"
-  videoType: SortEnumType
-  "The height of the video"
-  height: SortEnumType
-  "The width of the video"
-  width: SortEnumType
-  "The hour part for the duration of the video"
-  durationHour: SortEnumType
-  "The minute part for the duration of the video"
-  durationMinute: SortEnumType
-  "The second part for the duration of the video"
-  durationSecond: SortEnumType
-  "The longitude for the gps position"
-  gpsLongitude: SortEnumType
-  "The latitude for the gps position"
+  "Id of the upload picture that is converted"
+  uploadPicture: UploadPictureSortInput
+}
+
+"Exif information to the upload picture"
+input UploadPictureExifInfoSortInput {
+  "Contrast"
+  contrast: SortEnumType
+  "Timestamp when picture was recorded"
+  ddlRecorded: SortEnumType
+  "Exposure mode"
+  exposureMode: SortEnumType
+  "Exposure program"
+  exposureProgram: SortEnumType
+  "Exposure-Time"
+  exposureTime: SortEnumType
+  "Flash mode"
+  flashMode: SortEnumType
+  "F-Number"
+  fNumber: SortEnumType
+  "Focal length"
+  focalLength: SortEnumType
+  "Latitude for GPS-Position"
   gpsLatitude: SortEnumType
-  "The google geo coding address for this video"
-  googleGeoCodingAddress: GoogleGeoCodingAddressSortInput
-  "The assigned media item"
-  mediaItem: MediaItemSortInput
-  "The converting status for this upload video"
-  convertStatus: VideoConvertStatusSortInput
-  createDate: SortEnumType
-  id: SortEnumType
+  "Longitude for GPS-Position"
+  gpsLongitude: SortEnumType
+  "ISO sensitivity"
+  isoSensitivity: SortEnumType
+  "Make for the camera"
+  make: SortEnumType
+  "Metering mode"
+  meteringMode: SortEnumType
+  "Camera model"
+  model: SortEnumType
+  "Orientation for picture"
+  orientation: SortEnumType
+  "The resolution unit"
+  resolutionUnit: SortEnumType
+  "Resolution x"
+  resolutionX: SortEnumType
+  "Resolution Y"
+  resolutionY: SortEnumType
+  "Saturation"
+  saturation: SortEnumType
+  "Sensing mode"
+  sensingMode: SortEnumType
+  "Sharpness"
+  sharpness: SortEnumType
+  "Shutter speed"
+  shutterSpeed: SortEnumType
+  "White-Balance mode"
+  whiteBalanceMode: SortEnumType
 }
 
-input EnumCategoryTypeOperationFilterInput {
-  eq: EnumCategoryType
-  neq: EnumCategoryType
-  in: [EnumCategoryType!]
-  nin: [EnumCategoryType!]
+input EnumPictureConvertStatusOperationFilterInput {
+  eq: EnumPictureConvertStatus
+  in: [EnumPictureConvertStatus!]
+  neq: EnumPictureConvertStatus
+  nin: [EnumPictureConvertStatus!]
 }
 
-input ListFilterInputTypeOfCategoryValueFilterInput {
-  all: CategoryValueFilterInput
-  none: CategoryValueFilterInput
-  some: CategoryValueFilterInput
-  any: Boolean
+"The result for a deleted category value"
+type DeleteCategoryValuePayload {
+  "The deleted category value"
+  categoryValue: CategoryValue!
 }
 
-"The `DateTime` scalar represents an ISO-8601 compliant date time type."
-scalar DateTime
-
-"The `Long` scalar type represents non-fractional signed whole 64-bit numeric values. Long can represent values between -(2^63) and 2^63 - 1."
-scalar Long
-
-input ListFilterInputTypeOfMediaItemFilterInput {
-  all: MediaItemFilterInput
-  none: MediaItemFilterInput
-  some: MediaItemFilterInput
-  any: Boolean
+enum EnumVideoConvertStatus {
+  CONVERT_MP4_VIDEO_BEGIN
+  CONVERT_MP4_VIDEO_END
+  CONVERT_PICTURE_BEGIN
+  CONVERT_PICTURE_END
+  CONVERT1280X720_BEGIN
+  CONVERT1280X720_END
+  CONVERT1920X1080_BEGIN
+  CONVERT1920X1080_END
+  CONVERT3840X2160_BEGIN
+  CONVERT3840X2160_END
+  CONVERT640X360_BEGIN
+  CONVERT640X360_END
+  CONVERT852X480_BEGIN
+  CONVERT852X480_END
+  CONVERTED_WITH_ERRORS
+  COPY_CONVERTED_BEGIN
+  COPY_CONVERTED_END
+  CREATE_HLS_BEGIN
+  CREATE_HLS_END
+  CREATE_PREVIEW_IMAGE_BEGIN
+  CREATE_PREVIEW_IMAGE_END
+  CREATE_VTT_BEGIN
+  CREATE_VTT_END
+  DELETE_CONVERTED_BEGIN
+  DELETE_CONVERTED_END
+  DELETE_ORIGINAL_BEGIN
+  DELETE_ORIGINAL_END
+  READ_MEDIA_INFO_BEGIN
+  READ_MEDIA_INFO_END
+  SUCESSFULLY_CONVERTED
+  TRANSIENT_ERROR
+  WAITING_FOR_CONVERSION
 }
 
-input IntOperationFilterInput {
-  eq: Int
-  neq: Int
-  in: [Int]
-  nin: [Int]
-  gt: Int
-  ngt: Int
-  gte: Int
-  ngte: Int
-  lt: Int
-  nlt: Int
-  lte: Int
-  nlte: Int
+"Geo coding address"
+type GoogleGeoCodingAddress {
+  "The city name for the geo coding address"
+  city: String!
+  "The country name for the geo coding address"
+  country: String!
+  "The house number for the geo coding address"
+  hnr: String!
+  "The latitude for the gps position"
+  latitude: Float!
+  "The longitude for the gps position"
+  longitude: Float!
+  "The street name for the geo coding address"
+  streetName: String!
+  "The zip code for the geo coding address"
+  zip: String!
 }
 
-input EnumUploadStatusOperationFilterInput {
-  eq: EnumUploadStatus
-  neq: EnumUploadStatus
-  in: [EnumUploadStatus!]
-  nin: [EnumUploadStatus!]
+input StringOperationFilterInput {
+  and: [StringOperationFilterInput!]
+  contains: String
+  endsWith: String
+  eq: String
+  in: [String]
+  ncontains: String
+  nendsWith: String
+  neq: String
+  nin: [String]
+  nstartsWith: String
+  or: [StringOperationFilterInput!]
+  startsWith: String
+}
+
+"The result for a deleted category"
+type DeleteCategoryPayload {
+  "The deleted category"
+  category: Category!
+}
+
+"InputData type for deleting media item"
+input DeleteMediaItemInput {
+  "Should assigned upload item be kept in the upload area?"
+  keepUploadItem: Boolean!
+  "The ID for the media group the media item belongs to"
+  mediaGroupId: Long!
+  "The ID for the media item to delete"
+  mediaItemId: Long!
 }
 
 "Exif information to the upload picture"
 input UploadPictureExifInfoFilterInput {
   and: [UploadPictureExifInfoFilterInput!]
-  or: [UploadPictureExifInfoFilterInput!]
+  "Contrast"
+  contrast: ShortOperationFilterInput
+  "Timestamp when picture was recorded"
+  ddlRecorded: DateTimeOperationFilterInput
+  "Exposure mode"
+  exposureMode: ShortOperationFilterInput
+  "Exposure program"
+  exposureProgram: ShortOperationFilterInput
+  "Exposure-Time"
+  exposureTime: FloatOperationFilterInput
+  "Flash mode"
+  flashMode: ShortOperationFilterInput
+  "F-Number"
+  fNumber: FloatOperationFilterInput
+  "Focal length"
+  focalLength: FloatOperationFilterInput
+  "Latitude for GPS-Position"
+  gpsLatitude: FloatOperationFilterInput
+  "Longitude for GPS-Position"
+  gpsLongitude: FloatOperationFilterInput
+  "ISO sensitivity"
+  isoSensitivity: IntOperationFilterInput
   "Make for the camera"
   make: StringOperationFilterInput
+  "Metering mode"
+  meteringMode: ShortOperationFilterInput
   "Camera model"
   model: StringOperationFilterInput
+  or: [UploadPictureExifInfoFilterInput!]
+  "Orientation for picture"
+  orientation: ShortOperationFilterInput
+  "The resolution unit"
+  resolutionUnit: ShortOperationFilterInput
   "Resolution x"
   resolutionX: FloatOperationFilterInput
   "Resolution Y"
   resolutionY: FloatOperationFilterInput
-  "The resolution unit"
-  resolutionUnit: ShortOperationFilterInput
-  "Orientation for picture"
-  orientation: ShortOperationFilterInput
-  "Timestamp when picture was recorded"
-  ddlRecorded: DateTimeOperationFilterInput
-  "Exposure-Time "
-  exposureTime: FloatOperationFilterInput
-  "Exposure program"
-  exposureProgram: ShortOperationFilterInput
-  "Exposure mode"
-  exposureMode: ShortOperationFilterInput
-  "F-Number"
-  fNumber: FloatOperationFilterInput
-  "ISO sensitivity"
-  isoSensitivity: IntOperationFilterInput
-  "Shutter speed"
-  shutterSpeed: FloatOperationFilterInput
-  "Metering mode"
-  meteringMode: ShortOperationFilterInput
-  "Flash mode"
-  flashMode: ShortOperationFilterInput
-  "Focal length"
-  focalLength: FloatOperationFilterInput
-  "Sensing mode"
-  sensingMode: ShortOperationFilterInput
-  "White-Balance mode"
-  whiteBalanceMode: ShortOperationFilterInput
-  "Sharpness"
-  sharpness: ShortOperationFilterInput
-  "Longitude for GPS-Position"
-  gpsLongitude: FloatOperationFilterInput
-  "Latitude for GPS-Position"
-  gpsLatitude: FloatOperationFilterInput
-  "Contrast"
-  contrast: ShortOperationFilterInput
   "Saturation"
   saturation: ShortOperationFilterInput
-}
-
-"Geo coding address"
-input GoogleGeoCodingAddressFilterInput {
-  and: [GoogleGeoCodingAddressFilterInput!]
-  or: [GoogleGeoCodingAddressFilterInput!]
-  "The longitude for the gps position"
-  longitude: FloatOperationFilterInput
-  "The latitude for the gps position"
-  latitude: FloatOperationFilterInput
-  "The street name for the geo coding address"
-  streetName: StringOperationFilterInput
-  "The house number for the geo coding address"
-  hnr: StringOperationFilterInput
-  "The zip code for the geo coding address"
-  zip: StringOperationFilterInput
-  "The city name for the geo coding address"
-  city: StringOperationFilterInput
-  "The country name for the geo coding address"
-  country: StringOperationFilterInput
-}
-
-"Picture convert status"
-input PictureConvertStatusFilterInput {
-  and: [PictureConvertStatusFilterInput!]
-  or: [PictureConvertStatusFilterInput!]
-  "The current state for the conversion"
-  status: EnumPictureConvertStatusOperationFilterInput
-  "Error message when conversion is in state \"Finished with errors\""
-  errorMessage: StringOperationFilterInput
-  "Timestamp for \"Read Picture Info from file - Begin\""
-  startDateInfo: DateTimeOperationFilterInput
-  "Timestamp for \"Read Picture Info from file - End\""
-  finishDateInfo: DateTimeOperationFilterInput
-  "Timestamp for \"Read Exif-Information from file - Begin\""
-  startDateExif: DateTimeOperationFilterInput
-  "Timestamp for \"Read Exif-Information from file - End\""
-  finishDateExif: DateTimeOperationFilterInput
-  "Timestamp for \"Convert picture - Begin\""
-  startDateConvert: DateTimeOperationFilterInput
-  "Timestamp for \"Convert picture - End\""
-  finishDateConvert: DateTimeOperationFilterInput
-  "The upload picture that is converted"
-  uploadPicture: UploadPictureFilterInput
-  id: LongOperationFilterInput
-}
-
-input EnumVideoTypeOperationFilterInput {
-  eq: EnumVideoType
-  neq: EnumVideoType
-  in: [EnumVideoType!]
-  nin: [EnumVideoType!]
-}
-
-input FloatOperationFilterInput {
-  eq: Float
-  neq: Float
-  in: [Float]
-  nin: [Float]
-  gt: Float
-  ngt: Float
-  gte: Float
-  ngte: Float
-  lt: Float
-  nlt: Float
-  lte: Float
-  nlte: Float
-}
-
-"Video convert status"
-input VideoConvertStatusFilterInput {
-  and: [VideoConvertStatusFilterInput!]
-  or: [VideoConvertStatusFilterInput!]
-  "The type of video for the converted video"
-  videoType: EnumVideoTypeOperationFilterInput
-  "The current state for the conversion"
-  status: EnumVideoConvertStatusOperationFilterInput
-  "Hour part for the convert time"
-  convertHour: IntOperationFilterInput
-  "Minute part for the convert time"
-  convertMinute: IntOperationFilterInput
-  "Second part for the convert time"
-  convertSecond: IntOperationFilterInput
-  "The remaining time for current conversion in hours"
-  convertRestHour: IntOperationFilterInput
-  "The remaining time for current conversion in minutes"
-  convertRestMinute: IntOperationFilterInput
-  "The remaining time for current conversion in seconds"
-  convertRestSecond: IntOperationFilterInput
-  "Error message when conversion is in state \"Finished with errors\""
-  errorMessage: StringOperationFilterInput
-  "The progress for current conversion"
-  progress: IntOperationFilterInput
-  "Timestamp when converting the video to MP4 begins"
-  startDateMp4: DateTimeOperationFilterInput
-  "Timestamp when converting the video to MP4 ends"
-  finishDateMp4: DateTimeOperationFilterInput
-  "Timestamp when converting the video to HLS 640 x 360 begins"
-  startDateMp4360: DateTimeOperationFilterInput
-  "Timestamp when converting the video to HLS 640 x 360 ends"
-  finishDateMp4360: DateTimeOperationFilterInput
-  "Timestamp when converting the video to HLS 852 x 480 begins"
-  startDateMp4480: DateTimeOperationFilterInput
-  "Timestamp when converting the video to HLS 852 x 480 ends"
-  finishDateMp4480: DateTimeOperationFilterInput
-  "Timestamp when converting the video to HLS 1280 x 720 begins"
-  startDateMp4720: DateTimeOperationFilterInput
-  "Timestamp when converting the video to HLS 1280 x 720 ends"
-  finishDateMp4720: DateTimeOperationFilterInput
-  "Timestamp when converting the video to DASH 1920 x 1080 begins"
-  startDateMp41080: DateTimeOperationFilterInput
-  "Timestamp when converting the video to DASH 1920 x 1080 ends"
-  finishDateMp41080: DateTimeOperationFilterInput
-  "Timestamp when converting the video to DASH 3840 x 2160 begins"
-  startDateMp42160: DateTimeOperationFilterInput
-  "Timestamp when converting the video to DASH 3840 x 2160 ends"
-  finishDateMp42160: DateTimeOperationFilterInput
-  "Timestamp when creating HLS content begins"
-  startDateHls: DateTimeOperationFilterInput
-  "Timestamp when creating HLS content ends"
-  finishDateHls: DateTimeOperationFilterInput
-  "Timestamp when creating thumbnail begins"
-  startDateThumbnail: DateTimeOperationFilterInput
-  "Timestamp when creating thumbnail ends"
-  finishDateThumbnail: DateTimeOperationFilterInput
-  "Timestamp when reading media info begins"
-  startDateMediaInfo: DateTimeOperationFilterInput
-  "Timestamp when reading media info ends"
-  finishDateMediaInfo: DateTimeOperationFilterInput
-  "Timestamp when creating VTT content begins"
-  startDateVtt: DateTimeOperationFilterInput
-  "Timestamp when creating VTT content ends"
-  finishDateVtt: DateTimeOperationFilterInput
-  "Timestamp when copy of converted files begins"
-  startDateCopyConverted: DateTimeOperationFilterInput
-  "Timestamp when copy of converted files ends"
-  finishDateCopyConverted: DateTimeOperationFilterInput
-  "Timestamp when delete temporary files begins"
-  startDateDeleteTemp: DateTimeOperationFilterInput
-  "Timestamp when delete temporary files ends"
-  finishDateDeleteTemp: DateTimeOperationFilterInput
-  "Timestamp when delete original file begins"
-  startDateDeleteOriginal: DateTimeOperationFilterInput
-  "Timestamp when delete original file ends"
-  finishDateDeleteOriginal: DateTimeOperationFilterInput
-  "Timestamp when conversion of preview image begins"
-  startDateConvertPicture: DateTimeOperationFilterInput
-  "Timestamp when conversion of preview image ends"
-  finishDateConvertPicture: DateTimeOperationFilterInput
-  "The upload video that is converted"
-  uploadVideo: UploadVideoFilterInput
-  id: LongOperationFilterInput
-}
-
-"Exif information to the upload picture"
-input UploadPictureExifInfoSortInput {
-  "Make for the camera"
-  make: SortEnumType
-  "Camera model"
-  model: SortEnumType
-  "Resolution x"
-  resolutionX: SortEnumType
-  "Resolution Y"
-  resolutionY: SortEnumType
-  "The resolution unit"
-  resolutionUnit: SortEnumType
-  "Orientation for picture"
-  orientation: SortEnumType
-  "Timestamp when picture was recorded"
-  ddlRecorded: SortEnumType
-  "Exposure-Time "
-  exposureTime: SortEnumType
-  "Exposure program"
-  exposureProgram: SortEnumType
-  "Exposure mode"
-  exposureMode: SortEnumType
-  "F-Number"
-  fNumber: SortEnumType
-  "ISO sensitivity"
-  isoSensitivity: SortEnumType
-  "Shutter speed"
-  shutterSpeed: SortEnumType
-  "Metering mode"
-  meteringMode: SortEnumType
-  "Flash mode"
-  flashMode: SortEnumType
-  "Focal length"
-  focalLength: SortEnumType
   "Sensing mode"
-  sensingMode: SortEnumType
-  "White-Balance mode"
-  whiteBalanceMode: SortEnumType
+  sensingMode: ShortOperationFilterInput
   "Sharpness"
-  sharpness: SortEnumType
-  "Longitude for GPS-Position"
-  gpsLongitude: SortEnumType
-  "Latitude for GPS-Position"
-  gpsLatitude: SortEnumType
-  "Contrast"
-  contrast: SortEnumType
-  "Saturation"
-  saturation: SortEnumType
+  sharpness: ShortOperationFilterInput
+  "Shutter speed"
+  shutterSpeed: FloatOperationFilterInput
+  "White-Balance mode"
+  whiteBalanceMode: ShortOperationFilterInput
 }
 
-"Geo coding address"
-input GoogleGeoCodingAddressSortInput {
-  "The longitude for the gps position"
-  longitude: SortEnumType
-  "The latitude for the gps position"
-  latitude: SortEnumType
-  "The street name for the geo coding address"
-  streetName: SortEnumType
-  "The house number for the geo coding address"
-  hnr: SortEnumType
-  "The zip code for the geo coding address"
-  zip: SortEnumType
-  "The city name for the geo coding address"
-  city: SortEnumType
-  "The country name for the geo coding address"
-  country: SortEnumType
+"The result for all deleted upload pictures"
+type DeleteAllUploadPicturePayload {
+  "The list of deleted upload pictures"
+  uploadPictures: [UploadPicture!]!
 }
 
-"Picture convert status"
-input PictureConvertStatusSortInput {
-  "The current state for the conversion"
-  status: SortEnumType
-  "Error message when conversion is in state \"Finished with errors\""
-  errorMessage: SortEnumType
-  "Timestamp for \"Read Picture Info from file - Begin\""
-  startDateInfo: SortEnumType
-  "Timestamp for \"Read Picture Info from file - End\""
-  finishDateInfo: SortEnumType
-  "Timestamp for \"Read Exif-Information from file - Begin\""
-  startDateExif: SortEnumType
-  "Timestamp for \"Read Exif-Information from file - End\""
-  finishDateExif: SortEnumType
-  "Timestamp for \"Convert picture - Begin\""
-  startDateConvert: SortEnumType
-  "Timestamp for \"Convert picture - End\""
-  finishDateConvert: SortEnumType
-  "The upload picture that is converted"
-  uploadPicture: UploadPictureSortInput
+input FavoriteFilterInput {
+  and: [FavoriteFilterInput!]
+  createDate: DateTimeOperationFilterInput
+  id: LongOperationFilterInput
+  "The media item this favorite belongs to"
+  mediaItem: MediaItemFilterInput
+  or: [FavoriteFilterInput!]
+  "The user interaction info this favorite belongs to"
+  userInteractionInfo: UserInteractionInfoFilterInput
+}
+
+"InputData type for adding media group"
+input AddMediaGroupInput {
+  "English description for this media group"
+  descriptionEnglish: String!
+  "German description for this media group"
+  descriptionGerman: String!
+  "The date on which the event took place"
+  eventDate: DateTime!
+  "English name for this media group"
+  nameEnglish: String!
+  "German name for this media group"
+  nameGerman: String!
+}
+
+"The result for a deleted upload picture"
+type DeleteUploadPicturePayload {
+  "The deleted upload picture"
+  uploadPicture: UploadPicture!
+}
+
+"Upload picture"
+input UploadPictureSortInput {
+  createDate: SortEnumType
+  "The original filename for the picture file that was uploaded"
+  filename: SortEnumType
+  "Google geo coding address for this upload picture"
+  googleGeoCodingAddress: GoogleGeoCodingAddressSortInput
+  "The height of the picture"
+  height: SortEnumType
   id: SortEnumType
-}
-
-"Video convert status"
-input VideoConvertStatusSortInput {
-  "The type of video for the converted video"
-  videoType: SortEnumType
-  "The current state for the conversion"
-  status: SortEnumType
-  "Hour part for the convert time"
-  convertHour: SortEnumType
-  "Minute part for the convert time"
-  convertMinute: SortEnumType
-  "Second part for the convert time"
-  convertSecond: SortEnumType
-  "The remaining time for current conversion in hours"
-  convertRestHour: SortEnumType
-  "The remaining time for current conversion in minutes"
-  convertRestMinute: SortEnumType
-  "The remaining time for current conversion in seconds"
-  convertRestSecond: SortEnumType
-  "Error message when conversion is in state \"Finished with errors\""
-  errorMessage: SortEnumType
-  "The progress for current conversion"
-  progress: SortEnumType
-  "Timestamp when converting the video to MP4 begins"
-  startDateMp4: SortEnumType
-  "Timestamp when converting the video to MP4 ends"
-  finishDateMp4: SortEnumType
-  "Timestamp when converting the video to HLS 640 x 360 begins"
-  startDateMp4360: SortEnumType
-  "Timestamp when converting the video to HLS 640 x 360 ends"
-  finishDateMp4360: SortEnumType
-  "Timestamp when converting the video to HLS 852 x 480 begins"
-  startDateMp4480: SortEnumType
-  "Timestamp when converting the video to HLS 852 x 480 ends"
-  finishDateMp4480: SortEnumType
-  "Timestamp when converting the video to HLS 1280 x 720 begins"
-  startDateMp4720: SortEnumType
-  "Timestamp when converting the video to HLS 1280 x 720 ends"
-  finishDateMp4720: SortEnumType
-  "Timestamp when converting the video to DASH 1920 x 1080 begins"
-  startDateMp41080: SortEnumType
-  "Timestamp when converting the video to DASH 1920 x 1080 ends"
-  finishDateMp41080: SortEnumType
-  "Timestamp when converting the video to DASH 3840 x 2160 begins"
-  startDateMp42160: SortEnumType
-  "Timestamp when converting the video to DASH 3840 x 2160 ends"
-  finishDateMp42160: SortEnumType
-  "Timestamp when creating HLS content begins"
-  startDateHls: SortEnumType
-  "Timestamp when creating HLS content ends"
-  finishDateHls: SortEnumType
-  "Timestamp when creating thumbnail begins"
-  startDateThumbnail: SortEnumType
-  "Timestamp when creating thumbnail ends"
-  finishDateThumbnail: SortEnumType
-  "Timestamp when reading media info begins"
-  startDateMediaInfo: SortEnumType
-  "Timestamp when reading media info ends"
-  finishDateMediaInfo: SortEnumType
-  "Timestamp when creating VTT content begins"
-  startDateVtt: SortEnumType
-  "Timestamp when creating VTT content ends"
-  finishDateVtt: SortEnumType
-  "Timestamp when copy of converted files begins"
-  startDateCopyConverted: SortEnumType
-  "Timestamp when copy of converted files ends"
-  finishDateCopyConverted: SortEnumType
-  "Timestamp when delete temporary files begins"
-  startDateDeleteTemp: SortEnumType
-  "Timestamp when delete temporary files ends"
-  finishDateDeleteTemp: SortEnumType
-  "Timestamp when delete original file begins"
-  startDateDeleteOriginal: SortEnumType
-  "Timestamp when delete original file ends"
-  finishDateDeleteOriginal: SortEnumType
-  "Timestamp when conversion of preview image begins"
-  startDateConvertPicture: SortEnumType
-  "Timestamp when conversion of preview image ends"
-  finishDateConvertPicture: SortEnumType
-  "The upload video that is converted"
-  uploadVideo: UploadVideoSortInput
-  id: SortEnumType
-}
-
-input ShortOperationFilterInput {
-  eq: Short
-  neq: Short
-  in: [Short]
-  nin: [Short]
-  gt: Short
-  ngt: Short
-  gte: Short
-  ngte: Short
-  lt: Short
-  nlt: Short
-  lte: Short
-  nlte: Short
-}
-
-input EnumPictureConvertStatusOperationFilterInput {
-  eq: EnumPictureConvertStatus
-  neq: EnumPictureConvertStatus
-  in: [EnumPictureConvertStatus!]
-  nin: [EnumPictureConvertStatus!]
-}
-
-input EnumVideoConvertStatusOperationFilterInput {
-  eq: EnumVideoConvertStatus
-  neq: EnumVideoConvertStatus
-  in: [EnumVideoConvertStatus!]
-  nin: [EnumVideoConvertStatus!]
-}
-
-"The `Short` scalar type represents non-fractional signed whole 16-bit numeric values. Short can represent values between -(2^15) and 2^15 - 1."
-scalar Short
-
-type Mutation {
-  "Add a new category"
-  addCategory(input: AddCategoryInput!): AddCategoryPayload!
-  "Update existing category"
-  updateCategory(input: UpdateCategoryInput!): UpdateCategoryPayload!
-  "Delete existing category"
-  deleteCategory(input: DeleteCategoryInput!): DeleteCategoryPayload!
-  "Add a new category value"
-  addCategoryValue(input: AddCategoryValueInput!): AddCategoryValuePayload!
-  "Update existing category value"
-  updateCategoryValue(input: UpdateCategoryValueInput!): UpdateCategoryValuePayload!
-  "Delete existing category value"
-  deleteCategoryValue(input: DeleteCategoryValueInput!): DeleteCategoryValuePayload!
-  "Add a new picture upload chunk"
-  addPictureUploadChunk(input: AddPictureUploadChunkInput!): AddPictureUploadChunkPayload!
-  "Finish picture upload"
-  pictureUploadFinish(input: FinishPictureUploadInput!): FinishPictureUploadPayload!
-  "Add a new video upload chunk"
-  addVideoUploadChunk(input: AddVideoUploadChunkInput!): AddVideoUploadChunkPayload!
-  "Finish video upload"
-  videoUploadFinish(input: FinishVideoUploadInput!): FinishVideoUploadPayload!
-  "Delete picture vom upload area"
-  deleteUploadPicture(input: DeleteUploadPictureInput!): DeleteUploadPicturePayload!
-  "Delete all pictures vom upload area that are not assigned"
-  deleteAllUploadPictures(input: DeleteAllUploadPictureInput!): DeleteAllUploadPicturePayload!
-  "Delete video vom upload area"
-  deleteUploadVideo(input: DeleteUploadVideoInput!): DeleteUploadVideoPayload!
-  "Delete all videos vom upload area that are not assigned"
-  deleteAllUploadVideos(input: DeleteAllUploadVideoInput!): DeleteAllUploadVideoPayload!
-  "Add a new user setting"
-  addUserSetting(input: AddUserSettingInput!): AddUserSettingPayload!
-  "Update existing user setting"
-  updateUserSetting(input: UpdateUserSettingInput!): UpdateUserSettingPayload!
-  "Add a new media group"
-  addMediaGroup(input: AddMediaGroupInput!): AddMediaGroupPayload!
-  "Update existing media group"
-  updateMediaGroup(input: UpdateMediaGroupInput!): UpdateMediaGroupPayload!
-  "Delete existing media group"
-  deleteMediaGroup(input: DeleteMediaGroupInput!): DeleteMediaGroupPayload!
-  "Add a new media item"
-  addMediaItem(input: AddMediaItemInput!): AddMediaItemPayload!
-  "Update existing media item"
-  updateMediaItem(input: UpdateMediaItemInput!): UpdateMediaItemPayload!
-  "Delete existing media item"
-  deleteMediaItem(input: DeleteMediaItemInput!): DeleteMediaItemPayload!
-}
-
-type Query {
-  "Returns the api key for google maps"
-  googleMapsApiKey: String!
-  "Returns a list of categories"
-  categories(where: CategoryFilterInput order: [CategorySortInput!]): [Category!]!
-  "Validate german category name "
-  germanCategoryNameExists(iD: Long! categoryType: EnumCategoryType! germanName: String!): Boolean!
-  "Validate english category name "
-  englishCategoryNameExists(iD: Long! categoryType: EnumCategoryType! englishName: String!): Boolean!
-  "Returns a list of category values"
-  categoryValues(where: CategoryValueFilterInput order: [CategoryValueSortInput!]): [CategoryValue!]!
-  "Validate german category value name"
-  germanCategoryValueNameExists(iD: Long! categoryId: Long! germanName: String!): Boolean!
-  "Validate english category value name"
-  englishCategoryValueNameExists(iD: Long! categoryId: Long! englishName: String!): Boolean!
-  "Get next free upload id"
-  nextUploadId: Long!
-  "Returns a list of upload picture"
-  uploadPictures(where: UploadPictureFilterInput order: [UploadPictureSortInput!]): [UploadPicture!]!
-  "Returns the filter data for upload picture exif infos"
-  uploadPictureExifInfoFilterData: UploadPictureExifInfoFilterData!
-  "Returns the current count for converted and unassigned upload pictures"
-  uploadPictureCount: Int!
-  "Returns a list of upload videos"
-  uploadVideos(where: UploadVideoFilterInput order: [UploadVideoSortInput!]): [UploadVideo!]!
-  "Returns the current count for converted and unassigned upload videos"
-  uploadVideoCount: Int!
-  "Returns a list of user settings"
-  userSettings(where: UserSettingFilterInput): [UserSetting!]!
-  "Returns a list of media groups"
-  mediaGroups(where: MediaGroupFilterInput order: [MediaGroupSortInput!]): [MediaGroup!]!
-  "Returns a list of media items"
-  mediaItems(where: MediaItemFilterInput order: [MediaItemSortInput!]): [MediaItem!]!
-  "Validate german media group name "
-  germanMediaGroupNameExists(iD: Long! germanName: String!): Boolean!
-  "Validate english media group name "
-  englishMediaGroupNameExists(iD: Long! englishName: String!): Boolean!
-  "Validate german media item name "
-  germanMediaItemNameExists(iD: Long! mediaGroupId: Long! germanName: String!): Boolean!
-  "Validate english media item name "
-  englishMediaItemNameExists(iD: Long! mediaGroupId: Long! englishName: String!): Boolean!
-}
-
-type Subscription {
-  "Subscription for new picture convert status items in waiting state"
-  onPictureConvertStatusWaiting: PictureConvertStatus!
-  "Subscription for new picture convert status items in error state"
-  onPictureConvertStatusError: PictureConvertStatus!
-  "Subscription for new picture convert status items in success state"
-  onPictureConvertStatusSuccess: PictureConvertStatus!
-  "Subscription for convert status item for currently converted picture"
-  onPictureConvertStatusCurrent: PictureConvertStatus!
-  "Subscription for new video convert status items in waiting state"
-  onVideoConvertStatusWaiting: VideoConvertStatus!
-  "Subscription for new video convert status items in error state"
-  onVideoConvertStatusError: VideoConvertStatus!
-  "Subscription for new video convert status items in success state"
-  onVideoConvertStatusSuccess: VideoConvertStatus!
-  "Subscription for convert status item for currently converted video"
-  onVideoConvertStatusCurrent: VideoConvertStatus!
+  "Is the upload picture assigned to a media item"
+  isAssigned: SortEnumType
+  "The media item the upload picture is assigned to"
+  mediaItem: MediaItemSortInput
+  "The state for the upload picture"
+  state: SortEnumType
+  "The converting status for this upload picture"
+  status: PictureConvertStatusSortInput
+  "The Exif-Info for the upload picture"
+  uploadPictureExifInfo: UploadPictureExifInfoSortInput
+  "The width of the picture"
+  width: SortEnumType
 }
 
 "Enumeration for setting the category type for categories"
@@ -1269,237 +1101,922 @@ enum EnumCategoryType {
   VIDEO
 }
 
-enum EnumPictureConvertStatus {
-  WAITING_FOR_CONVERSION
-  READ_INFO_BEGIN
-  READ_INFO_END
-  READ_EXIF_BEGIN
-  READ_EXIF_END
-  CONVERT_BEGIN
-  CONVERT_END
-  SUCESSFULLY_CONVERTED
-  CONVERTED_WITH_ERRORS
-  TRANSIENT_ERROR
+"Media item assigned category value"
+input MediaItemCategoryValueFilterInput {
+  and: [MediaItemCategoryValueFilterInput!]
+  "The category value this media item belongs to"
+  categoryValue: CategoryValueFilterInput
+  createDate: DateTimeOperationFilterInput
+  id: LongOperationFilterInput
+  "The media item this category value entry belongs to"
+  mediaItem: MediaItemFilterInput
+  or: [MediaItemCategoryValueFilterInput!]
 }
 
-"The video type for the converted upload video"
-enum EnumVideoType {
-  "Not set"
-  NOT_SET
-  "Progressive video format"
-  PROGRESSIVE
-  "HTTP Live Streaming format"
-  HLS
+"Upload picture"
+type UploadPicture {
+  "When was this upload picture created"
+  createDate: DateTime!
+  "The original filename for the picture file that was uploaded"
+  filename: String!
+  "Google geo coding address for this upload picture"
+  googleGeoCodingAddress: GoogleGeoCodingAddress
+  "The height of the picture"
+  height: Int!
+  "The identifier for this upload picture"
+  id: Long!
+  "Is the upload picture assigned to a media item"
+  isAssigned: Boolean!
+  "The media item the upload picture is assigned to"
+  mediaItem: MediaItem
+  "The state for the upload picture"
+  state: EnumUploadState!
+  "The converting status for this upload picture"
+  status: PictureConvertStatus
+  "The Exif-Info for the upload picture"
+  uploadPictureExifInfo: UploadPictureExifInfo
+  "The width of the picture"
+  width: Int!
 }
 
-enum EnumVideoConvertStatus {
-  WAITING_FOR_CONVERSION
-  READ_MEDIA_INFO_BEGIN
-  READ_MEDIA_INFO_END
-  CONVERT_MP4_VIDEO_BEGIN
-  CONVERT_MP4_VIDEO_END
-  CONVERT640X360_BEGIN
-  CONVERT640X360_END
-  CONVERT852X480_BEGIN
-  CONVERT852X480_END
-  CONVERT1280X720_BEGIN
-  CONVERT1280X720_END
-  CONVERT1920X1080_BEGIN
-  CONVERT1920X1080_END
-  CONVERT3840X2160_BEGIN
-  CONVERT3840X2160_END
-  CREATE_PREVIEW_IMAGE_BEGIN
-  CREATE_PREVIEW_IMAGE_END
-  CREATE_HLS_BEGIN
-  CREATE_HLS_END
-  CREATE_VTT_BEGIN
-  CREATE_VTT_END
-  COPY_CONVERTED_BEGIN
-  COPY_CONVERTED_END
-  DELETE_ORIGINAL_BEGIN
-  DELETE_ORIGINAL_END
-  DELETE_CONVERTED_BEGIN
-  DELETE_CONVERTED_END
-  CONVERT_PICTURE_BEGIN
-  CONVERT_PICTURE_END
-  SUCESSFULLY_CONVERTED
-  CONVERTED_WITH_ERRORS
-  TRANSIENT_ERROR
+input UserInteractionInfoSortInput {
+  changeDate: SortEnumType
+  "Count of comments"
+  commentCount: SortEnumType
+  createDate: SortEnumType
+  "Count of favorites"
+  favoriteCount: SortEnumType
+  id: SortEnumType
+  "Cout of ratings"
+  ratingCount: SortEnumType
+  "The user account this interaction info is linked to"
+  userAccount: UserAccountSortInput
 }
 
-"State for upload item"
-enum EnumUploadStatus {
-  "File is only uploaded and not converted"
-  UPLOADED
-  "File is converted by a converter service"
-  CONVERTED
-  "The file is uploaded, converted and assigned to a media item"
-  ASSIGNED
+input CommentFilterInput {
+  and: [CommentFilterInput!]
+  "Content for the comment"
+  content: StringOperationFilterInput
+  createDate: DateTimeOperationFilterInput
+  id: LongOperationFilterInput
+  "The media item this comment belongs to"
+  mediaItem: MediaItemFilterInput
+  or: [CommentFilterInput!]
+  "The user interaction info this comment belongs to"
+  userInteractionInfo: UserInteractionInfoFilterInput
+}
+
+"The `DateTime` scalar represents an ISO-8601 compliant date time type."
+scalar DateTime
+
+"The result for all deleted upload videos"
+input DeleteAllUploadVideoInput {
+  "The Id list for the upload videos to delete"
+  uploadVideoIds: [Long!]!
 }
 
 "Exif information to the upload picture"
 type UploadPictureExifInfo {
+  "Contrast"
+  contrast: Short
+  "Timestamp when picture was recorded"
+  ddlRecorded: DateTime
+  "Exposure mode"
+  exposureMode: Short
+  "Exposure program"
+  exposureProgram: Short
+  "Exposure-Time"
+  exposureTime: Float
+  "Flash mode"
+  flashMode: Short
+  "F-Number"
+  fNumber: Float
+  "Focal length"
+  focalLength: Float
+  "Latitude for GPS-Position"
+  gpsLatitude: Float
+  "Longitude for GPS-Position"
+  gpsLongitude: Float
+  "ISO sensitivity"
+  isoSensitivity: Int
   "Make for the camera"
   make: String!
+  "Metering mode"
+  meteringMode: Short
   "Camera model"
   model: String!
+  "Orientation for picture"
+  orientation: Short
+  "The resolution unit"
+  resolutionUnit: Short
   "Resolution x"
   resolutionX: Float
   "Resolution Y"
   resolutionY: Float
-  "The resolution unit"
-  resolutionUnit: Short
-  "Orientation for picture"
-  orientation: Short
-  "Timestamp when picture was recorded"
-  ddlRecorded: DateTime
-  "Exposure-Time "
-  exposureTime: Float
-  "Exposure program"
-  exposureProgram: Short
-  "Exposure mode"
-  exposureMode: Short
-  "F-Number"
-  fNumber: Float
-  "ISO sensitivity"
-  isoSensitivity: Int
-  "Shutter speed"
-  shutterSpeed: Float
-  "Metering mode"
-  meteringMode: Short
-  "Flash mode"
-  flashMode: Short
-  "Focal length"
-  focalLength: Float
-  "Sensing mode"
-  sensingMode: Short
-  "White-Balance mode"
-  whiteBalanceMode: Short
-  "Sharpness"
-  sharpness: Short
-  "Longitude for GPS-Position"
-  gpsLongitude: Float
-  "Latitude for GPS-Position"
-  gpsLatitude: Float
-  "Contrast"
-  contrast: Short
   "Saturation"
   saturation: Short
+  "Sensing mode"
+  sensingMode: Short
+  "Sharpness"
+  sharpness: Short
+  "Shutter speed"
+  shutterSpeed: Float
+  "White-Balance mode"
+  whiteBalanceMode: Short
+}
+
+input ListFilterInputTypeOfRatingFilterInput {
+  all: RatingFilterInput
+  any: Boolean
+  none: RatingFilterInput
+  some: RatingFilterInput
+}
+
+"Input type for changing users"
+input UpdateUserInput {
+  "Cityname of living adress"
+  city: String!
+  "CountryId for the country of living adress"
+  countryId: String!
+  "Family name of user"
+  familyName: String!
+  "Gender for user"
+  gender: EnumGenderType!
+  "Givenname of user"
+  givenName: String!
+  "Housenumber of living adress"
+  hnr: String!
+  "The Id for the user"
+  id: String!
+  "Streetname of living adress"
+  street: String!
+  "ZIP-Code of living adress"
+  zip: String!
 }
 
 "Geo coding address"
-type GoogleGeoCodingAddress {
-  "The longitude for the gps position"
-  longitude: Float!
-  "The latitude for the gps position"
-  latitude: Float!
-  "The street name for the geo coding address"
-  streetName: String!
-  "The house number for the geo coding address"
-  hnr: String!
-  "The zip code for the geo coding address"
-  zip: String!
+input GoogleGeoCodingAddressFilterInput {
+  and: [GoogleGeoCodingAddressFilterInput!]
   "The city name for the geo coding address"
-  city: String!
+  city: StringOperationFilterInput
   "The country name for the geo coding address"
-  country: String!
+  country: StringOperationFilterInput
+  "The house number for the geo coding address"
+  hnr: StringOperationFilterInput
+  "The latitude for the gps position"
+  latitude: FloatOperationFilterInput
+  "The longitude for the gps position"
+  longitude: FloatOperationFilterInput
+  or: [GoogleGeoCodingAddressFilterInput!]
+  "The street name for the geo coding address"
+  streetName: StringOperationFilterInput
+  "The zip code for the geo coding address"
+  zip: StringOperationFilterInput
 }
 
-"Setting the type for a media item"
-enum EnumMediaType {
-  "The media item is a photo"
-  PICTURE
-  "The media is a video"
-  VIDEO
-  "The media type for mixed content (photo \/ video)"
-  BOTH
+input UpdateUserSettingInput {
+  "Allow zoom with mouse wheel in video player"
+  allowZoomingWithMouseWheel: Boolean!
+  "What should be the default when question would not be shown"
+  defaultKeepUploadWhenDelete: Boolean!
+  "Close gallery with clicking on background"
+  galleryCloseDimmer: Boolean!
+  "Close gallery with pressing the Escape-Key"
+  galleryCloseEsc: Boolean!
+  "Change current photo in gallery by using the mouse wheel"
+  galleryMouseWheelChangeSlide: Boolean!
+  "Start gallery in full screen mode"
+  galleryShowFullScreen: Boolean!
+  "Show thumbnails from begin on"
+  galleryShowThumbnails: Boolean!
+  "Time to transition from current picture to next picture in milliseconds"
+  galleryTransitionDuration: Int!
+  "Name of the transition animation"
+  galleryTransitionType: String!
+  "The id for the user"
+  id: String!
+  "Should the question to keep the upload item be shown?"
+  questionKeepUploadWhenDelete: Boolean!
+  "Should the seek forward button be shown in the player"
+  showButtonForward: Boolean!
+  "Should the seek backward button be shown in the player"
+  showButtonRewind: Boolean!
+  "Show mirror button in video player"
+  showMirrorButton: Boolean!
+  "Show play rate menu in video player"
+  showPlayRateMenu: Boolean!
+  "Show quality menu in video player"
+  showQualityMenu: Boolean!
+  "Show tooltip for current playtime in video player"
+  showTooltipForCurrentPlaytime: Boolean!
+  "Show tooltip for playtime in video player when mouse over"
+  showTooltipForPlaytimeOnMouseCursor: Boolean!
+  "Show zoom info in video player"
+  showZoomInfo: Boolean!
+  "Should the player show the zoom menu"
+  showZoomMenu: Boolean!
+  "Should videos automatically start playing when video player is shown"
+  videoAutoPlay: Boolean!
+  "Should other videos of current album play after current video is fnished"
+  videoAutoPlayOtherVideos: Boolean!
+  "Should videos play in a loop"
+  videoLoop: Boolean!
+  "Time in seconds the seek forward \/ rewind button will jump ahead \/ back in the video"
+  videoTimeSeekForwardRewind: Int!
+  "Wait time to play other video in of current album in seconds"
+  videoTimeToPlayNextVideo: Int!
+  "The default volume vor video player all videos start playing with"
+  videoVolume: Int!
+}
+
+"Input type for adding category value"
+input AddCategoryValueInput {
+  "The key for the category"
+  categoryId: Long!
+  "English name for this category value"
+  nameEnglish: String!
+  "German name for this category value"
+  nameGerman: String!
+}
+
+"The result for a updated media item"
+type UpdateMediaItemPayload {
+  "The updated media item"
+  mediaItem: MediaItem!
+}
+
+"Input type for deleting category values"
+input DeleteCategoryValueInput {
+  "The ID for the category value"
+  id: Long!
+}
+
+"The result for a finished picture upload"
+type FinishPictureUploadPayload {
+  "Has the finish operation successfully completed"
+  status: Boolean!
+}
+
+"InputData type for deleting upload picture"
+input DeleteUploadPictureInput {
+  "The Id for the upload picture"
+  id: Long!
+}
+
+"InputData type for adding user setting"
+input AddUserSettingInput {
+  "The id for the user"
+  id: String!
+}
+
+type Rating {
+  "When was this rating created"
+  createDate: DateTime!
+  "The identifier for this rating"
+  id: Long!
+  "The media item this rating belongs to"
+  mediaItem: MediaItem
+  "The user interaction info this rating belongs to"
+  userInteractionInfo: UserInteractionInfo
+  "The user interaction info this rating belongs to"
+  value: Int!
+}
+
+"The result for a new added category"
+type AddCategoryPayload {
+  "The new added category"
+  category: Category!
+}
+
+"Country"
+input CountryFilterInput {
+  and: [CountryFilterInput!]
+  createDate: DateTimeOperationFilterInput
+  id: StringOperationFilterInput
+  "The english country name"
+  nameEnglish: StringOperationFilterInput
+  "The german country name"
+  nameGerman: StringOperationFilterInput
+  or: [CountryFilterInput!]
+  "The list of users that live in this country"
+  users: ListFilterInputTypeOfUserAccountFilterInput
+}
+
+"The `Short` scalar type represents non-fractional signed whole 16-bit numeric values. Short can represent values between -(2^15) and 2^15 - 1."
+scalar Short
+
+input EnumMediaTypeOperationFilterInput {
+  eq: EnumMediaType
+  in: [EnumMediaType!]
+  neq: EnumMediaType
+  nin: [EnumMediaType!]
+}
+
+"The `Long` scalar type represents non-fractional signed whole 64-bit numeric values. Long can represent values between -(2^63) and 2^63 - 1."
+scalar Long
+
+"Picture convert status"
+type PictureConvertStatus {
+  "Error message when conversion is in state \"Finished with errors\""
+  errorMessage: String!
+  "Timestamp for \"Convert picture - End\""
+  finishDateConvert: DateTime
+  "Timestamp for \"Read Exif-Information from file - End\""
+  finishDateExif: DateTime
+  "Timestamp for \"Read Picture Info from file - End\""
+  finishDateInfo: DateTime
+  "The identifier for this picture convert status item"
+  id: Long!
+  "Timestamp for \"Convert picture - Begin\""
+  startDateConvert: DateTime
+  "Timestamp for \"Read Exif-Information from file - Begin\""
+  startDateExif: DateTime
+  "Timestamp for \"Read Picture Info from file - Begin\""
+  startDateInfo: DateTime
+  "The current state for the conversion"
+  status: EnumPictureConvertStatus!
+  "Id of the upload picture that is converted"
+  uploadPicture: UploadPicture!
+}
+
+"Upload picture"
+input UploadPictureFilterInput {
+  and: [UploadPictureFilterInput!]
+  createDate: DateTimeOperationFilterInput
+  "The original filename for the picture file that was uploaded"
+  filename: StringOperationFilterInput
+  "Google geo coding address for this upload picture"
+  googleGeoCodingAddress: GoogleGeoCodingAddressFilterInput
+  "The height of the picture"
+  height: IntOperationFilterInput
+  id: LongOperationFilterInput
+  "Is the upload picture assigned to a media item"
+  isAssigned: BooleanOperationFilterInput
+  "The media item the upload picture is assigned to"
+  mediaItem: MediaItemFilterInput
+  or: [UploadPictureFilterInput!]
+  "The state for the upload picture"
+  state: EnumUploadStateOperationFilterInput
+  "The converting status for this upload picture"
+  status: PictureConvertStatusFilterInput
+  "The Exif-Info for the upload picture"
+  uploadPictureExifInfo: UploadPictureExifInfoFilterInput
+  "The width of the picture"
+  width: IntOperationFilterInput
+}
+
+input EnumUploadStateOperationFilterInput {
+  eq: EnumUploadState
+  in: [EnumUploadState!]
+  neq: EnumUploadState
+  nin: [EnumUploadState!]
+}
+
+input ListFilterInputTypeOfUserAccountFilterInput {
+  all: UserAccountFilterInput
+  any: Boolean
+  none: UserAccountFilterInput
+  some: UserAccountFilterInput
+}
+
+type Mutation {
+  "Add a new category"
+  addCategory(input: AddCategoryInput!): AddCategoryPayload!
+  "Add a new category value"
+  addCategoryValue(input: AddCategoryValueInput!): AddCategoryValuePayload!
+  "Add a new media group"
+  addMediaGroup(input: AddMediaGroupInput!): AddMediaGroupPayload!
+  "Add a new media item"
+  addMediaItem(input: AddMediaItemInput!): AddMediaItemPayload!
+  "Add a new picture upload chunk"
+  addPictureUploadChunk(input: AddPictureUploadChunkInput!): AddPictureUploadChunkPayload!
+  "Add a new user"
+  addUser(input: AddUserInput!): AddUserPayload!
+  "Add a new user setting"
+  addUserSetting(input: AddUserSettingInput!): AddUserSettingPayload!
+  "Add a new video upload chunk"
+  addVideoUploadChunk(input: AddVideoUploadChunkInput!): AddVideoUploadChunkPayload!
+  "Delete all pictures vom upload area that are not assigned"
+  deleteAllUploadPictures(input: DeleteAllUploadPictureInput!): DeleteAllUploadPicturePayload!
+  "Delete all videos vom upload area that are not assigned"
+  deleteAllUploadVideos(input: DeleteAllUploadVideoInput!): DeleteAllUploadVideoPayload!
+  "Delete existing category"
+  deleteCategory(input: DeleteCategoryInput!): DeleteCategoryPayload!
+  "Delete existing category value"
+  deleteCategoryValue(input: DeleteCategoryValueInput!): DeleteCategoryValuePayload!
+  "Delete existing media group"
+  deleteMediaGroup(input: DeleteMediaGroupInput!): DeleteMediaGroupPayload!
+  "Delete existing media item"
+  deleteMediaItem(input: DeleteMediaItemInput!): DeleteMediaItemPayload!
+  "Delete picture vom upload area"
+  deleteUploadPicture(input: DeleteUploadPictureInput!): DeleteUploadPicturePayload!
+  "Delete video vom upload area"
+  deleteUploadVideo(input: DeleteUploadVideoInput!): DeleteUploadVideoPayload!
+  "Finish picture upload"
+  pictureUploadFinish(input: FinishPictureUploadInput!): FinishPictureUploadPayload!
+  "Update existing category"
+  updateCategory(input: UpdateCategoryInput!): UpdateCategoryPayload!
+  "Update existing category value"
+  updateCategoryValue(input: UpdateCategoryValueInput!): UpdateCategoryValuePayload!
+  "Update existing media group"
+  updateMediaGroup(input: UpdateMediaGroupInput!): UpdateMediaGroupPayload!
+  "Update existing media item"
+  updateMediaItem(input: UpdateMediaItemInput!): UpdateMediaItemPayload!
+  "Update existing user"
+  updateUser(input: UpdateUserInput!): UpdateUserPayload!
+  "Update existing user setting"
+  updateUserSetting(input: UpdateUserSettingInput!): UpdateUserSettingPayload!
+  "Finish video upload"
+  videoUploadFinish(input: FinishVideoUploadInput!): FinishVideoUploadPayload!
+}
+
+input UserInteractionInfoFilterInput {
+  and: [UserInteractionInfoFilterInput!]
+  changeDate: DateTimeOperationFilterInput
+  "Count of comments"
+  commentCount: IntOperationFilterInput
+  "List of related comments"
+  comments: ListFilterInputTypeOfCommentFilterInput
+  createDate: DateTimeOperationFilterInput
+  "Count of favorites"
+  favoriteCount: IntOperationFilterInput
+  "List of related favorites"
+  favorites: ListFilterInputTypeOfFavoriteFilterInput
+  id: LongOperationFilterInput
+  or: [UserInteractionInfoFilterInput!]
+  "Cout of ratings"
+  ratingCount: IntOperationFilterInput
+  "List of related ratings"
+  ratings: ListFilterInputTypeOfRatingFilterInput
+  "The user account this interaction info is linked to"
+  userAccount: UserAccountFilterInput
+}
+
+"The result for a updated user setting"
+type UpdateUserSettingPayload {
+  "The updated user setting"
+  userSetting: UserSetting!
 }
 
 "User setting"
 input UserSettingFilterInput {
+  "Allow zoom with mouse wheel in video player"
+  allowZoomingWithMouseWheel: BooleanOperationFilterInput
   and: [UserSettingFilterInput!]
+  changeDate: DateTimeOperationFilterInput
+  createDate: DateTimeOperationFilterInput
+  "What should be the default when question would not be shown"
+  defaultKeepUploadWhenDelete: BooleanOperationFilterInput
+  "Close gallery with clicking on background"
+  galleryCloseDimmer: BooleanOperationFilterInput
+  "Close gallery with pressing the Escape-Key"
+  galleryCloseEsc: BooleanOperationFilterInput
+  "Change current photo in gallery by using the mouse wheel"
+  galleryMouseWheelChangeSlide: BooleanOperationFilterInput
+  "Start gallery in full screen mode"
+  galleryShowFullScreen: BooleanOperationFilterInput
+  "Show thumbnails from begin on"
+  galleryShowThumbnails: BooleanOperationFilterInput
+  "Time to transition from current picture to next picture in milliseconds"
+  galleryTransitionDuration: IntOperationFilterInput
+  "Name of the transition animation"
+  galleryTransitionType: StringOperationFilterInput
+  id: StringOperationFilterInput
   or: [UserSettingFilterInput!]
   "Should the question to keep the upload item be shown?"
   questionKeepUploadWhenDelete: BooleanOperationFilterInput
-  "What should be the default when question would not be shown"
-  defaultKeepUploadWhenDelete: BooleanOperationFilterInput
-  "Should videos automatically start playing when video player is shown"
-  videoAutoPlay: BooleanOperationFilterInput
-  "The default volume vor video player all videos start playing with"
-  videoVolume: IntOperationFilterInput
-  "Should videos play in a loop"
-  videoLoop: BooleanOperationFilterInput
-  "Should other videos of current album play after current video is fnished"
-  videoAutoPlayOtherVideos: BooleanOperationFilterInput
-  "Wait time to play other video in of current album in seconds"
-  videoTimeToPlayNextVideo: IntOperationFilterInput
-  "Show zoom info in video player"
-  showZoomInfo: BooleanOperationFilterInput
-  "Allow zoom with mouse wheel in video player"
-  allowZoomingWithMouseWheel: BooleanOperationFilterInput
-  "Show tooltip for playtime in video player when mouse over"
-  showTooltipForPlaytimeOnMouseCursor: BooleanOperationFilterInput
-  "Show tooltip for current playtime in video player"
-  showTooltipForCurrentPlaytime: BooleanOperationFilterInput
   "Should the seek forward button be shown in the player"
   showButtonForward: BooleanOperationFilterInput
   "Should the seek backward button be shown in the player"
   showButtonRewind: BooleanOperationFilterInput
-  "Should the player show the zoom menu"
-  showZoomMenu: BooleanOperationFilterInput
-  "Show play rate menu in video player"
-  showPlayRateMenu: BooleanOperationFilterInput
   "Show mirror button in video player"
   showMirrorButton: BooleanOperationFilterInput
+  "Show play rate menu in video player"
+  showPlayRateMenu: BooleanOperationFilterInput
   "Show quality menu in video player"
   showQualityMenu: BooleanOperationFilterInput
+  "Show tooltip for current playtime in video player"
+  showTooltipForCurrentPlaytime: BooleanOperationFilterInput
+  "Show tooltip for playtime in video player when mouse over"
+  showTooltipForPlaytimeOnMouseCursor: BooleanOperationFilterInput
+  "Show zoom info in video player"
+  showZoomInfo: BooleanOperationFilterInput
+  "Should the player show the zoom menu"
+  showZoomMenu: BooleanOperationFilterInput
+  "Should videos automatically start playing when video player is shown"
+  videoAutoPlay: BooleanOperationFilterInput
+  "Should other videos of current album play after current video is fnished"
+  videoAutoPlayOtherVideos: BooleanOperationFilterInput
+  "Should videos play in a loop"
+  videoLoop: BooleanOperationFilterInput
   "Time in seconds the seek forward \/ rewind button will jump ahead \/ back in the video"
   videoTimeSeekForwardRewind: IntOperationFilterInput
-  "Close gallery with pressing the Escape-Key"
-  galleryCloseEsc: BooleanOperationFilterInput
-  "Close gallery with clicking on background"
-  galleryCloseDimmer: BooleanOperationFilterInput
-  "Change current photo in gallery by using the mouse wheel"
-  galleryMouseWheelChangeSlide: BooleanOperationFilterInput
-  "Show thumbnails from begin on"
-  galleryShowThumbnails: BooleanOperationFilterInput
-  "Start gallery in full screen mode"
-  galleryShowFullScreen: BooleanOperationFilterInput
-  "Time to transition from current picture to next picture in milliseconds"
-  galleryTransitionDuration: IntOperationFilterInput
-  "Name of the transition animation "
-  galleryTransitionType: StringOperationFilterInput
+  "Wait time to play other video in of current album in seconds"
+  videoTimeToPlayNextVideo: IntOperationFilterInput
+  "The default volume vor video player all videos start playing with"
+  videoVolume: IntOperationFilterInput
+}
+
+input ShortOperationFilterInput {
+  eq: Short
+  gt: Short
+  gte: Short
+  in: [Short]
+  lt: Short
+  lte: Short
+  neq: Short
+  ngt: Short
+  ngte: Short
+  nin: [Short]
+  nlt: Short
+  nlte: Short
+}
+
+"Input type for adding users"
+input AddUserInput {
+  "Cityname of living adress"
+  city: String!
+  "CountryId for the country of living adress"
+  countryId: String!
+  "The eMail-Adress for the user"
+  eMail: String!
+  "Family name of user"
+  familyName: String!
+  "Gender for user"
+  gender: EnumGenderType!
+  "Givenname of user"
+  givenName: String!
+  "Housenumber of living adress"
+  hnr: String!
+  "The Id for the user"
+  id: String!
+  "Streetname of living adress"
+  street: String!
+  "The user name for the user"
+  userName: String!
+  "ZIP-Code of living adress"
+  zip: String!
+}
+
+type Favorite {
+  "When was this favorite created"
+  createDate: DateTime!
+  "The identifier for this favorite"
+  id: Long!
+  "The media item this favorite belongs to"
+  mediaItem: MediaItem
+  "The user interaction info this favorite belongs to"
+  userInteractionInfo: UserInteractionInfo
+}
+
+"Input type for adding picture upload chunks"
+input AddPictureUploadChunkInput {
+  "The chunk data as base64 encoded string"
+  chunkData: String!
+  "The chunk number for the chunk to upload"
+  chunkNumber: Long!
+  "The size of the chunk in bytes"
+  chunkSize: Int!
+  "The target filename for the file to upload"
+  targetFilename: String!
+}
+
+"The result for a updated media group"
+type UpdateMediaGroupPayload {
+  "The updated media group"
+  mediaGroup: MediaGroup!
+}
+
+"InputData type for updating media group"
+input UpdateMediaGroupInput {
+  "English description for this media group"
+  descriptionEnglish: String!
+  "German description for this media group"
+  descriptionGerman: String!
+  "The date on which the event took place"
+  eventDate: DateTime!
+  "The unique identifier for the media group to update"
+  id: Long!
+  "English name for this media group"
+  nameEnglish: String!
+  "German name for this media group"
+  nameGerman: String!
+}
+
+"The result for a deleted media item"
+type DeleteMediaItemPayload {
+  "The deleted media item"
+  mediaItem: MediaItem!
+}
+
+"Category values"
+type CategoryValue {
+  "The Category this category value entry belongs to"
+  category: Category!
+  "When was this category value last changed"
+  changeDate: DateTime
+  "When was this category value created"
+  createDate: DateTime!
+  "The identifier for this category value"
+  id: Long!
+  "List of related media item category values"
+  mediaItemCategoryValues(order: [MediaItemCategoryValueSortInput!] where: MediaItemCategoryValueFilterInput): [MediaItemCategoryValue!]!
+  "English name for this category value"
+  nameEnglish: String!
+  "German name for this category value"
+  nameGerman: String!
+}
+
+"Geo coding address"
+input GoogleGeoCodingAddressSortInput {
+  "The city name for the geo coding address"
+  city: SortEnumType
+  "The country name for the geo coding address"
+  country: SortEnumType
+  "The house number for the geo coding address"
+  hnr: SortEnumType
+  "The latitude for the gps position"
+  latitude: SortEnumType
+  "The longitude for the gps position"
+  longitude: SortEnumType
+  "The street name for the geo coding address"
+  streetName: SortEnumType
+  "The zip code for the geo coding address"
+  zip: SortEnumType
+}
+
+"Video convert status"
+input VideoConvertStatusSortInput {
+  "Hour part for the convert time"
+  convertHour: SortEnumType
+  "Minute part for the convert time"
+  convertMinute: SortEnumType
+  "The remaining time for current conversion in hours"
+  convertRestHour: SortEnumType
+  "The remaining time for current conversion in minutes"
+  convertRestMinute: SortEnumType
+  "The remaining time for current conversion in seconds"
+  convertRestSecond: SortEnumType
+  "Second part for the convert time"
+  convertSecond: SortEnumType
+  "Error message when conversion is in state \"Finished with errors\""
+  errorMessage: SortEnumType
+  "Timestamp when conversion of preview image ends"
+  finishDateConvertPicture: SortEnumType
+  "Timestamp when copy of converted files ends"
+  finishDateCopyConverted: SortEnumType
+  "Timestamp when delete original file ends"
+  finishDateDeleteOriginal: SortEnumType
+  "Timestamp when delete temporary files ends"
+  finishDateDeleteTemp: SortEnumType
+  "Timestamp when creating HLS content ends"
+  finishDateHls: SortEnumType
+  "Timestamp when reading media info ends"
+  finishDateMediaInfo: SortEnumType
+  "Timestamp when converting the video to MP4 ends"
+  finishDateMp4: SortEnumType
+  "Timestamp when converting the video to DASH 1920 x 1080 ends"
+  finishDateMp41080: SortEnumType
+  "Timestamp when converting the video to DASH 3840 x 2160 ends"
+  finishDateMp42160: SortEnumType
+  "Timestamp when converting the video to HLS 640 x 360 ends"
+  finishDateMp4360: SortEnumType
+  "Timestamp when converting the video to HLS 852 x 480 ends"
+  finishDateMp4480: SortEnumType
+  "Timestamp when converting the video to HLS 1280 x 720 ends"
+  finishDateMp4720: SortEnumType
+  "Timestamp when creating thumbnail ends"
+  finishDateThumbnail: SortEnumType
+  "Timestamp when creating VTT content ends"
+  finishDateVtt: SortEnumType
+  id: SortEnumType
+  "The progress for current conversion"
+  progress: SortEnumType
+  "Timestamp when conversion of preview image begins"
+  startDateConvertPicture: SortEnumType
+  "Timestamp when copy of converted files begins"
+  startDateCopyConverted: SortEnumType
+  "Timestamp when delete original file begins"
+  startDateDeleteOriginal: SortEnumType
+  "Timestamp when delete temporary files begins"
+  startDateDeleteTemp: SortEnumType
+  "Timestamp when creating HLS content begins"
+  startDateHls: SortEnumType
+  "Timestamp when reading media info begins"
+  startDateMediaInfo: SortEnumType
+  "Timestamp when converting the video to MP4 begins"
+  startDateMp4: SortEnumType
+  "Timestamp when converting the video to DASH 1920 x 1080 begins"
+  startDateMp41080: SortEnumType
+  "Timestamp when converting the video to DASH 3840 x 2160 begins"
+  startDateMp42160: SortEnumType
+  "Timestamp when converting the video to HLS 640 x 360 begins"
+  startDateMp4360: SortEnumType
+  "Timestamp when converting the video to HLS 852 x 480 begins"
+  startDateMp4480: SortEnumType
+  "Timestamp when converting the video to HLS 1280 x 720 begins"
+  startDateMp4720: SortEnumType
+  "Timestamp when creating thumbnail begins"
+  startDateThumbnail: SortEnumType
+  "Timestamp when creating VTT content begins"
+  startDateVtt: SortEnumType
+  "The current state for the conversion"
+  status: SortEnumType
+  "The upload video that is converted"
+  uploadVideo: UploadVideoSortInput
+  "The type of video for the converted video"
+  videoType: SortEnumType
+}
+
+"The result for a changed user"
+type UpdateUserPayload {
+  "The changed user"
+  userAccount: UserAccount!
+}
+
+"Media group"
+type MediaGroup {
+  "When was this media group last changed"
+  changeDate: DateTime
+  "When was this media group created"
+  createDate: DateTime!
+  "English description for this media group"
+  descriptionEnglish: String!
+  "German description for this media group"
+  descriptionGerman: String!
+  "The date on which the event took place"
+  eventDate: DateTime!
+  "The identifier for this media group"
+  id: Long!
+  "List of related media items"
+  mediaItems(order: [MediaItemSortInput!] where: MediaItemFilterInput): [MediaItem!]!
+  "English name for this media group"
+  nameEnglish: String!
+  "German name for this media group"
+  nameGerman: String!
+}
+
+"The result for a deleted upload video"
+type DeleteUploadVideoPayload {
+  "The deleted upload video"
+  uploadVideo: UploadVideo!
+}
+
+"User"
+input UserAccountSortInput {
+  changeDate: SortEnumType
+  "The name of the city the user lives in"
+  city: SortEnumType
+  "The assigned country the user lives in"
+  country: CountrySortInput
+  createDate: SortEnumType
+  "The eMail-Adress for the user"
+  eMail: SortEnumType
+  "The family name for the user"
+  familyName: SortEnumType
+  "The gender for the user"
+  gender: SortEnumType
+  "The given name for the user"
+  givenName: SortEnumType
+  "The house number for the adress of the user"
+  hnr: SortEnumType
+  id: SortEnumType
+  "The street name for the adress of the user"
+  street: SortEnumType
+  "The interaction info this user account is linked to"
+  userInteractionInfo: UserInteractionInfoSortInput
+  "The user name for the user"
+  userName: SortEnumType
+  "The ZIP-Code for the adress of the user"
+  zip: SortEnumType
+}
+
+"Media item assigned category value"
+type MediaItemCategoryValue {
+  "The category value this media item belongs to"
+  categoryValue: CategoryValue!
+  "When was this media item category value created"
+  createDate: DateTime!
+  "The identifier for this media item category value"
+  id: Long!
+  "The media item this category value entry belongs to"
+  mediaItem: MediaItem!
+}
+
+input RatingFilterInput {
+  and: [RatingFilterInput!]
+  createDate: DateTimeOperationFilterInput
+  id: LongOperationFilterInput
+  "The media item this rating belongs to"
+  mediaItem: MediaItemFilterInput
+  or: [RatingFilterInput!]
+  "The user interaction info this rating belongs to"
+  userInteractionInfo: UserInteractionInfoFilterInput
+  "The user interaction info this rating belongs to"
+  value: IntOperationFilterInput
+}
+
+"Country"
+input CountrySortInput {
+  createDate: SortEnumType
+  id: SortEnumType
+  "The english country name"
+  nameEnglish: SortEnumType
+  "The german country name"
+  nameGerman: SortEnumType
+}
+
+input EnumGenderTypeOperationFilterInput {
+  eq: EnumGenderType
+  in: [EnumGenderType!]
+  neq: EnumGenderType
+  nin: [EnumGenderType!]
+}
+
+"Upload video"
+input UploadVideoFilterInput {
+  and: [UploadVideoFilterInput!]
+  "The converting status for this upload video"
+  convertStatus: VideoConvertStatusFilterInput
+  createDate: DateTimeOperationFilterInput
+  "The hour part for the duration of the video"
+  durationHour: IntOperationFilterInput
+  "The minute part for the duration of the video"
+  durationMinute: IntOperationFilterInput
+  "The second part for the duration of the video"
+  durationSecond: IntOperationFilterInput
+  "The original filename for the video file that was uploaded"
+  filename: StringOperationFilterInput
+  "The google geo coding address for this video"
+  googleGeoCodingAddress: GoogleGeoCodingAddressFilterInput
+  "The latitude for the gps position"
+  gpsLatitude: FloatOperationFilterInput
+  "The longitude for the gps position"
+  gpsLongitude: FloatOperationFilterInput
+  "The height of the video"
+  height: IntOperationFilterInput
+  id: LongOperationFilterInput
+  "Is the upload video assigned to a media item"
+  isAssigned: BooleanOperationFilterInput
+  "The media item the upload video is assigned to"
+  mediaItem: MediaItemFilterInput
+  or: [UploadVideoFilterInput!]
+  "The state for the upload video"
+  state: EnumUploadStateOperationFilterInput
+  "The video type for the upload video"
+  videoType: EnumVideoTypeOperationFilterInput
+  "The width of the video"
+  width: IntOperationFilterInput
+}
+
+"Setting the type for a media item"
+enum EnumMediaType {
+  "The media type for mixed content (photo \/ video)"
+  BOTH
+  "The media item is a photo"
+  PICTURE
+  "The media is a video"
+  VIDEO
+}
+
+"Input type for finish video upload"
+input FinishVideoUploadInput {
+  "The last chunk number"
+  lastChunkNumber: Long!
+  "The original filename for the file to upload"
+  originalFilename: String!
+  "The target filename for the file to upload"
+  targetFilename: String!
+}
+
+input EnumCategoryTypeOperationFilterInput {
+  eq: EnumCategoryType
+  in: [EnumCategoryType!]
+  neq: EnumCategoryType
+  nin: [EnumCategoryType!]
+}
+
+"InputData type for deleting all upload pictures"
+input DeleteAllUploadPictureInput {
+  "The Id list for the upload pictures to delete"
+  uploadPictureIds: [Long!]!
+}
+
+"Category group"
+input CategoryFilterInput {
+  and: [CategoryFilterInput!]
+  "The type of category"
+  categoryType: EnumCategoryTypeOperationFilterInput
+  "List of related category values"
+  categoryValues: ListFilterInputTypeOfCategoryValueFilterInput
   changeDate: DateTimeOperationFilterInput
   createDate: DateTimeOperationFilterInput
-  id: StringOperationFilterInput
-}
-
-"InputData type for adding media item"
-input AddMediaItemInput {
-  "The unique identifier for the media group this media item belongs to"
-  mediaGroupId: Long!
-  "The type of media item"
-  mediaType: EnumMediaType!
-  "German name for this media item"
-  nameGerman: String!
-  "English name for this media item"
-  nameEnglish: String!
-  "German description for this media item"
-  descriptionGerman: String
-  "English description for this media item"
-  descriptionEnglish: String
-  "Is this media item only visible for family users"
-  onlyFamily: Boolean!
-  "The unique identifier for the assigned upload item (picture or video)"
-  uploadItemId: Long!
-  "The list of unique identifiers for the category values added to this media item"
-  categoryValueIds: [Long!]!
-}
-
-"The result for a new added media item"
-type AddMediaItemPayload {
-  "The new added media item"
-  mediaItem: MediaItem!
+  id: LongOperationFilterInput
+  "English name for this category"
+  nameEnglish: StringOperationFilterInput
+  "German name for this category"
+  nameGerman: StringOperationFilterInput
+  or: [CategoryFilterInput!]
 }
 
 "InputData type for deleting media group"
@@ -1510,235 +2027,71 @@ input DeleteMediaGroupInput {
   keepUploadItems: Boolean!
 }
 
+"Input type for updating category values"
+input UpdateCategoryValueInput {
+  "The ID for the category value to update"
+  id: Long!
+  "English name for this category value"
+  nameEnglish: String!
+  "German name for this category value"
+  nameGerman: String!
+}
+
+"Input type for adding video upload chunks"
+input AddVideoUploadChunkInput {
+  "The chunk data as base64 encoded string"
+  chunkData: String!
+  "The chunk number for the chunk to upload"
+  chunkNumber: Long!
+  "The size of the chunk in bytes"
+  chunkSize: Int!
+  "The target filename for the file to upload"
+  targetFilename: String!
+}
+
 "The result for a deleted media group"
 type DeleteMediaGroupPayload {
   "The deleted media group"
   mediaGroup: MediaGroup!
 }
 
-"InputData type for updating media group"
-input UpdateMediaGroupInput {
-  "The unique identifier for the media group to update"
-  id: Long!
-  "German name for this media group"
-  nameGerman: String!
-  "English name for this media group"
-  nameEnglish: String!
-  "German description for this media group"
-  descriptionGerman: String!
-  "English description for this media group"
-  descriptionEnglish: String!
-  "The date on which the event took place"
-  eventDate: DateTime!
-}
-
-"The result for a updated media group"
-type UpdateMediaGroupPayload {
-  "The updated media group"
-  mediaGroup: MediaGroup!
-}
-
-"InputData type for adding media group"
-input AddMediaGroupInput {
-  "German name for this media group"
-  nameGerman: String!
-  "English name for this media group"
-  nameEnglish: String!
-  "German description for this media group"
-  descriptionGerman: String!
-  "English description for this media group"
-  descriptionEnglish: String!
-  "The date on which the event took place"
-  eventDate: DateTime!
-}
-
-"The result for a new added media group"
-type AddMediaGroupPayload {
-  "The new added media group"
-  mediaGroup: MediaGroup!
-}
-
-input UpdateUserSettingInput {
-  "The id for the user"
+"Country"
+type Country {
+  "When was this country added to database"
+  createDate: DateTime!
+  "The identifier for this country"
   id: String!
-  "Should the question to keep the upload item be shown?"
-  questionKeepUploadWhenDelete: Boolean!
-  "What should be the default when question would not be shown"
-  defaultKeepUploadWhenDelete: Boolean!
-  "Should videos automatically start playing when video player is shown"
-  videoAutoPlay: Boolean!
-  "The default volume vor video player all videos start playing with"
-  videoVolume: Int!
-  "Should videos play in a loop"
-  videoLoop: Boolean!
-  "Should other videos of current album play after current video is fnished"
-  videoAutoPlayOtherVideos: Boolean!
-  "Wait time to play other video in of current album in seconds"
-  videoTimeToPlayNextVideo: Int!
-  "Show zoom info in video player"
-  showZoomInfo: Boolean!
-  "Allow zoom with mouse wheel in video player"
-  allowZoomingWithMouseWheel: Boolean!
-  "Show tooltip for playtime in video player when mouse over"
-  showTooltipForPlaytimeOnMouseCursor: Boolean!
-  "Show tooltip for current playtime in video player"
-  showTooltipForCurrentPlaytime: Boolean!
-  "Should the seek forward button be shown in the player"
-  showButtonForward: Boolean!
-  "Should the seek backward button be shown in the player"
-  showButtonRewind: Boolean!
-  "Should the player show the zoom menu"
-  showZoomMenu: Boolean!
-  "Show play rate menu in video player"
-  showPlayRateMenu: Boolean!
-  "Show mirror button in video player"
-  showMirrorButton: Boolean!
-  "Show quality menu in video player"
-  showQualityMenu: Boolean!
-  "Time in seconds the seek forward \/ rewind button will jump ahead \/ back in the video"
-  videoTimeSeekForwardRewind: Int!
-  "Close gallery with pressing the Escape-Key"
-  galleryCloseEsc: Boolean!
-  "Close gallery with clicking on background"
-  galleryCloseDimmer: Boolean!
-  "Change current photo in gallery by using the mouse wheel"
-  galleryMouseWheelChangeSlide: Boolean!
-  "Show thumbnails from begin on"
-  galleryShowThumbnails: Boolean!
-  "Start gallery in full screen mode"
-  galleryShowFullScreen: Boolean!
-  "Time to transition from current picture to next picture in milliseconds"
-  galleryTransitionDuration: Int!
-  "Name of the transition animation "
-  galleryTransitionType: String!
+  "The english country name"
+  nameEnglish: String!
+  "The german country name"
+  nameGerman: String!
+  "The list of users that live in this country"
+  users(order: [UserAccountSortInput!] where: UserAccountFilterInput): [UserAccount!]!
 }
 
-"The result for a updated user setting"
-type UpdateUserSettingPayload {
-  "The updated user setting"
-  userSetting: UserSetting!
-}
-
-"InputData type for adding user setting"
-input AddUserSettingInput {
-  "The id for the user"
-  id: String!
-}
-
-"The result for a new added user setting"
-type AddUserSettingPayload {
-  "The new added user setting"
-  userSetting: UserSetting!
-}
-
-"The result for all deleted upload videos"
-input DeleteAllUploadVideoInput {
-  "The Id list for the upload videos to delete"
-  uploadVideoIds: [Long!]!
-}
-
-"InputData type for deleting all upload videos"
-type DeleteAllUploadVideoPayload {
-  "The list of deleted upload videos"
-  uploadVideos: [UploadVideo!]!
-}
-
-"InputData type for deleting upload video"
-input DeleteUploadVideoInput {
-  "The Id for the upload video"
-  id: Long!
-}
-
-"The result for a deleted upload video"
-type DeleteUploadVideoPayload {
-  "The deleted upload video"
-  uploadVideo: UploadVideo!
-}
-
-"InputData type for deleting all upload pictures"
-input DeleteAllUploadPictureInput {
-  "The Id list for the upload pictures to delete"
-  uploadPictureIds: [Long!]!
-}
-
-"The result for all deleted upload pictures"
-type DeleteAllUploadPicturePayload {
-  "The list of deleted upload pictures"
-  uploadPictures: [UploadPicture!]!
-}
-
-"InputData type for deleting upload picture"
-input DeleteUploadPictureInput {
-  "The Id for the upload picture"
-  id: Long!
-}
-
-"The result for a deleted upload picture"
-type DeleteUploadPicturePayload {
-  "The deleted upload picture"
-  uploadPicture: UploadPicture!
-}
-
-"Input type for finish video upload"
-input FinishVideoUploadInput {
-  "The target filename for the file to upload"
-  targetFilename: String!
-  "The original filename for the file to upload"
-  originalFilename: String!
-  "The last chunk number"
-  lastChunkNumber: Long!
-}
-
-"The result for a finished video upload"
-type FinishVideoUploadPayload {
-  "Has the finish operation successfully completed"
-  status: Boolean!
-}
-
-"Input type for adding video upload chunks"
-input AddVideoUploadChunkInput {
-  "The target filename for the file to upload"
-  targetFilename: String!
-  "The chunk number for the chunk to upload"
-  chunkNumber: Long!
-  "The size of the chunk in bytes"
-  chunkSize: Int!
-  "The chunk data as base64 encoded string"
-  chunkData: String!
-}
-
-"The result for a new added video upload chunk"
-type AddVideoUploadChunkPayload {
-  "Has the chunk been successfully written to the server"
-  status: Boolean!
+input IntOperationFilterInput {
+  eq: Int
+  gt: Int
+  gte: Int
+  in: [Int]
+  lt: Int
+  lte: Int
+  neq: Int
+  ngt: Int
+  ngte: Int
+  nin: [Int]
+  nlt: Int
+  nlte: Int
 }
 
 "Input type for finish picture upload"
 input FinishPictureUploadInput {
-  "The target filename for the file to upload"
-  targetFilename: String!
-  "The original filename for the file to upload"
-  originalFilename: String!
   "The last chunk number"
   lastChunkNumber: Long!
-}
-
-"The result for a finished picture upload"
-type FinishPictureUploadPayload {
-  "Has the finish operation successfully completed"
-  status: Boolean!
-}
-
-"Input type for adding picture upload chunks"
-input AddPictureUploadChunkInput {
+  "The original filename for the file to upload"
+  originalFilename: String!
   "The target filename for the file to upload"
   targetFilename: String!
-  "The chunk number for the chunk to upload"
-  chunkNumber: Long!
-  "The size of the chunk in bytes"
-  chunkSize: Int!
-  "The chunk data as base64 encoded string"
-  chunkData: String!
 }
 
 "The result for a new added picture upload chunk"
@@ -1747,148 +2100,271 @@ type AddPictureUploadChunkPayload {
   status: Boolean!
 }
 
-"Input type for deleting category values"
-input DeleteCategoryValueInput {
-  "The ID for the category value"
+"Picture convert status"
+input PictureConvertStatusFilterInput {
+  and: [PictureConvertStatusFilterInput!]
+  "Error message when conversion is in state \"Finished with errors\""
+  errorMessage: StringOperationFilterInput
+  "Timestamp for \"Convert picture - End\""
+  finishDateConvert: DateTimeOperationFilterInput
+  "Timestamp for \"Read Exif-Information from file - End\""
+  finishDateExif: DateTimeOperationFilterInput
+  "Timestamp for \"Read Picture Info from file - End\""
+  finishDateInfo: DateTimeOperationFilterInput
+  id: LongOperationFilterInput
+  or: [PictureConvertStatusFilterInput!]
+  "Timestamp for \"Convert picture - Begin\""
+  startDateConvert: DateTimeOperationFilterInput
+  "Timestamp for \"Read Exif-Information from file - Begin\""
+  startDateExif: DateTimeOperationFilterInput
+  "Timestamp for \"Read Picture Info from file - Begin\""
+  startDateInfo: DateTimeOperationFilterInput
+  "The current state for the conversion"
+  status: EnumPictureConvertStatusOperationFilterInput
+  "Id of the upload picture that is converted"
+  uploadPicture: UploadPictureFilterInput
+}
+
+input RatingSortInput {
+  createDate: SortEnumType
+  id: SortEnumType
+  "The media item this rating belongs to"
+  mediaItem: MediaItemSortInput
+  "The user interaction info this rating belongs to"
+  userInteractionInfo: UserInteractionInfoSortInput
+  "The user interaction info this rating belongs to"
+  value: SortEnumType
+}
+
+"The video type for the converted upload video"
+enum EnumVideoType {
+  "HTTP Live Streaming format"
+  HLS
+  "Not set"
+  NOT_SET
+  "Progressive video format"
+  PROGRESSIVE
+}
+
+"InputData type for deleting upload video"
+input DeleteUploadVideoInput {
+  "The Id for the upload video"
   id: Long!
 }
 
-"The result for a deleted category value"
-type DeleteCategoryValuePayload {
-  "The deleted category value"
-  categoryValue: CategoryValue!
+input FavoriteSortInput {
+  createDate: SortEnumType
+  id: SortEnumType
+  "The media item this favorite belongs to"
+  mediaItem: MediaItemSortInput
+  "The user interaction info this favorite belongs to"
+  userInteractionInfo: UserInteractionInfoSortInput
 }
 
-"Input type for updating category values"
-input UpdateCategoryValueInput {
-  "The ID for the category value to update"
-  id: Long!
-  "German name for this category value"
-  nameGerman: String!
-  "English name for this category value"
-  nameEnglish: String!
+"InputData type for deleting all upload videos"
+type DeleteAllUploadVideoPayload {
+  "The list of deleted upload videos"
+  uploadVideos: [UploadVideo!]!
 }
 
-"The result for a updated category value"
-type UpdateCategoryValuePayload {
-  "The updated category value"
-  categoryValue: CategoryValue!
-}
-
-"Input type for adding category value"
-input AddCategoryValueInput {
-  "The key for the category"
-  categoryId: Long!
-  "German name for this category value"
-  nameGerman: String!
-  "English name for this category value"
-  nameEnglish: String!
-}
-
-"The result for a new added category value"
-type AddCategoryValuePayload {
-  "The new added category value"
-  categoryValue: CategoryValue!
-}
-
-"InputData type for deleting categories"
-input DeleteCategoryInput {
-  "The Id for the category"
-  id: Long!
-}
-
-"The result for a deleted category"
-type DeleteCategoryPayload {
-  "The deleted category"
-  category: Category!
-}
-
-"InputData type for updating categories"
-input UpdateCategoryInput {
-  "The ID for the category to update"
-  id: Long!
-  "German name for this category"
-  nameGerman: String!
-  "English name for this category"
-  nameEnglish: String!
-}
-
-"The result for a updated category"
-type UpdateCategoryPayload {
-  "The updated category"
-  category: Category!
-}
-
-"InputData type for adding categories"
-input AddCategoryInput {
+"Category group"
+type Category {
   "The type of category"
   categoryType: EnumCategoryType!
-  "German name for this category"
-  nameGerman: String!
+  "List of related category values"
+  categoryValues(order: [CategoryValueSortInput!] where: CategoryValueFilterInput): [CategoryValue!]!
+  "When was this category last changed"
+  changeDate: DateTime
+  "When was this category created"
+  createDate: DateTime!
+  "The identifier for this category"
+  id: Long!
   "English name for this category"
   nameEnglish: String!
+  "German name for this category"
+  nameGerman: String!
 }
 
-"The result for a new added category"
-type AddCategoryPayload {
-  "The new added category"
-  category: Category!
+"Media item"
+input MediaItemFilterInput {
+  and: [MediaItemFilterInput!]
+  changeDate: DateTimeOperationFilterInput
+  "List of related comments"
+  comments: ListFilterInputTypeOfCommentFilterInput
+  createDate: DateTimeOperationFilterInput
+  "English description for this media item"
+  descriptionEnglish: StringOperationFilterInput
+  "German description for this media item"
+  descriptionGerman: StringOperationFilterInput
+  "List of related favorites"
+  favorites: ListFilterInputTypeOfFavoriteFilterInput
+  id: LongOperationFilterInput
+  "The media group this media item entry belongs to"
+  mediaGroup: MediaGroupFilterInput
+  "List of related media item category values"
+  mediaItemCategoryValues: ListFilterInputTypeOfMediaItemCategoryValueFilterInput
+  "The type of media item"
+  mediaType: EnumMediaTypeOperationFilterInput
+  "English name for this media item"
+  nameEnglish: StringOperationFilterInput
+  "German name for this media item"
+  nameGerman: StringOperationFilterInput
+  "Is this media item is only visible for family users"
+  onlyFamily: BooleanOperationFilterInput
+  or: [MediaItemFilterInput!]
+  "List of related ratings"
+  ratings: ListFilterInputTypeOfRatingFilterInput
+  "The assigned upload picture if the item is of type picture"
+  uploadPicture: UploadPictureFilterInput
+  "The assigned upload video if the item is of type video"
+  uploadVideo: UploadVideoFilterInput
 }
 
-"The result for a updated media item"
-type UpdateMediaItemPayload {
-  "The updated media item"
-  mediaItem: MediaItem!
+input EnumVideoConvertStatusOperationFilterInput {
+  eq: EnumVideoConvertStatus
+  in: [EnumVideoConvertStatus!]
+  neq: EnumVideoConvertStatus
+  nin: [EnumVideoConvertStatus!]
+}
+
+"Video convert status"
+input VideoConvertStatusFilterInput {
+  and: [VideoConvertStatusFilterInput!]
+  "Hour part for the convert time"
+  convertHour: IntOperationFilterInput
+  "Minute part for the convert time"
+  convertMinute: IntOperationFilterInput
+  "The remaining time for current conversion in hours"
+  convertRestHour: IntOperationFilterInput
+  "The remaining time for current conversion in minutes"
+  convertRestMinute: IntOperationFilterInput
+  "The remaining time for current conversion in seconds"
+  convertRestSecond: IntOperationFilterInput
+  "Second part for the convert time"
+  convertSecond: IntOperationFilterInput
+  "Error message when conversion is in state \"Finished with errors\""
+  errorMessage: StringOperationFilterInput
+  "Timestamp when conversion of preview image ends"
+  finishDateConvertPicture: DateTimeOperationFilterInput
+  "Timestamp when copy of converted files ends"
+  finishDateCopyConverted: DateTimeOperationFilterInput
+  "Timestamp when delete original file ends"
+  finishDateDeleteOriginal: DateTimeOperationFilterInput
+  "Timestamp when delete temporary files ends"
+  finishDateDeleteTemp: DateTimeOperationFilterInput
+  "Timestamp when creating HLS content ends"
+  finishDateHls: DateTimeOperationFilterInput
+  "Timestamp when reading media info ends"
+  finishDateMediaInfo: DateTimeOperationFilterInput
+  "Timestamp when converting the video to MP4 ends"
+  finishDateMp4: DateTimeOperationFilterInput
+  "Timestamp when converting the video to DASH 1920 x 1080 ends"
+  finishDateMp41080: DateTimeOperationFilterInput
+  "Timestamp when converting the video to DASH 3840 x 2160 ends"
+  finishDateMp42160: DateTimeOperationFilterInput
+  "Timestamp when converting the video to HLS 640 x 360 ends"
+  finishDateMp4360: DateTimeOperationFilterInput
+  "Timestamp when converting the video to HLS 852 x 480 ends"
+  finishDateMp4480: DateTimeOperationFilterInput
+  "Timestamp when converting the video to HLS 1280 x 720 ends"
+  finishDateMp4720: DateTimeOperationFilterInput
+  "Timestamp when creating thumbnail ends"
+  finishDateThumbnail: DateTimeOperationFilterInput
+  "Timestamp when creating VTT content ends"
+  finishDateVtt: DateTimeOperationFilterInput
+  id: LongOperationFilterInput
+  or: [VideoConvertStatusFilterInput!]
+  "The progress for current conversion"
+  progress: IntOperationFilterInput
+  "Timestamp when conversion of preview image begins"
+  startDateConvertPicture: DateTimeOperationFilterInput
+  "Timestamp when copy of converted files begins"
+  startDateCopyConverted: DateTimeOperationFilterInput
+  "Timestamp when delete original file begins"
+  startDateDeleteOriginal: DateTimeOperationFilterInput
+  "Timestamp when delete temporary files begins"
+  startDateDeleteTemp: DateTimeOperationFilterInput
+  "Timestamp when creating HLS content begins"
+  startDateHls: DateTimeOperationFilterInput
+  "Timestamp when reading media info begins"
+  startDateMediaInfo: DateTimeOperationFilterInput
+  "Timestamp when converting the video to MP4 begins"
+  startDateMp4: DateTimeOperationFilterInput
+  "Timestamp when converting the video to DASH 1920 x 1080 begins"
+  startDateMp41080: DateTimeOperationFilterInput
+  "Timestamp when converting the video to DASH 3840 x 2160 begins"
+  startDateMp42160: DateTimeOperationFilterInput
+  "Timestamp when converting the video to HLS 640 x 360 begins"
+  startDateMp4360: DateTimeOperationFilterInput
+  "Timestamp when converting the video to HLS 852 x 480 begins"
+  startDateMp4480: DateTimeOperationFilterInput
+  "Timestamp when converting the video to HLS 1280 x 720 begins"
+  startDateMp4720: DateTimeOperationFilterInput
+  "Timestamp when creating thumbnail begins"
+  startDateThumbnail: DateTimeOperationFilterInput
+  "Timestamp when creating VTT content begins"
+  startDateVtt: DateTimeOperationFilterInput
+  "The current state for the conversion"
+  status: EnumVideoConvertStatusOperationFilterInput
+  "The upload video that is converted"
+  uploadVideo: UploadVideoFilterInput
+  "The type of video for the converted video"
+  videoType: EnumVideoTypeOperationFilterInput
+}
+
+"State for upload item"
+enum EnumUploadState {
+  "The file is uploaded, converted and assigned to a media item"
+  ASSIGNED
+  "File is converted by a converter service"
+  CONVERTED
+  "File is only uploaded and not converted"
+  UPLOADED
+}
+
+type Comment {
+  "Content for the comment"
+  content: String
+  "When was this comment created"
+  createDate: DateTime!
+  "The identifier for this comment"
+  id: Long!
+  "The media item this comment belongs to"
+  mediaItem: MediaItem
+  "The user interaction info this comment belongs to"
+  userInteractionInfo: UserInteractionInfo
+}
+
+"Category group"
+input CategorySortInput {
+  "The type of category"
+  categoryType: SortEnumType
+  changeDate: SortEnumType
+  createDate: SortEnumType
+  id: SortEnumType
+  "English name for this category"
+  nameEnglish: SortEnumType
+  "German name for this category"
+  nameGerman: SortEnumType
 }
 
 "InputData type for updating media item"
 input UpdateMediaItemInput {
-  "The unique identifier for the media item to update"
-  id: Long!
-  "German name for this media item"
-  nameGerman: String!
-  "English name for this media item"
-  nameEnglish: String!
-  "German description for this media item"
-  descriptionGerman: String
-  "English description for this media item"
-  descriptionEnglish: String
-  "Is this media item only visible for family users"
-  onlyFamily: Boolean!
   "The list of unique identifiers for the category values added to this media item"
   categoryValueIds: [Long!]!
+  "English description for this media item"
+  descriptionEnglish: String
+  "German description for this media item"
+  descriptionGerman: String
+  "The unique identifier for the media item to update"
+  id: Long!
+  "English name for this media item"
+  nameEnglish: String!
+  "German name for this media item"
+  nameGerman: String!
+  "Is this media item only visible for family users"
+  onlyFamily: Boolean!
 }
 
-"The result for a deleted media item"
-type DeleteMediaItemPayload {
-  "The deleted media item"
-  mediaItem: MediaItem!
-}
-
-"InputData type for deleting media item"
-input DeleteMediaItemInput {
-  "The ID for the media group the media item belongs to"
-  mediaGroupId: Long!
-  "The ID for the media item to delete"
-  mediaItemId: Long!
-  "Should assigned upload item be kept in the upload area?"
-  keepUploadItem: Boolean!
-}
-
-"The filter data info for upload picture exif info"
-type UploadPictureExifInfoFilterData {
-  "The distinct list of distinct makes"
-  make: [String!]!
-  "The distinct list of distinct models"
-  model: [String!]!
-  "The distinct list of fnumbers"
-  fNumbers: [Float!]!
-  "The distinct list of ISO sensitivities"
-  isoSensitivities: [Int!]!
-  "The distinct list of exposure times"
-  exposureTimes: [Float!]!
-  "The distinct list of shutter speeds"
-  shutterSpeeds: [Float!]!
-  "The distinct list of focal lengths"
-  focalLengths: [Float!]!
-}
+"The purpose of the `cost` directive is to define a `weight` for GraphQL types, fields, and arguments. Static analysis can use these weights when calculating the overall cost of a query or response."
+directive @cost("The `weight` argument defines what value to add to the overall cost for every appearance, or possible appearance, of a type, field, argument, etc." weight: String!) on SCALAR | OBJECT | FIELD_DEFINITION | ARGUMENT_DEFINITION | ENUM | INPUT_FIELD_DEFINITION

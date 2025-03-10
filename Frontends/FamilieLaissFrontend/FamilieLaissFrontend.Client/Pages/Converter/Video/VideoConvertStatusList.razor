@@ -27,9 +27,9 @@
             {
                 <MudTd DataLabel="@VideoConvertStatusListRes.ErrorMessage">@context.ErrorMessage</MudTd>
             }
-            @if (ListType == EnumVideoConvertStatus.SucessfullyConverted)
+            @if (ListType == EnumVideoConvertStatus.SucessfullyConverted && context.FinishDateConvertPicture.HasValue)
             {
-                <MudTd DataLabel="@VideoConvertStatusListRes.ConvertedAt">@context.FinishDateConvertPicture!.Value.LocalDateTime</MudTd>
+                <MudTd DataLabel="@VideoConvertStatusListRes.ConvertedAt">@context.FinishDateConvertPicture.Value.LocalDateTime</MudTd>
             }
         </RowTemplate>
     </MudTable>

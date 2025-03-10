@@ -1,11 +1,10 @@
-﻿namespace FamilieLaissEnums
+﻿namespace FamilieLaissEnums;
+
+public enum EnumVideoResolutionIcon
 {
-    public enum EnumVideoResolutionIcon
-    {
-        p360,
-        p480,
-        p720,
-        p1080,
-        p2160
-    }
+    P360,
+    P480,
+    P720,
+    P1080,
+    P2160
 }

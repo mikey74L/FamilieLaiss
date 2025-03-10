@@ -1,7 +1,10 @@
-﻿namespace Upload.API.GraphQL.Mutations.UploadPicture
+﻿using HotChocolate;
+
+namespace Upload.API.GraphQL.Mutations.UploadPicture;
+
+[GraphQLDescription("InputData type for deleting upload picture")]
+public class DeleteUploadPictureInput
 {
-    public class DeleteUploadPictureInput
-    {
-        public long Id { get; set; }
-    }
+    [GraphQLDescription("The Id for the upload picture")]
+    public long Id { get; set; }
 }

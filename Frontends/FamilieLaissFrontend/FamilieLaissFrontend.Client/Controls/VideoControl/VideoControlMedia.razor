@@ -35,14 +35,8 @@ else
     [Parameter]
     public IUploadVideoModel? UploadItem 
     { 
-        get
-        {
-            return ViewModel.UploadItem;
-        }
-        set
-        {
-            ViewModel.UploadItem = value;
-        }
+        get => ViewModel.UploadItem;
+        set => ViewModel.UploadItem = value;
     }
 
     [Parameter]

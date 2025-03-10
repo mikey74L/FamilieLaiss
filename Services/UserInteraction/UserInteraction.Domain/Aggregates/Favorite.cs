@@ -1,5 +1,9 @@
 ﻿using DomainHelper.AbstractClasses;
 using DomainHelper.Exceptions;
+using HotChocolate;
+using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using UserInteraction.Domain.DomainEvents;
 
@@ -11,22 +15,28 @@ namespace UserInteraction.Domain.Aggregates
         /// <summary>
         /// Identifier for user interaction info
         /// </summary>
-        public long UserInteractionInfoID { get; private set; }
+        [Required]
+        [GraphQLIgnore]
+        public long UserInteractionInfoId { get; private set; }
 
         /// <summary>
-        /// The user interaction info this rating belongs to
+        /// The user interaction info this favorite belongs to
         /// </summary>
+        [GraphQLDescription("The user interaction info this favorite belongs to")]
         public UserInteractionInfo UserInteractionInfo { get; private set; }
 
         /// <summary>
-        /// Identifier for user account
+        /// Identifier for media item
         /// </summary>
-        public string UserAccountID { get; private set; }
+        [Required]
+        [GraphQLIgnore]
+        public long MediaItemId { get; private set; }
 
         /// <summary>
-        /// The user account this rating belongs to
+        /// The media item this favorite belongs to
         /// </summary>
-        public UserAccount UserAccount { get; private set; }
+        [GraphQLDescription("The media item this favorite belongs to")]
+        public MediaItem MediaItem { get; private set; }
         #endregion
 
         #region C'tor
@@ -42,18 +52,13 @@ namespace UserInteraction.Domain.Aggregates
         /// C'tor
         /// </summary>
         /// <param name="userInteractionInfo">The user interaction info this comment belongs to</param>
-        /// <param name="userAccountID">Identifier for user account</param>
-        public Favorite(UserInteractionInfo userInteractionInfo, string userAccountID)
+        public Favorite(UserInteractionInfo userInteractionInfo)
         {
             //Überprüfen ob eine Rating-Info übergeben wurde
             if (userInteractionInfo == null) throw new DomainException("A user interaction info is needed");
 
-            //Überprüfen ob ein UserAccount übergeben wurde
-            if (string.IsNullOrEmpty(userAccountID)) throw new DomainException("A user account is needed");
-
             //Übernehmen der Werte
             UserInteractionInfo = userInteractionInfo;
-            UserAccountID = userAccountID;
         }
         #endregion
 
@@ -61,19 +66,19 @@ namespace UserInteraction.Domain.Aggregates
         #endregion
 
         #region Called from Change Tracker
-        public override Task EntityAddedAsync()
+        public override Task EntityAddedAsync(DbContext dbContext, IDictionary<string, object> dictContextParams)
         {
             //Feuern des Domain-Events 
-            AddDomainEvent(new MtrEventFavoriteAdded(Id, UserInteractionInfo.Id, UserAccountID));
+            AddDomainEvent(new MtrEventFavoriteAdded(Id, UserInteractionInfo.Id));
 
             //Funktionsergebnis
             return Task.CompletedTask;
         }
 
-        public override Task EntityDeletedAsync()
+        public override Task EntityDeletedAsync(DbContext dbContext, IDictionary<string, object> dictContextParams)
         {
             //Hinzufügen der Domain-Events
-            AddDomainEvent(new MtrEventFavoriteDeleted(Id, UserInteractionInfoID, UserAccountID));
+            AddDomainEvent(new MtrEventFavoriteDeleted(Id, UserInteractionInfoId));
 
             //Funktionsergebnis
             return Task.CompletedTask;

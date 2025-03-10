@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Threading.Tasks;
-using FamilieLaissSharedObjects.Enums;
 
 namespace VideoConvertExecuteService.Interfaces;
 
@@ -47,10 +46,6 @@ public interface IDatabaseOperations
 
     Task SetStatusConvertPictureBeginAsync(long id);
     Task SetStatusConvertPictureEndAsync(long id);
-
-    Task SetVideoInfoData(long id, EnumVideoType videoType, int height, int width, int hours, int minutes, int seconds,
-        double? longitude,
-        double? latitude);
 
     Task UpdateProgressAsync(long id, int progressCurrent, TimeSpan currentTime, TimeSpan restTime);
 

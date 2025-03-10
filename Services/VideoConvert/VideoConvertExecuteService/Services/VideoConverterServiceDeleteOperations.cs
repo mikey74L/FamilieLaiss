@@ -1,11 +1,9 @@
-﻿using System;
+﻿using Microsoft.Extensions.Logging;
+using ServiceHelper.Exceptions;
+using System;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using FamilieLaissMassTransitDefinitions.Contracts.Events;
-using FamilieLaissMassTransitDefinitions.Events;
-using Microsoft.Extensions.Logging;
-using ServiceHelper.Exceptions;
 
 namespace VideoConvertExecuteService.Services;
 
@@ -18,20 +16,11 @@ public partial class VideoConverterService
             logger.LogInformation("Set Status in database to 'delete original - begin'");
             await databaseOperations.SetStatusDeleteOriginalBeginAsync(_convertStatusId);
 
-            var @event = new VideoConvertProgressEvent()
-            {
-                ConvertStatusId = _consumerContext.Message.ConvertStatusId,
-                UploadVideoId = _consumerContext.Message.Id
-            };
-            await _consumerContext.Publish<IVideoConvertProgressEvent>(@event);
-
             logger.LogInformation("Delete original video in service");
             File.Delete(_filenameSource);
 
             logger.LogInformation("Set Status in database to 'delete original - end'");
             await databaseOperations.SetStatusDeleteOriginalEndAsync(_convertStatusId);
-
-            await _consumerContext.Publish<IVideoConvertProgressEvent>(@event);
 
             logger.LogInformation($"File \"{Path.GetFileName(_filenameSource)}\" successfully deleted in service");
         }
@@ -47,13 +36,6 @@ public partial class VideoConverterService
         {
             await databaseOperations.SetStatusDeleteConvertedBeginAsync(_convertStatusId);
 
-            var @event = new VideoConvertProgressEvent()
-            {
-                ConvertStatusId = _consumerContext.Message.ConvertStatusId,
-                UploadVideoId = _consumerContext.Message.Id
-            };
-            await _consumerContext.Publish<IVideoConvertProgressEvent>(@event);
-
             logger.LogInformation("Delete temporary image files");
             var filteredFiles = Directory.EnumerateFiles(Path.GetDirectoryName(filename360) ?? string.Empty)
                 .Where(x => x.Contains("-Sprite-"))
@@ -66,8 +48,6 @@ public partial class VideoConverterService
             logger.LogInformation("Temporary image files successfully deleted");
 
             await databaseOperations.SetStatusDeleteConvertedEndAsync(_convertStatusId);
-
-            await _consumerContext.Publish<IVideoConvertProgressEvent>(@event);
         }
         catch (Exception ex)
         {

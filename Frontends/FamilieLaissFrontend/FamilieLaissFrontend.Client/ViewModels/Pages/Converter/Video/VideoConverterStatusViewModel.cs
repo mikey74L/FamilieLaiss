@@ -10,29 +10,24 @@ using MudBlazor;
 
 namespace FamilieLaissFrontend.Client.ViewModels.Pages.Converter.Video;
 
-public partial class VideoConverterStatusViewModel : ViewModelBase
+public partial class VideoConverterStatusViewModel(
+    ISnackbar snackbarService,
+    IMessageBoxService messageBoxService,
+    IVideoConvertStatusDataService statusService)
+    : ViewModelBase(snackbarService, messageBoxService)
 {
-    #region Services
-    private readonly IVideoConvertStatusDataService statusService;
-    #endregion
-
     #region Public Properties
     [ObservableProperty]
-    private ExtendedObservableCollection<IVideoConvertStatusModel> _listWaiting = [];
-    [ObservableProperty]
-    private ExtendedObservableCollection<IVideoConvertStatusModel> _listSuccess = [];
-    [ObservableProperty]
-    private ExtendedObservableCollection<IVideoConvertStatusModel> _listError = [];
-    [ObservableProperty]
-    private IVideoConvertStatusModel? _currentConversionItem;
-    #endregion
+    public partial ExtendedObservableCollection<IVideoConvertStatusModel> ListWaiting { get; set; } = [];
 
-    #region C'tor
-    public VideoConverterStatusViewModel(ISnackbar snackbarService, IMessageBoxService messageBoxService,
-        IVideoConvertStatusDataService statusService) : base(snackbarService, messageBoxService)
-    {
-        this.statusService = statusService;
-    }
+    [ObservableProperty]
+    public partial ExtendedObservableCollection<IVideoConvertStatusModel> ListSuccess { get; set; } = [];
+
+    [ObservableProperty]
+    public partial ExtendedObservableCollection<IVideoConvertStatusModel> ListError { get; set; } = [];
+
+    [ObservableProperty]
+    public partial IVideoConvertStatusModel? CurrentConversionItem { get; set; }
     #endregion
 
     #region Lifecycle

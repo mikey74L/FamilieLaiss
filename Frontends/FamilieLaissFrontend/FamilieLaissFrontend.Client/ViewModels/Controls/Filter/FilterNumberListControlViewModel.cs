@@ -13,16 +13,17 @@ namespace FamilieLaissFrontend.Client.ViewModels.Controls.Filter;
 
 public class FilterItemNumberValue
 {
-    public object Value { get; set; } = default!;
-    public string DisplayText { get; set; } = string.Empty;
+    public object Value { get; init; } = default!;
+    public string DisplayText { get; init; } = string.Empty;
 }
 
-public partial class FilterNumberListControlViewModel : ViewModelBase, IHandle<AggSetFilter>, IHandle<AggResetFilter>, IHandle<AggResetFilterGroup>, IHandle<AggFilterValuesSet>
+public partial class FilterNumberListControlViewModel(
+    ISnackbar snackbarService,
+    IMessageBoxService messageBoxService,
+    IEventAggregator eventAggregator)
+    : ViewModelBase(snackbarService, messageBoxService), IHandle<AggSetFilter>, IHandle<AggResetFilter>,
+        IHandle<AggResetFilterGroup>, IHandle<AggFilterValuesSet>
 {
-    #region Services
-    private readonly IEventAggregator eventAggregator;
-    #endregion
-
     #region Parameters
     public IGraphQlFilterCriteria FilterCriteria { get; set; } = default!;
     public EventCallback<(Guid id, bool hasValue)> ValueChanged { get; set; }
@@ -30,7 +31,8 @@ public partial class FilterNumberListControlViewModel : ViewModelBase, IHandle<A
 
     #region Public Properties
     [ObservableProperty]
-    private FilterItemNumberValue? _selectedValue;
+    public partial FilterItemNumberValue? SelectedValue { get; set; }
+
     partial void OnSelectedValueChanged(FilterItemNumberValue? value)
     {
         if (ValueChanged.HasDelegate)
@@ -47,15 +49,7 @@ public partial class FilterNumberListControlViewModel : ViewModelBase, IHandle<A
     }
 
     [ObservableProperty]
-    private List<FilterItemNumberValue> _filterItems = [];
-    #endregion
-
-    #region C'tor
-    public FilterNumberListControlViewModel(ISnackbar snackbarService, IMessageBoxService messageBoxService,
-        IEventAggregator eventAggregator) : base(snackbarService, messageBoxService)
-    {
-        this.eventAggregator = eventAggregator;
-    }
+    public partial List<FilterItemNumberValue> FilterItems { get; set; } = [];
     #endregion
 
     #region Lifecycle

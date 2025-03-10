@@ -2,20 +2,16 @@
 using FamilieLaissSharedUI.ViewModels;
 using MudBlazor;
 
-namespace FamilieLaissFrontend.Client.ViewModels.Pages.Converter.Picture
-{
-    public partial class PictureConvertStatusListViewModel : ViewModelBase
-    {
-        #region C'tor
-        public PictureConvertStatusListViewModel(ISnackbar snackbarService, IMessageBoxService messageBoxService) : base(snackbarService, messageBoxService)
-        {
-        }
-        #endregion
+namespace FamilieLaissFrontend.Client.ViewModels.Pages.Converter.Picture;
 
-        #region Abstract overrides
-        public override void Dispose()
-        {
-        }
-        #endregion
+public class PictureConvertStatusListViewModel(
+    ISnackbar snackbarService,
+    IMessageBoxService messageBoxService)
+    : ViewModelBase(snackbarService, messageBoxService)
+{
+    #region Abstract overrides
+    public override void Dispose()
+    {
     }
+    #endregion
 }

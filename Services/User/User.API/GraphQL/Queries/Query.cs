@@ -1,11 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿namespace User.API.GraphQL.Queries;
 
-namespace User.API.GraphQL.Queries
+public class Query
 {
-    public class Query
-    {
-    }
 }

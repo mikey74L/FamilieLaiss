@@ -9,14 +9,7 @@ public static class MediaItemMappingExtensions
 {
     public static IEnumerable<IMediaItemModel> Map(this IReadOnlyList<IFrMediaItemFull> sourceItems)
     {
-        var result = new List<IMediaItemModel>();
-
-        foreach (var sourceItem in sourceItems)
-        {
-            result.Add(sourceItem.Map());
-        }
-
-        return result;
+        return sourceItems.Select(sourceItem => sourceItem.Map()).ToList();
     }
 
     public static IMediaItemModel Map(this IFrMediaItemFull sourceItem)

@@ -40,7 +40,13 @@ public class UploadPictureDataService(IFamilieLaissClient familieLaissClient)
     {
         try
         {
-            var response = await Client.GetUploadPicturesForUploadView.ExecuteAsync(sortCriterias, filterCriteria);
+            var filterCriteriaUse = filterCriteria ?? new UploadPictureFilterInput();
+            filterCriteriaUse.State = new EnumUploadStateOperationFilterInput()
+            {
+                Eq = EnumUploadState.Converted
+            };
+
+            var response = await Client.GetUploadPicturesForUploadView.ExecuteAsync(sortCriterias, filterCriteriaUse);
 
             if (response.IsSuccessResult() && response.Data is not null)
             {
@@ -59,7 +65,7 @@ public class UploadPictureDataService(IFamilieLaissClient familieLaissClient)
     {
         try
         {
-            UploadPictureExifInfoFilterData? result = new();
+            UploadPictureExifInfoFilterData result = new();
 
             var filterDataRaw = await Client.GetUploadPictureExifInfoFilterData.ExecuteAsync();
 

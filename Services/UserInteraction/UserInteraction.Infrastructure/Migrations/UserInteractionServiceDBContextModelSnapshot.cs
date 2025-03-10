@@ -17,7 +17,7 @@ namespace UserInteraction.Infrastructure.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.0")
+                .HasAnnotation("ProductVersion", "9.0.1")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -26,6 +26,9 @@ namespace UserInteraction.Infrastructure.Migrations
                 .IncrementsBy(10);
 
             modelBuilder.HasSequence("SequenceFavorite")
+                .IncrementsBy(10);
+
+            modelBuilder.HasSequence("SequenceMediaItem")
                 .IncrementsBy(10);
 
             modelBuilder.HasSequence("SequenceRating")
@@ -40,24 +43,23 @@ namespace UserInteraction.Infrastructure.Migrations
                     NpgsqlPropertyBuilderExtensions.UseHiLo(b.Property<long>("Id"), "SequenceComment");
 
                     b.Property<string>("Content")
-                        .IsRequired()
                         .HasMaxLength(2000)
                         .HasColumnType("character varying(2000)");
 
-                    b.Property<DateTimeOffset>("CreateDate")
+                    b.Property<DateTimeOffset?>("CreateDate")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("UserAccountID")
-                        .HasColumnType("text");
+                    b.Property<long>("MediaItemId")
+                        .HasColumnType("bigint");
 
-                    b.Property<long>("UserInteractionInfoID")
+                    b.Property<long>("UserInteractionInfoId")
                         .HasColumnType("bigint");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserAccountID");
+                    b.HasIndex("MediaItemId");
 
-                    b.HasIndex("UserInteractionInfoID");
+                    b.HasIndex("UserInteractionInfoId");
 
                     b.ToTable("Comments");
                 });
@@ -70,22 +72,38 @@ namespace UserInteraction.Infrastructure.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseHiLo(b.Property<long>("Id"), "SequenceFavorite");
 
-                    b.Property<DateTimeOffset>("CreateDate")
+                    b.Property<DateTimeOffset?>("CreateDate")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("UserAccountID")
-                        .HasColumnType("text");
+                    b.Property<long>("MediaItemId")
+                        .HasColumnType("bigint");
 
-                    b.Property<long>("UserInteractionInfoID")
+                    b.Property<long>("UserInteractionInfoId")
                         .HasColumnType("bigint");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserAccountID");
+                    b.HasIndex("MediaItemId");
 
-                    b.HasIndex("UserInteractionInfoID");
+                    b.HasIndex("UserInteractionInfoId");
 
                     b.ToTable("Favorites");
+                });
+
+            modelBuilder.Entity("UserInteraction.Domain.Aggregates.MediaItem", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseHiLo(b.Property<long>("Id"), "SequenceMediaItem");
+
+                    b.Property<DateTimeOffset?>("CreateDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("MediaItems");
                 });
 
             modelBuilder.Entity("UserInteraction.Domain.Aggregates.Rating", b =>
@@ -96,25 +114,23 @@ namespace UserInteraction.Infrastructure.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseHiLo(b.Property<long>("Id"), "SequenceRating");
 
-                    b.Property<DateTimeOffset>("CreateDate")
+                    b.Property<DateTimeOffset?>("CreateDate")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("UserAccountID")
-                        .HasColumnType("text");
+                    b.Property<long>("MediaItemId")
+                        .HasColumnType("bigint");
 
-                    b.Property<long>("UserInteractionInfoID")
+                    b.Property<long>("UserInteractionInfoId")
                         .HasColumnType("bigint");
 
                     b.Property<int>("Value")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasDefaultValue(0);
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserAccountID");
+                    b.HasIndex("MediaItemId");
 
-                    b.HasIndex("UserInteractionInfoID");
+                    b.HasIndex("UserInteractionInfoId");
 
                     b.ToTable("Ratings");
                 });
@@ -127,23 +143,8 @@ namespace UserInteraction.Infrastructure.Migrations
                     b.Property<DateTimeOffset?>("ChangeDate")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<int>("CommentCount")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasDefaultValue(0);
-
-                    b.Property<DateTimeOffset>("CreateDate")
+                    b.Property<DateTimeOffset?>("CreateDate")
                         .HasColumnType("timestamp with time zone");
-
-                    b.Property<int>("FavoriteCount")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasDefaultValue(0);
-
-                    b.Property<int>("RatingCount")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasDefaultValue(0);
 
                     b.Property<string>("UserName")
                         .IsRequired()
@@ -159,95 +160,113 @@ namespace UserInteraction.Infrastructure.Migrations
                     b.Property<long>("Id")
                         .HasColumnType("bigint");
 
-                    b.Property<double>("AverageRating")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("double precision")
-                        .HasDefaultValue(0.0);
-
                     b.Property<DateTimeOffset?>("ChangeDate")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<int>("CommentCount")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasDefaultValue(0);
+                        .HasColumnType("integer");
 
-                    b.Property<DateTimeOffset>("CreateDate")
+                    b.Property<DateTimeOffset?>("CreateDate")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<int>("FavoriteCount")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasDefaultValue(0);
+                        .HasColumnType("integer");
 
                     b.Property<int>("RatingCount")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasDefaultValue(0);
+                        .HasColumnType("integer");
+
+                    b.Property<string>("UserAccountId")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("UserAccountId")
+                        .IsUnique();
 
                     b.ToTable("UserInteractionInfos");
                 });
 
             modelBuilder.Entity("UserInteraction.Domain.Aggregates.Comment", b =>
                 {
-                    b.HasOne("UserInteraction.Domain.Aggregates.UserAccount", "UserAccount")
+                    b.HasOne("UserInteraction.Domain.Aggregates.MediaItem", "MediaItem")
                         .WithMany("Comments")
-                        .HasForeignKey("UserAccountID");
-
-                    b.HasOne("UserInteraction.Domain.Aggregates.UserInteractionInfo", "UserInteractionInfo")
-                        .WithMany("Comments")
-                        .HasForeignKey("UserInteractionInfoID")
+                        .HasForeignKey("MediaItemId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("UserAccount");
+                    b.HasOne("UserInteraction.Domain.Aggregates.UserInteractionInfo", "UserInteractionInfo")
+                        .WithMany("Comments")
+                        .HasForeignKey("UserInteractionInfoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("MediaItem");
 
                     b.Navigation("UserInteractionInfo");
                 });
 
             modelBuilder.Entity("UserInteraction.Domain.Aggregates.Favorite", b =>
                 {
-                    b.HasOne("UserInteraction.Domain.Aggregates.UserAccount", "UserAccount")
+                    b.HasOne("UserInteraction.Domain.Aggregates.MediaItem", "MediaItem")
                         .WithMany("Favorites")
-                        .HasForeignKey("UserAccountID");
-
-                    b.HasOne("UserInteraction.Domain.Aggregates.UserInteractionInfo", "UserInteractionInfo")
-                        .WithMany("Favorites")
-                        .HasForeignKey("UserInteractionInfoID")
+                        .HasForeignKey("MediaItemId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("UserAccount");
+                    b.HasOne("UserInteraction.Domain.Aggregates.UserInteractionInfo", "UserInteractionInfo")
+                        .WithMany("Favorites")
+                        .HasForeignKey("UserInteractionInfoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("MediaItem");
 
                     b.Navigation("UserInteractionInfo");
                 });
 
             modelBuilder.Entity("UserInteraction.Domain.Aggregates.Rating", b =>
                 {
-                    b.HasOne("UserInteraction.Domain.Aggregates.UserAccount", "UserAccount")
+                    b.HasOne("UserInteraction.Domain.Aggregates.MediaItem", "MediaItem")
                         .WithMany("Ratings")
-                        .HasForeignKey("UserAccountID");
-
-                    b.HasOne("UserInteraction.Domain.Aggregates.UserInteractionInfo", "UserInteractionInfo")
-                        .WithMany("Ratings")
-                        .HasForeignKey("UserInteractionInfoID")
+                        .HasForeignKey("MediaItemId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("UserAccount");
+                    b.HasOne("UserInteraction.Domain.Aggregates.UserInteractionInfo", "UserInteractionInfo")
+                        .WithMany("Ratings")
+                        .HasForeignKey("UserInteractionInfoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("MediaItem");
 
                     b.Navigation("UserInteractionInfo");
                 });
 
-            modelBuilder.Entity("UserInteraction.Domain.Aggregates.UserAccount", b =>
+            modelBuilder.Entity("UserInteraction.Domain.Aggregates.UserInteractionInfo", b =>
+                {
+                    b.HasOne("UserInteraction.Domain.Aggregates.UserAccount", "UserAccount")
+                        .WithOne("UserInteractionInfo")
+                        .HasForeignKey("UserInteraction.Domain.Aggregates.UserInteractionInfo", "UserAccountId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("UserAccount");
+                });
+
+            modelBuilder.Entity("UserInteraction.Domain.Aggregates.MediaItem", b =>
                 {
                     b.Navigation("Comments");
 
                     b.Navigation("Favorites");
 
                     b.Navigation("Ratings");
+                });
+
+            modelBuilder.Entity("UserInteraction.Domain.Aggregates.UserAccount", b =>
+                {
+                    b.Navigation("UserInteractionInfo");
                 });
 
             modelBuilder.Entity("UserInteraction.Domain.Aggregates.UserInteractionInfo", b =>

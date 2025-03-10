@@ -1,7 +1,6 @@
 ﻿@using FamilieLaissFrontend.Client.ViewModels.Controls.Filter
 @using FamilieLaissInterfaces.Enums
 @using FamilieLaissInterfaces.Models
-@using FamilieLaissInterfaces.Services
 @using FamilieLaissResources.Resources.Controls.Filter
 @using FamilieLaissSharedUI.Components
 
@@ -66,17 +65,11 @@
     [EditorRequired]
     public IGraphQlFilterGroup FilterGroup 
     { 
-        get
-        {
-            return ViewModel.FilterGroup;
-        }
-        set
-        {
-            ViewModel.FilterGroup = value;
-        }
+        get => ViewModel.FilterGroup;
+        set => ViewModel.FilterGroup = value;
     } 
 
     [Parameter]
     [EditorRequired]
-    public List<IGraphQlFilterCriteria> FilterCriterias { get; set; } = default!;
+    public required List<IGraphQlFilterCriteria> FilterCriterias { get; set; }
 }

@@ -2,7 +2,6 @@
 using FamilieLaissInterfaces.DataServices;
 using FamilieLaissInterfaces.Models;
 using FamilieLaissInterfaces.Models.Data;
-using FamilieLaissMappingExtensions.Category;
 using FamilieLaissMappingExtensions.MediaItem;
 using StrawberryShake;
 using System;
@@ -127,12 +126,12 @@ public class MediaItemDataService(IFamilieLaissClient familieLaissClient)
             return CreateSimpleApiResultForBadRequest();
         }
 
-        if (model.MediaType == EnumMediaType.Picture && model.UploadPicture is null)
+        if (model is { MediaType: EnumMediaType.Picture, UploadPicture: null })
         {
             return CreateSimpleApiResultForBadRequest();
         }
 
-        if (model.MediaType == EnumMediaType.Video && model.UploadVideo is null)
+        if (model is { MediaType: EnumMediaType.Video, UploadVideo: null })
         {
             return CreateSimpleApiResultForBadRequest();
         }
@@ -196,12 +195,12 @@ public class MediaItemDataService(IFamilieLaissClient familieLaissClient)
             return CreateSimpleApiResultForBadRequest();
         }
 
-        if (model.MediaType == EnumMediaType.Picture && model.UploadPicture is null)
+        if (model is { MediaType: EnumMediaType.Picture, UploadPicture: null })
         {
             return CreateSimpleApiResultForBadRequest();
         }
 
-        if (model.MediaType == EnumMediaType.Video && model.UploadVideo is null)
+        if (model is { MediaType: EnumMediaType.Video, UploadVideo: null })
         {
             return CreateSimpleApiResultForBadRequest();
         }

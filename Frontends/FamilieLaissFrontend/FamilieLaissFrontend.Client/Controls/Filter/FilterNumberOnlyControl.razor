@@ -1,7 +1,6 @@
 ﻿@using FamilieLaissFrontend.Client.ViewModels.Controls.Filter
 @using FamilieLaissInterfaces.Enums
 @using FamilieLaissInterfaces.Models
-@using FamilieLaissInterfaces.Services
 @using FamilieLaissResources.Resources.Controls.Filter
 @using FamilieLaissSharedUI.Components
 
@@ -60,27 +59,15 @@
     [EditorRequired]
     public IGraphQlFilterCriteria FilterCriteria
     {
-        get
-        {
-            return ViewModel.FilterCriteria;
-        }
-        set
-        {
-            ViewModel.FilterCriteria = value;
-        }
+        get => ViewModel.FilterCriteria;
+        set => ViewModel.FilterCriteria = value;
     }
 
     [Parameter]
     [EditorRequired]
     public EventCallback<(Guid id, bool hasValue)> ValueChanged
     {
-        get
-        {
-            return ViewModel.ValueChanged;
-        }
-        set
-        {
-            ViewModel.ValueChanged = value;
-        }
+        get => ViewModel.ValueChanged;
+        set => ViewModel.ValueChanged = value;
     }
 }

@@ -1,7 +1,10 @@
-﻿namespace Upload.API.GraphQL.Mutations.UploadVideo
+﻿using HotChocolate;
+
+namespace Upload.API.GraphQL.Mutations.UploadVideo;
+
+[GraphQLDescription("InputData type for deleting upload video")]
+public class DeleteUploadVideoInput
 {
-    public class DeleteUploadVideoInput
-    {
-        public long Id { get; set; }
-    }
+    [GraphQLDescription("The Id for the upload video")]
+    public long Id { get; set; }
 }

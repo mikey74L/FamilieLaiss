@@ -9,7 +9,7 @@
 
 <MudDialog>
     <DialogContent>
-        <MudContainer Style="max-height: 460px; overflow-y: scroll">
+        <MudContainer Style="max-height: 70vh; overflow-y: scroll">
             @if (ViewModel.IsLoading)
             {
                 <div style="height: 200px;">
@@ -47,7 +47,7 @@
                             </MudStack>
                         }
 
-                        @if (ViewModel.CurrentMediaType == EnumMediaType.Picture && ViewModel.SelectedPicture is not null)
+                        @if (ViewModel is { CurrentMediaType: EnumMediaType.Picture, SelectedPicture: not null })
                         {
                             <PictureControl ControlType="EnumPictureControlType.EditDialog"
                                             IsDisabled="false"
@@ -56,7 +56,7 @@
                                             ShowSkeleton="false" />
                         }
 
-                        @if (ViewModel.CurrentMediaType == EnumMediaType.Video && ViewModel.SelectedVideo is not null)
+                        @if (ViewModel is { CurrentMediaType: EnumMediaType.Video, SelectedVideo: not null })
                         {
                             <VideoControl ControlType="EnumVideoControlType.EditDialog"
                                           UploadItem="ViewModel.SelectedVideo"
@@ -101,15 +101,7 @@
 
                         @if (ViewModel.CurrentMediaType is not null)
                         {
-                            string labelForDropdown = "";
-                            if (ViewModel.CurrentMediaType == EnumMediaType.Picture)
-                            {
-                                labelForDropdown = MediaItemEditDialogRes.LabelForDropdownPhoto;
-                            }
-                            else
-                            {
-                                labelForDropdown = MediaItemEditDialogRes.LabelForDropdownVideo;
-                            }
+                            var labelForDropdown = ViewModel.CurrentMediaType == EnumMediaType.Picture ? MediaItemEditDialogRes.LabelForDropdownPhoto : MediaItemEditDialogRes.LabelForDropdownVideo;
                             string placeholderForDropdown = MediaItemEditDialogRes.PlaceholderForDropdown;
                             string searchPlaceHolderForDropdown = MediaItemEditDialogRes.PlaceholderForDropdownFilter;
 
@@ -136,9 +128,10 @@
                                               Row="true"
                                               Justify="Justify.SpaceBetween"
                                               AlignItems="MudBlazor.AlignItems.Center">
-                                        <MudText>@context.Value.LocalizedName</MudText>
-                                        <MudChip Color="Color.Info"
-                                                 Variant="MudBlazor.Variant.Outlined">@context.Value.Category!.LocalizedName</MudChip>
+                                        <MudText>@context.Value!.LocalizedName</MudText>
+                                        <MudChip T="string"
+                                                 Color="Color.Info"
+                                                 Variant="MudBlazor.Variant.Outlined">@context.Value!.Category!.LocalizedName</MudChip>
                                     </MudStack>
                                 </ItemTemplate>
                             </MudSelectExtended>
@@ -160,7 +153,7 @@
         {
             @if (ViewModel.CurrentMediaType is not null)
             {
-                @if (ViewModel.SaveMode == EnumSaveMode.Save)
+                @if (IsInEditMode)
                 {
                     <MudTooltip Placement="Placement.Top" Arrow="true" Text="@MediaItemEditDialogRes.TooltipSave" ShowOnFocus="false">
                         <MudLoadingButton Loading="@ViewModel.IsSaving"
@@ -173,32 +166,25 @@
                 }
                 else
                 {
-                    <MudTooltip Placement="Placement.Top" Arrow="true" Text="@MediaItemEditDialogRes.TooltipSaveContinue" ShowOnFocus="false">
-                        <MudLoadingButton Loading="@ViewModel.IsSaving"
-                                          LoadingAdornment="Adornment.Start"
-                                          StartIcon="@Icons.Material.Filled.Save"
-                                          Color="Color.Primary"
-                                          Variant="MudBlazor.Variant.Filled"
-                                          OnClick="async () => await ViewModel.SaveCommand.ExecuteAsync(true)">@MediaItemEditDialogRes.ButtonSaveContinue</MudLoadingButton>
-                    </MudTooltip>
-                }
-                @if (!IsInEditMode)
-                {
-                    <MudMenu Style="margin-left: 1px!important">
-                        <ActivatorContent>
-                            <MudTooltip Text="@MediaItemEditDialogRes.TooltipShowSaveOptions" ShowOnFocus="false">
-                                <MudIconButton Icon="@Icons.Material.Filled.ArrowDropDown"
-                                               Variant="MudBlazor.Variant.Filled"
-                                               Color="Color.Primary"
-                                               Disabled="@ViewModel.IsSaving">
-                                </MudIconButton>
-                            </MudTooltip>
-                        </ActivatorContent>
-                        <ChildContent>
-                            <MudMenuItem OnClick="async () => await ViewModel.SaveCommand.ExecuteAsync(false)">@MediaItemEditDialogRes.ButtonSave</MudMenuItem>
-                            <MudMenuItem OnClick="async () => await ViewModel.SaveCommand.ExecuteAsync(true)">@MediaItemEditDialogRes.TooltipSaveContinue</MudMenuItem>
-                        </ChildContent>
-                    </MudMenu>
+                    <MudButtonGroup Color="Color.Primary" Variant="MudBlazor.Variant.Filled">
+                        <MudTooltip Placement="Placement.Top" Arrow="true"
+                                    Text="@(ViewModel.SaveMode == EnumSaveMode.Save ? @MediaItemEditDialogRes.TooltipSave : @MediaItemEditDialogRes.TooltipSaveContinue)"
+                                    ShowOnFocus="false">
+                            <MudLoadingButton Loading="@ViewModel.IsSaving"
+                                              LoadingAdornment="Adornment.Start"
+                                              StartIcon="@Icons.Material.Filled.Save"
+                                              Color="Color.Primary"
+                                              Variant="MudBlazor.Variant.Filled"
+                                              OnClick="async () => await ViewModel.SaveCommand.ExecuteAsync(false)">@(ViewModel.SaveMode == EnumSaveMode.Save ? @MediaItemEditDialogRes.ButtonSave : @MediaItemEditDialogRes.ButtonSaveContinue)</MudLoadingButton>
+                        </MudTooltip>
+                        <MudTooltip Text="@MediaItemEditDialogRes.TooltipShowSaveOptions" ShowOnFocus="false">
+                            <MudMenu Disabled="@ViewModel.IsSaving" Icon="@Icons.Material.Filled.ArrowDropDown"
+                                     Style="align-self: auto;">
+                                <MudMenuItem OnClick="async () => await ViewModel.SaveCommand.ExecuteAsync(false)">@MediaItemEditDialogRes.ButtonSave</MudMenuItem>
+                                <MudMenuItem OnClick="async () => await ViewModel.SaveCommand.ExecuteAsync(true)">@MediaItemEditDialogRes.TooltipSaveContinue</MudMenuItem>
+                            </MudMenu>
+                        </MudTooltip>
+                    </MudButtonGroup>
                 }
             }
             <MudTooltip Placement="Placement.Top" Arrow="true" Text="@MediaItemEditDialogRes.TooltipCancel" ShowOnFocus="false">
@@ -211,54 +197,30 @@
 @code
 {
     [CascadingParameter]
-    public MudDialogInstance MudDialog
+    public IMudDialogInstance MudDialog
     {
-        get
-        {
-            return ViewModel.MudDialog;
-        }
-        set
-        {
-            ViewModel.MudDialog = value;
-        }
+        get => ViewModel.MudDialog;
+        set => ViewModel.MudDialog = value;
     }
 
     [Parameter]
     public bool IsInEditMode
     {
-        get
-        {
-            return ViewModel.IsInEditMode;
-        }
-        set
-        {
-            ViewModel.IsInEditMode = value;
-        }
+        get => ViewModel.IsInEditMode;
+        set => ViewModel.IsInEditMode = value;
     }
 
     [Parameter]
     public long? MediaGroupId
     {
-        get
-        {
-            return ViewModel.MediaGroupId;
-        }
-        set
-        {
-            ViewModel.MediaGroupId = value;
-        }
+        get => ViewModel.MediaGroupId;
+        set => ViewModel.MediaGroupId = value;
     }
 
     [Parameter]
     public IMediaItemModel? Model
     {
-        get
-        {
-            return ViewModel.Model;
-        }
-        set
-        {
-            ViewModel.Model = value;
-        }
+        get => ViewModel.Model;
+        set => ViewModel.Model = value;
     }
 }

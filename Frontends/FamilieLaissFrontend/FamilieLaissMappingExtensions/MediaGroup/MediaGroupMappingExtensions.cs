@@ -8,14 +8,7 @@ public static class MediaGroupMappingExtensions
 {
     public static IEnumerable<IMediaGroupModel> Map(this IReadOnlyList<IFrMediaGroupFull> sourceItems)
     {
-        var result = new List<IMediaGroupModel>();
-
-        foreach (var sourceItem in sourceItems)
-        {
-            result.Add(sourceItem.Map());
-        }
-
-        return result;
+        return sourceItems.Select(sourceItem => sourceItem.Map()).ToList();
     }
 
     public static IMediaGroupModel Map(this IFrMediaGroupFull sourceItem)

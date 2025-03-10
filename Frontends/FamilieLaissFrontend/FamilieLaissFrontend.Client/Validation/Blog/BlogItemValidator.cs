@@ -4,7 +4,7 @@ using FamilieLaissInterfaces.Services;
 using FamilieLaissResources.Resources.Validation.Blog;
 using FluentValidation;
 
-namespace FamilieLaissBlazor.Client.Validation.Blog;
+namespace FamilieLaissFrontend.Client.Validation.Blog;
 
 public class BlogItemModelValidator : AbstractValidator<IBlogItemModel>, IValidatorFl<IBlogItemModel>
 {

@@ -1,7 +1,10 @@
-﻿namespace Upload.API.GraphQL.Mutations.UploadPicture
+﻿using HotChocolate;
+
+namespace Upload.API.GraphQL.Mutations.UploadPicture;
+
+[GraphQLDescription("The result for a deleted upload picture")]
+public class DeleteUploadPicturePayload
 {
-    public class DeleteUploadPicturePayload
-    {
-        public Upload.Domain.Entities.UploadPicture UploadPicture { get; set; } = default!;
-    }
+    [GraphQLDescription("The deleted upload picture")]
+    public Domain.Entities.UploadPicture UploadPicture { get; set; } = default!;
 }

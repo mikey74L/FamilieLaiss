@@ -2,7 +2,6 @@
 using FamilieLaissInterfaces.DataServices;
 using FamilieLaissInterfaces.Models;
 using FamilieLaissInterfaces.Models.Data;
-using FamilieLaissMappingExtensions.Category;
 using FamilieLaissMappingExtensions.MediaGroup;
 using StrawberryShake;
 using System;

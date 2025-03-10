@@ -11,12 +11,13 @@ using Tocronx.SimpleAsync;
 
 namespace FamilieLaissFrontend.Client.ViewModels.Controls.Filter;
 
-public partial class FilterNumberOnlyControlViewModel : ViewModelBase, IHandle<AggSetFilter>, IHandle<AggResetFilter>, IHandle<AggResetFilterGroup>, IHandle<AggFilterValuesSet>
+public partial class FilterNumberOnlyControlViewModel(
+    ISnackbar snackbarService,
+    IMessageBoxService messageBoxService,
+    IEventAggregator eventAggregator)
+    : ViewModelBase(snackbarService, messageBoxService), IHandle<AggSetFilter>, IHandle<AggResetFilter>,
+        IHandle<AggResetFilterGroup>, IHandle<AggFilterValuesSet>
 {
-    #region Services
-    private readonly IEventAggregator eventAggregator;
-    #endregion
-
     #region Parameters
     public IGraphQlFilterCriteria FilterCriteria { get; set; } = default!;
     public EventCallback<(Guid id, bool hasValue)> ValueChanged { get; set; }
@@ -24,32 +25,24 @@ public partial class FilterNumberOnlyControlViewModel : ViewModelBase, IHandle<A
 
     #region Public Properties
     [ObservableProperty]
-    private int? _selectedValueInt;
+    public partial int? SelectedValueInt { get; set; }
     partial void OnSelectedValueIntChanged(int? value)
     {
         CheckHasValue();
     }
 
     [ObservableProperty]
-    private double? _selectedValueDouble;
+    public partial double? SelectedValueDouble { get; set; }
     partial void OnSelectedValueDoubleChanged(double? value)
     {
         CheckHasValue();
     }
 
     [ObservableProperty]
-    private List<int?> _filterItemsInt = [];
+    public partial List<int?> FilterItemsInt { get; set; } = [];
 
     [ObservableProperty]
-    private List<double?> _filterItemsDouble = [];
-    #endregion
-
-    #region C'tor
-    public FilterNumberOnlyControlViewModel(ISnackbar snackbarService, IMessageBoxService messageBoxService,
-        IEventAggregator eventAggregator) : base(snackbarService, messageBoxService)
-    {
-        this.eventAggregator = eventAggregator;
-    }
+    public partial List<double?> FilterItemsDouble { get; set; } = [];
     #endregion
 
     #region Lifecycle

@@ -33,40 +33,22 @@ else
     [EditorRequired]
     public EnumPictureControlType ControlType
     {
-        get
-        {
-            return ViewModel.ControlType;
-        }
-        set
-        {
-            ViewModel.ControlType = value;
-        }
+        get => ViewModel.ControlType;
+        set => ViewModel.ControlType = value;
     }
 
     [Parameter]
     public IUploadPictureModel? UploadItem
     {
-        get
-        {
-            return ViewModel.UploadItem;
-        }
-        set
-        {
-            ViewModel.UploadItem = value;
-        }
+        get => ViewModel.UploadItem;
+        set => ViewModel.UploadItem = value;
     }
 
     [Parameter]
     public IMediaItemModel? MediaItem
     {
-        get
-        {
-            return ViewModel.MediaItem;
-        }
-        set
-        {
-            ViewModel.MediaItem = value;
-        }
+        get => ViewModel.MediaItem;
+        set => ViewModel.MediaItem = value;
     }
 
     [Parameter]

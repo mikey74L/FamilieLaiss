@@ -1,6 +1,5 @@
-﻿namespace User.API.GraphQL.Mutations
+﻿namespace User.API.GraphQL.Mutations;
+
+public class Mutation
 {
-    public class Mutation
-    {
-    }
 }

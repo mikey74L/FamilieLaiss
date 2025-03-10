@@ -1,15 +1,14 @@
-﻿using System;
-using System.Diagnostics;
-using System.Globalization;
-using System.Threading.Tasks;
-using FamilieLaissMassTransitDefinitions.Contracts.Commands;
-using FamilieLaissMassTransitDefinitions.Contracts.Events;
-using FamilieLaissMassTransitDefinitions.Events;
+﻿using FamilieLaissMassTransitDefinitions.Commands.UploadVideo;
+using FamilieLaissMassTransitDefinitions.Contracts.Commands.UploadVideo;
 using FamilieLaissSharedObjects.Enums;
 using MassTransit;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using ServiceHelper.Exceptions;
+using System;
+using System.Diagnostics;
+using System.Globalization;
+using System.Threading.Tasks;
 using VideoConvertExecuteService.Interfaces;
 using VideoConvertExecuteService.Models;
 
@@ -18,6 +17,7 @@ namespace VideoConvertExecuteService.Services;
 public class MetadataExtractorService(
     ILogger<MetadataExtractorService> logger,
     IOptions<AppSettings> appSettings,
+    IBus massTransit,
     IDatabaseOperations databaseOperations)
     : IMetadataExtractor
 {
@@ -106,7 +106,7 @@ public class MetadataExtractorService(
 
     #region Interface IMetadataExtractor
 
-    public async Task<MediaInfoData> ExtractMetadata(ConsumeContext<IConvertVideoCmd> context,
+    public async Task<MediaInfoData> ExtractMetadata(ConsumeContext<IMassConvertVideoCmd> context,
         string filenameSourceVideo)
     {
         var currentStep = 0;
@@ -118,14 +118,6 @@ public class MetadataExtractorService(
             currentStep = 1;
             logger.LogInformation("Set status to read media info - begin");
             await databaseOperations.SetStatusReadMediaInfoBeginAsync(context.Message.ConvertStatusId);
-
-            currentStep = 2;
-            var @eventProgress = new VideoConvertProgressEvent()
-            {
-                ConvertStatusId = context.Message.ConvertStatusId,
-                UploadVideoId = context.Message.Id
-            };
-            await context.Publish<IVideoConvertProgressEvent>(@eventProgress);
 
             currentStep = 3;
             logger.LogInformation("Read media info from file");
@@ -217,18 +209,25 @@ public class MetadataExtractorService(
                 $"Latitude : {(coordinates.latitude.HasValue ? coordinates.latitude.Value.ToString(CultureInfo.InvariantCulture) : "NULL")}");
 
             currentStep = 4;
-            logger.LogInformation("Send VideoInfoChanged-Event over service bus");
+            logger.LogInformation("Send SetVideoInfo over service bus");
 
-            await databaseOperations.SetVideoInfoData(context.Message.Id, videoType, Convert.ToInt32(height),
-                Convert.ToInt32(width),
-                hours, minutes, seconds, coordinates.longitude, coordinates.latitude);
+            var newCommand = new MassSetVideoInfoDataCmd()
+            {
+                Id = context.Message.Id,
+                VideoType = videoType,
+                Height = Convert.ToInt32(height),
+                Width = Convert.ToInt32(width),
+                Hours = hours,
+                Minutes = minutes,
+                Seconds = seconds,
+                Longitude = coordinates.longitude,
+                Latitude = coordinates.latitude
+            };
+            await massTransit.Send<IMassSetVideoInfoDataCmd>(newCommand);
 
             currentStep = 5;
             logger.LogInformation("Set status to read media info - end");
             await databaseOperations.SetStatusReadMediaInfoEndAsync(context.Message.ConvertStatusId);
-
-            currentStep = 6;
-            await context.Publish<IVideoConvertProgressEvent>(@eventProgress);
 
             return returnValue;
         }

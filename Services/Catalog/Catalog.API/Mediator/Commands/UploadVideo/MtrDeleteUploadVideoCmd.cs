@@ -1,79 +1,60 @@
-﻿//using DomainHelper.Interfaces;
-//using MediatR;
+﻿using DomainHelper.Exceptions;
+using DomainHelper.Interfaces;
+using FamilieLaissMassTransitDefinitions.Contracts.Events.UploadVideo;
+using MediatR;
 
-//namespace Catalog.API.Mediator.Commands.UploadVideo
-//{
-//    /// <summary>
-//    /// Mediatr Command for Delete upload Video
-//    /// </summary>
-//    public class MtrDeleteUploadVideoCmd : IRequest
-//    {
-//        #region Public Properties
-//        /// <summary>
-//        /// ID for upload Video
-//        /// </summary>
-//        public long UploadID { get; private set; }
-//        #endregion
+namespace Catalog.API.Mediator.Commands.UploadVideo;
 
-//        #region C'tor
-//        /// <summary>
-//        /// C'tor
-//        /// </summary>
-//        /// <param name="uploadVideoID">ID for upload Video</param>
-//        public MtrDeleteUploadVideoCmd(long uploadID)
-//        {
-//            UploadID = uploadID;
-//        }
-//        #endregion
-//    }
+/// <summary>
+/// Mediatr Command for delete upload video
+/// </summary>
+public class MtrDeleteUploadVideoCmd : IRequest
+{
+    /// <summary>
+    /// The message data from mass transit
+    /// </summary>
+    public required IMassUploadVideoDeletedEvent Message { get; init; }
+}
 
-//    /// <summary>
-//    /// Mediatr Command-Handler for Delete upload Video command
-//    /// </summary>
-//    public class MtrDeleteUploadVideoCmdHandler : IRequestHandler<MtrDeleteUploadVideoCmd>
-//    {
-//        #region Private Members
-//        private readonly iUnitOfWork _UnitOfWork;
-//        private readonly ILogger<MtrDeleteUploadVideoCmdHandler> _Logger;
-//        #endregion
+/// <summary>
+/// Mediatr Command-Handler for delete upload video command
+/// </summary>
+/// <remarks>
+/// Primary constructor
+/// </remarks>
+/// <param name="unitOfWork">UnitOfWork. Injected by DI</param>
+/// <param name="logger">Logger. Injected by DI</param>
+public class MtrDeleteUploadVideoCmdHandler(iUnitOfWork unitOfWork, ILogger<MtrDeleteUploadVideoCmdHandler> logger)
+    : IRequestHandler<MtrDeleteUploadVideoCmd>
+{
+    /// <summary>
+    /// Will be called by Mediatr
+    /// </summary>
+    /// <param name="request">The request data</param>
+    /// <param name="cancellationToken">The cancellation token</param>
+    /// <returns>Task</returns>
+    public async Task Handle(MtrDeleteUploadVideoCmd request,
+        CancellationToken cancellationToken)
+    {
+        logger.LogInformation("Mediatr-Handler for delete upload video command was called for {@Message}",
+            request.Message);
 
-//        #region C'tor
-//        /// <summary>
-//        /// C'tor
-//        /// </summary>
-//        /// <param name="unitOfWork">The Unit of Work. Will be injected by DI.</param>
-//        /// <param name="logger">Logger. Injected by DI</param>
-//        public MtrDeleteUploadVideoCmdHandler(iUnitOfWork unitOfWork, ILogger<MtrDeleteUploadVideoCmdHandler> logger)
-//        {
-//            //Übernehmen der injected Classes
-//            _UnitOfWork = unitOfWork;
-//            _Logger = logger;
-//        }
-//        #endregion
+        logger.LogDebug("Get repository for upload video");
+        var repository = unitOfWork.GetRepository<Domain.Entities.UploadVideo>();
 
-//        #region Mediatr-Handler
-//        /// <summary>
-//        /// Will be called by Mediatr
-//        /// </summary>
-//        /// <param name="request">The request data</param>
-//        /// <param name="cancellationToken">The cancelation token</param>
-//        /// <returns>Task</returns>
-//        public async Task Handle(MtrDeleteUploadVideoCmd request, CancellationToken cancellationToken)
-//        {
-//            _Logger.LogInformation("Mediatr-Handler for Delete upload Video command was called with request: {@Request}", request);
+        logger.LogDebug("Get model to delete in store");
+        var modelToDelete = await repository.GetOneAsync(request.Message.Id);
+        if (modelToDelete == null)
+        {
+            logger.LogError("Could not find upload video with id {ID}", request.Message.Id);
+            throw new DomainException(DomainExceptionType.NoDataFound,
+                $"Could not find upload video with id = {request.Message.Id}");
+        }
 
-//            _Logger.LogDebug("Get repository for UploadVideo");
-//            iRepository<Domain.Entities.UploadVideo> Repository = _UnitOfWork.GetRepository<Domain.Entities.UploadVideo>();
+        logger.LogDebug("Delete upload video domain model from store");
+        repository.Delete(modelToDelete);
 
-//            _Logger.LogDebug("Get item from repository");
-//            Domain.Entities.UploadVideo ItemDoDelete = await Repository.GetOneAsync(request.UploadID);
-
-//            _Logger.LogDebug("Remove item from repository");
-//            Repository.Delete(ItemDoDelete);
-
-//            _Logger.LogDebug("Saving changes to data store");
-//            await _UnitOfWork.SaveChangesAsync();
-//        }
-//        #endregion
-//    }
-//}
+        logger.LogDebug("Saving changes to data store");
+        await unitOfWork.SaveChangesAsync();
+    }
+}

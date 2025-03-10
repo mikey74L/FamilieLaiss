@@ -15,12 +15,17 @@ using MudBlazor;
 
 namespace FamilieLaissFrontend.Client.ViewModels.Dialogs.BaseData.CategoryValue;
 
-public partial class CategoryValueEditDialogViewModel : ViewModelBase
+public partial class CategoryValueEditDialogViewModel(
+    ISnackbar snackbarService,
+    IMessageBoxService messageBoxService,
+    IValidatorFl<ICategoryValueModel> validator,
+    ICategoryValueDataService categoryValueService,
+    IEventAggregator eventAggregator)
+    : ViewModelBase(snackbarService, messageBoxService)
 {
     #region Services
-    public readonly IValidatorFl<ICategoryValueModel> Validator;
-    private ICategoryValueDataService categoryValueService;
-    private IEventAggregator eventAggregator;
+    public readonly IValidatorFl<ICategoryValueModel> Validator = validator;
+
     #endregion
 
     #region Private Members
@@ -28,25 +33,14 @@ public partial class CategoryValueEditDialogViewModel : ViewModelBase
     #endregion
 
     #region Parameters
-    public MudDialogInstance MudDialog { get; set; } = default!;
+    public IMudDialogInstance MudDialog { get; set; } = null!;
     public bool IsInEditMode { get; set; }
-    public ICategoryValueModel? Model { get; set; } = default!;
-    public ICategoryModel ModelCategory { get; set; } = default!;
+    public ICategoryValueModel? Model { get; set; }
+    public ICategoryModel ModelCategory { get; set; } = null!;
     #endregion
 
     #region Public Properties
     public MudForm? Form { get; set; }
-    #endregion
-
-    #region C'tor
-    public CategoryValueEditDialogViewModel(ISnackbar snackbarService, IMessageBoxService messageBoxService,
-        IValidatorFl<ICategoryValueModel> validator, ICategoryValueDataService categoryValueService,
-        IEventAggregator eventAggregator) : base(snackbarService, messageBoxService)
-    {
-        Validator = validator;
-        this.categoryValueService = categoryValueService;
-        this.eventAggregator = eventAggregator;
-    }
     #endregion
 
     #region Lifecycle
@@ -74,7 +68,7 @@ public partial class CategoryValueEditDialogViewModel : ViewModelBase
 
                         return Task.CompletedTask;
                     })
-                    .HandleErrors((result) =>
+                    .HandleErrors((_) =>
                     {
                         ShowErrorToast(CategoryValueEditDialogViewModelRes.ToastInitializeError);
 

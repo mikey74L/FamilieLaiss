@@ -2,18 +2,26 @@
   "projects": [
     {
       "schema": [
-        "Frontends/FamilieLaissFrontendNew/schema.graphql"
+        "Frontends/FamilieLaissFrontend/schema.graphql"
       ],
       "documents": [
-        "Frontends/FamilieLaissFrontendNew/**/*.graphql"
+        "Frontends/FamilieLaissFrontend/**/*.graphql"
       ]
     },
     {
       "schema": [
-        "Frontends/FamilieLaissFrontendNew/FamilieLaissGraphQlClientLibrary/schema.graphql"
+        "Frontends/FamilieLaissFrontend/FamilieLaissGraphQlClientLibrary/schema.graphql"
       ],
       "documents": [
-        "Frontends/FamilieLaissFrontendNew/FamilieLaissGraphQlClientLibrary/**/*.graphql"
+        "Frontends/FamilieLaissFrontend/FamilieLaissGraphQlClientLibrary/**/*.graphql"
+      ]
+    },
+    {
+      "schema": [
+        "Frontends/FamilieLaissFrontendUno/FamilieLaissGraphQL/schema.graphql"
+      ],
+      "documents": [
+        "Frontends/FamilieLaissFrontendUno/FamilieLaissGraphQL/**/*.graphql"
       ]
     }
   ]

@@ -9,12 +9,17 @@ internal class UploadPictureEntityTypeConfiguration : EntityTypeConfigurationBas
 {
     protected override void ConfigureEntity(EntityTypeBuilder<UploadPicture> modelBuilder)
     {
+        //Primary Key Column
         CreateModelForIDColumn(modelBuilder, null);
 
         modelBuilder.OwnsOne(x => x.UploadPictureExifInfo).ToTable("UploadPictureExifInfos");
         modelBuilder.Navigation(x => x.UploadPictureExifInfo).IsRequired(false);
 
-        modelBuilder.OwnsOne(x => x.GoogleGeoCodingAddress).ToTable("GoogleGeoCodingAdressesPicture");
+        modelBuilder.OwnsOne(x => x.GoogleGeoCodingAddress).ToTable("GoogleGeoCodingAddressesPicture");
         modelBuilder.Navigation(x => x.GoogleGeoCodingAddress).IsRequired(false);
+        
+        modelBuilder.HasOne(a => a.Status).WithOne(b => b.UploadPicture)
+            .HasForeignKey<PictureConvertStatus>(b => b.UploadPictureId);
+
     }
 }

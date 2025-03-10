@@ -121,9 +121,9 @@
     <value>The videos in the upload area could not be loaded.</value>
   </data>
   <data name="TabHeaderUploadArea" xml:space="preserve">
-    <value>Upload files</value>
+    <value>Manage upload area</value>
   </data>
   <data name="TabHeaderUploadControl" xml:space="preserve">
-    <value>Manage upload area</value>
+    <value>Upload files</value>
   </data>
 </root>

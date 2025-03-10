@@ -1,0 +1,6 @@
+{
+  "subgraph": "Pictureconvert",
+  "http": {
+    "baseAddress": "http://pictureconvertservice/graphql"
+  }
+}

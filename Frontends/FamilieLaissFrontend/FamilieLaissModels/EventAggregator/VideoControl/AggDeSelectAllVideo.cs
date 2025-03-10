@@ -1,0 +1,5 @@
+﻿namespace FamilieLaissModels.EventAggregator.VideoControl;
+
+public class AggDeSelectAllVideo
+{
+}

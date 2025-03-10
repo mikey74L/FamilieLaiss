@@ -48,7 +48,7 @@ fragment FrUploadPictureForMediaItem on UploadPicture {
 	filename
 	height
 	width
-	status
+	state
 	uploadPictureExifInfo {
 		...FrUploadPictureExifInfo
 	}
@@ -63,7 +63,7 @@ fragment FrUploadPictureForUploadView on UploadPicture {
 	filename
 	height
 	width
-	status
+	state
 	uploadPictureExifInfo {
 		...FrUploadPictureExifInfo
 	}
@@ -76,12 +76,12 @@ fragment FrUploadPictureForUploadView on UploadPicture {
 fragment FrUploadPictureForChooseView on UploadPicture {
 	...FrUploadPictureOnlyId
 	filename
-	status
+	state
 	createDate
 } 
 
 query GetUploadPicturesForChooseView {
-    uploadPictures (where: {status: {eq: CONVERTED}}, order: {createDate: DESC}) {
+    uploadPictures (where: {state: {eq: CONVERTED}}, order: {createDate: DESC}) {
        ...FrUploadPictureForChooseView
 	}
 }

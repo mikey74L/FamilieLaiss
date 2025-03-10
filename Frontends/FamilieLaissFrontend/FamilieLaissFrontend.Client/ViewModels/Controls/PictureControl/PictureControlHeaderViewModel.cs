@@ -7,10 +7,11 @@ using MudBlazor;
 
 namespace FamilieLaissFrontend.Client.ViewModels.Controls.PictureControl;
 
-public partial class PictureControlHeaderViewModel : ViewModelBase
+public partial class PictureControlHeaderViewModel(ISnackbar snackbarService, IMessageBoxService messageBoxService)
+    : ViewModelBase(snackbarService, messageBoxService)
 {
     #region Parameters
-    public IUploadPictureModel? UploadItem { get; set; }
+    public required IUploadPictureModel UploadItem { get; set; }
     public EventCallback ToggleChanged { get; set; }
     #endregion
 
@@ -21,7 +22,7 @@ public partial class PictureControlHeaderViewModel : ViewModelBase
         {
             string result = "fl-card-picture-toggle-button ";
 
-            if (UploadItem?.IsSelected ?? false)
+            if (UploadItem.IsSelected)
             {
                 result += "fl-card-picture-toggle-button-selected ";
             }
@@ -31,24 +32,15 @@ public partial class PictureControlHeaderViewModel : ViewModelBase
     }
     #endregion
 
-    #region C'tor
-    public PictureControlHeaderViewModel(ISnackbar snackbarService, IMessageBoxService messageBoxService) : base(snackbarService, messageBoxService)
-    {
-    }
-    #endregion
-
     #region Commands
     [RelayCommand]
     public async Task ChangeToggle()
     {
-        if (UploadItem is not null)
-        {
-            UploadItem.IsSelected = !UploadItem.IsSelected;
+        UploadItem.IsSelected = !UploadItem.IsSelected;
 
-            if (ToggleChanged.HasDelegate)
-            {
-                await ToggleChanged.InvokeAsync();
-            }
+        if (ToggleChanged.HasDelegate)
+        {
+            await ToggleChanged.InvokeAsync();
         }
     }
     #endregion

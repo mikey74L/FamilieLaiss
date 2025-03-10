@@ -43,18 +43,37 @@ public enum EnumPictureConvertStatus : byte
     [DescriptionTranslation("Konvertierung - Ende", "Conversion - End")]
     ConvertEnd = 6,
     /// <summary>
+    /// Conversion is in state "Upload to cloud - Begin"
+    /// </summary>
+    [DescriptionTranslation("Speichern in Cloud - Beginn", "Upload to cloud - Begin")]
+    UploadPictureToBlobBegin = 7,
+    /// <summary>
+    /// Conversion is in state "Upload to cloud - End"
+    /// </summary>
+    [DescriptionTranslation("Speichern in Cloud - Ende", "Upload to cloud - End")]
+    UploadPictureToBlobEnd = 8,
+    /// <summary>
+    /// Conversion is in state "Delete physical files - Begin"
+    /// </summary>
+    [DescriptionTranslation("Löschen der physikalischen Dateien - Beginn", "Delete physical files - Begin")]
+    DeleteFilesBegin = 9,
+    /// <summary>
+    /// Conversion is in state "Delete physical files - End"
+    /// </summary>
+    [DescriptionTranslation("Löschen der physikalischen Dateien - Ende", "Delete physical files - End")]
+    DeleteFilesEnd = 10,    /// <summary>
     /// Conversion is in state "Successfully converted upload picture"
     /// </summary>
     [DescriptionTranslation("Erfolgreich konvertiert", "Successfully converted")]
-    SucessfullyConverted = 7,
+    SucessfullyConverted = 11,
     /// <summary>
     /// Conversion is in state "Upload picture converted with errors"
     /// </summary>
     [DescriptionTranslation("Konvertiert mit Fehlern", "Converted with errors")]
-    ConvertedWithErrors = 8,
+    ConvertedWithErrors = 12,
     /// <summary>
     /// During conversion a transient error occurs
     /// </summary>
     [DescriptionTranslation("Konvertierung wird wiederholt", "")]
-    TransientError = 9
+    TransientError = 13
 }

@@ -1,13 +1,11 @@
-﻿using System;
+﻿using Microsoft.Extensions.Logging;
+using ServiceHelper.Exceptions;
+using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using FamilieLaissMassTransitDefinitions.Contracts.Events;
-using FamilieLaissMassTransitDefinitions.Events;
-using Microsoft.Extensions.Logging;
-using ServiceHelper.Exceptions;
 using Xabe.FFmpeg;
 
 namespace VideoConvertExecuteService.Services;
@@ -23,14 +21,6 @@ public partial class VideoConverterService
             actualStep = 1;
             logger.LogInformation("Set Status in database to 'creating thumbnail'");
             await databaseOperations.SetStatusCreateThumbnailBeginAsync(_convertStatusId);
-
-            actualStep = 2;
-            var @event = new VideoConvertProgressEvent()
-            {
-                ConvertStatusId = _consumerContext.Message.ConvertStatusId,
-                UploadVideoId = _consumerContext.Message.Id
-            };
-            await _consumerContext.Publish<IVideoConvertProgressEvent>(@event);
 
             actualStep = 3;
             logger.LogInformation("Setting command line parameter for thumbnail");
@@ -119,9 +109,6 @@ public partial class VideoConverterService
             logger.LogInformation("Thumbnail-Image successfully generated");
             await databaseOperations.SetStatusCreateThumbnailEndAsync(_convertStatusId);
 
-            actualStep = 10;
-            await _consumerContext.Publish<IVideoConvertProgressEvent>(@event);
-
             return returnValue;
         }
         catch (Exception ex)
@@ -174,14 +161,6 @@ public partial class VideoConverterService
             actualStep = 1;
             logger.LogInformation("Set Status in database to 'creating VTT'");
             await databaseOperations.SetStatusCreateVttBeginAsync(_convertStatusId);
-
-            actualStep = 2;
-            var @event = new VideoConvertProgressEvent()
-            {
-                ConvertStatusId = _consumerContext.Message.ConvertStatusId,
-                UploadVideoId = _consumerContext.Message.Id
-            };
-            await _consumerContext.Publish<IVideoConvertProgressEvent>(@event);
 
             actualStep = 3;
             var destinationFilename = Path.Combine(appSettings.Value.DirectoryConvertVideo,
@@ -253,9 +232,6 @@ public partial class VideoConverterService
             logger.LogInformation("VTT successfully generated");
             await databaseOperations.SetStatusCreateVttEndAsync(_convertStatusId);
 
-            actualStep = 8;
-            await _consumerContext.Publish<IVideoConvertProgressEvent>(@event);
-
             return destinationFilename;
         }
         catch (Exception ex)
@@ -294,14 +270,6 @@ public partial class VideoConverterService
             actualStep = 1;
             logger.LogInformation("Set Status in database to 'creating HLS'");
             await databaseOperations.SetStatusCreateHlsBeginAsync(_convertStatusId);
-
-            actualStep = 2;
-            var @event = new VideoConvertProgressEvent()
-            {
-                ConvertStatusId = _consumerContext.Message.ConvertStatusId,
-                UploadVideoId = _consumerContext.Message.Id
-            };
-            await _consumerContext.Publish<IVideoConvertProgressEvent>(@event);
 
             actualStep = 3;
             logger.LogInformation("Setting filename for HLS metadata file");
@@ -366,9 +334,6 @@ public partial class VideoConverterService
             actualStep = 6;
             logger.LogInformation("HLS metadata successfully generated");
             await databaseOperations.SetStatusCreateHlsEndAsync(_convertStatusId);
-
-            actualStep = 7;
-            await _consumerContext.Publish<IVideoConvertProgressEvent>(@event);
 
             return destinationFilename;
         }

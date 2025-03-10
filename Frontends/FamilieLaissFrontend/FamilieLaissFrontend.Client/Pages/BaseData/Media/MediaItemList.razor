@@ -1,13 +1,14 @@
 ﻿@using FamilieLaissEnums
 @using FamilieLaissFrontend.Client.ViewModels.Pages.BaseData.Media
+@using FamilieLaissGraphQlClientLibrary
 @using FamilieLaissResources.Resources.Pages.BaseData.Media
 @using FamilieLaissSharedUI.Components
 
 @inherits FlComponentBase<MediaItemListViewModel>
 
-@page "/basedata-media-items"
+@page "/base-data-media-items"
 
-<div style="height: calc(100vh - var(--mud-appbar-height) - var(--fl-content-border-size) - var(--fl-additional-substract-content-page-height))">
+<MudItem style="height: calc(100vh - var(--mud-appbar-height) - var(--fl-content-border-size) - var(--fl-additional-substract-content-page-height))">
     <MudStack Style="height: 100%">
         <MudPaper Elevation="25">
             <MudStack Row="true" Justify="Justify.SpaceBetween">
@@ -39,10 +40,22 @@
             </MudStack>
         </MudPaper>
         <MudPaper Style="height: 100%" Elevation="5">
-            <div style="padding: 10px;">
+            @{
+                string classForContainer;
+                if (ViewModel.MediaItems.Count == 0 && ViewModel is { HasError: false, IsLoading: false } || ViewModel.HasError)
+                {
+                    classForContainer = "container-base-data-media";
+                }
+                else
+                {
+                    classForContainer = "container-base-data-media-items";
+                }
+            }
+
+            <MudItem Class="@classForContainer">
                 @if (ViewModel.IsLoading)
                 {
-                    <MediaItemListSkeleton />
+                    <MediaItemListSkeleton/>
                 }
                 else
                 {
@@ -50,33 +63,48 @@
                     {
                         foreach (var item in ViewModel.MediaItems)
                         {
-                            <PictureControl ControlType="EnumPictureControlType.MediaItemBaseData"
-                                            ShowSkeleton="false"
-                                            MediaItem="item"
-                                            IsDisabled="ViewModel.IsBusy"
-                                            EditClicked="async (model) => await ViewModel.EditItemCommand.ExecuteAsync(model)"
-                                            DeleteMediaClicked="async (model) => await ViewModel.DeleteItemCommand.ExecuteAsync(model) "
-                                            ShowSelectionMode="false" />
-                        }
+                            if (item.MediaType == EnumMediaType.Picture)
+                            {
+                                <PictureControl ControlType="EnumPictureControlType.MediaItemBaseData"
+                                                ShowSkeleton="false"
+                                                MediaItem="item"
+                                                IsDisabled="ViewModel.IsBusy"
+                                                EditClicked="async (model) => await ViewModel.EditItemCommand.ExecuteAsync(model)"
+                                                DeleteMediaClicked="async (model) => await ViewModel.DeleteItemCommand.ExecuteAsync(model)"
+                                                ShowSelectionMode="false"/>
+                            }
+                            else
+                            {
+                                <VideoControl ControlType="EnumVideoControlType.MediaItemBaseData"
+                                              ShowSkeleton="false"
+                                              MediaItem="item"
+                                              IsDisabled="ViewModel.IsBusy"
+                                              EditClicked="async (model) => await ViewModel.EditItemCommand.ExecuteAsync(model)"
+                                              DeleteMediaClicked="async (model) => await ViewModel.DeleteItemCommand.ExecuteAsync(model)"
+                                              ShowSelectionMode="false"/>
+                            }
+                        
+                            <MediaItemListActions IsBusy="ViewModel.IsBusy"
+                                ShowSelectionMode="ViewModel.ShowSelectionMode"
+                                OnDeSelectAll="ViewModel.DeSelectAll"
+                                OnRefreshItems="async () => await ViewModel.RefreshItemsCommand.ExecuteAsync(null)"
+                                OnSelectAll="async () => await ViewModel.SelectAllCommand.ExecuteAsync(null)"
+                                OnShowFilterSidebar="() => ViewModel.ShowFilterSidebarCommand.Execute(null)"
+                                OnToggleSelectionMode="() => ViewModel.ToggleSelectionModeCommand.Execute(null)"
+                                OnShowSortSidebar="() => ViewModel.ShowSortSidebarCommand.Execute(null)" />}
                     }
                 }
-            </div>
+            </MudItem>
         </MudPaper>
     </MudStack>
-</div>
+</MudItem>
 
 @code
 {
     [CascadingParameter]
     public Task<AuthenticationState> AuthenticationState
     {
-        get
-        {
-            return ViewModel.AuthenticationState;
-        }
-        set
-        {
-            ViewModel.AuthenticationState = value;
-        }
+        get => ViewModel.AuthenticationState;
+        set => ViewModel.AuthenticationState = value;
     }
 }

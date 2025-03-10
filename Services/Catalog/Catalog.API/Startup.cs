@@ -1,7 +1,5 @@
 using Catalog.API.Models;
 using Catalog.Infrastructure.DBContext;
-using FamilieLaissMassTransitDefinitions.Contracts.Commands;
-using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using Polly;
 
@@ -17,24 +15,23 @@ public static class Startup
     {
         var serviceScopeFactory = app.ApplicationServices.GetService<IServiceScopeFactory>();
 
-        if (serviceScopeFactory is not null)
-        {
-            using var serviceScope = serviceScopeFactory.CreateScope();
+        if (serviceScopeFactory is null) return;
 
-            var factory = serviceScope.ServiceProvider.GetRequiredService<IDbContextFactory<CatalogServiceDbContext>>();
+        using var serviceScope = serviceScopeFactory.CreateScope();
 
-            var dbContext = factory.CreateDbContext();
+        var factory = serviceScope.ServiceProvider.GetRequiredService<IDbContextFactory<CatalogServiceDbContext>>();
 
-            //Eine Retry-Policy mit Polly erstellen.
-            //Falls beim Start des Containers der zugehörige Datenbankcontainer noch nicht bereit sein sollte
-            var retryPolicy = Policy.Handle<Exception>()
-                .WaitAndRetry(10, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)));
+        var dbContext = factory.CreateDbContext();
 
-            retryPolicy.Execute(dbContext.Database.Migrate);
+        //Eine Retry-Policy mit Polly erstellen.
+        //Falls beim Start des Containers der zugehörige Datenbankcontainer noch nicht bereit sein sollte
+        var retryPolicy = Policy.Handle<Exception>()
+            .WaitAndRetry(10, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)));
 
-            dbContext.Database.CloseConnection();
-            dbContext.Dispose();
-        }
+        retryPolicy.Execute(dbContext.Database.Migrate);
+
+        dbContext.Database.CloseConnection();
+        dbContext.Dispose();
     }
     #endregion
 
@@ -44,7 +41,7 @@ public static class Startup
         //Setzen der Sending-Endpoint-Mappings
         if (appSettings is not null)
         {
-            EndpointConvention.Map<iCreateMessageForUserGroupCmd>(new Uri("queue:" + appSettings.Endpoint_MessageService));
+            //EndpointConvention.Map<iCreateMessageForUserGroupCmd>(new Uri("queue:" + appSettings.Endpoint_MessageService));
         }
     }
     #endregion

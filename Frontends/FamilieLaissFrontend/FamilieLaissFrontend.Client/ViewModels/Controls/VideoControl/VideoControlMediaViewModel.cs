@@ -8,13 +8,13 @@ using MudBlazor;
 
 namespace FamilieLaissFrontend.Client.ViewModels.Controls.VideoControl;
 
-public partial class VideoControlMediaViewModel : ViewModelBase
+public partial class VideoControlMediaViewModel(
+    ISnackbar snackbarService,
+    IMessageBoxService messageBoxService,
+    IUrlHelperService urlHelperService,
+    IDialogService dialogService)
+    : ViewModelBase(snackbarService, messageBoxService)
 {
-    #region Services
-    private readonly IUrlHelperService urlHelperService;
-    private readonly IDialogService dialogService;
-    #endregion
-
     #region Parameters
     public IUploadVideoModel? UploadItem { get; set; }
     #endregion
@@ -23,16 +23,7 @@ public partial class VideoControlMediaViewModel : ViewModelBase
     public string ImageUrlForVideo => UploadItem is not null ? urlHelperService.GetUrlForUploadVideoCard(UploadItem) : "";
 
     [ObservableProperty]
-    private bool _isOverlayVideoActive;
-    #endregion
-
-    #region C'tor
-    public VideoControlMediaViewModel(ISnackbar snackbarService, IMessageBoxService messageBoxService,
-        IUrlHelperService urlHelperService, IDialogService dialogService) : base(snackbarService, messageBoxService)
-    {
-        this.urlHelperService = urlHelperService;
-        this.dialogService = dialogService;
-    }
+    public partial bool IsOverlayVideoActive { get; set; }
     #endregion
 
     #region Commands
@@ -50,11 +41,8 @@ public partial class VideoControlMediaViewModel : ViewModelBase
             { "UploadVideoItem", UploadItem }
         };
 
-        var dialogOptions = GetDialogOptions();
-        dialogOptions.CloseButton = true;
-        dialogOptions.CloseOnEscapeKey = true;
-        dialogOptions.Position = DialogPosition.Center;
-        dialogOptions.MaxWidth = MaxWidth.ExtraExtraLarge;
+        var dialogOptions = GetDialogOptions(true, true, DialogPosition.Center,
+            MaxWidth.ExtraExtraLarge);
 
         await dialogService.ShowAsync<VideoPlayerDialog>("", dialogParams, dialogOptions);
     }

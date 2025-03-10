@@ -5,7 +5,7 @@
 
 @inherits FlComponentBase<PictureUploadPageViewModel>
 
-@page "/basedata-picture-upload"
+@page "/base-data-picture-upload"
 
 <NavigationLock OnBeforeInternalNavigation="(param) => ViewModel.BeforeInternalNavigationCommand.Execute(param)"
                 ConfirmExternalNavigation="@ViewModel.IsUploading" />

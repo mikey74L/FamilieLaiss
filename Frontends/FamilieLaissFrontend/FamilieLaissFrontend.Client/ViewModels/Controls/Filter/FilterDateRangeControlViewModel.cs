@@ -12,12 +12,13 @@ using Tocronx.SimpleAsync;
 
 namespace FamilieLaissFrontend.Client.ViewModels.Controls.Filter;
 
-public partial class FilterDateRangeControlViewModel : ViewModelBase, IHandle<AggSetFilter>, IHandle<AggResetFilter>, IHandle<AggResetFilterGroup>
+public partial class FilterDateRangeControlViewModel(
+    ISnackbar snackbarService,
+    IMessageBoxService messageBoxService,
+    IEventAggregator eventAggregator)
+    : ViewModelBase(snackbarService, messageBoxService), IHandle<AggSetFilter>, IHandle<AggResetFilter>,
+        IHandle<AggResetFilterGroup>
 {
-    #region Services
-    private readonly IEventAggregator eventAggregator;
-    #endregion
-
     #region Parameters
     public IGraphQlFilterCriteria FilterCriteria { get; set; } = default!;
     public EventCallback<(Guid id, bool hasValue)> ValueChanged { get; set; }
@@ -25,7 +26,8 @@ public partial class FilterDateRangeControlViewModel : ViewModelBase, IHandle<Ag
 
     #region Public Properties
     [ObservableProperty]
-    private DateRange _dateRangeValue = new(null, null);
+    public partial DateRange DateRangeValue { get; set; } = new(null, null);
+
     partial void OnDateRangeValueChanged(DateRange value)
     {
         if (ValueChanged.HasDelegate)
@@ -42,14 +44,6 @@ public partial class FilterDateRangeControlViewModel : ViewModelBase, IHandle<Ag
     }
 
     public MudDateRangePicker PickerControl = default!;
-    #endregion
-
-    #region C'tor
-    public FilterDateRangeControlViewModel(ISnackbar snackbarService, IMessageBoxService messageBoxService,
-        IEventAggregator eventAggregator) : base(snackbarService, messageBoxService)
-    {
-        this.eventAggregator = eventAggregator;
-    }
     #endregion
 
     #region Lifecycle

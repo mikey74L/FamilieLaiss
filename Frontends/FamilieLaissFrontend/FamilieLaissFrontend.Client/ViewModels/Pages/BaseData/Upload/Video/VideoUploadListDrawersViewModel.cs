@@ -12,12 +12,12 @@ using Tocronx.SimpleAsync;
 
 namespace FamilieLaissFrontend.Client.ViewModels.Pages.BaseData.Upload.Video;
 
-public partial class VideoUploadListDrawersViewModel : ViewModelBase
+public partial class VideoUploadListDrawersViewModel(
+    ISnackbar snackbarService,
+    IMessageBoxService messageBoxService,
+    IEventAggregator eventAggregator)
+    : ViewModelBase(snackbarService, messageBoxService)
 {
-    #region Services
-    private readonly IEventAggregator eventAggregator;
-    #endregion
-
     #region Parameters
     public EventCallback<bool> IsSortSidebarVisibleChanged { get; set; }
     public EventCallback<bool> IsFilterSidebarVisibleChanged { get; set; }
@@ -26,7 +26,7 @@ public partial class VideoUploadListDrawersViewModel : ViewModelBase
 
     #region Public Properties
     [ObservableProperty]
-    private bool _isSortSidebarVisible;
+    public partial bool IsSortSidebarVisible { get; set; }
     partial void OnIsSortSidebarVisibleChanged(bool value)
     {
         if (IsSortSidebarVisibleChanged.HasDelegate)
@@ -35,7 +35,7 @@ public partial class VideoUploadListDrawersViewModel : ViewModelBase
         }
     }
     [ObservableProperty]
-    private bool _isFilterSidebarVisible;
+    public partial bool IsFilterSidebarVisible { get; set; }
     partial void OnIsFilterSidebarVisibleChanged(bool value)
     {
         if (IsFilterSidebarVisibleChanged.HasDelegate)
@@ -45,19 +45,11 @@ public partial class VideoUploadListDrawersViewModel : ViewModelBase
     }
 
     [ObservableProperty]
-    private IGraphQlSortCriteria<UploadVideoSortInput> _selectedSortCriteria = default!;
+    public partial IGraphQlSortCriteria<UploadVideoSortInput> SelectedSortCriteria { get; set; }
     partial void OnSelectedSortCriteriaChanged(IGraphQlSortCriteria<UploadVideoSortInput> value)
     {
         SortAndFilterService.SelectedSortCriteria = value;
         eventAggregator.PublishAsync(new AggFilterChanged()).FireAndForget();
-    }
-    #endregion
-
-    #region C'tor
-    public VideoUploadListDrawersViewModel(ISnackbar snackbarService, IMessageBoxService messageBoxService,
-        IEventAggregator eventAggregator) : base(snackbarService, messageBoxService)
-    {
-        this.eventAggregator = eventAggregator;
     }
     #endregion
 

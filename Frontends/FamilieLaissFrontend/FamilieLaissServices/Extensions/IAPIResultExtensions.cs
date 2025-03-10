@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace FamilieLaissServices.Extensions;
 
-public static class IAPIResultExtensions
+public static class IApiResultExtensions
 {
     public static async Task<IApiResult> HandleStatus(this Task<IApiResult> apiResult, APIResultErrorType errorType,
         Func<Task> action)

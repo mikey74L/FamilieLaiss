@@ -6,7 +6,7 @@ namespace FamilieLaissSharedObjects.Enums
     /// Enumaration for setting the state for upload items
     /// </summary>
     [GraphQLDescription("State for upload item")]
-    public enum EnumUploadStatus : byte
+    public enum EnumUploadState : byte
     {
         /// <summary>
         /// File is only uploaded and not converted

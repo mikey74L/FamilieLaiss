@@ -7,6 +7,7 @@ using FamilieLaissInterfaces.DataServices;
 using FamilieLaissInterfaces.Enums;
 using FamilieLaissInterfaces.Models.Data;
 using FamilieLaissInterfaces.Services;
+using FamilieLaissModels.EventAggregator.MediaControl;
 using FamilieLaissModels.EventAggregator.MediaItem;
 using FamilieLaissResources.Resources.ViewModels.Pages.BaseData.Media;
 using FamilieLaissServices.Extensions;
@@ -39,9 +40,20 @@ public partial class MediaItemListViewModel : ViewModelBase, IHandle<AggMediaIte
 
     #region Properties
     [ObservableProperty]
-    private IMediaGroupModel? _mediaGroup;
+    public partial IMediaGroupModel? MediaGroup { get; set; }
 
     public SortableObservableCollection<IMediaItemModel> MediaItems { get; } = [];
+
+    [ObservableProperty]
+    public partial bool ShowSelectionMode { get; set; }
+
+
+    [ObservableProperty]
+    public partial bool IsSortSidebarVisible { get; set; }
+
+    [ObservableProperty]
+    public partial bool IsFilterSidebarVisible { get; set; }
+
     #endregion
 
     #region C'tor
@@ -93,7 +105,7 @@ public partial class MediaItemListViewModel : ViewModelBase, IHandle<AggMediaIte
 
                 return Task.CompletedTask;
             })
-            .HandleErrors((result) =>
+            .HandleErrors((_) =>
             {
                 ShowErrorToast(MediaItemListViewModelRes.ToastInitializeError);
 
@@ -113,7 +125,7 @@ public partial class MediaItemListViewModel : ViewModelBase, IHandle<AggMediaIte
 
                     return Task.CompletedTask;
                 })
-                .HandleErrors((result) =>
+                .HandleErrors((_) =>
                 {
                     ShowErrorToast(MediaItemListViewModelRes.ToastInitializeError);
 
@@ -139,8 +151,8 @@ public partial class MediaItemListViewModel : ViewModelBase, IHandle<AggMediaIte
     {
         DialogParameters dialogParam = new() { { "IsInEditMode", true }, { "Model", model }, { "MediaGroupId", MediaGroupId } };
 
-        var dialogRef = await dialogService.ShowAsync<MediaItemEditDialog>(
-          MediaItemListViewModelRes.DialogTitleEdit, dialogParam, GetDialogOptions());
+        await dialogService.ShowAsync<MediaItemEditDialog>(
+            MediaItemListViewModelRes.DialogTitleEdit, dialogParam, GetDialogOptions());
     }
 
     [RelayCommand]
@@ -155,9 +167,9 @@ public partial class MediaItemListViewModel : ViewModelBase, IHandle<AggMediaIte
 
         if (result.HasValue && result.Value)
         {
-            bool keepUploadItem = false;
+            bool keepUploadItem;
             var userSettings = await userSettingsService.GetCurrentUserSettings(AuthenticationState);
-            if (userSettings?.QuestionKeepUploadWhenDelete is not null && userSettings.QuestionKeepUploadWhenDelete.Value)
+            if (userSettings?.QuestionKeepUploadWhenDelete is not null && userSettings.QuestionKeepUploadWhenDelete)
             {
                 var title = model.MediaType == EnumMediaType.Picture ?
                     MediaItemListViewModelRes.QuestionKeepUploadPhotoTitle :
@@ -172,18 +184,11 @@ public partial class MediaItemListViewModel : ViewModelBase, IHandle<AggMediaIte
                     MediaItemListViewModelRes.QuestionKeepUploadPhotoButtonCancel :
                     MediaItemListViewModelRes.QuestionKeepUploadVideoButtonCancel;
                 var resultKeepUploadQuestion = await Question(title, message, confirmButton, cancelButton, false, false);
-                if (resultKeepUploadQuestion.HasValue)
-                {
-                    keepUploadItem = resultKeepUploadQuestion.Value;
-                }
-                else
-                {
-                    keepUploadItem = false;
-                }
+                keepUploadItem = resultKeepUploadQuestion.HasValue && resultKeepUploadQuestion.Value;
             }
             else
             {
-                keepUploadItem = userSettings?.DefaultKeepUploadWhenDelete is not null && userSettings.DefaultKeepUploadWhenDelete.Value;
+                keepUploadItem = userSettings?.DefaultKeepUploadWhenDelete is not null && userSettings.DefaultKeepUploadWhenDelete;
             }
 
             IsSaving = true;
@@ -233,6 +238,43 @@ public partial class MediaItemListViewModel : ViewModelBase, IHandle<AggMediaIte
     {
         navManager.NavigateTo<MediaListViewModel>();
     }
+
+    [RelayCommand]
+    private void ToggleSelectionMode()
+    {
+        ShowSelectionMode = !ShowSelectionMode;
+    }
+
+    [RelayCommand]
+    private void ShowSortSidebar()
+    {
+        IsSortSidebarVisible = true;
+    }
+
+    [RelayCommand]
+    private void ShowFilterSidebar()
+    {
+        IsFilterSidebarVisible = true;
+    }
+
+    [RelayCommand]
+    private async Task SelectAll()
+    {
+        await eventAggregator.PublishAsync(new AggSelectAllMediaItems());
+    }
+
+    [RelayCommand]
+    public async Task DeSelectAll()
+    {
+        await eventAggregator.PublishAsync(new AggDeSelectAllMediaItems());
+    }
+
+    [RelayCommand]
+    private async Task RefreshItems()
+    {
+        //await ReloadUploadPictures.InvokeAsync();
+    }
+
     #endregion
 
     #region Event-Handler
@@ -255,7 +297,7 @@ public partial class MediaItemListViewModel : ViewModelBase, IHandle<AggMediaIte
 
                 return Task.CompletedTask;
             })
-            .HandleErrors((result) =>
+            .HandleErrors((_) =>
             {
                 ShowErrorToast(MediaItemListViewModelRes.ToastAddItemError);
 
@@ -266,16 +308,16 @@ public partial class MediaItemListViewModel : ViewModelBase, IHandle<AggMediaIte
     public async Task HandleAsync(AggMediaItemChanged message)
     {
         await mediaItemDataService.GetMediaItemAsync(message.MediaItem.Id)
-            .HandleSuccess((result) =>
+            .HandleSuccess(result =>
             {
                 if (result is not null)
                 {
-                    MediaItems.Replace(result, (IMediaItemModel item) => item.Id == result.Id);
+                    MediaItems.Replace(result, item => item.Id == result.Id);
                 }
 
                 return Task.CompletedTask;
             })
-            .HandleErrors((result) =>
+            .HandleErrors(_ =>
             {
                 ShowErrorToast(MediaItemListViewModelRes.ToastReplaceItemError);
 

@@ -28,28 +28,28 @@ public class GraphQlSortAndFilterService<TModel, TSortInput, TFilterInput> : IGr
 {
     #region Private Members
     private string Scope { get; }
-    private Type genericTypeModel;
-    private IEventAggregator eventAggregator;
-    private Func<string, Dictionary<int, string>>? provideNumberList;
+    private readonly Type _genericTypeModel;
+    private readonly IEventAggregator _eventAggregator;
+    private readonly Func<string, Dictionary<int, string>>? _provideNumberList;
     #endregion
 
     #region C'tor
     public GraphQlSortAndFilterService(string scope, IEventAggregator eventAggregator, Func<string, Dictionary<int, string>>? provideNumberList)
     {
         this.Scope = scope;
-        this.eventAggregator = eventAggregator;
-        this.provideNumberList = provideNumberList;
+        this._eventAggregator = eventAggregator;
+        this._provideNumberList = provideNumberList;
 
-        genericTypeModel = typeof(TModel);
+        _genericTypeModel = typeof(TModel);
 
-        var sortCriterias = GetSortingCriterias(genericTypeModel);
+        var sortCriterias = GetSortingCriterias(_genericTypeModel);
 
         SortCriterias.AddRange(sortCriterias.OrderBy(x => x.DisplaySort));
 
-        selectedSortCriteria = sortCriterias.Single(x => x.InitialSelect);
+        _selectedSortCriteria = sortCriterias.Single(x => x.InitialSelect);
 
-        GetFilterGroups(genericTypeModel);
-        GetFilterCriterias(genericTypeModel);
+        GetFilterGroups(_genericTypeModel);
+        GetFilterCriterias(_genericTypeModel);
     }
     #endregion
 
@@ -78,25 +78,17 @@ public class GraphQlSortAndFilterService<TModel, TSortInput, TFilterInput> : IGr
     }
 
     private void SetSortCriteriaOnSortInput(Type modelType, object sortInputObject,
-        GraphQlSortDirection sortDirection, string PropertyName)
+        GraphQlSortDirection sortDirection, string propertyName)
     {
         var foundSortInputType = GetSortInputType(modelType);
 
         if (foundSortInputType is not null)
         {
-            var propertyInfoToSet = foundSortInputType.GetProperty(PropertyName);
+            var propertyInfoToSet = foundSortInputType.GetProperty(propertyName);
 
             if (propertyInfoToSet is not null)
             {
-                SortEnumType sortValue;
-                if (sortDirection == GraphQlSortDirection.Ascending)
-                {
-                    sortValue = SortEnumType.Asc;
-                }
-                else
-                {
-                    sortValue = SortEnumType.Desc;
-                }
+                var sortValue = sortDirection == GraphQlSortDirection.Ascending ? SortEnumType.Asc : SortEnumType.Desc;
 
                 propertyInfoToSet.SetValue(sortInputObject, sortValue);
             }
@@ -157,16 +149,13 @@ public class GraphQlSortAndFilterService<TModel, TSortInput, TFilterInput> : IGr
     #region Public Properties
     public List<IGraphQlSortCriteria<TSortInput>> SortCriterias { get; } = [];
 
-    private IGraphQlSortCriteria<TSortInput> selectedSortCriteria;
+    private IGraphQlSortCriteria<TSortInput> _selectedSortCriteria;
     public IGraphQlSortCriteria<TSortInput> SelectedSortCriteria
     {
-        get
-        {
-            return selectedSortCriteria;
-        }
+        get => _selectedSortCriteria;
         set
         {
-            selectedSortCriteria = value;
+            _selectedSortCriteria = value;
 
             if (SelectedSortCriteriaChanged is not null)
             {
@@ -177,13 +166,8 @@ public class GraphQlSortAndFilterService<TModel, TSortInput, TFilterInput> : IGr
 
     public Func<Task>? SelectedSortCriteriaChanged { get; set; }
 
-    public IReadOnlyList<TSortInput> GraphQlSortCriteria
-    {
-        get
-        {
-            return [SelectedSortCriteria.GraphQlSortInput];
-        }
-    }
+    public IReadOnlyList<TSortInput> GraphQlSortCriteria => [SelectedSortCriteria.GraphQlSortInput];
+
     #endregion
     #endregion
 
@@ -222,7 +206,7 @@ public class GraphQlSortAndFilterService<TModel, TSortInput, TFilterInput> : IGr
         {
             var groupResourceIdentifier = GetResourceIdentifierFilterGroupName(searchType, filterGroupAttr.Identifier);
 
-            filterGroups.Add(
+            _filterGroups.Add(
                 new GraphQlFilterGroup()
                 {
                     Id = Guid.NewGuid(),
@@ -254,9 +238,9 @@ public class GraphQlSortAndFilterService<TModel, TSortInput, TFilterInput> : IGr
                 Dictionary<int, string>? localizedValues = null;
                 if (attribute.FilterType == GraphQlFilterType.ValueListInt)
                 {
-                    if (provideNumberList is not null)
+                    if (_provideNumberList is not null)
                     {
-                        var numberList = provideNumberList.Invoke(propInfo.Name);
+                        var numberList = _provideNumberList.Invoke(propInfo.Name);
 
                         localizedValues = [];
                         foreach (var item in numberList)
@@ -381,7 +365,7 @@ public class GraphQlSortAndFilterService<TModel, TSortInput, TFilterInput> : IGr
     #region Public Methods
     public TFilterInput? GetGraphQlFilterCriteria()
     {
-        var filterInputType = GetFilterInputType(genericTypeModel);
+        var filterInputType = GetFilterInputType(_genericTypeModel);
 
         if (filterInputType is not null)
         {
@@ -414,13 +398,13 @@ public class GraphQlSortAndFilterService<TModel, TSortInput, TFilterInput> : IGr
                         }
                     }
 
-                    var mainFilterObject = CreateFilterInputObject(genericTypeModel);
+                    var mainFilterObject = CreateFilterInputObject(_genericTypeModel);
 
                     if (mainFilterObject is not null)
                     {
-                        foreach (var propInfoNavProp in genericTypeModel.GetProperties().Where(x => x.PropertyType.GetInterfaces().Contains(typeof(IBaseModel))))
+                        foreach (var propInfoNavProp in _genericTypeModel.GetProperties().Where(x => x.PropertyType.GetInterfaces().Contains(typeof(IBaseModel))))
                         {
-                            var filterObjectNav = GetGraphQlFilterForNavigationProperties(genericTypeModel, propInfoNavProp.PropertyType, propInfoNavProp.Name);
+                            var filterObjectNav = GetGraphQlFilterForNavigationProperties(_genericTypeModel, propInfoNavProp.PropertyType, propInfoNavProp.Name);
 
                             if (filterObjectNav is not null)
                             {
@@ -464,7 +448,7 @@ public class GraphQlSortAndFilterService<TModel, TSortInput, TFilterInput> : IGr
             {
                 foundCriteria.StringOnlyValues = data.Cast<string>().ToList();
 
-                await eventAggregator.PublishAsync(new AggFilterValuesSet());
+                await _eventAggregator.PublishAsync(new AggFilterValuesSet());
             }
         }
 
@@ -476,7 +460,7 @@ public class GraphQlSortAndFilterService<TModel, TSortInput, TFilterInput> : IGr
             {
                 foundCriteria.IntOnlyValues = data.Cast<int>().ToList();
 
-                await eventAggregator.PublishAsync(new AggFilterValuesSet());
+                await _eventAggregator.PublishAsync(new AggFilterValuesSet());
             }
         }
 
@@ -488,7 +472,7 @@ public class GraphQlSortAndFilterService<TModel, TSortInput, TFilterInput> : IGr
             {
                 foundCriteria.DoubleOnlyValues = data.Cast<double>().ToList();
 
-                await eventAggregator.PublishAsync(new AggFilterValuesSet());
+                await _eventAggregator.PublishAsync(new AggFilterValuesSet());
             }
         }
     }
@@ -501,40 +485,25 @@ public class GraphQlSortAndFilterService<TModel, TSortInput, TFilterInput> : IGr
 
             if (foundCriteria is not null)
             {
-                if (foundCriteria.DoubleValues is null)
-                {
-                    foundCriteria.DoubleValues = [];
-                }
+                foundCriteria.DoubleValues ??= [];
 
                 foreach (var item in data)
                 {
                     foundCriteria.DoubleValues?.Add(Convert.ToDouble(item.Key), item.Value);
                 }
 
-                await eventAggregator.PublishAsync(new AggFilterValuesSet());
+                await _eventAggregator.PublishAsync(new AggFilterValuesSet());
             }
         }
     }
     #endregion
 
     #region Public Properties
-    private List<IGraphQlFilterGroup> filterGroups = [];
-    public List<IGraphQlFilterGroup> FilterGroups
-    {
-        get
-        {
-            return filterGroups;
-        }
-    }
+    private readonly List<IGraphQlFilterGroup> _filterGroups = [];
+    public List<IGraphQlFilterGroup> FilterGroups => _filterGroups;
 
-    private List<IGraphQlFilterCriteria> filterCriterias = [];
-    public List<IGraphQlFilterCriteria> FilterCriterias
-    {
-        get
-        {
-            return filterCriterias;
-        }
-    }
+    public List<IGraphQlFilterCriteria> FilterCriterias { get; } = [];
+
     #endregion
     #endregion
 }

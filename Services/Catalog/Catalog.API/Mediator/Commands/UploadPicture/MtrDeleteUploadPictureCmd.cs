@@ -1,79 +1,60 @@
-﻿//using DomainHelper.Interfaces;
-//using MediatR;
+﻿using DomainHelper.Exceptions;
+using DomainHelper.Interfaces;
+using FamilieLaissMassTransitDefinitions.Contracts.Events.UploadPicture;
+using MediatR;
 
-//namespace Catalog.API.Mediator.Commands.UploadPicture
-//{
-//    /// <summary>
-//    /// Mediatr Command for Delete upload picture
-//    /// </summary>
-//    public class MtrDeleteUploadPictureCmd : IRequest
-//    {
-//        #region Public Properties
-//        /// <summary>
-//        /// ID for upload picture
-//        /// </summary>
-//        public long UploadID { get; private set; }
-//        #endregion
+namespace Catalog.API.Mediator.Commands.UploadPicture;
 
-//        #region C'tor
-//        /// <summary>
-//        /// C'tor
-//        /// </summary>
-//        /// <param name="uploadVideoID">ID for upload picture</param>
-//        public MtrDeleteUploadPictureCmd(long uploadID)
-//        {
-//            UploadID = uploadID;
-//        }
-//        #endregion
-//    }
+/// <summary>
+/// Mediatr Command for delete upload picture
+/// </summary>
+public class MtrDeleteUploadPictureCmd : IRequest
+{
+    /// <summary>
+    /// The message data from mass transit
+    /// </summary>
+    public required IMassUploadPictureDeletedEvent Message { get; init; }
+}
 
-//    /// <summary>
-//    /// Mediatr Command-Handler for Delete upload picture command
-//    /// </summary>
-//    public class MtrDeleteUploadPictureCmdHandler : IRequestHandler<MtrDeleteUploadPictureCmd>
-//    {
-//        #region Private Members
-//        private readonly iUnitOfWork _UnitOfWork;
-//        private readonly ILogger<MtrDeleteUploadPictureCmdHandler> _Logger;
-//        #endregion
+/// <summary>
+/// Mediatr Command-Handler for delete upload picture command
+/// </summary>
+/// <remarks>
+/// Primary constructor
+/// </remarks>
+/// <param name="unitOfWork">UnitOfWork. Injected by DI</param>
+/// <param name="logger">Logger. Injected by DI</param>
+public class MtrDeleteUploadPictureCmdHandler(iUnitOfWork unitOfWork, ILogger<MtrDeleteUploadPictureCmdHandler> logger)
+    : IRequestHandler<MtrDeleteUploadPictureCmd>
+{
+    /// <summary>
+    /// Will be called by Mediatr
+    /// </summary>
+    /// <param name="request">The request data</param>
+    /// <param name="cancellationToken">The cancellation token</param>
+    /// <returns>Task</returns>
+    public async Task Handle(MtrDeleteUploadPictureCmd request,
+        CancellationToken cancellationToken)
+    {
+        logger.LogInformation("Mediatr-Handler for delete upload picture command was called for {@Message}",
+            request.Message);
 
-//        #region C'tor
-//        /// <summary>
-//        /// C'tor
-//        /// </summary>
-//        /// <param name="unitOfWork">The Unit of Work. Will be injected by DI.</param>
-//        /// <param name="logger">Logger. Injected by DI</param>
-//        public MtrDeleteUploadPictureCmdHandler(iUnitOfWork unitOfWork, ILogger<MtrDeleteUploadPictureCmdHandler> logger)
-//        {
-//            //Übernehmen der injected Classes
-//            _UnitOfWork = unitOfWork;
-//            _Logger = logger;
-//        }
-//        #endregion
+        logger.LogDebug("Get repository for upload picture");
+        var repository = unitOfWork.GetRepository<Domain.Entities.UploadPicture>();
 
-//        #region Mediatr-Handler
-//        /// <summary>
-//        /// Will be called by Mediatr
-//        /// </summary>
-//        /// <param name="request">The request data</param>
-//        /// <param name="cancellationToken">The cancelation token</param>
-//        /// <returns>Task</returns>
-//        public async Task Handle(MtrDeleteUploadPictureCmd request, CancellationToken cancellationToken)
-//        {
-//            _Logger.LogInformation("Mediatr-Handler for Delete upload picture command was called with request: {@Request}", request);
+        logger.LogDebug("Get model to delete in store");
+        var modelToDelete = await repository.GetOneAsync(request.Message.Id);
+        if (modelToDelete == null)
+        {
+            logger.LogError("Could not find upload picture with id {ID}", request.Message.Id);
+            throw new DomainException(DomainExceptionType.NoDataFound,
+                $"Could not find upload picture with id = {request.Message.Id}");
+        }
 
-//            _Logger.LogDebug("Get repository for UploadPicture");
-//            iRepository<Domain.Entities.UploadPicture> Repository = _UnitOfWork.GetRepository<Domain.Entities.UploadPicture>();
+        logger.LogDebug("Delete upload picture domain model from store");
+        repository.Delete(modelToDelete);
 
-//            _Logger.LogDebug("Get item from repository");
-//            Domain.Entities.UploadPicture ItemDoDelete = await Repository.GetOneAsync(request.UploadID);
-
-//            _Logger.LogDebug("Remove item from repository");
-//            Repository.Delete(ItemDoDelete);
-
-//            _Logger.LogDebug("Saving changes to data store");
-//            await _UnitOfWork.SaveChangesAsync();
-//        }
-//        #endregion
-//    }
-//}
+        logger.LogDebug("Saving changes to data store");
+        await unitOfWork.SaveChangesAsync();
+    }
+}

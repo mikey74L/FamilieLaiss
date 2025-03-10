@@ -1,5 +1,0 @@
-{
-  "GlobalConfiguration": {
-    "ServiceDiscoveryProvider": { "Type": "Eureka" }
-  }
-}

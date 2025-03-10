@@ -2,5 +2,5 @@
 
 public class ConnectionStrings
 {
-    public string ServiceConnection { get; set; }
+    public string ServiceConnection { get; set; } = string.Empty;
 }

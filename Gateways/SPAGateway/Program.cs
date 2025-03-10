@@ -1,27 +1,24 @@
-﻿using System;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Ocelot.DependencyInjection;
 using Serilog;
 using ServiceLayerHelper.Logging;
-using SPAGateway.GraphQl;
 using SPAGateway.Logging;
 using SPAGateway.Models;
-using StackExchange.Redis;
-using Steeltoe.Discovery.Client;
-using Steeltoe.Discovery.Eureka;
+using System;
+using System.Globalization;
+using Microsoft.AspNetCore.Localization;
 
 //Den Titel für das Konsolenfenster setzen
 Console.Title = "Gateway-SPA";
 
 var builder = WebApplication.CreateBuilder(args);
 
-//Hinzufügen der Ocelot-Konfiguration über die JSON-Files
-builder.Configuration.AddOcelot(System.IO.Path.Combine(builder.Environment.ContentRootPath, "Configuration"),
-    builder.Environment);
+//Integrate Aspire
+builder
+    .AddServiceDefaults();
 
 //Logging
 var logger = new LoggerConfiguration()
@@ -30,101 +27,107 @@ var logger = new LoggerConfiguration()
 builder.Logging.ClearProviders();
 builder.Host.UseSerilog(logger);
 
-//Den Logger für Serilog erstellen
+//Create the bootstrap logger for Serilog
 Log.Logger = new LoggerConfiguration()
     .ReadFrom.Configuration(builder.Configuration)
     .CreateBootstrapLogger();
 
-//Hinzufügen der Service-Discovery
-builder.AddServiceDiscovery(options => options.UseEureka());
-
-//Hinzufügen det globalen Exception-Handler Middleware
+//Adding the global exception handler middleware
 builder.Services.AddSingleton<ILog, LogSerilog>();
 
-//Mapster hinzufügen
-//builder.Services.AddMapster();
-
-//Hinzufügen der Konfiguration (App-Settings) zum IOC-Container
+//Adding configuration (App-Settings) to the IOC container
 var appSettingsSection = builder.Configuration.GetSection("AppSettings");
 builder.Services.Configure<AppSettings>(appSettingsSection);
-AppSettings appSettings = appSettingsSection.Get<AppSettings>();
+AppSettings? appSettings = appSettingsSection.Get<AppSettings>();
 
 //Cors konfigurieren und zum DI-Container hinzufügen
-if (builder.Environment.IsDevelopment())
-{
-    builder.Services.AddCors(options =>
+builder.Services.AddCors();
+
+//Add header propagation
+builder.Services.AddHeaderPropagation(
+    options =>
     {
-        options.AddPolicy("SPAGateway", policy =>
-        {
-            policy.WithOrigins(appSettings.CORS_Origin)
-                .AllowAnyHeader()
-                .AllowAnyMethod()
-                .AllowCredentials();
-        });
+        options.Headers.Add("GraphQL-Preflight");
+        options.Headers.Add("Authorization");
     });
-}
 
-//Add Http-Clients for all GraphQL Micro-Services
+//Add HttpClient for Fusion
 builder.Services
-    .AddHttpClient(WellKnownSchemaNames.Catalog, c => c.BaseAddress = new Uri("http://catalogservice/graphql"))
-    .AddRoundRobinLoadBalancer();
-
-//Add redis for GraphQL-Schema-Stitching
-builder.Services.AddSingleton(ConnectionMultiplexer.Connect("redis"));
+    .AddHttpClient("Fusion")
+    .AddHeaderPropagation();
 
 //Add GraphQL-Server
-//Add GraphQL-Server
-builder.Services.AddGraphQLServer()
-    .AddQueryType(d => d.Name("Query"))
-    .AddRemoteSchema(WellKnownSchemaNames.Catalog);
-//.AddRemoteSchemasFromRedis("familielaiss", sp => sp.GetRequiredService<ConnectionMultiplexer>())
-//.AddTypeExtensionsFromFile("./Stitching.graphql");
+builder.Services.AddFusionGatewayServer()
+    .ConfigureFromFile("gateway.fgp")
+    .ModifyFusionOptions(x => x.AllowQueryPlan = true)
+    .AddServiceDiscoveryRewriter();
 
-//Add Ocelot to DI-Container
-//builder.Services.AddOcelot(builder.Configuration).AddEureka();
-
-//Den Web-Host ausführen
 try
 {
-    Log.Information("Starting Web-Host...");
+    Log.Information("Building web app");
 
     var app = builder.Build();
 
-    //Hinzufügen des Request-Loggings von Serilog
-    app.UseSerilogRequestLogging();
+    var lifetime = app.Lifetime;
+    lifetime.ApplicationStarted.Register(() => Log.Information("Web app started"));
+    lifetime.ApplicationStopped.Register(() => Log.Information("Application stopped"));
+    
+    var supportedCultures = new[]
+    {
+        new CultureInfo("de"),
+        new CultureInfo("en")
+    };
 
-    //Wenn im Entwicklungsmodus dann wird eine detaillierte Exception-Page angezeigt
+    Log.Information("Add logging to pipeline");
+    app.UseSerilogRequestLogging();
+    app.UseRequestLocalization(new RequestLocalizationOptions
+    {
+        DefaultRequestCulture = new RequestCulture("en-US"),
+        SupportedCultures = supportedCultures,
+        SupportedUICultures = supportedCultures
+    });
     if (builder.Environment.IsDevelopment())
     {
         app.UseDeveloperExceptionPage();
     }
-
-    //Cors zur Pipeline hinzufügen
-    if (builder.Environment.IsDevelopment()) app.UseCors("SPAGateway");
-
-    //Konfigurieren der Exception-Handler-Middleware
+    
+    Log.Information("Configure global exception handler");
     app.ConfigureExceptionHandler();
 
-    //WebSockets zur Pipeline hinzufügen
+    Log.Information("Add web sockets to pipeline");
     app.UseWebSockets();
 
-    //Routing hinzufügen
+    Log.Information("Add Cors to pipeline");
+    app.UseCors(c => c.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin());
+
+    Log.Information("Add Header Propagation to pipeline");
+    app.UseHeaderPropagation();
+    
+    Log.Information("Add routing to pipeline");
     app.UseRouting();
 
-    //Initialisieren der Endpoints für GraphQL
-    app.MapGraphQL();
+    Log.Information("Add GraphQl to pipeline");
+    app.UseEndpoints(endpoints =>
+    {
+        if (builder.Environment.IsDevelopment())
+        {
+            endpoints.MapGraphQL();
+        }
+        else
+        {
+            endpoints.MapGraphQLHttp();
+            endpoints.MapGraphQLWebSocket();
+        }
+    });
 
-    //Ocelot zur Pipeline hinzufügen
-    //app.UseOcelot().Wait();
-
+    Log.Information("Starting web app...");
     app.Run();
 }
 catch (Exception ex)
 {
-    Log.Fatal(ex, "Web-Host terminated unexpectedly");
+    Log.Fatal(ex, "Web app terminated unexpectedly");
 }
 finally
 {
-    Log.Information("Web-Host stoped");
     Log.CloseAndFlush();
 }
